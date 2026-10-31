@@ -8,6 +8,9 @@ enum Stato { ARRIVO, DENTRO, ANDATA, LAVORO, RITORNO, ESCE_CON_MERCE }
 
 const RAGGIO := 7
 const PAUSA := 3.5
+## suono di lavoro di ogni mestiere e secondi tra un colpo e l'altro
+const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardaboschi": ["vanga", 1.3],
+	"segheria": ["sega", 1.45]}
 
 var edificio: Edificio
 var risorse: RisorseNaturali
@@ -20,6 +23,7 @@ var _attesa := 0.0
 var _foglio_cammino := ""
 var _foglio_lavoro := ""
 var _avvisato := false
+var _colpo := 0.0
 
 
 func avvia(e: Edificio, r: RisorseNaturali, l: Logistica, rs: ReteStrade, partenza: Array[Vector2]) -> void:
@@ -53,6 +57,7 @@ func _process(delta: float) -> void:
 				_cerca_lavoro()
 		Stato.LAVORO:
 			_attesa -= delta
+			_suona_lavoro(delta)
 			if _attesa <= 0.0:
 				_fine_lavoro()
 
@@ -63,6 +68,7 @@ func _on_arrivato(_c: Colono) -> void:
 			_entra()
 		Stato.ANDATA:
 			stato = Stato.LAVORO
+			_colpo = 0.3
 			_attesa = 4.0 if mestiere != "guardaboschi" else 3.0
 			if _foglio_lavoro != "":
 				imposta_foglio(_foglio_lavoro)
@@ -122,6 +128,7 @@ func _fine_lavoro() -> void:
 	match mestiere:
 		"boscaiolo":
 			risorse.abbatti(_bersaglio)
+			Suono.suona_in("albero_cade", global_position)
 			_torna("portatore_tronco")
 		"cava":
 			risorse.estrai(_bersaglio)
@@ -141,6 +148,16 @@ func _fine_lavoro() -> void:
 			stato = Stato.ESCE_CON_MERCE
 			var punti: Array[Vector2] = [_porta()]
 			percorri(punti)
+
+
+func _suona_lavoro(delta: float) -> void:
+	if not SUONI.has(mestiere):
+		return
+	_colpo -= delta
+	if _colpo <= 0.0:
+		_colpo = SUONI[mestiere][1]
+		var dove := global_position if visible else edificio.global_position
+		Suono.suona_in(SUONI[mestiere][0], dove, -3.0)
 
 
 func _torna(foglio: String) -> void:

@@ -25,6 +25,7 @@ var villaggio: Node
 
 var _sprite: Sprite2D
 var _fase := -1
+var _martello := 0.0
 
 
 func prepara(p_id: int, p_tipo: String, p_casella: Vector2i, gia_finito := false) -> void:
@@ -69,6 +70,10 @@ func _process(delta: float) -> void:
 	var limite := frazione_materiali()
 	if progresso < limite:
 		progresso = minf(limite, progresso + delta / tempo_totale)
+		_martello -= delta
+		if _martello <= 0.0:
+			_martello = randf_range(0.45, 0.9)
+			Suono.suona_in("martello", global_position, -6.0)
 	queue_redraw()
 	_aggiorna_aspetto()
 	if progresso >= 1.0:
@@ -91,6 +96,7 @@ func _finisci(avvisa: bool) -> void:
 	_sprite.offset = -Sprites.ancora(tipo)
 	queue_redraw()
 	if avvisa:
+		Suono.suona_in("completato", global_position)
 		completato.emit(self)
 
 
