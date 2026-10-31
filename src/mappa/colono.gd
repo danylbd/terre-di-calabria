@@ -1,43 +1,68 @@
 class_name Colono
 extends Node2D
-## Un colono che cammina avanti e indietro lungo un percorso di punti della mappa.
-## (Nello step 04 il percorso verrà dalla rete di strade; per ora è fisso.)
+## Un colono che cammina sulla mappa seguendo una serie di punti (coordinate di mappa)
+## e poi si ferma ad aspettare.
+
+signal arrivato(c: Colono)
 
 var dati: DatiMappa
-var percorso: Array[Vector2] = []      # punti in coordinate di mappa
-var velocita := 1.1                      # caselle al secondo
-var _tappa := 1
-var _pos := Vector2.ZERO
+var velocita := 1.15                     # caselle al secondo
+var pos := Vector2.ZERO                  # posizione attuale in coordinate di mappa
+var _punti: Array[Vector2] = []
+var _foglio := ""
 var _anim: AnimatedSprite2D
-var _avanti := true
 
 
-func prepara(d: DatiMappa, punti: Array[Vector2], foglio: String, ritardo := 0.0) -> void:
+func prepara(d: DatiMappa, inizio: Vector2, foglio := "portatore_nessuno") -> void:
 	dati = d
-	percorso = punti
-	_pos = punti[0].lerp(punti[1], fposmod(ritardo, 1.0))
+	pos = inizio
 	_anim = AnimatedSprite2D.new()
-	_anim.sprite_frames = Sprites.animazioni(foglio)
 	_anim.centered = false
-	_anim.offset = -Sprites.ancora(foglio)
 	add_child(_anim)
+	imposta_foglio(foglio)
 	_anim.play("S")
-	_anim.frame = randi() % 8
-	position = d.a_schermo(_pos.x, _pos.y)
+	_ferma()
+	position = d.a_schermo(pos.x, pos.y)
+
+
+func imposta_foglio(foglio: String) -> void:
+	if foglio == _foglio:
+		return
+	_foglio = foglio
+	var anim: StringName = _anim.animation
+	if anim == &"" or anim == &"default":
+		anim = &"S"
+	_anim.sprite_frames = Sprites.animazioni(foglio)
+	_anim.animation = anim
+	_anim.offset = -Sprites.ancora(foglio)
+
+
+func percorri(punti: Array[Vector2]) -> void:
+	_punti = punti.duplicate()
+	if _punti.size() > 0:
+		_anim.play()
+
+
+func in_cammino() -> bool:
+	return _punti.size() > 0
 
 
 func _process(delta: float) -> void:
-	if percorso.size() < 2:
+	if _punti.is_empty():
 		return
-	var meta := percorso[_tappa]
-	var verso := meta - _pos
 	var passo := velocita * delta
-	if verso.length() <= passo:
-		_pos = meta
-		_prossima_tappa()
-	else:
-		_pos += verso.normalized() * passo
-	var nuova := dati.a_schermo(_pos.x, _pos.y)
+	while passo > 0.0 and _punti.size() > 0:
+		var meta: Vector2 = _punti[0]
+		var verso := meta - pos
+		var dist := verso.length()
+		if dist <= passo:
+			pos = meta
+			passo -= dist
+			_punti.pop_front()
+		else:
+			pos += verso / dist * passo
+			passo = 0.0
+	var nuova := dati.a_schermo(pos.x, pos.y)
 	var mov := nuova - position
 	if mov.length_squared() > 0.0001:
 		var nome_dir: String = Sprites.DIREZIONI[Sprites.direzione(mov)]
@@ -46,16 +71,11 @@ func _process(delta: float) -> void:
 			_anim.play(nome_dir)
 			_anim.frame = f
 	position = nuova
+	if _punti.is_empty():
+		_ferma()
+		arrivato.emit(self)
 
 
-func _prossima_tappa() -> void:
-	if _avanti:
-		_tappa += 1
-		if _tappa >= percorso.size():
-			_avanti = false
-			_tappa = percorso.size() - 2
-	else:
-		_tappa -= 1
-		if _tappa < 0:
-			_avanti = true
-			_tappa = 1
+func _ferma() -> void:
+	_anim.pause()
+	_anim.frame = 0

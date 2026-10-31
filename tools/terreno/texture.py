@@ -149,3 +149,18 @@ salva("acqua", img)
 canali = [rumore(90 + k, [64, 20, 6], [0.5, 0.3, 0.2], n=256) for k in range(4)]
 Image.fromarray((np.stack(canali, -1) * 255).astype(np.uint8), "RGBA").save(USCITA / "rumore_bordi.png")
 print("  ✓ rumore_bordi")
+
+# ---------------------------------------------------------------- strada di terra battuta (striscia con bordi sfumati)
+L, A = 256, 48
+n = rumore(120, [64, 16, 4], [0.4, 0.35, 0.25], n=L)[:A, :]
+strada = colora(n, [(0, (104, 78, 50)), (0.5, (138, 106, 70)), (1, (170, 138, 96))])
+strada = macchie(strada, 121, 50, 1, (100, 80, 56), 0.6)
+strada = macchie(strada, 122, 25, 1, (200, 190, 168), 0.6)
+v = np.abs(np.arange(A) - (A - 1) / 2) / (A / 2)
+bordo = rumore(123, [24, 6], [0.6, 0.4], n=L)[:A, :] * 0.35
+alfa = np.clip((1.0 - v[:, None] - bordo + 0.12) * 2.2, 0, 1)
+solchi = (np.abs(v - 0.42) < 0.07)[:, None] & (n > 0.35)
+strada[solchi] *= 0.85
+rgba = np.dstack([np.clip(strada, 0, 255), alfa * 255]).astype(np.uint8)
+Image.fromarray(rgba, "RGBA").save(USCITA / "strada.png")
+print("  ✓ strada")

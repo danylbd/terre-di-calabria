@@ -12,6 +12,7 @@ const TERRENI_EDIFICABILI := [T.PRATO, T.SECCO, T.TERRA]
 const PENDENZA_MAX := {1: 14.0, 2: 10.0}
 
 var dati: DatiMappa
+var rete: ReteStrade
 var oggetti: Node2D                  # nodo con ordinamento in profondità dove vanno gli edifici
 var natura := {}                     # Vector2i -> Array[Node2D] (alberi e rocce su quella casella)
 var edifici := {}                    # id -> Edificio
@@ -42,9 +43,13 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := true) -> S
 				return "Ci sono alberi o rocce"
 			if o >= 2:
 				return "Posto occupato"
+			if rete and (rete.strada.has(Vector2i(x, y)) or rete.bandiere.has(Vector2i(x, y))):
+				return "C'è una strada"
 	var b := Vector2i(c.x + s - 1, c.y + s)
-	if not dati.nel_territorio(b.x, b.y) or dati.tipo(b.x, b.y) in [T.ACQUA, T.ROCCIA, T.NEVE] or dati.occupante(b.x, b.y) >= 2:
-		return "Serve spazio libero davanti alla porta"
+	if not dati.nel_territorio(b.x, b.y) or dati.tipo(b.x, b.y) in [T.ACQUA, T.ROCCIA, T.NEVE] or dati.occupante(b.x, b.y) != 0:
+		return "Serve spazio davanti alla porta per la bandierina"
+	if rete and not rete.bandiere.has(b) and rete.motivo_no_bandiera(b) != "":
+		return "Serve spazio davanti alla porta per la bandierina"
 	var qmin := INF
 	var qmax := -INF
 	for j in range(c.y, c.y + s + 1):
@@ -90,8 +95,14 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
 	e.completato.connect(_on_completato)
 	if gia_finito:
 		_ricalcola_territorio()
-	else:
-		messaggio.emit("Cantiere aperto: %s" % CatalogoEdifici.dati(tipo)["nome"], false)
+	rete.aggiungi_bandiera(e.bandiera, true)
+	rete.segna_ostacoli_vecchi()
+	if not gia_finito:
+		if rete.collegata(e.bandiera):
+			messaggio.emit("Cantiere aperto: %s" % CatalogoEdifici.dati(tipo)["nome"], false)
+		else:
+			messaggio.emit("Collega la bandierina del cantiere con una strada", false)
+	_aggiorna_collegamenti()
 	return e
 
 
@@ -107,6 +118,8 @@ func demolisci(e: Edificio) -> void:
 	for r in costo:
 		scorte[r] += int(costo[r] / 2)
 	edifici.erase(e.id)
+	rete.libera_protezione(e.bandiera)
+	rete.segna_ostacoli_vecchi()
 	e.queue_free()
 	scorte_cambiate.emit()
 	_ricalcola_territorio()
@@ -122,6 +135,9 @@ func _on_completato(e: Edificio) -> void:
 	messaggio.emit("%s completato" % CatalogoEdifici.dati(e.tipo)["nome"], false)
 	if CatalogoEdifici.dati(e.tipo).has("territorio") or e.tipo == "magazzino":
 		_ricalcola_territorio()
+	if e.tipo == "magazzino":
+		rete.aggiungi_bandiera(e.bandiera, true)
+		rete._ricalcola()
 
 
 func _ricalcola_territorio() -> void:
@@ -134,7 +150,14 @@ func _ricalcola_territorio() -> void:
 		elif CatalogoEdifici.dati(e.tipo).has("territorio"):
 			centri.append([e.casella, float(CatalogoEdifici.dati(e.tipo)["territorio"])])
 	dati.calcola_territorio(centri)
+	if rete:
+		rete.segna_ostacoli_vecchi()
 	territorio_cambiato.emit()
+
+
+func _aggiorna_collegamenti() -> void:
+	for e in edifici.values():
+		e.collegato = e.tipo == "magazzino" or rete.collegata(e.bandiera)
 
 
 func _conta(tipo: String) -> int:
