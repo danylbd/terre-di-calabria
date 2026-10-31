@@ -54,7 +54,7 @@ tools/studio/modelli.gd  ──▶  modello 3D (pietra, intonaco, coppi veri, le
 | Fase | Contenuto | Stato |
 |---|---|---|
 | **G1** | Studio di rendering 3D; casa, magazzino, boscaiolo, segheria, frantoio; pino, ulivo; portatore animato (8 direzioni × 8 passi, 4 carichi) | fatto, da rifinire |
-| G2 | Transizioni tra terreni, riva con schiuma, fiumi, varianti | |
+| G2 | Edifici "vissuti" e più grandi, alberi frondosi (castagno, quercia, pino laricio, ulivo), decorazioni, terreno saturo e granuloso, materiale con sporco e finta occlusione | fatto |
 | G3 | Tutti gli edifici greci (≈ 20) con cantiere in 3 fasi | |
 | G4 | Mestieri: 12 lavoratori animati; soldati greci | |
 | G5 | Interfaccia: icone di tutte le merci, pulsanti, pannelli, cursori | |

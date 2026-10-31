@@ -14,7 +14,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 04 | Trasporto | Le merci viaggiano di bandierina in bandierina; i cantieri crescono con i materiali consegnati | fatto |
 | 05 | Prima catena | Boscaiolo abbatte gli alberi, guardaboschi ripianta, segheria fa assi, cava estrae pietra: tutto portato dai portatori | |
 | M1 | Musica e suoni | Primi 3 brani (orchestra + strumenti calabresi), suoni di lavoro e natura | |
-| G2 | Grafica livello 2 | Rifinitura verso la qualità di Settlers 3: texture sporcate, varietà, transizioni del terreno | |
+| G2 | Grafica livello 2 | Edifici grandi e vissuti (2×2, magazzino 3×3), castagni, querce, pini laricio, ulivi, fiori e funghi, terreno saturo | fatto |
 | 06 | Cibo: campi, allevamenti, pesca | Coltivazioni (grano, vite, ortaggi, cipolla rossa, agrumi), allevamenti (maiali, pecore, capre, api), pesca dalla costa e pesce spada con la barca; mulino, forno, macelleria, caseificio | |
 | 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | |
 | 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | |

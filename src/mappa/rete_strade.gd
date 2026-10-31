@@ -129,18 +129,51 @@ func trova_percorso(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 	if strada.has(a) and motivo_spaziatura(a) != "":
 		return vuoto
 	_aggiorna_ostacoli()
-	_astar.set_point_solid(da, false)
-	_astar.set_point_solid(a, false)
-	var p := _astar.get_id_path(da, a)
-	_astar.set_point_solid(da, true)
-	_astar.set_point_solid(a, true)
+	var p := _percorso_tra_uscite(da, a)
 	if p.size() < 2 or p.size() > LUNGHEZZA_MAX:
 		return vuoto
 	for c in p:
 		if not dati.nel_territorio(c.x, c.y):
 			return vuoto
+	return p
+
+
+## Una bandierina può avere strade in tutte le 8 direzioni: si cerca il percorso tra le sue
+## caselle d'uscita libere (anche in diagonale tra due strade che partono dalla stessa bandierina).
+func _percorso_tra_uscite(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
+	var migliore: Array[Vector2i] = []
+	if (da - a).abs().x <= 1 and (da - a).abs().y <= 1:
+		migliore.assign([da, a])
+		return migliore
+	var uscite_da := _uscite(da, a)
+	var uscite_a := _uscite(a, da)
+	var era_solido := _astar.is_point_solid(a)
+	if not bandiere.has(a):
+		uscite_a = [a] as Array[Vector2i]
+		_astar.set_point_solid(a, false)
+	for u in uscite_da.slice(0, 4):
+		for v in uscite_a.slice(0, 4):
+			var tratto := _astar.get_id_path(u, v) if u != v else [u] as Array[Vector2i]
+			if tratto.is_empty():
+				continue
+			var tot: Array[Vector2i] = [da]
+			tot.append_array(tratto)
+			if tot[-1] != a:
+				tot.append(a)
+			if migliore.is_empty() or tot.size() < migliore.size():
+				migliore = tot
+	_astar.set_point_solid(a, era_solido)
+	return migliore
+
+
+func _uscite(f: Vector2i, verso: Vector2i) -> Array[Vector2i]:
 	var r: Array[Vector2i] = []
-	r.assign(p)
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			var n := f + Vector2i(dx, dy)
+			if (dx != 0 or dy != 0) and _astar.is_in_boundsv(n) and not _astar.is_point_solid(n):
+				r.append(n)
+	r.sort_custom(func(p1, p2): return (p1 - verso).length_squared() < (p2 - verso).length_squared())
 	return r
 
 
