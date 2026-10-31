@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) (in `main`, release v0.13.0).
+Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) e lo step 12 (in `main`, release v0.14.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -66,7 +66,9 @@ Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) (in `ma
 
 - Step 11 (Greci completi, 36 edifici): argillaio e fornace (anfore), saline, tessitura (stoffa, lusso), miniera d'argento e zecca (monete), agorà 3×3 che vende (`CatalogoEdifici.VENDITA`) e compra (`ACQUISTO`, scelta nel pannello, `Edificio.acquisto`). Il gruppo "una qualsiasi tra queste merci" è `CatalogoEdifici.gruppo()` (cibo dei minatori, merci dell'agorà). Test: `tools/test/test_greci.gd`.
 
-**In corso: step 12 – territorio e torri** (ramo `step-12-territorio`), inizio della Fase 2 (guerra e avversario): confini, torri presidiate, castelli. Per la guerra vedi `docs/design.md` §6 «Guerra» e le decisioni (la guerra si sceglie all'inizio).
+- Step 12 (territorio): `DatiMappa.territorio` contiene il proprietario (0 nessuno, 1 giocatore, 2.. altri popoli, `proprietario(x, y)`); le caselle non si rubano finché il vecchio proprietario le copre. Torre (raggio 7) e castello (3×3, raggio 11) allargano solo quando la guardia entra (`Edificio.presidiata`, `Villaggio.presidia`). Altri popoli per ora come `Villaggio.centri_esterni`. Confine che si ritira: gli edifici fuori bruciano. Test: `tools/test/test_territorio.gd`.
+
+**In corso: step 13 – soldati e conquista** (ramo `step-13-soldati`): armaiolo e armi, caserma che addestra i soldati (oplita per i Greci), attacco alle torri nemiche e conquista del territorio.
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

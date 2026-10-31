@@ -10,7 +10,7 @@ var tipi := PackedByteArray()        # larghezza * altezza
 var quote := PackedFloat32Array()    # (larghezza + 1) * (altezza + 1), in pixel verso l'alto
 var villaggio := Vector2i.ZERO       # casella del centro del villaggio iniziale
 var occupazione := PackedInt32Array() # 0 libero, 1 natura (alberi, rocce), >=2 id di un edificio
-var territorio := PackedByteArray()   # 1 = casella del giocatore
+var territorio := PackedByteArray()   # proprietario di ogni casella: 0 nessuno, 1 il giocatore, 2.. gli avversari
 
 const NATURA := 1
 
@@ -39,16 +39,42 @@ func nel_territorio(x: int, y: int) -> bool:
 	return dentro(x, y) and territorio[y * larghezza + x] == 1
 
 
-## Ricalcola il territorio da un elenco di centri [casella, raggio].
+func proprietario(x: int, y: int) -> int:
+	return territorio[y * larghezza + x] if dentro(x, y) else 0
+
+
+## Ricalcola il territorio da un elenco di centri [casella, raggio, proprietario].
+## Una casella resta a chi la aveva finché un suo centro la copre (i confini non si rubano):
+## altrimenti va a chi la copre meglio (più vicino in proporzione al raggio).
 func calcola_territorio(centri: Array) -> void:
-	territorio.fill(0)
+	var prima := territorio.duplicate()
+	var meglio := PackedFloat32Array()
+	meglio.resize(larghezza * altezza)
+	meglio.fill(-1.0)
+	var nuovo := PackedByteArray()
+	nuovo.resize(larghezza * altezza)
+	var coperto := {}                   # indice -> {proprietario: true}
 	for c in centri:
 		var p: Vector2i = c[0]
 		var r: float = c[1]
+		var chi: int = c[2] if c.size() > 2 else 1
 		for y in range(p.y - int(r) - 1, p.y + int(r) + 2):
 			for x in range(p.x - int(r) - 1, p.x + int(r) + 2):
-				if dentro(x, y) and Vector2(x - p.x, y - p.y).length() <= r:
-					territorio[y * larghezza + x] = 1
+				if not dentro(x, y):
+					continue
+				var dist := Vector2(x - p.x, y - p.y).length()
+				if dist > r:
+					continue
+				var i := y * larghezza + x
+				coperto.get_or_add(i, {})[chi] = true
+				var punteggio := 1.0 - dist / r
+				if punteggio > meglio[i]:
+					meglio[i] = punteggio
+					nuovo[i] = chi
+	for i in coperto:
+		if prima[i] != 0 and coperto[i].has(int(prima[i])):
+			nuovo[i] = prima[i]
+	territorio = nuovo
 
 
 ## Casella sotto un punto dello schermo, tenendo conto del rilievo.

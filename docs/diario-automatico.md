@@ -66,3 +66,9 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - 7 edifici nuovi (36 in tutto): argillaio, fornace, saline, tessitura, miniera d'argento, zecca, agorà (3×3, edificio unico dei Greci).
 - Agorà: vende olio, vino, stoffa, anfore, pesce spada, miele, formaggio, sale, agrumi per monete (prezzi favorevoli); compra la merce scelta nel pannello. Le monete non hanno tetto di scorta.
 - Generalizzato il gruppo "una qualsiasi" (`CatalogoEdifici.gruppo`). Versione 0.13.0. Prossimo: step 12 territorio e torri.
+
+## 2026-11-01 03:00 — step 12 territorio e torri
+- Territorio con proprietario per casella; i confini altrui non si rubano senza conquista. Torre e castello (nuovo, 3×3) allargano solo con la guardia dentro (nuovo sprite "guardia" con elmo, scudo e lancia).
+- Confine che si ritira: edifici fuori bruciano, strade e bandierine fuori spariscono. Pali di confine colorati per popolo; cerchio dei nuovi confini mentre si piazza un forte. Messaggi di demolizione resi neutri.
+- Fase 2 della roadmap ora ha la colonna Stato. Versione 0.14.0. Prossimo: step 13 soldati e conquista.
+- Bug trovato dai test: un produttore si fermava se alla sua bandierina c'erano 3+ merci di passaggio (incrocio trafficato). Ora `merci_in_uscita` conta solo le merci prodotte da quell'edificio (`Merce.origine`).

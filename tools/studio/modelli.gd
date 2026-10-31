@@ -26,7 +26,7 @@ const REGOLAZIONI := {
 	"vino": [0.0, 0.0, 1.1], "spada": [0.0, 0.0, 1.0], "minerale": [0.3, 0.3, 1.15], "carbone": [0.0, 0.0, 1.0],
 	"lingotto": [0.1, 0.1, 1.0], "brace": [0.0, 0.0, 1.3], "fumo": [0.0, 0.0, 1.0], "argilla": [0.2, 0.2, 1.15],
 	"argilla_cruda": [0.3, 0.3, 1.05], "sale": [0.1, 0.1, 1.0], "moneta": [0.0, 0.0, 1.1], "argento_grezzo": [0.2, 0.2, 1.0],
-	"stoffa_rossa": [0.0, 0.0, 1.15],
+	"stoffa_rossa": [0.0, 0.0, 1.15], "bronzo": [0.1, 0.1, 1.1],
 }
 
 
@@ -68,6 +68,7 @@ static func catalogo() -> Dictionary:
 		"saline": {"crea": saline},
 		"tessitura": {"crea": tessitura},
 		"agora": {"crea": agora},
+		"castello": {"crea": castello},
 		"cantiere_0": {"crea": cantiere.bind(0)},
 		"cantiere_1": {"crea": cantiere.bind(1)},
 		"cantiere_2": {"crea": cantiere.bind(2)},
@@ -131,6 +132,8 @@ static func catalogo() -> Dictionary:
 		c["agrumi_%d" % (k + 1)] = {"crea": agrumi.bind(k)}
 	for att in ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]:
 		c["merce_" + att] = {"crea": merce.bind(att)}
+	c["guardia"] = {"crea": guardia, "posa": posa_cammino,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["barca_remi"] = {"crea": barca_remi, "posa": posa_remata,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(112, 96), "ancora": Vector2(56, 64)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
@@ -379,6 +382,10 @@ static func materiale(nome: String) -> Material:
 		"argento_grezzo":
 			m.albedo_texture = _rumore(51, 0.7, Color("4a4c54"), Color("c8ccd8"))
 			m.metallic = 0.4
+		"bronzo":
+			m.albedo_texture = _rumore(52, 0.5, Color("8a5a20"), Color("d8a048"))
+			m.metallic = 0.6
+			m.roughness = 0.4
 		"stoffa_rossa":
 			m.albedo_color = Color("a8302a")
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
@@ -2686,3 +2693,70 @@ static func _tutto_marmo(n: Node) -> void:
 		(n as MeshInstance3D).material_override = materiale("marmo")
 	for k in n.get_children():
 		_tutto_marmo(k)
+
+
+# =================================================================== DIFESA (step 12)
+
+## Guardia greca: elmo di bronzo con cresta, scudo rotondo al braccio sinistro, lancia nella destra.
+static func guardia() -> Node3D:
+	var r := portatore("")
+	var corpo: Node3D = r.get_node("corpo")
+	var anca := 0.2
+	corpo.add_child(sfera(0.08, Vector3(0, anca + 0.27, -0.005), "bronzo", Vector3(1, 0.75, 1.05)))
+	corpo.add_child(scatola(Vector3(0.016, 0.06, 0.13), Vector3(0, anca + 0.34, -0.01), "bandiera_rossa"))
+	corpo.add_child(cilindro(0.088, 0.088, 0.03, Vector3(0, anca + 0.12, 0), "bronzo", Vector3.ZERO, 10))
+	var bs: Node3D = corpo.get_node("braccio_s")
+	var scudo := cilindro(0.085, 0.085, 0.014, Vector3(-0.02, -0.07, 0.04), "bronzo", Vector3(0, 0, 90), 16)
+	bs.add_child(scudo)
+	bs.add_child(cilindro(0.03, 0.03, 0.016, Vector3(-0.03, -0.07, 0.04), "bandiera_rossa", Vector3(0, 0, 90), 10))
+	var bd: Node3D = corpo.get_node("braccio_d")
+	bd.add_child(cilindro(0.007, 0.007, 0.5, Vector3(0, 0.06, 0.02), "legno", Vector3.ZERO, 5))
+	bd.add_child(cilindro(0.016, 0.0, 0.06, Vector3(0, 0.34, 0.02), "ferro", Vector3.ZERO, 6))
+	r.set_meta("carico", "lancia")
+	return r
+
+
+## Castello (3x3): mura di pietra con quattro torri agli angoli, mastio al centro, porta e stendardi.
+static func castello() -> Node3D:
+	var r := Node3D.new()
+	var lato := 2.3
+	var h := 0.5
+	r.add_child(scatola(Vector3(lato + 0.3, 0.06, lato + 0.3), Vector3(0, 0.03, 0), "pietra"))
+	# mura con merli
+	for i in 4:
+		var m := Node3D.new()
+		m.rotation_degrees.y = i * 90
+		r.add_child(m)
+		m.add_child(scatola(Vector3(lato, h, 0.16), Vector3(0, 0.06 + h * 0.5, lato * 0.5), "pietra_vista"))
+		for k in 11:
+			m.add_child(scatola(Vector3(0.1, 0.08, 0.17), Vector3(-lato * 0.5 + 0.1 + k * (lato - 0.2) / 10, 0.06 + h + 0.04, lato * 0.5), "blocco"))
+	# torri d'angolo
+	for x in [-1, 1]:
+		for z in [-1, 1]:
+			var p := Vector3(x * lato * 0.5, 0, z * lato * 0.5)
+			r.add_child(cilindro(0.24, 0.27, h + 0.3, p + Vector3(0, 0.06 + (h + 0.3) * 0.5, 0), "pietra_vista", Vector3.ZERO, 16))
+			for k in 8:
+				var a := k * TAU / 8
+				r.add_child(scatola(Vector3(0.09, 0.08, 0.09), p + Vector3(cos(a) * 0.22, 0.06 + h + 0.34, sin(a) * 0.22), "blocco", Vector3(0, -rad_to_deg(a), 0)))
+			r.add_child(cilindro(0.29, 0.0, 0.32, p + Vector3(0, 0.06 + h + 0.54, 0), "tegola", Vector3.ZERO, 16))
+	# mastio al centro
+	var c := Node3D.new()
+	c.position = Vector3(-0.15, 0.06, -0.15)
+	r.add_child(c)
+	c.add_child(scatola(Vector3(0.8, 0.95, 0.8), Vector3(0, 0.475, 0), "pietra_vista"))
+	for i in 4:
+		for k in 5:
+			var a := i * PI * 0.5
+			var o := Vector3(-0.32 + k * 0.16, 0.99, 0.4).rotated(Vector3.UP, a)
+			c.add_child(scatola(Vector3(0.1, 0.08, 0.1), o, "blocco", Vector3(0, rad_to_deg(a), 0)))
+	finestra_z(c, 0.0, 0.7, 0.4, 0.07, 0.12)
+	finestra_x(c, 0.0, 0.7, 0.4, 0.07, 0.12)
+	c.add_child(cilindro(0.012, 0.012, 0.5, Vector3(0.2, 1.25, 0.2), "legno", Vector3.ZERO, 6))
+	c.add_child(scatola(Vector3(0.006, 0.18, 0.26), Vector3(0.2, 1.4, 0.34), "stoffa"))
+	# porta ad arco sul lato in vista e cortile
+	r.add_child(scatola(Vector3(0.4, 0.38, 0.06), Vector3(0.45, 0.25, lato * 0.5 + 0.06), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.52, 0.06, 0.08), Vector3(0.45, 0.47, lato * 0.5 + 0.07), "blocco"))
+	for k in 3:
+		r.add_child(cassa(Vector3(0.55 + k * 0.12, 0.06, 0.55), k * 20))
+	r.add_child(barile(Vector3(-0.7, 0.06, 0.6), 1.1))
+	return r

@@ -305,6 +305,7 @@ func _esci_modalita(deseleziona := true) -> void:
 	rete.nascondi_anteprima()
 	if _fantasma:
 		_fantasma.visible = false
+	segni.anteprima_confine = []
 	if _evidenziato:
 		_evidenziato.evidenzia(Color.WHITE)
 		_evidenziato = null
@@ -321,6 +322,9 @@ func _aggiorna_fantasma() -> void:
 	_fantasma.position = dati.a_schermo(c.x + taglia * 0.5, c.y + taglia * 0.5)
 	var ok := villaggio.puo_costruire(tipo_scelto, c)
 	_fantasma.modulate = Color(0.75, 1.0, 0.75, 0.8) if ok else Color(1.0, 0.45, 0.4, 0.6)
+	var info := CatalogoEdifici.dati(tipo_scelto)
+	segni.anteprima_confine = [Vector2(c.x + taglia * 0.5, c.y + taglia * 0.5), float(info["territorio"])] if info.has("territorio") else []
+	segni.queue_redraw()
 
 
 func _aggiorna_evidenziato() -> void:

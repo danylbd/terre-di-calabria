@@ -24,12 +24,12 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 
 ## Fase 2 — La guerra e l'avversario
 
-| Step | Nome |
-|---|---|
-| 12 | Territorio e torri |
-| 13 | Soldati e conquista |
-| 14 | Avversario controllato dal computer |
-| 15 | Scelta all'avvio: solo pace / solo guerra / pace poi guerra |
+| Step | Nome | Stato |
+|---|---|---|
+| 12 | Territorio e torri | fatto |
+| 13 | Soldati e conquista | |
+| 14 | Avversario controllato dal computer | |
+| 15 | Scelta all'avvio: solo pace / solo guerra / pace poi guerra | |
 
 ## Fase 3 — La storia
 

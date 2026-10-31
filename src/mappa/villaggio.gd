@@ -26,6 +26,7 @@ var _prossimo_id := 2
 var coloni_liberi := 40              # coloni in magazzino, pronti a fare i portatori o i lavoratori
 var in_cammino := 0                  # coloni appena nati che vanno verso il magazzino
 var _richiamo := 0.0
+var centri_esterni := []             # territori di altri popoli: [casella, raggio, proprietario]
 var caricamento := false             # si sta ricostruendo una partita salvata: niente costi né messaggi
 
 const TEMPO_NASCITA := 40.0          # secondi tra una nascita e l'altra in ogni abitazione
@@ -111,6 +112,10 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false, forza := false) 
 			dati.occupa(x, y, e.id)
 			togli_decori.emit(Vector2i(x, y))
 	e.completato.connect(_on_completato)
+	if gia_finito and CatalogoEdifici.dati(tipo).has("presidio") and not caricamento:
+		# un forte già finito (inizio partita, prove) ha già la sua guardia dentro
+		e.presidiata = true
+		metti_lavoratore(e)
 	if gia_finito:
 		_ricalcola_territorio()
 	rete.aggiungi_bandiera(e.bandiera, true)
@@ -124,7 +129,7 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false, forza := false) 
 	return e
 
 
-func demolisci(e: Edificio) -> void:
+func demolisci(e: Edificio, recupera := true) -> void:
 	if e.tipo == "magazzino" and _conta("magazzino") <= 1:
 		messaggio.emit("Non puoi demolire l'ultimo magazzino", true)
 		return
@@ -132,8 +137,8 @@ func demolisci(e: Edificio) -> void:
 		for x in range(e.casella.x, e.casella.x + e.taglia):
 			dati.occupa(x, y, 0)
 	# materiali recuperati: tutti quelli già arrivati al cantiere, metà del costo se l'edificio era finito
-	var recupero: Dictionary = e.consegnati
-	if e.finito:
+	var recupero: Dictionary = e.consegnati if recupera else {}
+	if e.finito and recupera:
 		recupero = {}
 		var costo: Dictionary = CatalogoEdifici.dati(e.tipo)["costo"]
 		for r in costo:
@@ -144,15 +149,17 @@ func demolisci(e: Edificio) -> void:
 	if e.lavoratore and is_instance_valid(e.lavoratore):
 		e.lavoratore.queue_free()
 		restituisci_colono()
-	for r in e.ingresso:
-		scorte[r] = scorte.get(r, 0) + e.ingresso[r]
+	if recupera:
+		for r in e.ingresso:
+			scorte[r] = scorte.get(r, 0) + e.ingresso[r]
 	rete.libera_protezione(e.bandiera)
 	rete.segna_ostacoli_vecchi()
 	e.queue_free()
 	rete._ricalcola()
 	scorte_cambiate.emit()
 	_ricalcola_territorio()
-	messaggio.emit("%s demolito" % CatalogoEdifici.dati(e.tipo)["nome"], false)
+	if recupera:
+		messaggio.emit("Demolito: %s" % CatalogoEdifici.dati(e.tipo)["nome"].to_lower(), false)
 
 
 # ------------------------------------------------------------ popolazione
@@ -256,7 +263,10 @@ func edificio_in(c: Vector2i) -> Edificio:
 
 
 func _on_completato(e: Edificio) -> void:
-	messaggio.emit("%s completato" % CatalogoEdifici.dati(e.tipo)["nome"], false)
+	if CatalogoEdifici.dati(e.tipo).has("presidio"):
+		messaggio.emit("%s completato: arriva una guardia a presidiarlo" % CatalogoEdifici.dati(e.tipo)["nome"], false)
+	else:
+		messaggio.emit("%s completato" % CatalogoEdifici.dati(e.tipo)["nome"], false)
 	_chiama_lavoratore(e)
 	if CatalogoEdifici.dati(e.tipo).has("territorio") or e.tipo == "magazzino":
 		_ricalcola_territorio()
@@ -271,13 +281,37 @@ func _ricalcola_territorio() -> void:
 		if not e.finito:
 			continue
 		if e.tipo == "magazzino":
-			centri.append([Vector2i(e.centro()), RAGGIO_MAGAZZINO])
-		elif CatalogoEdifici.dati(e.tipo).has("territorio"):
-			centri.append([e.casella, float(CatalogoEdifici.dati(e.tipo)["territorio"])])
+			centri.append([Vector2i(e.centro()), RAGGIO_MAGAZZINO, 1])
+		elif CatalogoEdifici.dati(e.tipo).has("territorio") and e.presidiata:
+			centri.append([Vector2i(e.centro()), float(CatalogoEdifici.dati(e.tipo)["territorio"]), 1])
+	centri.append_array(centri_esterni)
 	dati.calcola_territorio(centri)
+	if not caricamento:
+		_perdi_fuori_confine()
 	if rete:
 		rete.segna_ostacoli_vecchi()
 	territorio_cambiato.emit()
+
+
+## Il confine si è ritirato: gli edifici rimasti fuori bruciano, strade e bandierine fuori spariscono.
+func _perdi_fuori_confine() -> void:
+	var persi := []
+	for e in edifici.values():
+		for y in range(e.casella.y, e.casella.y + e.taglia):
+			for x in range(e.casella.x, e.casella.x + e.taglia):
+				if not dati.nel_territorio(x, y) and not e in persi:
+					persi.append(e)
+	for e in persi:
+		messaggio.emit("Fuori dai confini, è andato a fuoco: %s" % CatalogoEdifici.dati(e.tipo)["nome"].to_lower(), true)
+		demolisci(e, false)
+	if rete:
+		for c in rete.bandiere.keys():
+			if not dati.nel_territorio(c.x, c.y):
+				rete.libera_protezione(c)
+				rete.rimuovi_bandiera(c)
+		for c in rete.strada.keys():
+			if rete.strada.has(c) and not dati.nel_territorio(c.x, c.y):
+				rete.rimuovi_strada_in(c)
 
 
 func _aggiorna_collegamenti() -> void:
@@ -339,8 +373,19 @@ func richiama_lavoratori() -> void:
 			_chiama_lavoratore(e)
 
 
+## Una guardia è entrata nel forte: i confini si allargano.
+func presidia(e: Edificio) -> void:
+	if e.presidiata:
+		return
+	e.presidiata = true
+	messaggio.emit("%s presidiato: i confini si allargano" % CatalogoEdifici.dati(e.tipo)["nome"], false)
+	_ricalcola_territorio()
+
+
 ## Partita caricata: il lavoratore è già dentro il suo edificio (coloni e attrezzi sono già contati).
 func metti_lavoratore(e: Edificio) -> void:
+	if e.lavoratore != null:
+		return
 	var l := Lavoratore.new()
 	oggetti.add_child(l)
 	var qui: Array[Vector2] = [e.centro()]

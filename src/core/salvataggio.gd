@@ -85,7 +85,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	for e in v.edifici.values():
 		edifici.append({"id": e.id, "tipo": e.tipo, "casella": _v(e.casella), "finito": e.finito, "progresso": e.progresso,
 			"consegnati": e.consegnati, "richiesti": e.richiesti, "ingresso": e.ingresso, "in_arrivo": e.in_arrivo,
-			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "guadagno": e.guadagno, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono,
+			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "guadagno": e.guadagno, "presidiata": e.presidiata, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono,
 			"lavoratore": e.lavoratore != null and is_instance_valid(e.lavoratore)})
 	d["edifici"] = edifici
 	var bandiere := []
@@ -149,6 +149,7 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		e.nascita = s["nascita"]
 		e.acquisto = s.get("acquisto", "")
 		e.guadagno = int(s.get("guadagno", 0))
+		e.presidiata = s.get("presidiata", false)
 		e.manca_attrezzo = s["manca_attrezzo"]
 		e.manca_colono = s["manca_colono"]
 	for b in d["bandiere"]:
@@ -186,6 +187,7 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		if e and s["lavoratore"]:
 			v.metti_lavoratore(e)
 	v.caricamento = false
+	v._ricalcola_territorio()
 	p.camera.position = Vector2(d["camera"][0], d["camera"][1])
 	p.camera.zoom = Vector2.ONE * float(d["camera"][2])
 	v.scorte_cambiate.emit()

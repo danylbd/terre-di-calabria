@@ -8,6 +8,8 @@ var villaggio: Villaggio
 var tipo_scelto := ""
 var mostra_bandiere := false
 var inizio_strada := Vector2i(-1, -1)
+var anteprima_confine := []          # [centro (caselle), raggio] del forte che si sta piazzando
+const COLORI_POPOLI := [Color(0, 0, 0, 0), Color("2f78a8"), Color("b0322a"), Color("d9a441"), Color("4f8a2a")]
 var _posti: Array[Vector2i] = []
 
 
@@ -29,6 +31,15 @@ func aggiorna() -> void:
 
 func _draw() -> void:
 	_disegna_confini()
+	if anteprima_confine.size() == 2:
+		var centro: Vector2 = anteprima_confine[0]
+		var r: float = anteprima_confine[1]
+		var punti := PackedVector2Array()
+		for k in 65:
+			var a := k * TAU / 64
+			punti.append(dati.a_schermo(centro.x + cos(a) * r, centro.y + sin(a) * r))
+		draw_polyline(punti, Color(Palette.INCHIOSTRO, 0.5), 5.0)
+		draw_polyline(punti, Color(COLORI_POPOLI[1], 0.9), 2.5)
 	if mostra_bandiere and villaggio.rete:
 		for c in villaggio.rete.bandiere:
 			var p := dati.a_schermo(c.x + 0.5, c.y + 0.5)
@@ -50,15 +61,17 @@ func _draw() -> void:
 		draw_polyline(rombo, Color(Palette.INCHIOSTRO, 0.7), 1.5)
 
 
+## Pali di confine sul bordo di ogni territorio, col colore del popolo che lo possiede.
 func _disegna_confini() -> void:
-	var col := Color("2f78a8")
 	for y in dati.altezza:
 		for x in dati.larghezza:
-			if not dati.nel_territorio(x, y):
+			var chi := dati.proprietario(x, y)
+			if chi == 0:
 				continue
+			var col: Color = COLORI_POPOLI[chi % COLORI_POPOLI.size()]
 			for v in [[Vector2i(1, 0), Vector2(1, 0.5)], [Vector2i(-1, 0), Vector2(0, 0.5)], [Vector2i(0, 1), Vector2(0.5, 1)], [Vector2i(0, -1), Vector2(0.5, 0)]]:
 				var n: Vector2i = Vector2i(x, y) + v[0]
-				if dati.nel_territorio(n.x, n.y):
+				if dati.proprietario(n.x, n.y) == chi:
 					continue
 				var m: Vector2 = Vector2(x, y) + v[1]
 				var p := dati.a_schermo(m.x, m.y)

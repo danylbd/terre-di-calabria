@@ -26,6 +26,7 @@ var prodotti := 0                    # merci prodotte finora
 var nascita := 0.0                   # abitazioni: secondi al prossimo colono
 var acquisto := ""                   # agorà: la merce da comprare con le monete ("" = niente)
 var guadagno := 0                    # agorà: monete ricavate finora
+var presidiata := false              # torri e castelli: la guardia è entrata, i confini si allargano
 var dati_mappa: DatiMappa
 var villaggio: Node
 

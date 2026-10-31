@@ -21,6 +21,7 @@ var bandiera := Vector2i.ZERO        # bandierina dove si trova ora (se non è i
 var prenotata := false               # un portatore sta venendo a prenderla
 var in_spalla := false
 var sprite: Sprite2D
+var origine := 0                     # id dell'edificio che l'ha prodotta (0 = uscita dal magazzino)
 
 
 func _init(p_tipo: String, dest: Edificio, dove: Vector2i) -> void:
