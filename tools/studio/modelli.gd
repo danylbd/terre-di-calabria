@@ -41,6 +41,11 @@ static func catalogo() -> Dictionary:
 			"dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)},
 		"portatore_anfora": {"crea": portatore.bind("anfora"), "posa": posa_cammino, "fotogrammi": 8, "direzioni": 8,
 			"dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)},
+		"portatore_pietra": {"crea": portatore.bind("pietra"), "posa": posa_cammino, "fotogrammi": 8, "direzioni": 8,
+			"dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)},
+		"merce_assi": {"crea": merce.bind("assi"), "dimensione": Vector2i(48, 40), "ancora": Vector2(24, 30)},
+		"merce_tronchi": {"crea": merce.bind("tronchi"), "dimensione": Vector2i(48, 40), "ancora": Vector2(24, 30)},
+		"merce_pietra": {"crea": merce.bind("pietra"), "dimensione": Vector2i(48, 40), "ancora": Vector2(24, 30)},
 	}
 
 
@@ -550,6 +555,8 @@ static func portatore(carico: String) -> Node3D:
 			corpo.add_child(scatola(Vector3(0.05, 0.016, 0.34), spalla + Vector3(0.08, 0.038, 0.01), "legno_chiaro"))
 		"anfora":
 			corpo.add_child(anfora(Vector3(0, anca + 0.31, 0), 1.25))
+		"pietra":
+			corpo.add_child(scatola(Vector3(0.1, 0.075, 0.09), Vector3(0, anca + 0.36, 0), "blocco", Vector3(0, 15, 0)))
 	r.set_meta("carico", carico)
 	return r
 
@@ -567,7 +574,7 @@ static func posa_cammino(modello: Node3D, fotogramma: int, totale: int) -> void:
 	if carico == "":
 		bs.rotation.x = -oscill * 0.45
 		bd.rotation.x = oscill * 0.45
-	elif carico == "anfora":
+	elif carico == "anfora" or carico == "pietra":
 		bs.rotation = Vector3(0, 0, -2.6)
 		bd.rotation = Vector3(0, 0, 2.6)
 	else:
@@ -748,4 +755,23 @@ static func bandierina() -> Node3D:
 	r.add_child(cilindro(0.008, 0.008, 0.4, Vector3(0, 0.2, 0), "legno", Vector3.ZERO, 6))
 	r.add_child(scatola(Vector3(0.16, 0.1, 0.006), Vector3(0.08, 0.34, 0), "stoffa", Vector3(0, -40, 0)))
 	r.scale = Vector3.ONE * 1.3
+	return r
+
+
+
+# ------------------------------------------------------------------ merci (posate a terra vicino alle bandierine)
+
+static func merce(tipo: String) -> Node3D:
+	var r := Node3D.new()
+	match tipo:
+		"assi":
+			for k in 3:
+				r.add_child(scatola(Vector3(0.26, 0.022, 0.07), Vector3(0, 0.012 + k * 0.024, (k % 2) * 0.01), "legno_chiaro", Vector3(0, 30 + k * 4, 0)))
+		"tronchi":
+			r.add_child(cilindro(0.04, 0.04, 0.24, Vector3(0, 0.04, 0), "corteccia", Vector3(90, 30, 0), 8))
+			r.add_child(cilindro(0.033, 0.033, 0.242, Vector3(0, 0.04, 0), "legno_chiaro", Vector3(90, 30, 0), 8))
+		"pietra":
+			r.add_child(scatola(Vector3(0.12, 0.08, 0.1), Vector3(0, 0.04, 0), "blocco", Vector3(0, 20, 0)))
+			r.add_child(scatola(Vector3(0.07, 0.05, 0.06), Vector3(0.07, 0.025, 0.05), "blocco", Vector3(0, -10, 0)))
+	r.scale = Vector3.ONE * 1.25
 	return r

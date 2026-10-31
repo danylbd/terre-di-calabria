@@ -11,6 +11,7 @@ var rete: ReteStrade
 var oggetti: Node2D
 var camera: CameraMappa
 var villaggio: Villaggio
+var logistica: Logistica
 
 var menu: MenuCostruzione
 var barra: BarraRisorse
@@ -51,6 +52,9 @@ func _ready() -> void:
 	rete.cambiata.connect(villaggio._aggiorna_collegamenti)
 	rete.cambiata.connect(segni.queue_redraw)
 	segni.prepara(dati, villaggio)
+	logistica = Logistica.new()
+	add_child(logistica)
+	logistica.prepara(dati, villaggio, rete, oggetti)
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
 
@@ -65,6 +69,7 @@ func _ready() -> void:
 
 	_crea_interfaccia()
 	villaggio.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
+	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	barra.aggiorna(villaggio.scorte)
 
 
