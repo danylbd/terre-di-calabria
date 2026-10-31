@@ -64,6 +64,7 @@ jobs:
         run: choco install innosetup -y --no-progress
 
       - name: Compila il wizard
+        id: wizard
         shell: pwsh
         run: |
           $ver = (Select-String -Path project.godot -Pattern 'config/version="(.+)"').Matches[0].Groups[1].Value
@@ -71,14 +72,21 @@ jobs:
           Write-Host "Uso $($iscc.FullName) per la versione $ver"
           & $iscc.FullName "/DAppVersion=$ver" installer\setup.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "versione=$ver" >> $env:GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v4
         with:
           name: TerreDiCalabria-Setup
           path: installer/Output/*.exe
 
-      - name: Pubblica la versione
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Pubblica la versione (solo per main)
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.wizard.outputs.versione }}
+          target_commitish: ${{ github.sha }}
+          name: Terre di Calabria ${{ steps.wizard.outputs.versione }}
+          body: |
+            Installa con **TerreDiCalabria-Setup-${{ steps.wizard.outputs.versione }}.exe** (Windows ARM64 nativo, oppure x64).
+            Novità: vedi docs/roadmap.md.
           files: installer/Output/*.exe
