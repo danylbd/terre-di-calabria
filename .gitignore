@@ -1,0 +1,10 @@
+# Godot
+.godot/
+*.import.tmp
+export/
+build/
+# Installer
+installer/Output/
+# Sistema
+.DS_Store
+Thumbs.db
