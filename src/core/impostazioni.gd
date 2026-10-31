@@ -8,3 +8,5 @@ const MODALITA := {
 }
 
 static var modalita := "pace_poi_guerra"
+## missione della campagna da giocare ("" = partita libera)
+static var missione := ""
