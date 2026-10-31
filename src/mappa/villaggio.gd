@@ -26,6 +26,7 @@ var _prossimo_id := 2
 var coloni_liberi := 40              # coloni in magazzino, pronti a fare i portatori o i lavoratori
 var in_cammino := 0                  # coloni appena nati che vanno verso il magazzino
 var _richiamo := 0.0
+var caricamento := false             # si sta ricostruendo una partita salvata: niente costi né messaggi
 
 const TEMPO_NASCITA := 40.0          # secondi tra una nascita e l'altra in ogni abitazione
 const TEMPO_NASCITA_LUSSO := 20.0
@@ -89,8 +90,8 @@ func puo_costruire(tipo: String, c: Vector2i) -> bool:
 
 # ------------------------------------------------------------ azioni
 
-func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
-	if not gia_finito:
+func costruisci(tipo: String, c: Vector2i, gia_finito := false, forza := false) -> Edificio:
+	if not gia_finito and not forza:
 		var perche := motivo_impossibile(tipo, c)
 		if perche != "":
 			messaggio.emit(perche, true)
@@ -114,7 +115,7 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
 		_ricalcola_territorio()
 	rete.aggiungi_bandiera(e.bandiera, true)
 	rete.segna_ostacoli_vecchi()
-	if not gia_finito:
+	if not gia_finito and not caricamento:
 		if rete.collegata(e.bandiera):
 			messaggio.emit("Cantiere aperto: %s — i portatori consegneranno %s" % [CatalogoEdifici.dati(tipo)["nome"], CatalogoEdifici.testo_costo(tipo)], false)
 		else:
@@ -157,6 +158,8 @@ func demolisci(e: Edificio) -> void:
 # ------------------------------------------------------------ popolazione
 
 func prendi_colono() -> bool:
+	if caricamento:
+		return true
 	if coloni_liberi <= 0:
 		return false
 	coloni_liberi -= 1
@@ -286,7 +289,7 @@ func _aggiorna_collegamenti() -> void:
 ## Un edificio di produzione finito e collegato riceve il suo lavoratore, che arriva dal magazzino
 ## e prende con sé l'attrezzo del mestiere (se manca, aspetta che il fabbro lo forgi).
 func _chiama_lavoratore(e: Edificio) -> void:
-	if not e.finito or not e.collegato or e.lavoratore != null:
+	if caricamento or not e.finito or not e.collegato or e.lavoratore != null:
 		return
 	if not CatalogoEdifici.dati(e.tipo).has("lavoratore"):
 		return
@@ -334,6 +337,15 @@ func richiama_lavoratori() -> void:
 	for e in edifici.values():
 		if e.manca_attrezzo:
 			_chiama_lavoratore(e)
+
+
+## Partita caricata: il lavoratore è già dentro il suo edificio (coloni e attrezzi sono già contati).
+func metti_lavoratore(e: Edificio) -> void:
+	var l := Lavoratore.new()
+	oggetti.add_child(l)
+	var qui: Array[Vector2] = [e.centro()]
+	l.avvia(e, risorse, logistica, rete, qui)
+	e.lavoratore = l
 
 
 func _conta(tipo: String) -> int:

@@ -51,3 +51,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Le case fanno nascere coloni ogni 40 s (20 s consumando vino, agrumi o miele); il nuovo colono cammina fino al magazzino.
 - Pannello edificio (clic: stato, perché è fermo, ingressi, produzione, strada da qui, demolisci) e pannello villaggio (tasto I / pulsante). Barra: "Coloni N / M".
 - Tutti i 7 test OK. Versione 0.10.0, merge in main. Prossimo: step 09 salvataggio.
+
+## 2026-11-01 00:30 — step 09 salvataggio completato
+- `Salvataggio.salva/carica` (JSON): natura (alberi con posizione e crescita, massi, campi, ceppi, pesce, olive, giacimenti), edifici e cantieri, bandierine, strade (con o senza portatore), merci in viaggio, scorte, coloni, statistiche, camera.
+- F5/F9, salvataggio automatico con Esc e alla chiusura, "Continua la partita" nel menu iniziale. Tolta la scritta "step G2" dalla versione nel titolo.
+- test_salvataggio: tutto identico dopo il caricamento e la partita continua a produrre. Tutti gli 8 test OK. Versione 0.11.0. Prossimo: step 10 stagioni.

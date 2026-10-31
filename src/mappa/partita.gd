@@ -70,7 +70,10 @@ func _ready() -> void:
 	villaggio.togli_decori.connect(_togli_decori)
 
 	_metti_natura()
-	_metti_villaggio()
+	var da_caricare := Salvataggio.da_caricare
+	Salvataggio.da_caricare = ""
+	if da_caricare == "":
+		_metti_villaggio()
 
 	camera = CameraMappa.new()
 	camera.area = terreno.limiti()
@@ -84,12 +87,25 @@ func _ready() -> void:
 	villaggio.territorio_cambiato.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
 	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	logistica.scorte_cambiate.connect(villaggio.richiama_lavoratori)
+	if da_caricare != "":
+		if Salvataggio.carica(self, da_caricare):
+			segni.aggiorna()
+			_mostra_avviso("Partita caricata", false)
+		else:
+			_metti_villaggio()
+			_mostra_avviso("Il salvataggio non si può leggere: nuova partita", true)
 	barra.aggiorna(villaggio.scorte)
 	barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita())
 	Suono.scaletta(["lavoro", "mattino", "sera"] as Array[String])
 	Suono.ambiente("uccelli", -6.0)
 	Suono.ambiente("vento", -12.0)
 	Suono.ambiente("mare", -40.0)
+
+
+func _notification(what: int) -> void:
+	# chiudendo la finestra la partita si salva da sola
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and villaggio:
+		Salvataggio.salva(self)
 
 
 func _exit_tree() -> void:
@@ -120,6 +136,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif modalita != "":
 			_esci_modalita()
 		else:
+			Salvataggio.salva(self)
 			get_tree().change_scene_to_file("res://src/main/title_screen.tscn")
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and not event.echo:
@@ -128,6 +145,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				menu.premi_attrezzo("strada")
 			KEY_F:
 				menu.premi_attrezzo("bandierina")
+			KEY_F5:
+				_mostra_avviso("Partita salvata" if Salvataggio.salva(self) else "Non sono riuscito a salvare", false)
+			KEY_F9:
+				if Salvataggio.esiste():
+					Salvataggio.da_caricare = Salvataggio.PERCORSO
+					get_tree().reload_current_scene()
 			KEY_I:
 				pannello_villaggio.alterna()
 			KEY_M:
@@ -489,7 +512,7 @@ func _crea_interfaccia() -> void:
 	pulsante.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 
 	var aiuto := Label.new()
-	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Clic: info edificio  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  I: villaggio  ·  M: musica  ·  Esc: menu"
+	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Clic: info edificio  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  I: villaggio  ·  M: musica  ·  F5 salva  ·  F9 carica  ·  Esc: menu (salva)"
 	aiuto.add_theme_font_size_override("font_size", 16)
 	aiuto.add_theme_color_override("font_color", Palette.PERGAMENA_CHIARA)
 	aiuto.add_theme_color_override("font_outline_color", Palette.INCHIOSTRO)
