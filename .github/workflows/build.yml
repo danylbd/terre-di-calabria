@@ -1,0 +1,84 @@
+name: Compila gioco e installer
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: "4.7.2"
+
+jobs:
+  esporta:
+    name: Esporta il gioco (Windows ARM64 e x64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scarica Godot e i modelli di esportazione
+        run: |
+          V="${GODOT_VERSION}-stable"
+          curl -sSL --retry 5 -o godot.zip "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_linux.x86_64.zip"
+          unzip -q godot.zip && mv "Godot_v${V}_linux.x86_64" godot && chmod +x godot
+          curl -sSL --retry 5 -o templates.tpz "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_export_templates.tpz"
+          D="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$D"
+          unzip -q -j templates.tpz 'templates/windows_release_*' 'templates/version.txt' -d "$D"
+          rm templates.tpz godot.zip
+
+      - name: Importa il progetto
+        run: ./godot --headless --path . --import
+
+      - name: Esporta
+        run: |
+          mkdir -p build/arm64 build/x64
+          ./godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCalabria.exe
+          ./godot --headless --path . --export-release "Windows x64" build/x64/TerreDiCalabria.exe
+          test -f build/arm64/TerreDiCalabria.exe && test -f build/arm64/TerreDiCalabria.pck
+          test -f build/x64/TerreDiCalabria.exe && test -f build/x64/TerreDiCalabria.pck
+          ls -la build/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gioco-windows
+          path: build/
+
+  installer:
+    name: Crea il Setup.exe
+    needs: esporta
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: gioco-windows
+          path: build
+
+      - name: Installa Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Compila il wizard
+        shell: pwsh
+        run: |
+          $ver = (Select-String -Path project.godot -Pattern 'config/version="(.+)"').Matches[0].Groups[1].Value
+          $iscc = Get-ChildItem -Path "${env:ProgramFiles(x86)}", "$env:ProgramFiles" -Filter ISCC.exe -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -like '*Inno Setup*' } | Select-Object -First 1
+          Write-Host "Uso $($iscc.FullName) per la versione $ver"
+          & $iscc.FullName "/DAppVersion=$ver" installer\setup.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TerreDiCalabria-Setup
+          path: installer/Output/*.exe
+
+      - name: Pubblica la versione
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer/Output/*.exe

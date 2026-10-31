@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Sigillo: due mari, una montagna, un sole -->
+  <defs>
+    <clipPath id="c"><circle cx="128" cy="128" r="104"/></clipPath>
+  </defs>
+  <circle cx="128" cy="128" r="122" fill="#7f3420"/>
+  <circle cx="128" cy="128" r="112" fill="#f2e3c6"/>
+  <g clip-path="url(#c)">
+    <rect x="0" y="0" width="256" height="256" fill="#f6d29a"/>
+    <rect x="0" y="0" width="256" height="90" fill="#e58f5a"/>
+    <circle cx="150" cy="112" r="30" fill="#ffe2a8"/>
+    <path d="M10 160 L70 92 L104 128 L138 76 L196 142 L246 116 L256 170 L0 170 Z" fill="#5f7a4a"/>
+    <path d="M0 150 L48 126 L92 152 L128 138 L128 256 L0 256 Z" fill="#1f5f8b"/>
+    <path d="M128 140 L176 154 L222 132 L256 146 L256 256 L128 256 Z" fill="#2f78a8"/>
+    <path d="M118 256 L120 150 L128 138 L136 150 L138 256 Z" fill="#b5532f"/>
+    <path d="M24 190 q16 -10 32 0 t32 0 M150 196 q16 -10 32 0 t32 0" stroke="#f2e3c6" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </g>
+  <circle cx="128" cy="128" r="104" fill="none" stroke="#b5532f" stroke-width="6"/>
+</svg>

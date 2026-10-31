@@ -1,0 +1,26 @@
+; Terre di Calabria — configurazione del progetto Godot
+
+config_version=5
+
+[application]
+
+config/name="Terre di Calabria"
+config/description="Gioco di strategia ed economia ambientato in Calabria."
+config/version="0.0.1"
+run/main_scene="res://src/main/title_screen.tscn"
+config/features=PackedStringArray("4.7", "Mobile")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/mode=2
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+
+renderer/rendering_method="mobile"
+rendering_device/driver.windows="d3d12"
+textures/canvas_textures/default_texture_filter=0
