@@ -4,7 +4,8 @@ extends RefCounted
 
 const FOGLI := {"tronchi": "portatore_tronco", "assi": "portatore_asse", "pietra": "portatore_pietra",
 	"grano": "portatore_covone", "farina": "portatore_sacco", "acqua": "portatore_anfora", "pane": "portatore_cesta",
-	"pesce": "portatore_pesce"}
+	"pesce": "portatore_pesce", "maiale": "portatore_maiale", "carne": "portatore_carne", "latte": "portatore_anfora",
+	"lana": "portatore_lana", "formaggio": "portatore_formaggio", "miele": "portatore_anfora"}
 
 var tipo := ""
 var destinazione: Edificio          # dove deve arrivare

@@ -28,6 +28,7 @@ var mestiere := ""
 var _bersaglio := Vector2i(-1, -1)
 var _acqua := Vector2i(-1, -1)       # casella di mare dove pesca il pescatore
 var _semina := false                 # il contadino sta seminando (non mietendo)
+var _turno := 0                      # per chi produce più merci a turno (ovile: latte e lana)
 var _attesa := 0.0
 var _foglio_cammino := ""
 var _foglio_lavoro := ""
@@ -84,6 +85,7 @@ func _on_arrivato(_c: Colono) -> void:
 				_anim.play()
 		Stato.RITORNO, Stato.ESCE_CON_MERCE:
 			logistica.produci(_merce_prodotta(), edificio)
+			_turno += 1
 			imposta_foglio(_foglio_cammino)
 			stato = Stato.ARRIVO
 			var dentro: Array[Vector2] = [edificio.centro()]
@@ -195,7 +197,7 @@ func _lavora_dentro() -> void:
 	for tipo in ingressi:
 		edificio.ingresso[tipo] -= 1
 	stato = Stato.LAVORO
-	_attesa = DURATA_DENTRO
+	_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO)
 
 
 func _rientra_vuoto() -> void:
@@ -223,7 +225,8 @@ func _torna(foglio: String) -> void:
 
 
 func _merce_prodotta() -> String:
-	return CatalogoEdifici.dati(mestiere).get("produce", "")
+	var p := CatalogoEdifici.prodotti(mestiere)
+	return "" if p.is_empty() else p[_turno % p.size()]
 
 
 func _segnala(testo: String) -> void:
