@@ -2,7 +2,7 @@ name: Compila gioco e installer
 
 on:
   push:
-    branches: [main]
+    branches: [main, "step-*"]
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
