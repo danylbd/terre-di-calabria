@@ -92,6 +92,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	for n in v.nemici.values():
 		nemici.append([n.tipo, n.casella.x, n.casella.y, n.proprietario, n.soldati])
 	d["nemici"] = nemici
+	d["avversario"] = [p.avversario.tempo, p.avversario._espansione, p.avversario._attacco, p.avversario.attivo]
 	# i soldati in marcia tornano nella riserva (quelli all'attacco ricominceranno da capo)
 	d["soldati"] = v.soldati + p.guerra.in_marcia()
 	var bandiere := []
@@ -139,6 +140,11 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 	for n in d.get("nemici", []):
 		v.metti_nemico(n[0], Vector2i(int(n[1]), int(n[2])), int(n[3]), int(n[4]))
 	v.soldati = int(d.get("soldati", 0))
+	if d.has("avversario"):
+		p.avversario.tempo = float(d["avversario"][0])
+		p.avversario._espansione = float(d["avversario"][1])
+		p.avversario._attacco = float(d["avversario"][2])
+		p.avversario.attivo = d["avversario"][3]
 	# prima gli edifici finiti (allargano i confini), poi i cantieri
 	var vecchi := {}                 # id salvato -> Edificio nuovo
 	var ordinati: Array = d["edifici"].duplicate()

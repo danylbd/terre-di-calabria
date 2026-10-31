@@ -78,3 +78,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Due avamposti dei Brettii a inizio partita (sprite: torre di legno e paglia, guerriero con pelliccia). Attacco dal pannello del forte ("Attacca", poi clic sulla torre nemica): duelli alla porta (suono "scontro"), conquista → la torre diventa nostra con i vincitori dentro.
 - Bug trovato: più attaccanti conquistavano la stessa torre nello stesso istante (tre torri sovrapposte). Corretto.
 - Test: test_guerra (con strade non più lunghe di 14 caselle). Versione 0.15.0. Prossimo: step 14 avversario controllato dal computer.
+
+## 2026-11-01 04:50 — step 14 avversario
+- I Brettii giocati dal computer: alzano torri nuove ai margini del loro territorio, rispettano una tregua di 15 minuti, poi attaccano il nostro forte più debole alla loro portata se sono più numerosi; se vincono il forte brucia e diventa loro (perdiamo i confini e gli edifici fuori).
+- guerra.gd generalizzato ai due lati; nuovo sprite "brettio" che cammina; stato dell'avversario nel salvataggio.
+- Corretto un errore con edifici già distrutti assegnati a variabili con tipo. Versione 0.16.0. Prossimo: step 15 scelta della modalità all'avvio.
