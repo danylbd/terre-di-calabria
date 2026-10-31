@@ -24,6 +24,8 @@ var manca_attrezzo := false          # il lavoratore aspetta che arrivi il suo a
 var manca_colono := false            # non c'erano coloni liberi per mandare il lavoratore
 var prodotti := 0                    # merci prodotte finora
 var nascita := 0.0                   # abitazioni: secondi al prossimo colono
+var acquisto := ""                   # agorà: la merce da comprare con le monete ("" = niente)
+var guadagno := 0                    # agorà: monete ricavate finora
 var dati_mappa: DatiMappa
 var villaggio: Node
 

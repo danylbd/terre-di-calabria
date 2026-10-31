@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07, 08, 09, 10 (in `main`, release v0.12.0).
+Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) (in `main`, release v0.13.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -64,7 +64,9 @@ Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07, 08, 0
 
 - Step 10 (stagioni): `src/mappa/stagioni.gd` (4 stagioni da 300 s, `crescita(coltura)`, aspetto: `neve` nello shader del terreno, fiocchi, foglie di castagni e querce, luce con `CanvasModulate`). D'inverno niente semina né miele. Il calendario è nel salvataggio. Test: `tools/test/test_stagioni.gd`.
 
-**In corso: step 11 – Greci completi** (ramo `step-11-greci`): tutti i circa 30 edifici greci, olio e commercio, agorà (vedi `docs/design.md` e `docs/storia.md`).
+- Step 11 (Greci completi, 36 edifici): argillaio e fornace (anfore), saline, tessitura (stoffa, lusso), miniera d'argento e zecca (monete), agorà 3×3 che vende (`CatalogoEdifici.VENDITA`) e compra (`ACQUISTO`, scelta nel pannello, `Edificio.acquisto`). Il gruppo "una qualsiasi tra queste merci" è `CatalogoEdifici.gruppo()` (cibo dei minatori, merci dell'agorà). Test: `tools/test/test_greci.gd`.
+
+**In corso: step 12 – territorio e torri** (ramo `step-12-territorio`), inizio della Fase 2 (guerra e avversario): confini, torri presidiate, castelli. Per la guerra vedi `docs/design.md` §6 «Guerra» e le decisioni (la guerra si sceglie all'inizio).
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

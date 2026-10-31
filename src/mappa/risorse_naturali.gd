@@ -45,7 +45,7 @@ func prepara(d: DatiMappa, nodo_oggetti: Node2D) -> void:
 	_metti_giacimenti()
 
 
-## Il ferro sta a chiazze nella roccia della montagna (ogni casella ne ha da 0 a 6).
+## Il ferro sta a chiazze nella roccia della montagna (ogni casella ne ha da 0 a 6); l'argento in vene rare.
 func _metti_giacimenti() -> void:
 	var rumore := FastNoiseLite.new()
 	rumore.seed = 4242
@@ -58,6 +58,18 @@ func _metti_giacimenti() -> void:
 				if n > 0:
 					ferro[Vector2i(x, y)] = mini(n, 6)
 	minerali["ferro"] = ferro
+	# l'argento è più raro: poche vene nella roccia più alta
+	var vene := FastNoiseLite.new()
+	vene.seed = 777
+	vene.frequency = 0.09
+	var argento := {}
+	for y in dati.altezza:
+		for x in dati.larghezza:
+			if dati.tipo(x, y) == DatiMappa.Terreno.ROCCIA:
+				var n := int(round((vene.get_noise_2d(x, y) - 0.15) * 12.0))
+				if n > 0:
+					argento[Vector2i(x, y)] = mini(n, 4)
+	minerali["argento"] = argento
 
 
 ## Quanto minerale c'è intorno a una casella (raggio 3).

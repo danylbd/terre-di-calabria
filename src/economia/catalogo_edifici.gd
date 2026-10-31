@@ -52,6 +52,21 @@ const EDIFICI := {
 	"caseificio": {"nome": "Caseificio", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Cibo",
 		"tempo": 22.0, "lavoratore": "portatore_nessuno", "ingressi": {"latte": 4}, "produce": "formaggio",
 		"descrizione": "Fa il formaggio con il latte di pecore e capre."},
+	"argillaio": {"nome": "Argillaio", "taglia": 2, "costo": {"assi": 2}, "categoria": "Base",
+		"tempo": 16.0, "attrezzo": "pala", "lavoratore": "portatore_nessuno", "produce": "argilla", "durata": 7.0,
+		"vicino_mare": 4, "descrizione": "Cava l'argilla dalla riva. Va costruito vicino al mare."},
+	"fornace": {"nome": "Fornace", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Base",
+		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"argilla": 4, "tronchi": 2}, "produce": "anfore",
+		"durata": 8.0, "descrizione": "Cuoce l'argilla e fa le anfore dipinte, ricercate al mercato."},
+	"saline": {"nome": "Saline", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Cibo",
+		"tempo": 18.0, "lavoratore": "portatore_nessuno", "produce": "sale", "durata": 9.0, "vicino_mare": 3,
+		"descrizione": "Vasche dove il mare evapora e lascia il sale. Vanno costruite sulla costa."},
+	"tessitura": {"nome": "Tessitura", "taglia": 2, "costo": {"assi": 3, "pietra": 1}, "categoria": "Cibo",
+		"tempo": 20.0, "lavoratore": "portatore_nessuno", "ingressi": {"lana": 4}, "produce": "stoffa", "durata": 8.0,
+		"descrizione": "Fila e tesse la lana: la stoffa è un lusso che fa crescere il villaggio."},
+	"agora": {"nome": "Agorà", "taglia": 3, "costo": {"assi": 6, "pietra": 8}, "categoria": "Base",
+		"tempo": 45.0, "lavoratore": "portatore_nessuno", "vende": 8, "produce": "", "durata": 6.0,
+		"descrizione": "La piazza del mercato dei Greci: vende olio, vino, anfore, stoffa e altro in cambio di monete, e con le monete compra quello che scegli."},
 	"pescatore": {"nome": "Pescatore", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
 		"tempo": 16.0, "attrezzo": "canna", "lavoratore": "lavoratore_canna", "produce": "pesce", "vicino_mare": 5,
 		"descrizione": "Pesca dalla riva. Il pesce finisce e torna col tempo: costruiscilo vicino al mare."},
@@ -80,6 +95,13 @@ const EDIFICI := {
 		"tempo": 24.0, "attrezzo": "piccone", "lavoratore": "lavoratore_piccone", "produce": "ferro", "durata": 8.0,
 		"miniera": "ferro", "cibo": 4,
 		"descrizione": "Scava il ferro nei monti. Va costruita sulla roccia, ai piedi della montagna. I minatori lavorano solo se mangiano (pane, pesce, carne, formaggio, ortaggi o cipolle)."},
+	"miniera_argento": {"nome": "Miniera d'argento", "taglia": 2, "costo": {"assi": 4, "pietra": 1}, "categoria": "Metallo",
+		"tempo": 24.0, "attrezzo": "piccone", "lavoratore": "lavoratore_piccone", "produce": "argento", "durata": 10.0,
+		"miniera": "argento", "cibo": 4,
+		"descrizione": "Scava l'argento, più raro del ferro, nella roccia dei monti. I minatori lavorano solo se mangiano."},
+	"zecca": {"nome": "Zecca", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Metallo",
+		"tempo": 28.0, "lavoratore": "portatore_nessuno", "ingressi": {"argento": 4, "carbone": 4}, "produce": "monete",
+		"durata": 7.0, "descrizione": "Fonde l'argento e conia le monete per il commercio."},
 	"carbonaia": {"nome": "Carbonaia", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Metallo",
 		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "carbone", "durata": 9.0,
 		"descrizione": "Cuoce lentamente i tronchi sotto la terra e ne ricava carbone."},
@@ -100,7 +122,14 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"uva": "Uva", "vino": "Vino", "ortaggi": "Ortaggi", "cipolle": "Cipolle", "agrumi": "Agrumi",
 	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
-	"martello": "Martelli"}
+	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
+	"monete": "Monete", "stoffa": "Stoffa"}
+## all'agorà: monete ricavate vendendo una merce (i Greci sono buoni mercanti: prezzi favorevoli)
+const VENDITA := {"olio": 3, "vino": 3, "stoffa": 3, "anfore": 2, "pesce_spada": 2, "miele": 2, "formaggio": 1, "sale": 1,
+	"agrumi": 1}
+## all'agorà: monete per comprare una merce
+const ACQUISTO := {"grano": 1, "pesce": 1, "tronchi": 1, "pietra": 1, "assi": 1, "argilla": 1, "ferro": 2, "carbone": 1,
+	"lingotti": 3, "lana": 1}
 ## attrezzi dei mestieri: senza l'attrezzo in magazzino l'artigiano non arriva
 const ATTREZZI := ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]
 const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "una pala", "falce": "una falce",
@@ -108,7 +137,7 @@ const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "un
 ## cibo che i minatori accettano (uno qualsiasi per ogni turno di lavoro)
 const CIBI := ["pane", "pesce", "carne", "formaggio", "ortaggi", "cipolle"]
 ## merci di lusso: fanno nascere i coloni più in fretta
-const LUSSO := ["vino", "agrumi", "miele"]
+const LUSSO := ["vino", "agrumi", "miele", "stoffa"]
 ## merci sempre visibili nella barra delle scorte (le altre compaiono quando ce ne sono)
 const RISORSE_BASE := ["tronchi", "assi", "pietra"]
 
@@ -125,12 +154,24 @@ static func della_categoria(cat: String) -> Array:
 	return r
 
 
-## Quante merci di un tipo può tenere un edificio per lavorare (ingressi, più il cibo per i minatori).
+## Merci "una qualsiasi tra queste" che un edificio accetta: [elenco, quante in tutto], o [] se nessuna.
+## Il cibo dei minatori e le merci da vendere all'agorà.
+static func gruppo(tipo: String) -> Array:
+	var d: Dictionary = EDIFICI[tipo]
+	if d.has("cibo"):
+		return [CIBI, d["cibo"]]
+	if d.has("vende"):
+		return [VENDITA.keys(), d["vende"]]
+	return []
+
+
+## Quante merci di un tipo può tenere un edificio per lavorare (ingressi, più il gruppo "una qualsiasi").
 static func capacita(tipo: String, merce: String) -> int:
 	var d: Dictionary = EDIFICI[tipo]
 	var n: int = d.get("ingressi", {}).get(merce, 0)
-	if d.has("cibo") and merce in CIBI:
-		n += d["cibo"]
+	var g := gruppo(tipo)
+	if not g.is_empty() and merce in g[0]:
+		n += g[1]
 	return n
 
 
@@ -138,8 +179,9 @@ static func capacita(tipo: String, merce: String) -> int:
 static func merci_in_ingresso(tipo: String) -> Array:
 	var d: Dictionary = EDIFICI[tipo]
 	var r: Array = d.get("ingressi", {}).keys()
-	if d.has("cibo"):
-		r.append_array(CIBI)
+	var g := gruppo(tipo)
+	if not g.is_empty():
+		r.append_array(g[0])
 	return r
 
 

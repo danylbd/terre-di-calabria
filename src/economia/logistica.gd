@@ -84,12 +84,13 @@ func _prossima_richiesta(mag: Edificio) -> Array:
 
 func _spazio_ingresso(e: Edificio, tipo: String) -> int:
 	var cap := CatalogoEdifici.capacita(e.tipo, tipo)
-	if cap > 0 and tipo in CatalogoEdifici.CIBI and CatalogoEdifici.dati(e.tipo).has("cibo"):
-		# il cibo dei minatori: posto per quello che manca in tutto, qualunque sia il tipo
+	var g := CatalogoEdifici.gruppo(e.tipo)
+	if cap > 0 and not g.is_empty() and tipo in g[0]:
+		# il gruppo "una qualsiasi" (cibo dei minatori, merci dell'agorà): posto per quello che manca in tutto
 		var tot := 0
-		for c in CatalogoEdifici.CIBI:
+		for c in g[0]:
 			tot += e.ingresso.get(c, 0) + e.in_arrivo.get(c, 0)
-		return mini(cap - e.ingresso.get(tipo, 0) - e.in_arrivo.get(tipo, 0), CatalogoEdifici.dati(e.tipo)["cibo"] - tot)
+		return mini(cap - e.ingresso.get(tipo, 0) - e.in_arrivo.get(tipo, 0), g[1] - tot)
 	return cap - e.ingresso.get(tipo, 0) - e.in_arrivo.get(tipo, 0)
 
 
@@ -134,6 +135,8 @@ func attrezzo_da_fare() -> String:
 
 ## Serve ancora questa merce? Sì se un edificio ha posto per riceverla o se in magazzino ce n'è meno della soglia.
 func serve(tipo: String, soglia := SCORTA_MINIMA) -> bool:
+	if tipo == "monete":
+		return true          # le monete servono sempre: all'agorà si compra con quelle
 	if villaggio.scorte.get(tipo, 0) < soglia:
 		return true
 	for e in villaggio.edifici.values():
