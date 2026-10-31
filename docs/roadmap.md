@@ -51,3 +51,9 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 24 | Versione iPhone |
 
 L'ordine può cambiare strada facendo: è un progetto da fare con calma.
+
+## Fase 5 — Idee per le versioni future
+
+| Idea | Note |
+|---|---|
+| Ispirazione «Coral Island» | Integrare alcune logiche da gioco di vita e fattoria (da definire con domande al proprietario prima di iniziare): es. personaggi del villaggio con cui stringere rapporti, feste stagionali, cura del mare e della costa, raccolta e collezioni, mestieri più personali. Va adattato a un gioco di strategia/economia con tanti coloni. |
