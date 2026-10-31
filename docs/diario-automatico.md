@@ -8,3 +8,14 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Screenshot in `docs/immagini/step05-catena.png`. Versione 0.6.0, roadmap e CLAUDE.md aggiornati, step unito a `main`.
 - Resta / da tenere d'occhio: con una sola strada verso il magazzino si formano code (normale, il giocatore aggiunge strade). I tronchi del boscaiolo vanno al magazzino quando la segheria ha già 4 tronchi in arrivo: corretto ma fa fare giri in più.
 - Prossimo: step M1 musica e suoni.
+
+## 2026-10-31 20:30 — step M1 musica e suoni (inizio)
+- Creato ramo `step-m1-musica` e worktree. Sul PC mancano numpy, ffmpeg, fluidsynth, soundfont.
+- Scritta la domanda in `docs/domande-per-il-proprietario.md` (come produrre la musica; raccomandata opzione 1: FluidSynth + soundfont libero).
+- Prossimo turno, senza aspettare la risposta: sistema audio in Godot (bus Musica/Effetti/Ambiente, lettore musica con dissolvenza, suoni posizionali dei lavoratori) e suoni di lavoro/natura sintetizzati con Python standard (`wave`, `math`) in `tools/suoni/`.
+
+## 2026-10-31 20:45 — step M1 completato (sessione principale, lavoro continuo)
+- Su richiesta del proprietario: turno orario disattivato (eliminarlo va fatto da una sessione normale), si lavora solo dalla sessione principale.
+- Adottato il lavoro della sessione oraria (audio.gd, suoni.py, suoni di lavoro e interfaccia); aggiunta la classe `Suono` perché l'identificatore `Audio` rompeva i test con `--script`.
+- Musica segnaposto (3 brani, `tools/suoni/musica.py`), scaletta, tasto M, cicale. test_audio e test_catena OK; il gioco parte senza errori audio.
+- Versione 0.7.0, merge in main. Prossimo: step 06 cibo.

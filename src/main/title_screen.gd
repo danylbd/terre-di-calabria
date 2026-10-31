@@ -32,6 +32,8 @@ func _ready() -> void:
 	_crea_versione()
 	_crea_avviso()
 	_menu.get_child(0).grab_focus()
+	Suono.spegni_ambiente()
+	Suono.scaletta(["mattino"] as Array[String])
 
 
 func _unhandled_input(event: InputEvent) -> void:

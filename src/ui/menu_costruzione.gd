@@ -38,7 +38,7 @@ func _ready() -> void:
 		b.button_group = gruppo_schede
 		b.custom_minimum_size = Vector2(92, 34)
 		b.button_pressed = cat == _categoria
-		b.pressed.connect(_mostra_categoria.bind(cat))
+		b.pressed.connect(func(): Suono.suona("clic"); _mostra_categoria(cat))
 		riga.add_child(b)
 		_schede.append(b)
 

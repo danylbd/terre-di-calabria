@@ -26,6 +26,7 @@ var tipo_scelto := ""
 var _fantasma: Sprite2D
 var _casella_mouse := Vector2i(-1, -1)
 var _evidenziato: Edificio
+var _ascolto_mare := 0.0
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
 
 
@@ -79,11 +80,23 @@ func _ready() -> void:
 	villaggio.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	barra.aggiorna(villaggio.scorte)
+	Suono.scaletta(["lavoro", "mattino", "sera"] as Array[String])
+	Suono.ambiente("uccelli", -6.0)
+	Suono.ambiente("vento", -12.0)
+	Suono.ambiente("mare", -40.0)
+
+
+func _exit_tree() -> void:
+	Suono.spegni_ambiente()
 
 
 # --------------------------------------------------------------- comandi
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_ascolto_mare -= delta
+	if _ascolto_mare <= 0.0:
+		_ascolto_mare = 0.5
+		_aggiorna_ambiente()
 	var c := dati.casella_da_schermo(get_global_mouse_position())
 	if c == _casella_mouse:
 		return
@@ -106,6 +119,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				menu.premi_attrezzo("strada")
 			KEY_F:
 				menu.premi_attrezzo("bandierina")
+			KEY_M:
+				_mostra_avviso("Musica accesa" if Suono.alterna_musica() else "Musica spenta", false)
 	elif event is InputEventMouseButton and event.pressed:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
@@ -124,6 +139,7 @@ func _clic(c: Vector2i) -> void:
 	match modalita:
 		"costruisci":
 			if villaggio.costruisci(tipo_scelto, c) != null:
+				Suono.suona("posa")
 				segni.aggiorna()
 				_aggiorna_fantasma()
 				if not Input.is_key_pressed(KEY_SHIFT):
@@ -201,6 +217,7 @@ func _aggiorna_anteprima_strada() -> void:
 
 
 func _scegli_edificio(tipo: String) -> void:
+	Suono.suona("clic")
 	_esci_modalita(false)
 	modalita = "costruisci"
 	tipo_scelto = tipo
@@ -218,6 +235,7 @@ func _scegli_edificio(tipo: String) -> void:
 
 func _strumento(nome: String, attivo: bool) -> void:
 	if attivo:
+		Suono.suona("clic")
 		_esci_modalita(false)
 		modalita = nome
 		segni.mostra_bandiere = nome in ["strada", "bandierina", "demolisci"]
@@ -374,6 +392,32 @@ func _metti(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> void:
 	risorse.registra(nome, Vector2i(x, y), s)
 
 
+## Il mare si sente di più quando la camera guarda la costa; il vento in alto, fra le rocce.
+func _aggiorna_ambiente() -> void:
+	var centro := dati.casella_da_schermo(camera.global_position)
+	var acqua := 0
+	var roccia := 0
+	var prato := 0
+	var tot := 0
+	for dy in range(-10, 11, 2):
+		for dx in range(-10, 11, 2):
+			var t := dati.tipo(centro.x + dx, centro.y + dy)
+			tot += 1
+			if t == T.ACQUA:
+				acqua += 1
+			elif t == T.ROCCIA or t == T.NEVE:
+				roccia += 1
+			elif t == T.SECCO or t == T.PRATO:
+				prato += 1
+	var f_mare := minf(1.0, acqua / float(tot) * 3.0)
+	var f_roccia := minf(1.0, roccia / float(tot) * 2.5)
+	Suono.ambiente("mare", lerpf(-40.0, -4.0, sqrt(f_mare)))
+	Suono.ambiente("vento", lerpf(-14.0, -5.0, f_roccia))
+	Suono.ambiente("uccelli", lerpf(-5.0, -16.0, maxf(f_mare, f_roccia)))
+	# le cicale cantano nei prati e nelle radure assolate, non sulla spiaggia né in montagna
+	Suono.ambiente("cicale", lerpf(-30.0, -9.0, clampf(prato / float(tot) * 1.5 - f_mare - f_roccia, 0.0, 1.0)))
+
+
 # --------------------------------------------------------------- interfaccia
 
 func _crea_interfaccia() -> void:
@@ -393,7 +437,7 @@ func _crea_interfaccia() -> void:
 	menu.strumento.connect(_strumento)
 
 	var aiuto := Label.new()
-	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  Maiusc+clic: più edifici  ·  Esc: menu"
+	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  M: musica  ·  Maiusc+clic: più edifici  ·  Esc: menu"
 	aiuto.add_theme_font_size_override("font_size", 16)
 	aiuto.add_theme_color_override("font_color", Palette.PERGAMENA_CHIARA)
 	aiuto.add_theme_color_override("font_outline_color", Palette.INCHIOSTRO)
@@ -414,6 +458,8 @@ func _crea_interfaccia() -> void:
 
 
 func _mostra_avviso(testo: String, errore: bool) -> void:
+	if errore:
+		Suono.suona("errore", -4.0)
 	_avviso.text = testo
 	_avviso.add_theme_color_override("font_color", Color("ff9a8a") if errore else Palette.PERGAMENA_CHIARA)
 	if _tween_avviso:
