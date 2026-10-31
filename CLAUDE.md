@@ -20,6 +20,7 @@ Storia: `docs/storia.md` (Il Sigillo di Italo). Design: `docs/design.md`. Grafic
 
 ## Struttura
 
+- `src/audio/` — `audio.gd` (autoload Audio), `suono.gd` (scorciatoie statiche)
 - `src/core/` — `palette.gd`, `iso.gd` (coordinate isometriche, casella 112×56), `sprites.gd` (carica sprite + JSON di ancoraggio)
 - `src/mappa/` — `partita.gd/tscn` (scena di gioco), `dati_mappa.gd`, `generatore_mappa.gd`, `terreno.gd` + `terreno.gdshader` (terreno continuo con rilievi), `rete_strade.gd` (bandierine, tratti, A*, instradamento), `portatore.gd`/`colono.gd`, `edificio.gd`, `villaggio.gd` (regole, territorio, scorte), `segni.gd` (confini e segni), `camera_mappa.gd`
 - `src/economia/` — `catalogo_edifici.gd`, `merce.gd`, `logistica.gd`
@@ -47,13 +48,13 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05 (in `main`, release v0.6.0).
+Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1 (in `main`, release v0.7.0).
 
-Step 05 (prima catena): risorse naturali (`risorse_naturali.gd`), lavoratori (`lavoratore.gd`: boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
+- Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
+- Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
 
-**In corso: step M1 – musica e suoni** (ramo `step-m1-musica`): primi 3 brani (orchestra + strumenti calabresi) e suoni di lavoro e natura.
+**In corso: step 06 – cibo** (ramo `step-06-cibo`): coltivazioni, allevamenti, pesca, mulino, forno, macelleria, caseificio (vedi `docs/design.md` §5b).
 
-Poi: 06 cibo (coltivazioni, allevamenti, pesca: vedi `docs/design.md` §5b).
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 
 ### Note pratiche

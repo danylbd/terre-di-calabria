@@ -13,4 +13,6 @@ Opzioni:
 
 Raccomandazione: **1** per i primi 3 brani (poi si può sostituire con l'opzione 3 più avanti). Nel frattempo preparo il sistema audio del gioco (canali musica/effetti/ambiente, volumi, brani in loop con dissolvenza) e i **suoni di lavoro e natura** sintetizzati in codice, che non dipendono da questa scelta.
 
+Nel frattempo (stesso giorno): ci sono 3 brani segnaposto sintetizzati in Python (`tools/suoni/musica.py`: mattino, lavoro, sera) con zampogna, lira, chitarra battente, tamburello e archi imitati. Funzionano nel gioco, ma la qualità è da segnaposto. La domanda resta aperta.
+
 Risposta:
