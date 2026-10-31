@@ -36,3 +36,14 @@ static func musica(nome: String) -> void:
 	var a := _audio()
 	if a:
 		a.musica(nome)
+
+
+static func scaletta(nomi: Array[String]) -> void:
+	var a := _audio()
+	if a:
+		a.scaletta(nomi)
+
+
+static func alterna_musica() -> bool:
+	var a := _audio()
+	return a.alterna_musica() if a else false

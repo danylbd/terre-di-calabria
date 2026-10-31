@@ -23,9 +23,9 @@ func _prova() -> void:
 	for bus in ["Musica", "Effetti", "Ambiente"]:
 		_controlla(AudioServer.get_bus_index(bus) >= 0, "canale " + bus)
 	for nome in ["ascia", "piccone", "sega", "vanga", "martello", "albero_cade", "clic", "posa",
-			"completato", "errore", "vento", "mare", "uccelli"]:
+			"completato", "errore", "vento", "mare", "uccelli", "cicale"]:
 		_controlla(audio.ha_suono(nome), "suono " + nome)
-	for nome in ["vento", "mare", "uccelli"]:
+	for nome in ["vento", "mare", "uccelli", "cicale"]:
 		var s: AudioStreamWAV = load("res://assets/suoni/%s.wav" % nome)
 		_controlla(s.loop_mode != AudioStreamWAV.LOOP_DISABLED, "%s in loop (%.1fs)" % [nome, s.get_length()])
 	audio.imposta_volume("Effetti", 0.5)
@@ -58,6 +58,15 @@ func _prova() -> void:
 	for nome in ["martello", "ascia", "piccone", "albero_cade", "completato"]:
 		_controlla(audio.suonati.get(nome, 0) > 0, "si è sentito " + nome)
 	_controlla(audio._ambiente.has("uccelli") and audio._ambiente["uccelli"].playing, "uccelli in sottofondo")
+	# musica: un brano della scaletta suona, alla fine passa al successivo, M la toglie e la rimette
+	for nome in ["mattino", "lavoro", "sera"]:
+		_controlla(ResourceLoader.exists("res://assets/musica/%s.wav" % nome), "brano " + nome)
+	var brano: String = audio.brano_attuale()
+	_controlla(brano in ["mattino", "lavoro", "sera"] and audio._musica[0].playing, "musica in corso: " + brano)
+	audio._on_brano_finito(audio._musica[0])
+	_controlla(audio.brano_attuale() != brano and audio.brano_attuale() != "", "passa al brano successivo: " + audio.brano_attuale())
+	_controlla(audio.alterna_musica() == false and AudioServer.is_bus_mute(AudioServer.get_bus_index("Musica")), "tasto M toglie la musica")
+	_controlla(audio.alterna_musica() == true and not AudioServer.is_bus_mute(AudioServer.get_bus_index("Musica")), "tasto M rimette la musica")
 	_fine()
 
 

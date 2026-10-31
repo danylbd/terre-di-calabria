@@ -345,12 +345,28 @@ def uccelli(rng):
     return normalizza(chiudi_loop(x, 1.0), 0.45)
 
 
+def cicale(rng):
+    """Cicale d'estate: frinire a impulsi rapidi, a ondate, da più punti."""
+    durata = 12.0
+    n = int(durata * FC)
+    x = [0.0] * n
+    for k, (centro, ritmo, ondata) in enumerate(((5200, 52, 3.7), (4600, 61, 5.1))):
+        canto = passa_banda(rumore(n, rng), centro, 6.0)
+        fase = rng.uniform(0, 6.28)
+        for i in range(n):
+            t = i / FC
+            impulsi = (0.5 + 0.5 * math.sin(DUE_PI * ritmo * t)) ** 4
+            onde = 0.2 + 0.8 * (0.5 + 0.5 * math.sin(DUE_PI * t / ondata + fase)) ** 2
+            x[i] += canto[i] * impulsi * onde * (1.0 if k == 0 else 0.6)
+    return normalizza(chiudi_loop(x, 1.5), 0.4)
+
+
 # ------------------------------------------------------------------ elenco
 
 VARIANTI = {"ascia": (ascia, 3), "piccone": (piccone, 3), "sega": (sega, 2), "vanga": (vanga, 2),
             "martello": (martello, 3), "albero_cade": (albero_cade, 1),
             "clic": (clic, 1), "posa": (posa, 1), "completato": (completato, 1), "errore": (errore, 1)}
-LOOP = {"vento": vento, "mare": mare, "uccelli": uccelli}
+LOOP = {"vento": vento, "mare": mare, "uccelli": uccelli, "cicale": cicale}
 
 
 def main():

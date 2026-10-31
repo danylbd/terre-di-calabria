@@ -80,6 +80,7 @@ func _ready() -> void:
 	villaggio.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	barra.aggiorna(villaggio.scorte)
+	Suono.scaletta(["lavoro", "mattino", "sera"] as Array[String])
 	Suono.ambiente("uccelli", -6.0)
 	Suono.ambiente("vento", -12.0)
 	Suono.ambiente("mare", -40.0)
@@ -118,6 +119,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				menu.premi_attrezzo("strada")
 			KEY_F:
 				menu.premi_attrezzo("bandierina")
+			KEY_M:
+				_mostra_avviso("Musica accesa" if Suono.alterna_musica() else "Musica spenta", false)
 	elif event is InputEventMouseButton and event.pressed:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
@@ -394,6 +397,7 @@ func _aggiorna_ambiente() -> void:
 	var centro := dati.casella_da_schermo(camera.global_position)
 	var acqua := 0
 	var roccia := 0
+	var prato := 0
 	var tot := 0
 	for dy in range(-10, 11, 2):
 		for dx in range(-10, 11, 2):
@@ -403,11 +407,15 @@ func _aggiorna_ambiente() -> void:
 				acqua += 1
 			elif t == T.ROCCIA or t == T.NEVE:
 				roccia += 1
+			elif t == T.SECCO or t == T.PRATO:
+				prato += 1
 	var f_mare := minf(1.0, acqua / float(tot) * 3.0)
 	var f_roccia := minf(1.0, roccia / float(tot) * 2.5)
 	Suono.ambiente("mare", lerpf(-40.0, -4.0, sqrt(f_mare)))
 	Suono.ambiente("vento", lerpf(-14.0, -5.0, f_roccia))
 	Suono.ambiente("uccelli", lerpf(-5.0, -16.0, maxf(f_mare, f_roccia)))
+	# le cicale cantano nei prati e nelle radure assolate, non sulla spiaggia né in montagna
+	Suono.ambiente("cicale", lerpf(-30.0, -9.0, clampf(prato / float(tot) * 1.5 - f_mare - f_roccia, 0.0, 1.0)))
 
 
 # --------------------------------------------------------------- interfaccia
@@ -429,7 +437,7 @@ func _crea_interfaccia() -> void:
 	menu.strumento.connect(_strumento)
 
 	var aiuto := Label.new()
-	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  Maiusc+clic: più edifici  ·  Esc: menu"
+	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  M: musica  ·  Maiusc+clic: più edifici  ·  Esc: menu"
 	aiuto.add_theme_font_size_override("font_size", 16)
 	aiuto.add_theme_color_override("font_color", Palette.PERGAMENA_CHIARA)
 	aiuto.add_theme_color_override("font_outline_color", Palette.INCHIOSTRO)

@@ -17,6 +17,8 @@ var _voce_ui: AudioStreamPlayer
 var _ambiente := {}                  # nome -> AudioStreamPlayer in loop
 var _musica: Array[AudioStreamPlayer] = []
 var _brano := ""
+var _scaletta: Array[String] = []    # brani che si alternano uno dopo l'altro
+var _musica_spenta := false
 var _prossima := 0
 var suonati := {}                    # nome -> quante volte (per i test)
 
@@ -45,6 +47,7 @@ func _ready() -> void:
 	for i in 2:
 		var m := AudioStreamPlayer.new()
 		m.bus = "Musica"
+		m.finished.connect(_on_brano_finito.bind(m))
 		add_child(m)
 		_musica.append(m)
 
@@ -168,6 +171,29 @@ func musica(nome: String) -> void:
 
 func brano_attuale() -> String:
 	return _brano
+
+
+## Suona i brani uno dopo l'altro, ricominciando dal primo; parte da uno a caso.
+func scaletta(nomi: Array[String]) -> void:
+	_scaletta = nomi.duplicate()
+	if _brano in _scaletta:
+		return
+	musica(_scaletta.pick_random() if _scaletta.size() > 0 else "")
+
+
+func _on_brano_finito(p: AudioStreamPlayer) -> void:
+	if p != _musica[0] or _scaletta.is_empty():
+		return
+	var i := _scaletta.find(_brano)
+	_brano = ""
+	musica(_scaletta[(i + 1) % _scaletta.size()])
+
+
+## Tasto M: toglie o rimette la musica (gli effetti restano).
+func alterna_musica() -> bool:
+	_musica_spenta = not _musica_spenta
+	AudioServer.set_bus_mute(AudioServer.get_bus_index("Musica"), _musica_spenta)
+	return not _musica_spenta
 
 
 ## Volume lineare 0..1 di un canale ("Master", "Musica", "Effetti", "Ambiente").
