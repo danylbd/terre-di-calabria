@@ -66,12 +66,17 @@ func _prossima_richiesta(mag: Edificio) -> Array:
 
 # ------------------------------------------------------------ viaggio
 
+var _da_consegnare: Array[Merce] = []
+
+
 func _assegna_trasporti() -> void:
+	_da_consegnare.clear()
 	for m in merci:
 		if m.prenotata or m.in_spalla:
 			continue
 		var dest := m.destinazione.bandiera
 		if m.bandiera == dest:
+			_da_consegnare.append(m)
 			continue
 		var prossima := rete.prossimo_salto(m.bandiera, dest)
 		if prossima.x < 0:
@@ -81,6 +86,8 @@ func _assegna_trasporti() -> void:
 		var t = rete.tratto_tra(m.bandiera, prossima)
 		if t and t.portatore and t.portatore.libero():
 			t.portatore.trasporta(m, m.bandiera, prossima)
+	for m in _da_consegnare:
+		_consegna(m)
 
 
 func _on_posata(m: Merce, dove: Vector2i) -> void:
