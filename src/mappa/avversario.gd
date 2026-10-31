@@ -3,9 +3,17 @@ extends Node
 ## I Brettii, il popolo delle montagne, giocati dal computer. Crescono piano: ogni tanto alzano una
 ## torre nuova al margine del loro territorio. Dopo una tregua iniziale, quando una loro torre ha
 ## abbastanza guerrieri, attaccano il nostro forte più debole tra quelli raggiungibili.
+## Modalità (scelta all'avvio): «pace» (niente Brettii), «guerra» (tregua breve), «pace_poi_guerra»
+## (i Brettii restano tranquilli finché il villaggio non è cresciuto, poi dichiarano guerra).
 
 const POPOLO := 2
+signal messaggio(testo: String, errore: bool)
+
 const TREGUA := 900.0                # secondi di pace all'inizio della partita
+const TREGUA_GUERRA := 240.0         # nella modalità «solo guerra»
+const POPOLAZIONE_GUERRA := 60       # «pace poi guerra»: la guerra arriva quando il villaggio è così grande...
+const TEMPO_GUERRA := 2400.0         # ...o al più tardi dopo 40 minuti
+const PREAVVISO := 120.0
 const OGNI_ESPANSIONE := 300.0
 const OGNI_ATTACCO := 240.0
 const TORRI_MAX := 6
@@ -15,6 +23,9 @@ var villaggio: Villaggio
 var guerra: Guerra
 var dati: DatiMappa
 var attivo := true                   # false nella partita «solo pace»
+var modalita := "pace_poi_guerra"
+var tregua := TREGUA                 # fino a quando (in secondi di partita) i Brettii non attaccano
+var guerra_dichiarata := false
 var tempo := 0.0                     # secondi dall'inizio della partita (si salva)
 var _espansione := OGNI_ESPANSIONE
 var _attacco := OGNI_ATTACCO
@@ -28,6 +39,22 @@ func prepara(v: Villaggio, g: Guerra, d: DatiMappa) -> void:
 	_rng.seed = 1453
 
 
+## Prepara i Brettii per la modalità scelta.
+func imposta_modalita(m: String) -> void:
+	modalita = m
+	attivo = m != "pace"
+	tregua = TREGUA_GUERRA if m == "guerra" else TREGUA
+	guerra_dichiarata = m == "guerra"
+
+
+## «Pace poi guerra»: quando il villaggio è cresciuto i Brettii dichiarano guerra, con un preavviso.
+func dichiara_guerra() -> void:
+	guerra_dichiarata = true
+	tregua = tempo + PREAVVISO
+	messaggio.emit("I Brettii dichiarano guerra! Fra due minuti attaccheranno: prepara i forti", true)
+	Suono.suona("errore")
+
+
 func _process(delta: float) -> void:
 	if not attivo or villaggio.nemici.is_empty():
 		return
@@ -36,7 +63,11 @@ func _process(delta: float) -> void:
 	if _espansione <= 0.0:
 		_espansione = OGNI_ESPANSIONE
 		espandi()
-	if tempo < TREGUA:
+	if not guerra_dichiarata:
+		if modalita == "pace_poi_guerra" and (villaggio.popolazione() >= POPOLAZIONE_GUERRA or tempo >= TEMPO_GUERRA):
+			dichiara_guerra()
+		return
+	if tempo < tregua:
 		return
 	_attacco -= delta
 	if _attacco <= 0.0:
