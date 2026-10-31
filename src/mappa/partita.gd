@@ -7,6 +7,7 @@ const SEME := 1987
 var dati: DatiMappa
 var terreno: Terreno
 var segni: SegniMappa
+var rete: ReteStrade
 var oggetti: Node2D
 var camera: CameraMappa
 var villaggio: Villaggio
@@ -16,7 +17,9 @@ var barra: BarraRisorse
 var _avviso: Label
 var _tween_avviso: Tween
 
-var modalita := ""          # "", "costruisci", "demolisci"
+var modalita := ""          # "", "costruisci", "strada", "bandierina", "demolisci"
+var _inizio_strada := Vector2i(-1, -1)
+var _percorso: Array[Vector2i] = []
 var tipo_scelto := ""
 var _fantasma: Sprite2D
 var _casella_mouse := Vector2i(-1, -1)
@@ -26,11 +29,13 @@ var _evidenziato: Edificio
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(Color("16384f"))
 	dati = GeneratoreMappa.genera(SEME)
-	_traccia_sentieri()
 
 	terreno = Terreno.new()
 	add_child(terreno)
 	terreno.costruisci(dati)
+
+	rete = ReteStrade.new()
+	add_child(rete)
 
 	segni = SegniMappa.new()
 	add_child(segni)
@@ -41,6 +46,10 @@ func _ready() -> void:
 
 	villaggio = Villaggio.new(dati, oggetti)
 	add_child(villaggio)
+	villaggio.rete = rete
+	rete.prepara(dati, villaggio, oggetti)
+	rete.cambiata.connect(villaggio._aggiorna_collegamenti)
+	rete.cambiata.connect(segni.queue_redraw)
 	segni.prepara(dati, villaggio)
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
@@ -68,6 +77,7 @@ func _process(_delta: float) -> void:
 	_casella_mouse = c
 	_aggiorna_fantasma()
 	_aggiorna_evidenziato()
+	_aggiorna_anteprima_strada()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -77,12 +87,24 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			get_tree().change_scene_to_file("res://src/main/title_screen.tscn")
 		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and not event.echo:
+		match (event as InputEventKey).keycode:
+			KEY_R:
+				menu.premi_attrezzo("strada")
+			KEY_F:
+				menu.premi_attrezzo("bandierina")
 	elif event is InputEventMouseButton and event.pressed:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			_clic(dati.casella_da_schermo(get_global_mouse_position()))
 		elif mb.button_index == MOUSE_BUTTON_RIGHT and modalita != "":
-			_esci_modalita()
+			if modalita == "strada" and _inizio_strada.x >= 0:
+				_inizio_strada = Vector2i(-1, -1)
+				rete.nascondi_anteprima()
+				segni.inizio_strada = _inizio_strada
+				segni.queue_redraw()
+			else:
+				_esci_modalita()
 
 
 func _clic(c: Vector2i) -> void:
@@ -93,15 +115,78 @@ func _clic(c: Vector2i) -> void:
 				_aggiorna_fantasma()
 				if not Input.is_key_pressed(KEY_SHIFT):
 					_esci_modalita()
+		"strada":
+			_clic_strada(c)
+		"bandierina":
+			var perche := rete.motivo_no_bandiera(c)
+			if perche != "":
+				_mostra_avviso(perche, true)
+			elif rete.aggiungi_bandiera(c):
+				_mostra_avviso("Bandierina piantata", false)
 		"demolisci":
 			var e := villaggio.edificio_in(c)
 			if e:
 				_evidenziato = null
 				villaggio.demolisci(e)
 				segni.aggiorna()
+			elif rete.bandiera_in(c):
+				var esito := rete.rimuovi_bandiera(c)
+				_mostra_avviso(esito, esito.begins_with("È"))
+			elif rete.rimuovi_strada_in(c):
+				_mostra_avviso("Strada rimossa", false)
+		"":
+			# clic su un edificio o su una bandierina: scorciatoia per iniziare una strada
+			var e := villaggio.edificio_in(c)
+			if rete.bandiera_in(c) or e:
+				menu.premi_attrezzo("strada")
+				_clic_strada(e.bandiera if e else c)
+
+
+func _clic_strada(c: Vector2i) -> void:
+	if _inizio_strada.x < 0:
+		var e := villaggio.edificio_in(c)
+		if e:
+			c = e.bandiera
+		if not rete.bandiera_in(c):
+			_mostra_avviso("Una strada parte sempre da una bandierina", true)
+			return
+		_inizio_strada = c
+		segni.inizio_strada = c
+		segni.queue_redraw()
+		_casella_mouse = Vector2i(-99, -99)
+		return
+	var e2 := villaggio.edificio_in(c)
+	if e2:
+		c = e2.bandiera
+	var p := rete.trova_percorso(_inizio_strada, c)
+	if p.is_empty():
+		_mostra_avviso("Qui la strada non può arrivare", true)
+		return
+	if rete.costruisci_strada(p):
+		# si continua dalla bandierina d'arrivo, come una penna che non si stacca dal foglio
+		_inizio_strada = p[-1]
+		segni.inizio_strada = _inizio_strada
+		rete.nascondi_anteprima()
+		segni.queue_redraw()
+		if rete.collegata(p[-1]):
+			_mostra_avviso("Strada costruita: arriva un portatore", false)
+		else:
+			_mostra_avviso("Strada costruita, ma non è collegata al magazzino", true)
+
+
+func _aggiorna_anteprima_strada() -> void:
+	if modalita != "strada" or _inizio_strada.x < 0:
+		return
+	var c := _casella_mouse
+	var e := villaggio.edificio_in(c)
+	if e:
+		c = e.bandiera
+	_percorso = rete.trova_percorso(_inizio_strada, c)
+	rete.mostra_anteprima(_percorso, not _percorso.is_empty())
 
 
 func _scegli_edificio(tipo: String) -> void:
+	_esci_modalita(false)
 	modalita = "costruisci"
 	tipo_scelto = tipo
 	segni.tipo_scelto = tipo
@@ -116,12 +201,14 @@ func _scegli_edificio(tipo: String) -> void:
 	_casella_mouse = Vector2i(-99, -99)
 
 
-func _modalita_demolizione(attiva: bool) -> void:
-	if attiva:
+func _strumento(nome: String, attivo: bool) -> void:
+	if attivo:
 		_esci_modalita(false)
-		modalita = "demolisci"
-		Input.set_default_cursor_shape(Input.CURSOR_CROSS)
-	elif modalita == "demolisci":
+		modalita = nome
+		segni.mostra_bandiere = nome in ["strada", "bandierina", "demolisci"]
+		segni.queue_redraw()
+		Input.set_default_cursor_shape(Input.CURSOR_CROSS if nome == "demolisci" else Input.CURSOR_POINTING_HAND)
+	elif modalita == nome:
 		_esci_modalita()
 
 
@@ -129,7 +216,11 @@ func _esci_modalita(deseleziona := true) -> void:
 	modalita = ""
 	tipo_scelto = ""
 	segni.tipo_scelto = ""
+	segni.mostra_bandiere = false
+	_inizio_strada = Vector2i(-1, -1)
+	segni.inizio_strada = _inizio_strada
 	segni.aggiorna()
+	rete.nascondi_anteprima()
 	if _fantasma:
 		_fantasma.visible = false
 	if _evidenziato:
@@ -176,38 +267,15 @@ func _cella(rel: Vector2i) -> Vector2i:
 	return dati.villaggio + rel
 
 
-func _traccia_sentieri() -> void:
-	# sentieri di terra battuta dal magazzino alle prime case (le strade vere arriveranno nello step 03)
-	for e in INIZIALI.slice(1):
-		var a := _cella(Vector2i(1, 2))
-		var b := _cella(e[1]) + Vector2i(0, 1)
-		var p := a
-		while p != b:
-			if p.x != b.x:
-				p.x += signi(b.x - p.x)
-			else:
-				p.y += signi(b.y - p.y)
-			if dati.dentro(p.x, p.y) and dati.tipo(p.x, p.y) != T.ACQUA:
-				dati.imposta_tipo(p.x, p.y, T.TERRA)
-
-
 func _metti_villaggio() -> void:
+	var magazzino: Edificio = null
 	for e in INIZIALI:
-		villaggio.costruisci(e[0], _cella(e[1]), true)
-	var giri := [
-		["portatore_nessuno", Vector2i(4, -3)], ["portatore_anfora", Vector2i(-3, 4)],
-		["portatore_asse", Vector2i(4, -3)],
-	]
-	var k := 0
-	for g in giri:
-		var a := Vector2(dati.villaggio.x + 1.5, dati.villaggio.y + 2.5)
-		var meta: Vector2i = _cella(g[1]) + Vector2i(0, 1)
-		var punti: Array[Vector2] = [a, Vector2(meta.x + 0.5, a.y), Vector2(meta.x + 0.5, meta.y + 0.5)]
-		var c := Colono.new()
-		oggetti.add_child(c)
-		c.prepara(dati, punti, g[0], k * 0.37)
-		c.velocita = 0.9 + (k % 3) * 0.15
-		k += 1
+		var ed := villaggio.costruisci(e[0], _cella(e[1]), true)
+		if e[0] == "magazzino":
+			magazzino = ed
+	for ed in villaggio.edifici.values():
+		if ed != magazzino:
+			rete.costruisci_strada(rete.trova_percorso(magazzino.bandiera, ed.bandiera))
 
 
 # --------------------------------------------------------------- natura
@@ -284,10 +352,10 @@ func _crea_interfaccia() -> void:
 	menu.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 14)
 	menu.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	menu.edificio_scelto.connect(_scegli_edificio)
-	menu.demolizione.connect(_modalita_demolizione)
+	menu.strumento.connect(_strumento)
 
 	var aiuto := Label.new()
-	aiuto.text = "WASD / frecce: muovi  ·  Rotella: zoom  ·  Tasto destro: trascina / annulla  ·  Maiusc+clic: costruisci più volte  ·  Esc: menu"
+	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  Maiusc+clic: più edifici  ·  Esc: menu"
 	aiuto.add_theme_font_size_override("font_size", 16)
 	aiuto.add_theme_color_override("font_color", Palette.PERGAMENA_CHIARA)
 	aiuto.add_theme_color_override("font_outline_color", Palette.INCHIOSTRO)

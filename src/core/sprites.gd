@@ -40,8 +40,7 @@ static func animazioni(nome: String, velocita := 10.0) -> SpriteFrames:
 	var cella: Array = i["cella"]
 	var n: int = i["fotogrammi"]
 	var tex := texture(nome)
-	var sf := SpriteFrames.new()
-	sf.remove_animation("default")
+	var sf := SpriteFrames.new()   # tiene anche "default" (un fotogramma) per evitare errori al primo assegnamento
 	for d in DIREZIONI.size():
 		var anim: String = DIREZIONI[d]
 		sf.add_animation(anim)
@@ -51,6 +50,8 @@ static func animazioni(nome: String, velocita := 10.0) -> SpriteFrames:
 			at.atlas = tex
 			at.region = Rect2(f * cella[0], d * cella[1], cella[0], cella[1])
 			sf.add_frame(anim, at)
+			if d == 0 and f == 0:
+				sf.add_frame("default", at)
 	_animazioni[nome] = sf
 	return sf
 

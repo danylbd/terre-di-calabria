@@ -4,12 +4,12 @@ extends PanelContainer
 ## pulsante per demolire.
 
 signal edificio_scelto(tipo: String)
-signal demolizione(attiva: bool)
+signal strumento(nome: String, attivo: bool)   # "strada", "bandierina", "demolisci"
 
 var _griglia: GridContainer
 var _schede: Array[Button] = []
 var _pulsanti := {}          # tipo -> Button
-var _demolisci: Button
+var _attrezzi := {}
 var _nota: Label
 var _categoria := "Base"
 var _gruppo := ButtonGroup.new()
@@ -54,13 +54,22 @@ func _ready() -> void:
 	_nota.add_theme_color_override("font_color", Color(Palette.INCHIOSTRO, 0.7))
 	colonna.add_child(_nota)
 
-	_demolisci = Button.new()
-	_demolisci.text = "Demolisci"
-	_demolisci.toggle_mode = true
-	_demolisci.button_group = _gruppo
-	_demolisci.tooltip_text = "Clicca un edificio per abbatterlo (recuperi metà dei materiali)."
-	_demolisci.toggled.connect(func(on: bool): demolizione.emit(on))
-	colonna.add_child(_demolisci)
+	var attrezzi := HBoxContainer.new()
+	attrezzi.add_theme_constant_override("separation", 6)
+	colonna.add_child(attrezzi)
+	for a in [["strada", "Strada", "Clicca una bandierina, poi il punto d'arrivo: la strada trova da sola il percorso. (Tasto R)"],
+			["bandierina", "Bandierina", "Pianta una bandierina su una strada per dividerla: ogni tratto ha il suo portatore. (Tasto F)"],
+			["demolisci", "Demolisci", "Clicca un edificio, una strada o una bandierina per toglierli."]]:
+		var b := Button.new()
+		b.text = a[1]
+		b.toggle_mode = true
+		b.button_group = _gruppo
+		b.custom_minimum_size = Vector2(128, 36)
+		b.tooltip_text = a[2]
+		var nome: String = a[0]
+		b.toggled.connect(func(on: bool): strumento.emit(nome, on))
+		attrezzi.add_child(b)
+		_attrezzi[nome] = b
 
 	_mostra_categoria(_categoria)
 
@@ -100,3 +109,8 @@ func deseleziona() -> void:
 	var premuto := _gruppo.get_pressed_button()
 	if premuto:
 		premuto.set_pressed_no_signal(false)
+
+
+func premi_attrezzo(nome: String) -> void:
+	if _attrezzi.has(nome):
+		_attrezzi[nome].button_pressed = true

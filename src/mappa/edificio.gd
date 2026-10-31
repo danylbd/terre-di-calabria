@@ -13,6 +13,7 @@ var bandiera := Vector2i.ZERO       # casella davanti alla porta (per le strade 
 var progresso := 0.0                 # 0..1
 var tempo_totale := 20.0
 var finito := false
+var collegato := false               # la sua bandierina è collegata a un magazzino
 
 var _sprite: Sprite2D
 var _fase := -1
@@ -42,6 +43,9 @@ func centro() -> Vector2:
 
 func _process(delta: float) -> void:
 	if finito:
+		return
+	if not collegato:
+		queue_redraw()
 		return
 	progresso = minf(1.0, progresso + delta / tempo_totale)
 	_aggiorna_aspetto()
@@ -84,4 +88,11 @@ func _draw() -> void:
 	var w := 64.0
 	var y := -62.0 if taglia == 1 else -110.0
 	draw_rect(Rect2(-w * 0.5 - 2, y - 2, w + 4, 10), Color(Palette.INCHIOSTRO, 0.8))
-	draw_rect(Rect2(-w * 0.5, y, w * progresso, 6), Palette.OCRA)
+	draw_rect(Rect2(-w * 0.5, y, w * progresso, 6), Palette.OCRA if collegato else Color(0.6, 0.6, 0.6))
+	if not collegato:
+		# segnale: manca la strada
+		var c := Vector2(0, y - 22)
+		draw_circle(c, 12, Color(Palette.INCHIOSTRO, 0.85))
+		draw_circle(c, 10, Color("e05a3a"))
+		draw_rect(Rect2(c.x - 1.5, c.y - 6, 3, 8), Palette.PERGAMENA_CHIARA)
+		draw_rect(Rect2(c.x - 1.5, c.y + 4, 3, 3), Palette.PERGAMENA_CHIARA)

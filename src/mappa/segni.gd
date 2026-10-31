@@ -6,6 +6,8 @@ extends Node2D
 var dati: DatiMappa
 var villaggio: Villaggio
 var tipo_scelto := ""
+var mostra_bandiere := false
+var inizio_strada := Vector2i(-1, -1)
 var _posti: Array[Vector2i] = []
 
 
@@ -27,6 +29,15 @@ func aggiorna() -> void:
 
 func _draw() -> void:
 	_disegna_confini()
+	if mostra_bandiere and villaggio.rete:
+		for c in villaggio.rete.bandiere:
+			var p := dati.a_schermo(c.x + 0.5, c.y + 0.5)
+			var scelta: bool = c == inizio_strada
+			var col := Palette.OCRA if scelta else Color(Palette.PERGAMENA_CHIARA, 0.9)
+			draw_set_transform(p, 0.0, Vector2(1.0, 0.5))
+			draw_arc(Vector2.ZERO, 26.0 if scelta else 18.0, 0, TAU, 32, Color(Palette.INCHIOSTRO, 0.6), 6.0)
+			draw_arc(Vector2.ZERO, 26.0 if scelta else 18.0, 0, TAU, 32, col, 3.0)
+			draw_set_transform(Vector2.ZERO)
 	if tipo_scelto == "":
 		return
 	var taglia: int = CatalogoEdifici.dati(tipo_scelto)["taglia"]
