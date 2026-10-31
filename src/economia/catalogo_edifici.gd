@@ -8,16 +8,16 @@ const EDIFICI := {
 	"casa_greca": {"nome": "Abitazione", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Base",
 		"tempo": 20.0, "descrizione": "Fa crescere il villaggio con nuovi coloni."},
 	"boscaiolo": {"nome": "Boscaiolo", "taglia": 2, "costo": {"assi": 2}, "categoria": "Base",
-		"tempo": 16.0, "lavoratore": "lavoratore_ascia", "produce": "tronchi",
+		"tempo": 16.0, "attrezzo": "ascia", "lavoratore": "lavoratore_ascia", "produce": "tronchi",
 		"descrizione": "Abbatte gli alberi vicini e porta i tronchi."},
 	"guardaboschi": {"nome": "Guardaboschi", "taglia": 2, "costo": {"assi": 2}, "categoria": "Base",
-		"tempo": 16.0, "lavoratore": "lavoratore_pala",
+		"tempo": 16.0, "attrezzo": "pala", "lavoratore": "lavoratore_pala",
 		"descrizione": "Pianta nuovi alberi, così il bosco non finisce."},
 	"segheria": {"nome": "Segheria", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Base",
-		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "assi",
+		"tempo": 24.0, "attrezzo": "sega", "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "assi",
 		"descrizione": "Taglia i tronchi e ne ricava assi."},
 	"cava": {"nome": "Cava di pietra", "taglia": 2, "costo": {"assi": 2}, "categoria": "Base",
-		"tempo": 16.0, "lavoratore": "lavoratore_piccone", "produce": "pietra",
+		"tempo": 16.0, "attrezzo": "piccone", "lavoratore": "lavoratore_piccone", "produce": "pietra",
 		"descrizione": "Estrae pietra dalle rocce vicine."},
 	"magazzino": {"nome": "Magazzino", "taglia": 3, "costo": {"assi": 6, "pietra": 6}, "categoria": "Base",
 		"tempo": 40.0, "descrizione": "Custodisce le merci. I portatori partono da qui."},
@@ -25,7 +25,7 @@ const EDIFICI := {
 		"tempo": 12.0, "lavoratore": "portatore_nessuno", "produce": "acqua",
 		"descrizione": "Acqua per il forno e per il bestiame."},
 	"fattoria": {"nome": "Fattoria", "taglia": 2, "costo": {"assi": 3, "pietra": 1}, "categoria": "Cibo",
-		"tempo": 20.0, "lavoratore": "lavoratore_falce", "produce": "grano", "coltura": "grano",
+		"tempo": 20.0, "attrezzo": "falce", "lavoratore": "lavoratore_falce", "produce": "grano", "coltura": "grano",
 		"descrizione": "Il contadino semina i campi di grano intorno e li miete quando sono dorati."},
 	"mulino": {"nome": "Mulino", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Cibo",
 		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"grano": 4}, "produce": "farina",
@@ -52,29 +52,43 @@ const EDIFICI := {
 		"tempo": 22.0, "lavoratore": "portatore_nessuno", "ingressi": {"latte": 4}, "produce": "formaggio",
 		"descrizione": "Fa il formaggio con il latte di pecore e capre."},
 	"pescatore": {"nome": "Pescatore", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
-		"tempo": 16.0, "lavoratore": "lavoratore_canna", "produce": "pesce", "vicino_mare": 5,
+		"tempo": 16.0, "attrezzo": "canna", "lavoratore": "lavoratore_canna", "produce": "pesce", "vicino_mare": 5,
 		"descrizione": "Pesca dalla riva. Il pesce finisce e torna col tempo: costruiscilo vicino al mare."},
 	"frantoio": {"nome": "Frantoio", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Cibo",
 		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"olive": 4}, "produce": "olio",
 		"descrizione": "Spreme le olive e produce olio."},
 	"uliveto": {"nome": "Raccoglitore di olive", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
-		"tempo": 16.0, "lavoratore": "lavoratore_falce", "produce": "olive",
+		"tempo": 16.0, "attrezzo": "falce", "lavoratore": "lavoratore_falce", "produce": "olive",
 		"descrizione": "Raccoglie le olive dagli ulivi vicini. Gli ulivi rimettono frutto col tempo."},
 	"vigneto": {"nome": "Vigneto", "taglia": 2, "costo": {"assi": 3, "pietra": 1}, "categoria": "Cibo",
-		"tempo": 20.0, "lavoratore": "lavoratore_falce", "produce": "uva", "coltura": "vite",
+		"tempo": 20.0, "attrezzo": "falce", "lavoratore": "lavoratore_falce", "produce": "uva", "coltura": "vite",
 		"descrizione": "Pianta le viti, che danno uva ogni anno."},
 	"cantina": {"nome": "Cantina", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Cibo",
 		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"uva": 4}, "produce": "vino",
 		"descrizione": "Pigia l'uva e fa il vino, merce di lusso."},
 	"ortolano": {"nome": "Ortolano", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Cibo",
-		"tempo": 18.0, "lavoratore": "lavoratore_falce", "produce": ["ortaggi", "cipolle"], "coltura": "orto",
+		"tempo": 18.0, "attrezzo": "falce", "lavoratore": "lavoratore_falce", "produce": ["ortaggi", "cipolle"], "coltura": "orto",
 		"descrizione": "Coltiva ortaggi e cipolle rosse: cibo per i minatori."},
 	"agrumeto": {"nome": "Agrumeto", "taglia": 2, "costo": {"assi": 3, "pietra": 1}, "categoria": "Cibo",
-		"tempo": 20.0, "lavoratore": "lavoratore_falce", "produce": "agrumi", "coltura": "agrumi",
+		"tempo": 20.0, "attrezzo": "falce", "lavoratore": "lavoratore_falce", "produce": "agrumi", "coltura": "agrumi",
 		"descrizione": "Pianta aranci e bergamotti, che danno frutta ogni anno."},
 	"pesca_spada": {"nome": "Barca del pesce spada", "taglia": 2, "costo": {"assi": 4}, "categoria": "Cibo",
-		"tempo": 20.0, "lavoratore": "lavoratore_canna", "produce": "pesce_spada", "vicino_mare": 5,
+		"tempo": 20.0, "attrezzo": "canna", "lavoratore": "lavoratore_canna", "produce": "pesce_spada", "vicino_mare": 5,
 		"descrizione": "Esce in barca al largo per il pesce spada. Va costruita sulla costa."},
+	"miniera_ferro": {"nome": "Miniera di ferro", "taglia": 2, "costo": {"assi": 4, "pietra": 1}, "categoria": "Metallo",
+		"tempo": 24.0, "attrezzo": "piccone", "lavoratore": "lavoratore_piccone", "produce": "ferro", "durata": 8.0,
+		"miniera": "ferro", "cibo": 4,
+		"descrizione": "Scava il ferro nei monti. Va costruita sulla roccia, ai piedi della montagna. I minatori lavorano solo se mangiano (pane, pesce, carne, formaggio, ortaggi o cipolle)."},
+	"carbonaia": {"nome": "Carbonaia", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Metallo",
+		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "carbone", "durata": 9.0,
+		"descrizione": "Cuoce lentamente i tronchi sotto la terra e ne ricava carbone."},
+	"fonderia": {"nome": "Fonderia", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Metallo",
+		"tempo": 28.0, "lavoratore": "portatore_nessuno", "ingressi": {"ferro": 4, "carbone": 4}, "produce": "lingotti",
+		"durata": 7.0, "descrizione": "Fonde il ferro con il carbone e cola i lingotti."},
+	"fabbro": {"nome": "Fabbro", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Metallo",
+		"tempo": 26.0, "attrezzo": "martello", "lavoratore": "portatore_nessuno", "ingressi": {"lingotti": 4, "assi": 2},
+		"produce": "attrezzi", "durata": 8.0,
+		"descrizione": "Forgia gli attrezzi dei mestieri. Fa per primi quelli che mancano."},
 	"torre": {"nome": "Torre di guardia", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Difesa",
 		"tempo": 30.0, "territorio": 7, "descrizione": "Allarga i confini del territorio."},
 }
@@ -83,7 +97,15 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"farina": "Farina", "acqua": "Acqua", "pane": "Pane", "pesce": "Pesce", "maiale": "Maiali", "carne": "Carne",
 	"latte": "Latte", "lana": "Lana", "formaggio": "Formaggio", "miele": "Miele", "olive": "Olive", "olio": "Olio",
 	"uva": "Uva", "vino": "Vino", "ortaggi": "Ortaggi", "cipolle": "Cipolle", "agrumi": "Agrumi",
-	"pesce_spada": "Pesce spada"}
+	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "lingotti": "Lingotti",
+	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
+	"martello": "Martelli"}
+## attrezzi dei mestieri: senza l'attrezzo in magazzino l'artigiano non arriva
+const ATTREZZI := ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]
+const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "una pala", "falce": "una falce",
+	"canna": "una canna da pesca", "sega": "una sega", "martello": "un martello"}
+## cibo che i minatori accettano (uno qualsiasi per ogni turno di lavoro)
+const CIBI := ["pane", "pesce", "carne", "formaggio", "ortaggi", "cipolle"]
 ## merci sempre visibili nella barra delle scorte (le altre compaiono quando ce ne sono)
 const RISORSE_BASE := ["tronchi", "assi", "pietra"]
 
@@ -97,6 +119,24 @@ static func della_categoria(cat: String) -> Array:
 	for k in EDIFICI:
 		if EDIFICI[k]["categoria"] == cat:
 			r.append(k)
+	return r
+
+
+## Quante merci di un tipo può tenere un edificio per lavorare (ingressi, più il cibo per i minatori).
+static func capacita(tipo: String, merce: String) -> int:
+	var d: Dictionary = EDIFICI[tipo]
+	var n: int = d.get("ingressi", {}).get(merce, 0)
+	if d.has("cibo") and merce in CIBI:
+		n += d["cibo"]
+	return n
+
+
+## Tutte le merci che un edificio riceve per lavorare.
+static func merci_in_ingresso(tipo: String) -> Array:
+	var d: Dictionary = EDIFICI[tipo]
+	var r: Array = d.get("ingressi", {}).keys()
+	if d.has("cibo"):
+		r.append_array(CIBI)
 	return r
 
 

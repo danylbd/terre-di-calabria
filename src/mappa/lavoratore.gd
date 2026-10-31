@@ -12,7 +12,8 @@ const PAUSA := 3.5
 ## suono di lavoro di ogni mestiere e secondi tra un colpo e l'altro
 const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardaboschi": ["vanga", 1.3],
 	"segheria": ["sega", 1.45], "fattoria": ["falce", 1.1], "vigneto": ["falce", 1.4], "ortolano": ["vanga", 1.3],
-	"agrumeto": ["falce", 1.6], "uliveto": ["falce", 1.5], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4]}
+	"agrumeto": ["falce", 1.6], "uliveto": ["falce", 1.5], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4],
+	"miniera_ferro": ["piccone", 0.9], "fabbro": ["martello", 0.7], "fonderia": ["macina", 2.0]}
 ## secondi di lavoro sul posto (o dentro l'edificio)
 const DURATA := {"boscaiolo": 4.0, "cava": 4.0, "guardaboschi": 3.0, "fattoria": 3.5, "pescatore": 6.0,
 	"uliveto": 4.0, "pesca_spada": 9.0}
@@ -34,6 +35,7 @@ var _semina := false                 # il contadino sta seminando (non mietendo)
 var _turno := 0                      # per chi produce più merci a turno (ovile: latte e lana)
 var _coltura := ""                   # per i contadini: grano, vite, orto, agrumi
 var _foglio_terra := ""              # foglio da usare a terra (la barca lo cambia sull'acqua)
+var _attrezzo_scelto := ""           # quello che il fabbro sta forgiando
 var _attesa := 0.0
 var _foglio_cammino := ""
 var _foglio_lavoro := ""
@@ -238,14 +240,36 @@ func _fine_lavoro() -> void:
 			percorri(punti)
 
 
-## Dentro l'edificio: se ci sono tutte le merci in ingresso, ne consuma una per tipo e lavora.
+## Dentro l'edificio: se ci sono tutte le merci in ingresso (e il cibo, per i minatori),
+## ne consuma una per tipo e lavora. La miniera scava il giacimento; il fabbro sceglie l'attrezzo.
 func _lavora_dentro() -> void:
-	var ingressi: Dictionary = CatalogoEdifici.dati(mestiere).get("ingressi", {})
-	if ingressi.is_empty() and not logistica.serve(_merce_prodotta()):
+	var info := CatalogoEdifici.dati(mestiere)
+	var ingressi: Dictionary = info.get("ingressi", {})
+	if mestiere == "fabbro":
+		_attrezzo_scelto = logistica.attrezzo_da_fare()
+		if _attrezzo_scelto == "":
+			return
+	elif ingressi.is_empty() and not info.has("cibo") and not logistica.serve(_merce_prodotta()):
+		return
+	elif not ingressi.is_empty() and not logistica.serve(_merce_prodotta(), Logistica.SCORTA_MASSIMA):
 		return
 	for tipo in ingressi:
 		if edificio.ingresso.get(tipo, 0) <= 0:
 			return
+	var cibo := ""
+	if info.has("cibo"):
+		for c in CatalogoEdifici.CIBI:
+			if edificio.ingresso.get(c, 0) > 0 and (cibo == "" or edificio.ingresso[c] > edificio.ingresso[cibo]):
+				cibo = c
+		if cibo == "":
+			_segnala("%s: i minatori hanno fame" % info["nome"])
+			return
+	if info.has("miniera") and not risorse.scava(Vector2i(edificio.centro()), info["miniera"]):
+		_segnala("%s: il giacimento è esaurito" % info["nome"])
+		return
+	_avvisato = false
+	if cibo != "":
+		edificio.ingresso[cibo] -= 1
 	for tipo in ingressi:
 		edificio.ingresso[tipo] -= 1
 	stato = Stato.LAVORO
@@ -277,6 +301,8 @@ func _torna(foglio: String) -> void:
 
 
 func _merce_prodotta() -> String:
+	if mestiere == "fabbro":
+		return _attrezzo_scelto
 	var p := CatalogoEdifici.prodotti(mestiere)
 	return "" if p.is_empty() else p[_turno % p.size()]
 

@@ -23,7 +23,8 @@ const REGOLAZIONI := {
 	"lana": [0.1, 0.2, 1.0], "pelle_scura": [0.0, 0.0, 1.0], "capra": [0.0, 0.1, 1.0], "carne": [0.0, 0.1, 1.15],
 	"formaggio": [0.1, 0.2, 1.1], "miele": [0.0, 0.0, 1.2], "latte": [0.0, 0.0, 1.0], "uva": [0.0, 0.0, 1.2],
 	"cipolla": [0.0, 0.1, 1.2], "arancia": [0.0, 0.0, 1.25], "bergamotto": [0.0, 0.0, 1.2], "oliva": [0.0, 0.0, 1.1],
-	"vino": [0.0, 0.0, 1.1], "spada": [0.0, 0.0, 1.0],
+	"vino": [0.0, 0.0, 1.1], "spada": [0.0, 0.0, 1.0], "minerale": [0.3, 0.3, 1.15], "carbone": [0.0, 0.0, 1.0],
+	"lingotto": [0.1, 0.1, 1.0], "brace": [0.0, 0.0, 1.3], "fumo": [0.0, 0.0, 1.0],
 }
 
 
@@ -54,6 +55,10 @@ static func catalogo() -> Dictionary:
 		"ortolano": {"crea": ortolano},
 		"agrumeto": {"crea": agrumeto},
 		"pesca_spada": {"crea": pesca_spada},
+		"miniera_ferro": {"crea": miniera_ferro},
+		"carbonaia": {"crea": carbonaia},
+		"fonderia": {"crea": fonderia},
+		"fabbro": {"crea": fabbro},
 		"cantiere_0": {"crea": cantiere.bind(0)},
 		"cantiere_1": {"crea": cantiere.bind(1)},
 		"cantiere_2": {"crea": cantiere.bind(2)},
@@ -80,6 +85,9 @@ static func catalogo() -> Dictionary:
 		"merce_cipolle": {"crea": merce.bind("cipolle")},
 		"merce_agrumi": {"crea": merce.bind("agrumi")},
 		"merce_pesce_spada": {"crea": merce.bind("pesce_spada")},
+		"merce_ferro": {"crea": merce.bind("ferro")},
+		"merce_carbone": {"crea": merce.bind("carbone")},
+		"merce_lingotti": {"crea": merce.bind("lingotti")},
 		"stoppie": {"crea": stoppie},
 		"cespuglio_1": {"crea": cespuglio.bind(1)},
 		"cespuglio_2": {"crea": cespuglio.bind(2)},
@@ -106,6 +114,8 @@ static func catalogo() -> Dictionary:
 		c["vite_%d" % (k + 1)] = {"crea": vite.bind(k)}
 		c["orto_%d" % (k + 1)] = {"crea": orto_campo.bind(k)}
 		c["agrumi_%d" % (k + 1)] = {"crea": agrumi.bind(k)}
+	for att in ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]:
+		c["merce_" + att] = {"crea": merce.bind(att)}
 	c["barca_remi"] = {"crea": barca_remi, "posa": posa_remata,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(112, 96), "ancora": Vector2(56, 64)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
@@ -115,7 +125,7 @@ static func catalogo() -> Dictionary:
 		c["lavoratore_%s_lavoro" % att] = {"crea": lavoratore.bind(att), "posa": posa_pesca if att == "canna" else posa_lavoro,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	# persone: fogli di animazione 8 direzioni × 8 passi
-	for carico in ["nessuno", "tronco", "asse", "anfora", "pietra", "covone", "sacco", "cesta", "pesce", "maiale", "carne", "lana", "formaggio", "olive", "uva", "ortaggi", "cipolle", "agrumi", "spada"]:
+	for carico in ["nessuno", "tronco", "asse", "anfora", "pietra", "covone", "sacco", "cesta", "pesce", "maiale", "carne", "lana", "formaggio", "olive", "uva", "ortaggi", "cipolle", "agrumi", "spada", "carbone", "lingotti", "attrezzi"]:
 		c["portatore_" + carico] = {"crea": portatore.bind("" if carico == "nessuno" else carico), "posa": posa_cammino,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)}
 	return c
@@ -327,6 +337,23 @@ static func materiale(nome: String) -> Material:
 		"vino":
 			m.albedo_color = Color("4a0c1a")
 			m.roughness = 0.2
+		"minerale":
+			m.albedo_texture = _rumore(45, 0.7, Color("4a2a20"), Color("9a5a3a"))
+		"carbone":
+			m.albedo_texture = _rumore(46, 0.8, Color("141210"), Color("3a3634"))
+			m.roughness = 0.6
+		"lingotto":
+			m.albedo_texture = _rumore(47, 0.4, Color("5a5e66"), Color("9aa0a8"))
+			m.metallic = 0.5
+			m.roughness = 0.4
+		"brace":
+			m.albedo_color = Color("ff6a1a")
+			m.emission_enabled = true
+			m.emission = Color("ff5a10")
+			m.emission_energy_multiplier = 1.5
+		"fumo":
+			m.albedo_color = Color(0.75, 0.73, 0.7, 0.55)
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		"spada":
 			m.albedo_texture = _rumore(44, 0.4, Color("3a4e66"), Color("a8bcc8"))
 			m.metallic = 0.3
@@ -575,6 +602,17 @@ static func portatore(carico: String) -> Node3D:
 			corpo.add_child(sfera(0.05, spalla + Vector3(0.07, 0.03, 0), "carne", Vector3(0.9, 1.4, 0.8)))
 		"lana":
 			corpo.add_child(sfera(0.08, spalla + Vector3(0.05, 0.05, -0.01), "lana", Vector3(1.0, 0.8, 1.2)))
+		"carbone":
+			corpo.add_child(cesta(Vector3(0, anca + 0.31, 0), "carbone", 1.15))
+		"lingotti":
+			for k in 3:
+				corpo.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(-0.01 * k, anca + 0.33 + k * 0.026, 0), "lingotto", Vector3(0, 10 * k, 0)))
+		"attrezzi":
+			for k in 3:
+				var a := attrezzo(["ascia", "piccone", "pala"][k])
+				a.position = spalla + Vector3(0.07, 0.01 + k * 0.012, -0.03 + k * 0.03)
+				a.rotation_degrees = Vector3(0, 90, 0)
+				corpo.add_child(a)
 		"spada":
 			var sp := pesce_spada_modello()
 			sp.position = spalla + Vector3(0.07, 0.0, -0.05)
@@ -726,6 +764,18 @@ static func merce(tipo: String) -> Node3D:
 			r.add_child(cilindro(0.02, 0.02, 0.004, Vector3(0, 0.235, 0), "miele" if tipo == "olio" else "vino", Vector3.ZERO, 8))
 		"pesce_spada":
 			r.add_child(pesce_spada_modello())
+		"ferro":
+			r.add_child(mucchio(Vector3.ZERO, "minerale", 5, 8, 0.04))
+		"carbone":
+			r.add_child(cesta(Vector3.ZERO, "carbone"))
+		"lingotti":
+			for k in 3:
+				r.add_child(scatola(Vector3(0.1, 0.028, 0.04), Vector3((k % 2) * 0.02, 0.014 + k * 0.028, 0), "lingotto", Vector3(0, 20 + k * 30, 0)))
+		"ascia", "piccone", "pala", "falce", "canna", "sega", "martello":
+			var a := attrezzo(tipo)
+			a.rotation_degrees.y = 30
+			a.scale = Vector3.ONE * 1.3
+			r.add_child(a)
 		"miele":
 			r.add_child(cilindro(0.04, 0.035, 0.08, Vector3(0, 0.04, 0), "terracotta", Vector3.ZERO, 10))
 			r.add_child(cilindro(0.032, 0.032, 0.005, Vector3(0, 0.082, 0), "miele", Vector3.ZERO, 10))
@@ -1461,9 +1511,9 @@ static func cesta(pos: Vector3, contenuto: String, scala := 1.0) -> Node3D:
 			var a := k * TAU / 4 + 0.4
 			n.add_child(sfera(0.035, Vector3(cos(a) * 0.035, 0.07, sin(a) * 0.035), "pane", Vector3(1, 0.6, 1)))
 		n.add_child(sfera(0.033, Vector3(0, 0.09, 0), "pane", Vector3(1, 0.6, 1)))
-	elif contenuto in ["olive", "uva", "ortaggi", "cipolle", "agrumi"]:
-		var mat: String = {"olive": "oliva", "uva": "uva", "ortaggi": "orto", "cipolle": "cipolla", "agrumi": "arancia"}[contenuto]
-		var g: float = {"olive": 0.016, "uva": 0.02, "ortaggi": 0.03, "cipolle": 0.025, "agrumi": 0.026}[contenuto]
+	elif contenuto in ["olive", "uva", "ortaggi", "cipolle", "agrumi", "carbone"]:
+		var mat: String = {"olive": "oliva", "uva": "uva", "ortaggi": "orto", "cipolle": "cipolla", "agrumi": "arancia", "carbone": "carbone"}[contenuto]
+		var g: float = {"olive": 0.016, "uva": 0.02, "ortaggi": 0.03, "cipolle": 0.025, "agrumi": 0.026, "carbone": 0.025}[contenuto]
 		for k in 9:
 			var a := k * 2.4
 			var rr := 0.02 + (k % 3) * 0.018
@@ -2220,3 +2270,164 @@ static func posa_remata(modello: Node3D, fotogramma: int, totale: int) -> void:
 		var remo: Node3D = b.get_node(nome)
 		remo.rotation.y = (0.5 * sin(t)) * (1 if nome == "remo_d" else -1)
 		remo.rotation.z = 0.15 * cos(t) * (1 if nome == "remo_d" else -1)
+
+
+# =================================================================== METALLO (step 07)
+
+## Attrezzo da solo (per le merci a terra e il fascio del portatore).
+static func attrezzo(tipo: String) -> Node3D:
+	var n := Node3D.new()
+	n.add_child(cilindro(0.008, 0.008, 0.22, Vector3(0, 0.01, 0), "legno", Vector3(0, 0, 90), 6))
+	match tipo:
+		"ascia":
+			n.add_child(scatola(Vector3(0.05, 0.012, 0.06), Vector3(0.11, 0.012, 0.02), "ferro"))
+		"piccone":
+			n.add_child(scatola(Vector3(0.02, 0.014, 0.16), Vector3(0.11, 0.012, 0), "ferro"))
+		"pala":
+			n.add_child(scatola(Vector3(0.07, 0.008, 0.06), Vector3(0.14, 0.008, 0), "ferro"))
+		"falce":
+			for k in 4:
+				n.add_child(scatola(Vector3(0.03, 0.008, 0.012), Vector3(0.11 + 0.012 * k, 0.01, 0.015 + 0.02 * k - 0.003 * k * k), "ferro", Vector3(0, -k * 25, 0)))
+		"canna":
+			n.add_child(cilindro(0.004, 0.002, 0.2, Vector3(0.2, 0.01, 0), "legno_chiaro", Vector3(0, 0, 90), 4))
+		"sega":
+			n.add_child(scatola(Vector3(0.18, 0.004, 0.04), Vector3(0.06, 0.012, 0.025), "ferro"))
+		"martello":
+			n.add_child(scatola(Vector3(0.03, 0.03, 0.06), Vector3(0.11, 0.015, 0), "ferro"))
+	return n
+
+
+static func mucchio(pos: Vector3, mat: String, pezzi: int, seme: int, dim := 0.035) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	var rng := _rng(seme)
+	for k in pezzi:
+		var a := k * 2.4
+		var rr := 0.012 * k
+		n.add_child(sfera(dim * rng.randf_range(0.7, 1.2), Vector3(cos(a) * rr, dim * 0.6 + (pezzi - k) * 0.004, sin(a) * rr), mat,
+			Vector3(1, rng.randf_range(0.6, 0.9), 1)))
+	return n
+
+
+static func miniera_ferro() -> Node3D:
+	var r := Node3D.new()
+	# fianco della montagna con l'imbocco puntellato
+	r.add_child(sfera(0.6, Vector3(-0.25, 0.0, -0.3), "roccia_massi", Vector3(1.2, 0.75, 1.0)))
+	r.add_child(sfera(0.35, Vector3(0.35, 0.0, -0.45), "roccia_massi", Vector3(1.1, 0.8, 1.0)))
+	r.add_child(sfera(0.3, Vector3(-0.65, 0.0, 0.15), "roccia_massi", Vector3(1.0, 0.7, 1.0)))
+	var imb := Vector3(-0.05, 0, 0.18)
+	r.add_child(scatola(Vector3(0.22, 0.26, 0.1), imb + Vector3(0, 0.13, 0), "buio"))
+	for lato in [-1, 1]:
+		r.add_child(scatola(Vector3(0.04, 0.3, 0.04), imb + Vector3(lato * 0.13, 0.15, 0.05), "legno_vecchio"))
+	r.add_child(scatola(Vector3(0.34, 0.045, 0.05), imb + Vector3(0, 0.31, 0.05), "legno_vecchio"))
+	r.add_child(scatola(Vector3(0.12, 0.03, 0.01), imb + Vector3(0, 0.36, 0.08), "legno_chiaro"))
+	# binari e carrello di minerale
+	for lato in [-1, 1]:
+		r.add_child(scatola(Vector3(0.012, 0.01, 0.55), imb + Vector3(lato * 0.05, 0.005, 0.3), "ferro"))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.14, 0.008, 0.02), imb + Vector3(0, 0.004, 0.08 + k * 0.09), "legno_scuro"))
+	var carr := Vector3(-0.05, 0, 0.5)
+	r.add_child(scatola(Vector3(0.14, 0.08, 0.18), carr + Vector3(0, 0.07, 0), "legno"))
+	r.add_child(mucchio(carr + Vector3(0, 0.1, 0), "minerale", 6, 3, 0.03))
+	for x in [-0.075, 0.075]:
+		for z in [-0.06, 0.06]:
+			r.add_child(cilindro(0.022, 0.022, 0.012, carr + Vector3(x, 0.025, z), "ferro", Vector3(0, 0, 90), 8))
+	# mucchio di minerale, lanterna, puntelli di scorta
+	r.add_child(mucchio(Vector3(0.45, 0, 0.35), "minerale", 14, 4))
+	r.add_child(cilindro(0.01, 0.01, 0.3, Vector3(0.22, 0.15, 0.3), "legno_vecchio", Vector3.ZERO, 5))
+	r.add_child(sfera(0.025, Vector3(0.22, 0.31, 0.3), "miele"))
+	for k in 4:
+		r.add_child(cilindro(0.018, 0.018, 0.4, Vector3(-0.55 + k * 0.045, 0.02 + (k % 2) * 0.03, 0.55), "legno_vecchio", Vector3(0, 70, 90), 6))
+	return r
+
+
+static func carbonaia() -> Node3D:
+	var r := Node3D.new()
+	# capanno del carbonaio
+	var c := Node3D.new()
+	c.position = Vector3(-0.38, 0, -0.35)
+	r.add_child(c)
+	c.add_child(scatola(Vector3(0.44, 0.05, 0.36), Vector3(0, 0.025, 0), "pietra"))
+	c.add_child(scatola(Vector3(0.4, 0.24, 0.32), Vector3(0, 0.17, 0), "legno_vecchio"))
+	porta_z(c, 0.05, 0.16, 0.1, 0.17)
+	sottotetto(c, 0.4, 0.32, 0.29, 32.0, "legno")
+	tetto_scandole(c, 0.46, 0.32, 0.29, 32.0)
+	# la carbonaia: cupola di legna coperta di terra, che fuma
+	var m := Vector3(0.22, 0, 0.2)
+	r.add_child(sfera(0.36, m, "terra", Vector3(1, 0.7, 1)))
+	r.add_child(sfera(0.3, m + Vector3(0, 0.03, 0), "fuliggine", Vector3(1, 0.7, 1)))
+	r.add_child(sfera(0.37, m + Vector3(0, -0.01, 0), "terra", Vector3(1, 0.68, 1)))
+	for k in 5:
+		r.add_child(sfera(0.05 + k * 0.012, m + Vector3(0.02 * k, 0.28 + k * 0.07, -0.01 * k), "fumo", Vector3(1, 0.8, 1)))
+	r.add_child(scatola(Vector3(0.06, 0.04, 0.04), m + Vector3(0.0, 0.12, 0.33), "buio"))
+	# legna da cuocere e carbone pronto
+	legnaia(r, Vector3(-0.55, 0, 0.35), 0.35, 4)
+	r.add_child(mucchio(Vector3(0.62, 0, -0.25), "carbone", 12, 5))
+	r.add_child(sacco(Vector3(0.6, 0, 0.55), 0.4))
+	return r
+
+
+static func fonderia() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.25, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.66
+	var lz := 0.52
+	var h := 0.36
+	casa_muri(c, lx, lz, h, 211, "pietra_vista")
+	porta_z(c, -0.12, lz * 0.5, 0.14, 0.24)
+	sottotetto(c, lx, lz, 0.07 + h, 20.0)
+	tetto(c, lx + 0.06, lz, 0.07 + h, 20.0, 211)
+	# forno a torre in pietra con la bocca accesa e mantici
+	var f := Vector3(0.42, 0, 0.38)
+	r.add_child(cilindro(0.17, 0.2, 0.5, f + Vector3(0, 0.25, 0), "pietra", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.13, 0.15, 0.08, f + Vector3(0, 0.54, 0), "fuliggine", Vector3.ZERO, 16))
+	r.add_child(scatola(Vector3(0.1, 0.1, 0.05), f + Vector3(-0.05, 0.12, 0.17), "brace", Vector3(0, 25, 0)))
+	for k in 4:
+		r.add_child(sfera(0.05 + k * 0.012, f + Vector3(0.0, 0.66 + k * 0.08, -0.01 * k), "fumo"))
+	r.add_child(sfera(0.07, f + Vector3(-0.28, 0.1, 0.05), "pelle_scura", Vector3(1.4, 0.5, 1.0)))
+	# lingotti, carbone e minerale in attesa
+	for k in 6:
+		r.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(-0.45 + (k % 3) * 0.1, 0.013 + (k / 3) * 0.026, 0.55), "lingotto"))
+	r.add_child(mucchio(Vector3(-0.62, 0, 0.25), "carbone", 9, 6))
+	r.add_child(mucchio(Vector3(0.68, 0, -0.1), "minerale", 9, 7))
+	return r
+
+
+static func fabbro() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.28)
+	r.add_child(c)
+	var lx := 0.72
+	var lz := 0.5
+	var h := 0.38
+	casa_muri(c, lx, lz, h, 221)
+	porta_z(c, 0.16, lz * 0.5, 0.13, 0.24)
+	finestra_z(c, -0.18, 0.34, lz * 0.5, 0.1, 0.1)
+	sottotetto(c, lx, lz, 0.07 + h, 22.0)
+	tetto(c, lx + 0.06, lz, 0.07 + h, 22.0, 221)
+	comignolo(c, Vector3(-0.22, 0.07 + h + 0.05, -0.05), 0.2)
+	# fucina all'aperto sotto una tettoia: focolare, incudine, attrezzi appesi
+	for p in [Vector3(-0.5, 0, 0.6), Vector3(0.1, 0, 0.6)]:
+		r.add_child(cilindro(0.014, 0.014, 0.34, p + Vector3(0, 0.17, 0), "legno_vecchio", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.68, 0.025, 0.36), Vector3(-0.2, 0.35, 0.46), "tegola_scura", Vector3(-14, 0, 0)))
+	r.add_child(scatola(Vector3(0.2, 0.12, 0.16), Vector3(-0.38, 0.06, 0.42), "pietra"))
+	r.add_child(scatola(Vector3(0.14, 0.01, 0.1), Vector3(-0.38, 0.125, 0.42), "brace"))
+	r.add_child(cilindro(0.04, 0.05, 0.08, Vector3(-0.05, 0.04, 0.45), "corteccia", Vector3.ZERO, 10))
+	r.add_child(scatola(Vector3(0.12, 0.04, 0.05), Vector3(-0.05, 0.1, 0.45), "ferro"))
+	r.add_child(scatola(Vector3(0.04, 0.025, 0.035), Vector3(0.03, 0.1, 0.45), "ferro"))
+	for k in 4:
+		var a := attrezzo(ATTREZZI_FABBRO[k])
+		a.position = Vector3(-0.42 + k * 0.1, 0.25, 0.235)
+		a.rotation_degrees = Vector3(90, 0, 90)
+		r.add_child(a)
+	r.add_child(barile(Vector3(0.62, 0, 0.1), 1.0))
+	r.add_child(cilindro(0.04, 0.04, 0.005, Vector3(0.62, 0.1, 0.1), "acqua_pozzo", Vector3.ZERO, 10))
+	for k in 3:
+		r.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(0.45, 0.013 + k * 0.026, 0.45), "lingotto"))
+	return r
+
+
+const ATTREZZI_FABBRO := ["ascia", "piccone", "falce", "martello"]

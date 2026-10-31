@@ -16,7 +16,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | M1 | Musica e suoni | Primi 3 brani (orchestra + strumenti calabresi), suoni di lavoro e natura | fatto (musica segnaposto sintetizzata, da sostituire: vedi domande) |
 | G2 | Grafica livello 2 | Edifici grandi e vissuti (2×2, magazzino 3×3), castagni, querce, pini laricio, ulivi, fiori e funghi, terreno saturo | fatto |
 | 06 | Cibo: campi, allevamenti, pesca | Coltivazioni (grano, vite, ortaggi, cipolla rossa, agrumi), allevamenti (maiali, pecore, capre, api), pesca dalla costa e pesce spada con la barca; mulino, forno, macelleria, caseificio | fatto |
-| 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | |
+| 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | fatto |
 | 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | |
 | 09 | Salvataggio | Salvare e caricare | |
 | 10 | Stagioni | Inverno con neve, raccolti stagionali | |

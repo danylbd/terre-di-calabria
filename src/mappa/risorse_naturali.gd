@@ -1,7 +1,8 @@
 class_name RisorseNaturali
 extends Node
 ## Alberi, rocce e ulivi della mappa: si consumano (abbattuti, estratti) e ricrescono (piantati).
-## Anche i campi (grano, vite, orto, agrumi) dei contadini, le olive sugli ulivi e il pesce in mare.
+## Anche i campi (grano, vite, orto, agrumi) dei contadini, le olive sugli ulivi, il pesce in mare
+## e i giacimenti di ferro nascosti nella roccia dei monti.
 
 const SPECIE_ABBATTIBILI := ["pino", "castagno", "quercia"]
 const RISERVA_ROCCIA := 6
@@ -29,6 +30,7 @@ var pesci := {}       # Vector2i (casella d'acqua) -> pesci rimasti (assente = p
 var _ripopola := {}   # Vector2i -> secondi al prossimo pesce
 var spada := {}       # Vector2i (al largo) -> pesci spada rimasti (assente = pieno)
 var _ripopola_spada := {}
+var minerali := {}    # tipo -> {Vector2i (casella di roccia) -> quantità rimasta}
 var _olive_attesa := {}   # Vector2i -> secondi prima che l'ulivo abbia di nuovo olive
 var _olive_prenotate := {}
 var _ceppi: Array = []  # [sprite, secondi rimasti]
@@ -39,6 +41,49 @@ func prepara(d: DatiMappa, nodo_oggetti: Node2D) -> void:
 	dati = d
 	oggetti = nodo_oggetti
 	_rng.seed = 77
+	_metti_giacimenti()
+
+
+## Il ferro sta a chiazze nella roccia della montagna (ogni casella ne ha da 0 a 6).
+func _metti_giacimenti() -> void:
+	var rumore := FastNoiseLite.new()
+	rumore.seed = 4242
+	rumore.frequency = 0.12
+	var ferro := {}
+	for y in dati.altezza:
+		for x in dati.larghezza:
+			if dati.tipo(x, y) == DatiMappa.Terreno.ROCCIA:
+				var n := int(round((rumore.get_noise_2d(x, y) + 0.15) * 10.0))
+				if n > 0:
+					ferro[Vector2i(x, y)] = mini(n, 6)
+	minerali["ferro"] = ferro
+
+
+## Quanto minerale c'è intorno a una casella (raggio 3).
+func minerale_vicino(c: Vector2i, tipo: String) -> int:
+	var n := 0
+	var gia: Dictionary = minerali.get(tipo, {})
+	for y in range(c.y - 3, c.y + 4):
+		for x in range(c.x - 3, c.x + 4):
+			n += gia.get(Vector2i(x, y), 0)
+	return n
+
+
+## Toglie un'unità di minerale dalla casella più ricca intorno a c. False se il giacimento è esaurito.
+func scava(c: Vector2i, tipo: String) -> bool:
+	var gia: Dictionary = minerali.get(tipo, {})
+	var migliore := Vector2i(-1, -1)
+	for y in range(c.y - 3, c.y + 4):
+		for x in range(c.x - 3, c.x + 4):
+			var k := Vector2i(x, y)
+			if gia.get(k, 0) > 0 and (migliore.x < 0 or gia[k] > gia[migliore]):
+				migliore = k
+	if migliore.x < 0:
+		return false
+	gia[migliore] -= 1
+	if gia[migliore] <= 0:
+		gia.erase(migliore)
+	return true
 
 
 ## Registra uno sprite di natura messo dal generatore.
@@ -310,6 +355,18 @@ func mieti(c: Vector2i) -> bool:
 	campi.erase(c)
 	dati.occupa(c.x, c.y, 0)
 	return true
+
+
+## Sulla casella ci sono solo massi (niente alberi): una miniera può prenderne il posto.
+func solo_massi(c: Vector2i) -> bool:
+	return rocce.has(c) and not alberi.has(c) and not ulivi.has(c) and not campi.has(c)
+
+
+func togli_massi(c: Vector2i) -> void:
+	if rocce.has(c):
+		(rocce[c]["sprite"] as Node).queue_free()
+		rocce.erase(c)
+		dati.occupa(c.x, c.y, 0)
 
 
 func pesca(w: Vector2i) -> bool:
