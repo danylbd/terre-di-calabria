@@ -45,7 +45,10 @@ func _fai_uscire(delta: float) -> void:
 		var e: Edificio = richiesta[0]
 		var tipo: String = richiesta[1]
 		villaggio.scorte[tipo] -= 1
-		e.richiesti[tipo] = e.richiesti.get(tipo, 0) + 1
+		if e.finito:
+			e.in_arrivo[tipo] = e.in_arrivo.get(tipo, 0) + 1
+		else:
+			e.richiesti[tipo] = e.richiesti.get(tipo, 0) + 1
 		_nuova_merce(tipo, e, mag.bandiera)
 		_attesa_uscita[mag.id] = INTERVALLO_USCITA
 		scorte_cambiate.emit()
@@ -61,7 +64,53 @@ func _prossima_richiesta(mag: Edificio) -> Array:
 			if mancano > 0 and villaggio.scorte.get(tipo, 0) > 0:
 				if rete.prossimo_salto(mag.bandiera, e.bandiera) != Vector2i(-1, -1) or mag.bandiera == e.bandiera:
 					return [e, tipo]
+	for e in villaggio.edifici.values():
+		if not e.finito or not e.collegato:
+			continue
+		for tipo in CatalogoEdifici.dati(e.tipo).get("ingressi", {}):
+			if _spazio_ingresso(e, tipo) > 0 and villaggio.scorte.get(tipo, 0) > 0:
+				if rete.prossimo_salto(mag.bandiera, e.bandiera) != Vector2i(-1, -1):
+					return [e, tipo]
 	return []
+
+
+func _spazio_ingresso(e: Edificio, tipo: String) -> int:
+	var cap: int = CatalogoEdifici.dati(e.tipo).get("ingressi", {}).get(tipo, 0)
+	return cap - e.ingresso.get(tipo, 0) - e.in_arrivo.get(tipo, 0)
+
+
+# ------------------------------------------------------------ produzione
+
+## Un lavoratore ha prodotto una merce: la posa alla bandierina del suo edificio e le trova
+## una destinazione (prima chi la usa per lavorare, altrimenti il magazzino).
+func produci(tipo: String, da: Edificio) -> void:
+	if tipo == "":
+		return
+	var dest := _destinazione_per(tipo, da.bandiera)
+	if dest == null:
+		return
+	if dest.tipo != "magazzino":
+		dest.in_arrivo[tipo] = dest.in_arrivo.get(tipo, 0) + 1
+	_nuova_merce(tipo, dest, da.bandiera)
+
+
+func _destinazione_per(tipo: String, da: Vector2i) -> Edificio:
+	var migliore: Edificio = null
+	for e in villaggio.edifici.values():
+		if e.finito and e.collegato and _spazio_ingresso(e, tipo) > 0 and (rete.prossimo_salto(da, e.bandiera).x >= 0):
+			if migliore == null or Vector2(e.bandiera - da).length() < Vector2(migliore.bandiera - da).length():
+				migliore = e
+	if migliore:
+		return migliore
+	for e in _magazzini():
+		if rete.prossimo_salto(da, e.bandiera).x >= 0 or e.bandiera == da:
+			if migliore == null or Vector2(e.bandiera - da).length() < Vector2(migliore.bandiera - da).length():
+				migliore = e
+	return migliore if migliore else (_magazzini()[0] if _magazzini().size() > 0 else null)
+
+
+func merci_in_uscita(e: Edificio) -> int:
+	return _merci_in(e.bandiera)
 
 
 # ------------------------------------------------------------ viaggio
@@ -105,6 +154,9 @@ func _consegna(m: Merce) -> void:
 	if e.tipo == "magazzino" and e.finito:
 		villaggio.scorte[m.tipo] = villaggio.scorte.get(m.tipo, 0) + 1
 		scorte_cambiate.emit()
+	elif e.finito:
+		e.in_arrivo[m.tipo] = maxi(0, e.in_arrivo.get(m.tipo, 0) - 1)
+		e.ingresso[m.tipo] = e.ingresso.get(m.tipo, 0) + 1
 	else:
 		e.consegnati[m.tipo] = e.consegnati.get(m.tipo, 0) + 1
 	_disponi(m.bandiera)

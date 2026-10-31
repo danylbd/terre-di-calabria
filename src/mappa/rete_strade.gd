@@ -417,3 +417,24 @@ func _calcola_verso(a: Vector2i) -> Dictionary:
 				if not aperti.has(altra):
 					aperti.append(altra)
 	return prossimo
+
+
+
+## Punti (coordinate di mappa) per camminare sulle strade da una bandierina a un'altra.
+func percorso_tra_bandiere(da: Vector2i, a: Vector2i) -> Array[Vector2]:
+	var punti: Array[Vector2] = [Vector2(da) + Vector2(0.5, 0.5)]
+	var f := da
+	var giri := 0
+	while f != a and giri < 200:
+		giri += 1
+		var prossima := prossimo_salto(f, a)
+		if prossima.x < 0:
+			return [] as Array[Vector2]
+		var t := tratto_tra(f, prossima)
+		var p: Array[Vector2i] = t.percorso.duplicate()
+		if p[0] != f:
+			p.reverse()
+		for k in range(1, p.size()):
+			punti.append(Vector2(p[k]) + Vector2(0.5, 0.5))
+		f = prossima
+	return punti

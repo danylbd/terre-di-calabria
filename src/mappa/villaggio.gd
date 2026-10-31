@@ -14,8 +14,9 @@ const PENDENZA_MAX := {1: 14.0, 2: 12.0, 3: 10.0}
 
 var dati: DatiMappa
 var rete: ReteStrade
+var risorse: RisorseNaturali
+var logistica: Logistica
 var oggetti: Node2D                  # nodo con ordinamento in profondità dove vanno gli edifici
-var natura := {}                     # Vector2i -> Array[Node2D] (alberi e rocce su quella casella)
 var edifici := {}                    # id -> Edificio
 var scorte := {"tronchi": 20, "assi": 24, "pietra": 18}
 var _prossimo_id := 2
@@ -81,6 +82,8 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
 			messaggio.emit(perche, true)
 			return null
 	var e := Edificio.new()
+	e.dati_mappa = dati
+	e.villaggio = self
 	e.prepara(_prossimo_id, tipo, c, gia_finito)
 	_prossimo_id += 1
 	e.position = dati.a_schermo(e.centro().x, e.centro().y)
@@ -121,6 +124,10 @@ func demolisci(e: Edificio) -> void:
 	for r in recupero:
 		scorte[r] = scorte.get(r, 0) + recupero[r]
 	edifici.erase(e.id)
+	if e.lavoratore and is_instance_valid(e.lavoratore):
+		e.lavoratore.queue_free()
+	for r in e.ingresso:
+		scorte[r] = scorte.get(r, 0) + e.ingresso[r]
 	rete.libera_protezione(e.bandiera)
 	rete.segna_ostacoli_vecchi()
 	e.queue_free()
@@ -137,6 +144,7 @@ func edificio_in(c: Vector2i) -> Edificio:
 
 func _on_completato(e: Edificio) -> void:
 	messaggio.emit("%s completato" % CatalogoEdifici.dati(e.tipo)["nome"], false)
+	_chiama_lavoratore(e)
 	if CatalogoEdifici.dati(e.tipo).has("territorio") or e.tipo == "magazzino":
 		_ricalcola_territorio()
 	if e.tipo == "magazzino":
@@ -162,6 +170,29 @@ func _ricalcola_territorio() -> void:
 func _aggiorna_collegamenti() -> void:
 	for e in edifici.values():
 		e.collegato = e.tipo == "magazzino" or rete.collegata(e.bandiera)
+		_chiama_lavoratore(e)
+
+
+## Un edificio di produzione finito e collegato riceve il suo lavoratore, che arriva dal magazzino.
+func _chiama_lavoratore(e: Edificio) -> void:
+	if not e.finito or not e.collegato or e.lavoratore != null:
+		return
+	if not CatalogoEdifici.dati(e.tipo).has("lavoratore"):
+		return
+	var mag: Edificio = null
+	for m in edifici.values():
+		if m.tipo == "magazzino" and m.finito:
+			mag = m
+			break
+	if mag == null:
+		return
+	var punti := rete.percorso_tra_bandiere(mag.bandiera, e.bandiera)
+	if punti.is_empty():
+		return
+	var l := Lavoratore.new()
+	oggetti.add_child(l)
+	l.avvia(e, risorse, logistica, rete, punti)
+	e.lavoratore = l
 
 
 func _conta(tipo: String) -> int:

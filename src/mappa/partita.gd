@@ -12,6 +12,7 @@ var oggetti: Node2D
 var camera: CameraMappa
 var villaggio: Villaggio
 var logistica: Logistica
+var risorse: RisorseNaturali
 
 var menu: MenuCostruzione
 var barra: BarraRisorse
@@ -56,6 +57,11 @@ func _ready() -> void:
 	logistica = Logistica.new()
 	add_child(logistica)
 	logistica.prepara(dati, villaggio, rete, oggetti)
+	risorse = RisorseNaturali.new()
+	add_child(risorse)
+	risorse.prepara(dati, oggetti)
+	villaggio.risorse = risorse
+	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
 	villaggio.togli_decori.connect(_togli_decori)
@@ -365,12 +371,7 @@ func _metti(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> void:
 	var s := Sprites.crea(nome)
 	s.position = dati.a_schermo(px, py)
 	oggetti.add_child(s)
-	if true:
-		dati.occupa(x, y, DatiMappa.NATURA)
-		var c := Vector2i(x, y)
-		if not villaggio.natura.has(c):
-			villaggio.natura[c] = []
-		villaggio.natura[c].append(s)
+	risorse.registra(nome, Vector2i(x, y), s)
 
 
 # --------------------------------------------------------------- interfaccia

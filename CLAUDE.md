@@ -48,6 +48,19 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 ## Stato
 
 Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2 (in `main`, release v0.5.0).
-Prossimo: 05 prima catena di produzione (boscaiolo abbatte, guardaboschi ripianta, segheria, cava).
-Poi M1 musica e suoni, 06 cibo (coltivazioni, allevamenti, pesca: vedi `docs/design.md` §5b).
+
+**In corso: step 05 – prima catena** (ramo `step-05-catena`). Già scritto, da **verificare e rifinire**:
+- `src/mappa/risorse_naturali.gd`: alberi (abbattibili: pino, castagno, quercia), rocce (riserva 6), ulivi; ceppi; alberelli che crescono in 3 fasi.
+- `src/mappa/lavoratore.gd`: lavoratore che arriva dal magazzino lungo le strade e lavora (boscaiolo, cava, guardaboschi, segheria).
+- `catalogo_edifici.gd`: campi `lavoratore`, `produce`, `ingressi`.
+- `logistica.gd`: `produci()`, destinazione delle merci prodotte (chi le usa, altrimenti magazzino), richieste di materie prime dal magazzino per gli edifici di produzione.
+- `villaggio.gd`: `_chiama_lavoratore()`; `rete_strade.gd`: `percorso_tra_bandiere()`.
+- Nuovi sprite: `lavoratore_{ascia,piccone,pala}` (+ `_lavoro`), `ceppo`, `alberello_1..3`.
+Da fare per chiudere lo step: test automatico di una catena completa (boscaiolo → segheria → magazzino, cava → magazzino, guardaboschi pianta), screenshot, aggiornare roadmap, versione 0.6.0, merge in `main`.
+
+Poi: M1 musica e suoni, 06 cibo (coltivazioni, allevamenti, pesca: vedi `docs/design.md` §5b).
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
+
+### Note pratiche
+- Test automatici: script `extends SceneTree` lanciati con `--script` che caricano `res://src/mappa/partita.tscn`, accelerano con `Engine.time_scale` e stampano lo stato (vedi esempi nella cronologia dei commit degli step 03–04).
+- Se lo studio di rendering resta "appeso" senza output, quasi sempre c'è un errore di sintassi in `modelli.gd`: controlla con `godot --headless --path . --check-only --script tools/studio/modelli.gd`.
