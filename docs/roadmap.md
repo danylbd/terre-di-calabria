@@ -11,8 +11,8 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 01 | La mappa | Terreno dipinto continuo (prato, bosco, sabbia, mare, monti), alberi, camera con mouse e tastiera, zoom | fatto |
 | 02 | Costruire | Menu edifici, piazzamento sulla griglia, confini del territorio | fatto |
 | 03 | Strade e bandierine | Disegnare strade, rete di bandierine, un portatore per tratto | fatto |
-| 04 | Trasporto | Le merci viaggiano davvero di bandierina in bandierina | |
-| 05 | Prima catena | Boscaiolo → segheria → assi; magazzino; cantieri che crescono | |
+| 04 | Trasporto | Le merci viaggiano di bandierina in bandierina; i cantieri crescono con i materiali consegnati | fatto |
+| 05 | Prima catena | Boscaiolo abbatte gli alberi, guardaboschi ripianta, segheria fa assi, cava estrae pietra: tutto portato dai portatori | |
 | M1 | Musica e suoni | Primi 3 brani (orchestra + strumenti calabresi), suoni di lavoro e natura | |
 | G2 | Grafica livello 2 | Rifinitura verso la qualità di Settlers 3: texture sporcate, varietà, transizioni del terreno | |
 | 06 | Cibo | Grano, mulino, forno, pesca, allevamento, pozzo | |

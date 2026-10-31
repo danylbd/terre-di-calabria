@@ -164,7 +164,7 @@ func _crea_pannello_crediti() -> PanelContainer:
 
 func _crea_versione() -> void:
 	var etichetta := Label.new()
-	etichetta.text = "v%s · step 03" % ProjectSettings.get_setting("application/config/version", "0.0.0")
+	etichetta.text = "v%s · step 04" % ProjectSettings.get_setting("application/config/version", "0.0.0")
 	etichetta.add_theme_font_size_override("font_size", 20)
 	etichetta.add_theme_color_override("font_color", Color(Palette.PERGAMENA_CHIARA, 0.8))
 	etichetta.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 20)
