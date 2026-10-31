@@ -47,4 +47,6 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Rami: `step-04-trasporto` (merci che viaggiano, in chiusura), `step-g2-grafica` (bozza: materiale "vissuto" `tools/studio/vissuto.gdshader` e luce più contrastata, da completare dopo lo step 04).
+Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04 (in `main`, release v0.4.0).
+In corso: `step-g2-grafica` (rifacimento grafico verso la qualità di Settlers 3; bozza: materiale "vissuto"
+`tools/studio/vissuto.gdshader` e luce più contrastata). Poi: 05 prima catena di produzione.
