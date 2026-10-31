@@ -90,6 +90,32 @@ MONETE    Minatore argento ──▶ Zecca ──monete──▶ paga soldati, c
 
 **Regola base:** i minatori lavorano solo se ricevono cibo (pane, pesce o carne). Gli artigiani nascono da un portatore libero più l'attrezzo giusto: se mancano attrezzi, non si possono aprire nuovi edifici di quel tipo.
 
+## 5b. Coltivazioni, allevamenti e pesca
+
+Come nei classici del genere, il cibo nasce da tante filiere diverse, tutte visibili sulla mappa: campi che crescono stagione dopo stagione, animali nei recinti, pescatori sulla riva.
+
+**Coltivazioni** (il contadino semina, i campi crescono a vista, poi si raccoglie):
+- Grano → mulino → farina → forno → pane
+- Vite → vendemmia → cantina → vino (merce di lusso)
+- Orto e cipolla rossa → cibo per i minatori
+- Agrumi e bergamotto (costa di Reggio) → frutta, profumi
+- Gelsi → foglie per i bachi da seta
+- Ulivi → olive → frantoio → olio
+
+**Allevamenti** (recinti con animali che pascolano e si muovono):
+- Maiali → macelleria → carne e salumi (con il sale)
+- Pecore → lana (tessitura) e latte → caseificio → formaggio
+- Capre → latte e formaggio, sui terreni di montagna
+- Api → arnie → miele (dai fiori dei prati)
+- Bachi da seta → filanda → seta (Saraceni)
+- Cavalli → scuderia (Normanni, cavalleria)
+
+**Pesca**:
+- Pescatore dalla riva: pesce nei tratti di mare vicini
+- Barca da pesca: pesce spada nello Stretto (Scilla, Bagnara)
+- Tonnara sulla costa tirrenica (più avanti)
+- Le zone di pesca si esauriscono e si ripopolano col tempo
+
 ## 6. Come si gioca
 
 ### Il territorio

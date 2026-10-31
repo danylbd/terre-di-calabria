@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://csvpubklcrfeg"
-path="res://.godot/imported/pino_4.png-1785b0bea89b8eaece50e38402ab71b8.ctex"
+uid="uid://da7aejb2in7yu"
+path="res://.godot/imported/step04-trasporto.jpg-cfee2655700907bcd61cb20d9d6ed669.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/grafica/pino_4.png"
-dest_files=["res://.godot/imported/pino_4.png-1785b0bea89b8eaece50e38402ab71b8.ctex"]
+source_file="res://docs/immagini/step04-trasporto.jpg"
+dest_files=["res://.godot/imported/step04-trasporto.jpg-cfee2655700907bcd61cb20d9d6ed669.ctex"]
 
 [params]
 

@@ -15,7 +15,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 05 | Prima catena | Boscaiolo abbatte gli alberi, guardaboschi ripianta, segheria fa assi, cava estrae pietra: tutto portato dai portatori | |
 | M1 | Musica e suoni | Primi 3 brani (orchestra + strumenti calabresi), suoni di lavoro e natura | |
 | G2 | Grafica livello 2 | Rifinitura verso la qualità di Settlers 3: texture sporcate, varietà, transizioni del terreno | |
-| 06 | Cibo | Grano, mulino, forno, pesca, allevamento, pozzo | |
+| 06 | Cibo: campi, allevamenti, pesca | Coltivazioni (grano, vite, ortaggi, cipolla rossa, agrumi), allevamenti (maiali, pecore, capre, api), pesca dalla costa e pesce spada con la barca; mulino, forno, macelleria, caseificio | |
 | 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | |
 | 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | |
 | 09 | Salvataggio | Salvare e caricare | |

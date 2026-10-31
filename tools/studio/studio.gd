@@ -38,8 +38,10 @@ func _esegui() -> void:
 
 
 func _fotografa(nome: String, voce: Dictionary) -> void:
-	var dim: Vector2i = voce.get("dimensione", Vector2i(256, 256))
-	var ancora: Vector2 = voce.get("ancora", Vector2(dim.x * 0.5, dim.y - 48))
+	# gli sprite fermi si fotografano su una tela grande e poi si ritagliano sulla parte visibile
+	var ritaglia := not voce.has("dimensione")
+	var dim: Vector2i = voce.get("dimensione", Vector2i(704, 704))
+	var ancora: Vector2 = voce.get("ancora", Vector2(352, 500))
 
 	var vp := SubViewport.new()
 	vp.size = dim * SUPERCAMPIONE
@@ -78,6 +80,11 @@ func _fotografa(nome: String, voce: Dictionary) -> void:
 		print("  ✓ %s (%d direzioni × %d fotogrammi)" % [nome, direzioni, fotogrammi])
 	else:
 		var finale := await _foto(vp, mondo, modello, senza_ombra, dim)
+		if ritaglia:
+			var usato := finale.get_used_rect().grow(2).intersection(Rect2i(Vector2i.ZERO, dim))
+			finale = finale.get_region(usato)
+			ancora -= Vector2(usato.position)
+			dim = usato.size
 		finale.save_png(_uscita.path_join(nome + ".png"))
 		_salva_info(nome, {"dimensione": [dim.x, dim.y], "ancora": [ancora.x, ancora.y]})
 		print("  ✓ %s (%dx%d)" % [nome, dim.x, dim.y])

@@ -5,11 +5,12 @@ extends Node
 signal scorte_cambiate
 signal territorio_cambiato
 signal messaggio(testo: String, errore: bool)
+signal togli_decori(c: Vector2i)
 
 const T := DatiMappa.Terreno
 const RAGGIO_MAGAZZINO := 9.0
 const TERRENI_EDIFICABILI := [T.PRATO, T.SECCO, T.TERRA]
-const PENDENZA_MAX := {1: 14.0, 2: 10.0}
+const PENDENZA_MAX := {1: 14.0, 2: 12.0, 3: 10.0}
 
 var dati: DatiMappa
 var rete: ReteStrade
@@ -45,7 +46,7 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 				return "Posto occupato"
 			if rete and (rete.strada.has(Vector2i(x, y)) or rete.bandiere.has(Vector2i(x, y))):
 				return "C'è una strada"
-	var b := Vector2i(c.x + s - 1, c.y + s)
+	var b := Vector2i(c.x + (s - 1) / 2, c.y + s)
 	if not dati.nel_territorio(b.x, b.y) or dati.tipo(b.x, b.y) in [T.ACQUA, T.ROCCIA, T.NEVE] or dati.occupante(b.x, b.y) != 0:
 		return "Serve spazio davanti alla porta per la bandierina"
 	if rete and not rete.bandiere.has(b) and rete.motivo_no_bandiera(b) != "":
@@ -88,6 +89,7 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
 	for y in range(c.y, c.y + e.taglia):
 		for x in range(c.x, c.x + e.taglia):
 			dati.occupa(x, y, e.id)
+			togli_decori.emit(Vector2i(x, y))
 	e.completato.connect(_on_completato)
 	if gia_finito:
 		_ricalcola_territorio()

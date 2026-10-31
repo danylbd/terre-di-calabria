@@ -19,6 +19,8 @@ uniform sampler2D rumore : repeat_enable, filter_linear;
 uniform float caselle_per_texture = 4.0;
 uniform float morbidezza = 0.16;
 uniform float tempo_fisso = -1.0;   // per le foto di prova; -1 = usa TIME
+uniform float saturazione = 1.18;
+uniform float contrasto = 1.08;
 
 varying vec2 coord;
 varying float luce;
@@ -72,5 +74,9 @@ void fragment() {
 
 	// il rilievo ombreggia la terra ma non il mare
 	float l = mix(luce, 1.0, wb.y);
-	COLOR = vec4(col * l, 1.0);
+	col *= l;
+	float lum = dot(col, vec3(0.299, 0.587, 0.114));
+	col = mix(vec3(lum), col, saturazione);
+	col = (col - 0.5) * contrasto + 0.5;
+	COLOR = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
