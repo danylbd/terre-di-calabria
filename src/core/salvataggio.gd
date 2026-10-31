@@ -47,7 +47,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	var rete: ReteStrade = p.rete
 	var ris: RisorseNaturali = p.risorse
 	var log: Logistica = p.logistica
-	var d := {"versione": VERSIONE, "seme": p.SEME, "tempo": log.tempo, "storia": log.storia,
+	var d := {"versione": VERSIONE, "seme": p.SEME, "tempo": log.tempo, "storia": log.storia, "calendario": p.stagioni.tempo,
 		"scorte": v.scorte, "coloni_liberi": v.coloni_liberi + v.in_cammino,
 		"camera": [p.camera.position.x, p.camera.position.y, p.camera.zoom.x]}
 	# natura
@@ -172,6 +172,8 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 	v.scorte = _interi(d["scorte"])
 	v.coloni_liberi = int(d["coloni_liberi"])
 	log.tempo = d["tempo"]
+	p.stagioni.tempo = float(d.get("calendario", 0.0))
+	p.stagioni.prepara(p.terreno, ris, p.stagioni.luce, p.stagioni.fiocchi)
 	log.storia = d["storia"]
 	for m in d["merci"]:
 		var dest: Edificio = vecchi.get(int(m[3]))

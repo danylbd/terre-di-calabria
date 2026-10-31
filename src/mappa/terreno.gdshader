@@ -21,6 +21,7 @@ uniform float morbidezza = 0.16;
 uniform float tempo_fisso = -1.0;   // per le foto di prova; -1 = usa TIME
 uniform float saturazione = 1.18;
 uniform float contrasto = 1.08;
+uniform float neve = 0.0;          // 0..1: d'inverno la neve copre la terra (non il mare)
 
 varying vec2 coord;
 varying float luce;
@@ -60,6 +61,14 @@ void fragment() {
 	col += wb.x * texture(t_neve, tc).rgb;
 	col += wb.z * texture(t_terra, tc).rgb;
 	col += wb.w * texture(t_secco, tc).rgb;
+
+	// neve d'inverno: copre prima i pendii alti e lascia scoperte chiazze irregolari
+	if (neve > 0.001) {
+		float chiazze = texture(rumore, coord * 0.05 + vec2(0.13, 0.71)).r;
+		float copre = clamp(neve * 1.6 - chiazze * 0.9 - wa.z * 0.6, 0.0, 1.0);
+		vec3 bianco = texture(t_neve, tc).rgb * vec3(0.97, 0.99, 1.04);
+		col = mix(col, bianco * (1.0 - wb.y), copre * (1.0 - wb.y));
+	}
 
 	// mare: due strati che scorrono, riflessi e schiuma a riva
 	vec3 mare = texture(t_acqua, tc * 0.6 + vec2(t * 0.006, t * 0.004)).rgb * 0.55

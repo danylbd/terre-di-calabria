@@ -13,6 +13,7 @@ var camera: CameraMappa
 var villaggio: Villaggio
 var logistica: Logistica
 var risorse: RisorseNaturali
+var stagioni: Stagioni
 
 var menu: MenuCostruzione
 var pannello: PannelloEdificio
@@ -63,6 +64,9 @@ func _ready() -> void:
 	risorse = RisorseNaturali.new()
 	add_child(risorse)
 	risorse.prepara(dati, oggetti)
+	stagioni = Stagioni.new()
+	add_child(stagioni)
+	risorse.stagioni = stagioni
 	villaggio.risorse = risorse
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
@@ -82,6 +86,10 @@ func _ready() -> void:
 	camera.make_current()
 
 	_crea_interfaccia()
+	stagioni.prepara(terreno, risorse, _crea_luce(), _crea_fiocchi())
+	stagioni.cambiata.connect(func(s: int):
+		barra.aggiorna_stagione(stagioni.nome())
+		_mostra_avviso("Arriva %s" % ["la primavera", "l'estate", "l'autunno", "l'inverno"][s], false))
 	villaggio.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	villaggio.popolazione_cambiata.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
 	villaggio.territorio_cambiato.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
@@ -96,6 +104,7 @@ func _ready() -> void:
 			_mostra_avviso("Il salvataggio non si può leggere: nuova partita", true)
 	barra.aggiorna(villaggio.scorte)
 	barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita())
+	barra.aggiorna_stagione(stagioni.nome())
 	Suono.scaletta(["lavoro", "mattino", "sera"] as Array[String])
 	Suono.ambiente("uccelli", -6.0)
 	Suono.ambiente("vento", -12.0)
@@ -454,8 +463,46 @@ func _aggiorna_ambiente() -> void:
 	Suono.ambiente("mare", lerpf(-40.0, -4.0, sqrt(f_mare)))
 	Suono.ambiente("vento", lerpf(-14.0, -5.0, f_roccia))
 	Suono.ambiente("uccelli", lerpf(-5.0, -16.0, maxf(f_mare, f_roccia)))
-	# le cicale cantano nei prati e nelle radure assolate, non sulla spiaggia né in montagna
-	Suono.ambiente("cicale", lerpf(-30.0, -9.0, clampf(prato / float(tot) * 1.5 - f_mare - f_roccia, 0.0, 1.0)))
+	# le cicale cantano d'estate nei prati assolati, non sulla spiaggia né in montagna; d'inverno tira più vento
+	var estate := 1.0 if stagioni.stagione() == Stagioni.ESTATE else (0.3 if stagioni.stagione() == Stagioni.PRIMAVERA else 0.0)
+	Suono.ambiente("cicale", lerpf(-40.0, -9.0, clampf(prato / float(tot) * 1.5 - f_mare - f_roccia, 0.0, 1.0) * estate))
+	if stagioni.inverno():
+		Suono.ambiente("vento", lerpf(-8.0, -3.0, f_roccia))
+		Suono.ambiente("uccelli", -22.0)
+
+
+# --------------------------------------------------------------- stagioni
+
+## Luce generale della mappa (le stagioni la scaldano o la raffreddano); non tocca l'interfaccia.
+func _crea_luce() -> CanvasModulate:
+	var l := CanvasModulate.new()
+	add_child(l)
+	return l
+
+
+## Fiocchi di neve sullo schermo, accesi d'inverno.
+func _crea_fiocchi() -> CPUParticles2D:
+	var strato := CanvasLayer.new()
+	strato.layer = 0
+	add_child(strato)
+	var f := CPUParticles2D.new()
+	f.emitting = false
+	f.amount = 500
+	f.lifetime = 9.0
+	f.preprocess = 9.0
+	f.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	f.emission_rect_extents = Vector2(1100, 10)
+	f.position = Vector2(960, -20)
+	f.direction = Vector2(0.15, 1)
+	f.spread = 12.0
+	f.gravity = Vector2(0, 30)
+	f.initial_velocity_min = 60.0
+	f.initial_velocity_max = 120.0
+	f.scale_amount_min = 2.0
+	f.scale_amount_max = 4.5
+	f.color = Color(1, 1, 1, 0.85)
+	strato.add_child(f)
+	return f
 
 
 # --------------------------------------------------------------- interfaccia
@@ -497,6 +544,7 @@ func _crea_interfaccia() -> void:
 	pannello_villaggio.villaggio = villaggio
 	pannello_villaggio.logistica = logistica
 	pannello_villaggio.rete = rete
+	pannello_villaggio.stagioni = stagioni
 	strato.add_child(pannello_villaggio)
 	pannello_villaggio.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 70)
 	pannello_villaggio.grow_horizontal = Control.GROW_DIRECTION_BEGIN
