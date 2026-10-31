@@ -83,6 +83,10 @@ func _crea_titolo_e_menu() -> void:
 	_menu = VBoxContainer.new()
 	_menu.add_theme_constant_override("separation", 14)
 	colonna.add_child(_menu)
+	if Salvataggio.esiste():
+		_aggiungi_voce("Continua la partita", func():
+			Salvataggio.da_caricare = Salvataggio.PERCORSO
+			get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
 	_aggiungi_voce("Nuova partita", _on_nuova_partita)
 	_aggiungi_voce("La leggenda", func(): _mostra(_strato_leggenda))
 	_aggiungi_voce("Crediti", func(): _mostra(_strato_crediti))
@@ -166,7 +170,7 @@ func _crea_pannello_crediti() -> PanelContainer:
 
 func _crea_versione() -> void:
 	var etichetta := Label.new()
-	etichetta.text = "v%s · step G2" % ProjectSettings.get_setting("application/config/version", "0.0.0")
+	etichetta.text = "v%s" % ProjectSettings.get_setting("application/config/version", "0.0.0")
 	etichetta.add_theme_font_size_override("font_size", 20)
 	etichetta.add_theme_color_override("font_color", Color(Palette.PERGAMENA_CHIARA, 0.8))
 	etichetta.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 20)

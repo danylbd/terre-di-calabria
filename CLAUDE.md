@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07, 08 (in `main`, release v0.10.0).
+Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07, 08, 09 (in `main`, release v0.11.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -60,7 +60,9 @@ Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07, 08 (i
 
 - Step 08 (popolazione): `Villaggio.coloni_liberi` (40 all'inizio), ogni portatore e lavoratore prende un colono; posti = `abitanti` nel catalogo (magazzino 24, casa 8); le case fanno nascere coloni (più in fretta col lusso) che camminano al magazzino. Pannello edificio (clic) con `PannelloEdificio.stato()`, pannello villaggio (tasto I) con la produzione degli ultimi 5 minuti (`Logistica.storia`). Test: `tools/test/test_popolazione.gd`.
 
-**In corso: step 09 – salvataggio** (ramo `step-09-salvataggio`): salvare e caricare la partita (mappa, natura, edifici, strade, merci in viaggio, coloni, scorte).
+- Step 09 (salvataggio): `src/core/salvataggio.gd` (JSON in `user://salvataggio.json`): la mappa si rigenera dal seme, si salvano natura, edifici, bandierine, strade, merci, scorte, coloni. Caricando, `Villaggio.caricamento` evita costi e messaggi; i lavoratori tornano dentro (`metti_lavoratore`). F5 salva, F9 carica, Esc e chiusura salvano da soli; "Continua la partita" nel menu. **Ogni cosa nuova che cambia durante la partita va aggiunta al salvataggio** (e a `test_salvataggio.gd`).
+
+**In corso: step 10 – stagioni** (ramo `step-10-stagioni`): inverno con neve, raccolti stagionali.
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 
