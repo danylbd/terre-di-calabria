@@ -4,6 +4,19 @@ extends RefCounted
 ## quindi le facce "in vista" sono +Z (sinistra, illuminata) e +X (destra, in ombra).
 
 static var _cache_mat := {}
+static var _rumore_rgb: ImageTexture
+const SHADER_VISSUTO := preload("res://tools/studio/vissuto.gdshader")
+
+# materiali che restano "semplici" (metallo, stoffa sottile, acqua)
+const MATERIALI_SEMPLICI := ["ferro", "stoffa", "acqua_pozzo", "buio"]
+# regolazioni per materiale: [sporco, macchie, saturazione]
+const REGOLAZIONI := {
+	"aghi": [0.0, 0.0, 1.3], "foglie_ulivo": [0.0, 0.0, 1.2], "foglie": [0.0, 0.0, 1.35], "foglie_scure": [0.0, 0.0, 1.3],
+	"macchia": [0.0, 0.0, 1.3], "fiore": [0.0, 0.0, 1.2], "tegola": [0.15, 0.5, 1.2], "tegola_scura": [0.15, 0.5, 1.2],
+	"marmo": [0.35, 0.3, 1.0], "intonaco": [0.55, 0.45, 1.1], "tunica": [0.0, 0.0, 1.1], "pelle": [0.0, 0.0, 1.1],
+	"capelli": [0.0, 0.0, 1.0], "giocatore": [0.0, 0.0, 1.3], "sandali": [0.0, 0.0, 1.0], "corda": [0.0, 0.0, 1.0],
+	"persiana": [0.2, 0.3, 1.2], "lino": [0.2, 0.2, 1.1], "terracotta": [0.25, 0.3, 1.25],
+}
 
 
 static func catalogo() -> Dictionary:
@@ -66,7 +79,7 @@ static func _rumore(seme: int, frequenza: float, c1: Color, c2: Color, dim := 12
 	return ImageTexture.create_from_image(img)
 
 
-static func materiale(nome: String) -> StandardMaterial3D:
+static func materiale(nome: String) -> Material:
 	if _cache_mat.has(nome):
 		return _cache_mat[nome]
 	var m := StandardMaterial3D.new()
@@ -145,8 +158,48 @@ static func materiale(nome: String) -> StandardMaterial3D:
 			m.albedo_color = Color("3f6f96")
 		"buio":
 			m.albedo_color = Color("1e140d")
-	_cache_mat[nome] = m
-	return m
+	var finale: Material = m if nome in MATERIALI_SEMPLICI else _a_vissuto(m, nome)
+	_cache_mat[nome] = finale
+	return finale
+
+
+static func _a_vissuto(m: StandardMaterial3D, nome: String) -> ShaderMaterial:
+	var sm := ShaderMaterial.new()
+	sm.shader = SHADER_VISSUTO
+	var tex: Texture2D = m.albedo_texture
+	if tex == null:
+		var img := Image.create(4, 4, false, Image.FORMAT_RGBA8)
+		img.fill(m.albedo_color)
+		tex = ImageTexture.create_from_image(img)
+	sm.set_shader_parameter("tex", tex)
+	sm.set_shader_parameter("rumore", _rumore_studio())
+	sm.set_shader_parameter("scala", m.uv1_scale.x * 1.0)
+	sm.set_shader_parameter("ruvidezza", m.roughness)
+	var reg: Array = REGOLAZIONI.get(nome, [0.45, 0.35, 1.2])
+	sm.set_shader_parameter("sporco", reg[0])
+	sm.set_shader_parameter("macchie", reg[1])
+	sm.set_shader_parameter("saturazione", reg[2])
+	return sm
+
+
+static func _rumore_studio() -> ImageTexture:
+	if _rumore_rgb:
+		return _rumore_rgb
+	var dim := 128
+	var img := Image.create(dim, dim, false, Image.FORMAT_RGBA8)
+	var canali := []
+	for k in 3:
+		var n := FastNoiseLite.new()
+		n.seed = 300 + k
+		n.frequency = 0.06 + k * 0.05
+		n.fractal_octaves = 3
+		canali.append(n.get_seamless_image(dim, dim))
+	for y in dim:
+		for x in dim:
+			img.set_pixel(x, y, Color(canali[0].get_pixel(x, y).r, canali[1].get_pixel(x, y).r, canali[2].get_pixel(x, y).r))
+	img.generate_mipmaps()
+	_rumore_rgb = ImageTexture.create_from_image(img)
+	return _rumore_rgb
 
 
 # ------------------------------------------------------------------ primitive

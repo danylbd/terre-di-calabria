@@ -133,7 +133,7 @@ func _componi(oggetto: Image, con_ombra: Image, senza_ombra: Image) -> Image:
 			var a_ombra := 0.0
 			if luce > 0.01:
 				a_ombra = clampf((luce - ombra) / luce, 0.0, 1.0) * 0.55
-			var sotto := Color(0.08, 0.05, 0.02, a_ombra)
+			var sotto := Color(0.06, 0.05, 0.03, minf(a_ombra * 1.25, 0.72))
 			var sopra := oggetto.get_pixel(x, y)
 			# "sopra" su "sotto"
 			var a := sopra.a + sotto.a * (1.0 - sopra.a)
@@ -169,18 +169,18 @@ func _piano_ombra() -> MeshInstance3D:
 
 func _luci(mondo: Node3D) -> void:
 	var sole := DirectionalLight3D.new()
-	sole.light_color = Color(1.0, 0.94, 0.82)
-	sole.light_energy = 1.0
+	sole.light_color = Color(1.0, 0.92, 0.76)
+	sole.light_energy = 1.3
 	sole.shadow_enabled = true
-	sole.shadow_blur = 1.5
+	sole.shadow_blur = 0.6
 	sole.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
 	sole.directional_shadow_max_distance = 30.0
 	sole.rotation_degrees = Vector3(-48, -20, 0)
 	mondo.add_child(sole)
 
 	var riempimento := DirectionalLight3D.new()
-	riempimento.light_color = Color(0.75, 0.82, 1.0)
-	riempimento.light_energy = 0.25
+	riempimento.light_color = Color(0.6, 0.72, 1.0)
+	riempimento.light_energy = 0.22
 	riempimento.rotation_degrees = Vector3(-25, 150, 0)
 	mondo.add_child(riempimento)
 
@@ -188,8 +188,8 @@ func _luci(mondo: Node3D) -> void:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_CLEAR_COLOR
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.62, 0.62, 0.68)
-	env.ambient_light_energy = 0.5
+	env.ambient_light_color = Color(0.55, 0.6, 0.76)
+	env.ambient_light_energy = 0.42
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 0.95
 	amb.environment = env
