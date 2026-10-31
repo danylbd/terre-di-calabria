@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1) e Fase 2 (12–15) (in `main`, release v0.17.0).
+Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1), Fase 2 (12–15) e lo step 16 (in `main`, release v0.18.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -74,7 +74,9 @@ Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1) e Fase 2 (12–1
 
 - Step 15 (modalità): `src/core/impostazioni.gd` (`Impostazioni.modalita`: «pace», «pace_poi_guerra», «guerra»), scelta nel menu «Nuova partita»; `Avversario.imposta_modalita`, dichiarazione di guerra con preavviso quando il villaggio arriva a 60 coloni o dopo 40 minuti. Salvata. Test: `tools/test/test_modalita.gd`.
 
-**In corso: step 16 – tutorial «Il naufragio»** (ramo `step-16-tutorial`), inizio della Fase 3 (la storia): prima missione dei Greci, vedi `docs/storia.md`.
+- Step 16 (tutorial): `src/storia/missione.gd` (missioni definite in `Missione.MISSIONI`: racconto d'inizio e di fine, obiettivi con suggerimento e `prova`), `src/ui/pannello_missione.gd` (obiettivi in alto a sinistra, dialoghi a gioco fermo). Voce «Campagna dei Greci» nel menu; `Impostazioni.missione`. Missione salvata. Test: `tools/test/test_missione.gd`. Le assi non hanno più tetto di scorta (`Logistica.SEMPRE_UTILI`).
+
+**In corso: step 17 – campagna dei Greci** (ramo `step-17-campagna`): le altre 5 missioni de «Le Colonne dell'Alba» (vedi `docs/storia.md`), scelta della missione dal menu, missioni sbloccate una dopo l'altra.
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

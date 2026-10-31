@@ -92,6 +92,8 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	for n in v.nemici.values():
 		nemici.append([n.tipo, n.casella.x, n.casella.y, n.proprietario, n.soldati])
 	d["nemici"] = nemici
+	if p.missione:
+		d["missione"] = [p.missione.id, p.missione.indice]
 	d["avversario"] = [p.avversario.tempo, p.avversario._espansione, p.avversario._attacco, p.avversario.attivo,
 		p.avversario.modalita, p.avversario.tregua, p.avversario.guerra_dichiarata]
 	# i soldati in marcia tornano nella riserva (quelli all'attacco ricominceranno da capo)
@@ -207,6 +209,8 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		var e: Edificio = vecchi.get(int(s["id"]))
 		if e and s["lavoratore"]:
 			v.metti_lavoratore(e)
+	if d.has("missione") and p.missione == null:
+		p.avvia_missione(d["missione"][0], int(d["missione"][1]))
 	v.caricamento = false
 	v._ricalcola_territorio()
 	p.camera.position = Vector2(d["camera"][0], d["camera"][1])

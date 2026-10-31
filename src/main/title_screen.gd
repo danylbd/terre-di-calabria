@@ -90,6 +90,9 @@ func _crea_titolo_e_menu() -> void:
 			Salvataggio.da_caricare = Salvataggio.PERCORSO
 			get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
 	_aggiungi_voce("Nuova partita", func(): _mostra(_strato_modalita))
+	_aggiungi_voce("Campagna dei Greci", func():
+		Impostazioni.missione = "naufragio"
+		get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
 	_aggiungi_voce("La leggenda", func(): _mostra(_strato_leggenda))
 	_aggiungi_voce("Crediti", func(): _mostra(_strato_crediti))
 	_aggiungi_voce("Esci", func(): get_tree().quit())
@@ -186,6 +189,7 @@ func _crea_pannello_modalita() -> PanelContainer:
 		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		b.pressed.connect(func():
 			Impostazioni.modalita = m
+			Impostazioni.missione = ""
 			_on_nuova_partita())
 		colonna.add_child(b)
 		var spiega := _etichetta(Impostazioni.MODALITA[m][1], 20, Color(Palette.INCHIOSTRO, 0.8))

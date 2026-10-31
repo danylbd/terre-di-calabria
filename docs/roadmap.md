@@ -33,11 +33,11 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 
 ## Fase 3 — La storia
 
-| Step | Nome |
-|---|---|
-| 16 | Tutorial: «Il naufragio» (prima missione dei Greci) |
-| 17 | Campagna dei Greci (6 missioni) con Rocco della Lira |
-| 18 | Mappa della Calabria stilizzata |
+| Step | Nome | Stato |
+|---|---|---|
+| 16 | Tutorial: «Il naufragio» (prima missione dei Greci) | fatto |
+| 17 | Campagna dei Greci (6 missioni) con Rocco della Lira | |
+| 18 | Mappa della Calabria stilizzata | |
 
 ## Fase 4 — Gli altri popoli e il finale
 

@@ -87,3 +87,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-01 05:20 — step 15 modalità all'avvio (Fase 2 finita)
 - «Nuova partita» apre la scelta: Solo pace (niente Brettii), Pace poi guerra (guerra dichiarata a 60 coloni o dopo 40 minuti, con 2 minuti di preavviso), Solo guerra (avamposti con 4 difensori, tregua di 4 minuti).
 - Modalità e stato della guerra nel salvataggio e nel pannello del villaggio. Versione 0.17.0. Prossimo: step 16 tutorial «Il naufragio».
+
+## 2026-11-01 06:00 — step 16 tutorial «Il naufragio» (inizio Fase 3)
+- Sistema delle missioni: racconto di Rocco della Lira e di Eudora a gioco fermo, obiettivi in sequenza con suggerimenti (strada, boscaiolo, segheria, 6 assi, due abitazioni), racconto di chiusura. Si parte col solo magazzino (il relitto). Voce «Campagna dei Greci» nel menu.
+- Bug trovato: la segheria si fermava a 12 assi in magazzino (tetto delle scorte) e il tutorial non si poteva finire. Ora assi e monete servono sempre.
+- Tutti i 15 test OK (eseguiti in primo piano a gruppi). Versione 0.18.0. Prossimo: step 17 campagna dei Greci.

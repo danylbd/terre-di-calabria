@@ -16,6 +16,8 @@ var risorse: RisorseNaturali
 var stagioni: Stagioni
 var guerra: Guerra
 var avversario: Avversario
+var missione: Missione
+var pannello_missione: PannelloMissione
 var _attaccante: Edificio
 
 var menu: MenuCostruzione
@@ -80,7 +82,7 @@ func _ready() -> void:
 	add_child(avversario)
 	avversario.prepara(villaggio, guerra, dati)
 	avversario.messaggio.connect(_mostra_avviso)
-	avversario.imposta_modalita(Impostazioni.modalita)
+	avversario.imposta_modalita("pace" if Impostazioni.missione != "" else Impostazioni.modalita)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
@@ -89,7 +91,13 @@ func _ready() -> void:
 	_metti_natura()
 	var da_caricare := Salvataggio.da_caricare
 	Salvataggio.da_caricare = ""
-	if da_caricare == "":
+	if da_caricare == "" and Impostazioni.missione != "":
+		_metti_villaggio(true)
+		var d: Dictionary = Missione.MISSIONI[Impostazioni.missione]
+		for r in d["scorte"]:
+			villaggio.scorte[r] = d["scorte"][r]
+		villaggio.coloni_liberi = d["coloni"] - rete.portatori()
+	elif da_caricare == "":
 		_metti_villaggio()
 		if Impostazioni.modalita != "pace":
 			_metti_brettii()
@@ -110,6 +118,9 @@ func _ready() -> void:
 	villaggio.territorio_cambiato.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
 	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	logistica.scorte_cambiate.connect(villaggio.richiama_lavoratori)
+	if da_caricare == "" and Impostazioni.missione != "":
+		avvia_missione(Impostazioni.missione, 0)
+		missione.comincia.call_deferred()
 	if da_caricare != "":
 		if Salvataggio.carica(self, da_caricare):
 			segni.aggiorna()
@@ -377,9 +388,12 @@ func _cella(rel: Vector2i) -> Vector2i:
 	return dati.villaggio + rel
 
 
-func _metti_villaggio() -> void:
+## Il villaggio iniziale: magazzino e due case collegate (nelle missioni, solo il magazzino).
+func _metti_villaggio(solo_magazzino := false) -> void:
 	var magazzino: Edificio = null
 	for e in INIZIALI:
+		if solo_magazzino and e[0] != "magazzino":
+			continue
 		var ed := villaggio.costruisci(e[0], _cella(e[1]), true)
 		if e[0] == "magazzino":
 			magazzino = ed
@@ -499,6 +513,19 @@ func _aggiorna_ambiente() -> void:
 		Suono.ambiente("uccelli", -22.0)
 
 
+# --------------------------------------------------------------- missioni
+
+func avvia_missione(id: String, indice: int) -> void:
+	missione = Missione.new()
+	add_child(missione)
+	missione.prepara(self, id)
+	missione.indice = indice
+	pannello_missione = PannelloMissione.new()
+	_strato_ui.add_child(pannello_missione)
+	pannello_missione.prepara(missione)
+	missione.compiuta.connect(func(): _mostra_avviso("Missione compiuta: %s" % missione.titolo(), false))
+
+
 # --------------------------------------------------------------- i Brettii
 
 ## Due avamposti dei Brettii, il popolo delle montagne, a una ventina di caselle dal villaggio.
@@ -572,9 +599,13 @@ func _crea_fiocchi() -> CPUParticles2D:
 
 # --------------------------------------------------------------- interfaccia
 
+var _strato_ui: CanvasLayer
+
+
 func _crea_interfaccia() -> void:
 	var strato := CanvasLayer.new()
 	add_child(strato)
+	_strato_ui = strato
 
 	barra = BarraRisorse.new()
 	strato.add_child(barra)
