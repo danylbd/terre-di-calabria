@@ -1,28 +1,53 @@
 # Roadmap — Terre di Calabria
 
-Ogni step ha un suo ramo `step-XX-nome` (lavorato in un worktree separato). Quando lo step ti piace, lo uniamo a `main` e GitHub crea un nuovo `Setup.exe`.
+Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quando lo step ti piace lo uniamo a `main` e GitHub crea un nuovo `Setup.exe`. Le decisioni di fondo sono in [`decisioni.md`](decisioni.md).
+
+## Fase 1 — Il villaggio vive (Greci, modalità pace)
 
 | Step | Nome | Cosa si vede alla fine | Stato |
 |---|---|---|---|
-| 00 | Fondamenta | Struttura del progetto, documento di design, schermata iniziale, installer e compilazione automatica | in corso |
-| 01 | La mappa | Mappa isometrica con terreni (prato, bosco, montagna, mare), zoom e spostamento con mouse e touchpad | |
-| 02 | Costruire | Piazzare edifici sulla mappa, griglia del terreno edificabile, confini del territorio | |
-| 03 | Strade e bandierine | Disegnare strade tra gli edifici, rete di bandierine | |
-| 04 | I portatori | Omini che camminano lungo le strade e trasportano le merci | |
-| 05 | Prima catena | Boscaiolo → tronchi → segheria → assi, con magazzino | |
-| 06 | Cantiere | Gli edifici si costruiscono davvero con assi e pietre consegnate | |
-| 07 | Cibo | Grano, mulino, forno, pesca, allevamento | |
-| 08 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi artigiani | |
-| 09 | Popolazione | Abitazioni, crescita, interfaccia statistiche | |
-| 10 | Salvataggio | Salvare e caricare la partita | |
-| 11 | Territorio e torri | Torri che allargano i confini | |
-| 12 | Primo popolo completo | Greci con catena dell'olio ed edificio unico | |
-| 13 | Soldati | Caserma, addestramento, conquista delle torri | |
-| 14 | Avversario | Un'intelligenza artificiale che costruisce e attacca | |
-| 15 | Altri popoli | Brettii, Romani, Saraceni, Normanni | |
-| 16 | Grafica definitiva | Sostituzione dei disegni provvisori | |
-| 17 | Suoni e musica | | |
-| 18 | Campagna | Missioni e storia | |
-| 19 | iPhone | Controlli touch ed esportazione iOS | |
+| 00 | Fondamenta | Progetto, design, storia, schermata iniziale, installer | fatto |
+| G1 | Studio grafico | Rendering 3D → sprite; primi edifici greci, alberi, portatore animato | fatto |
+| 01 | La mappa | Terreno dipinto continuo (prato, bosco, sabbia, mare, monti), alberi, camera con mouse e tastiera, zoom | in corso |
+| 02 | Costruire | Menu edifici, piazzamento sulla griglia, confini del territorio | |
+| 03 | Strade e bandierine | Disegnare strade, rete di bandierine, un portatore per tratto | |
+| 04 | Trasporto | Le merci viaggiano davvero di bandierina in bandierina | |
+| 05 | Prima catena | Boscaiolo → segheria → assi; magazzino; cantieri che crescono | |
+| M1 | Musica e suoni | Primi 3 brani (orchestra + strumenti calabresi), suoni di lavoro e natura | |
+| G2 | Grafica livello 2 | Rifinitura verso la qualità di Settlers 3: texture sporcate, varietà, transizioni del terreno | |
+| 06 | Cibo | Grano, mulino, forno, pesca, allevamento, pozzo | |
+| 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | |
+| 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | |
+| 09 | Salvataggio | Salvare e caricare | |
+| 10 | Stagioni | Inverno con neve, raccolti stagionali | |
+| 11 | Greci completi | Tutti i circa 30 edifici, olio e commercio, agorà | |
+
+## Fase 2 — La guerra e l'avversario
+
+| Step | Nome |
+|---|---|
+| 12 | Territorio e torri |
+| 13 | Soldati e conquista |
+| 14 | Avversario controllato dal computer |
+| 15 | Scelta all'avvio: solo pace / solo guerra / pace poi guerra |
+
+## Fase 3 — La storia
+
+| Step | Nome |
+|---|---|
+| 16 | Tutorial: «Il naufragio» (prima missione dei Greci) |
+| 17 | Campagna dei Greci (6 missioni) con Rocco della Lira |
+| 18 | Mappa della Calabria stilizzata |
+
+## Fase 4 — Gli altri popoli e il finale
+
+| Step | Nome |
+|---|---|
+| 19 | Brettii |
+| 20 | Romani |
+| 21 | Saraceni |
+| 22 | Normanni |
+| 23 | Campagna finale «La Soglia» |
+| 24 | Versione iPhone |
 
 L'ordine può cambiare strada facendo: è un progetto da fare con calma.
