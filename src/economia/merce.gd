@@ -1,8 +1,14 @@
 class_name Merce
 extends RefCounted
-## Una singola merce (un tronco, un fascio di assi, una pietra) che viaggia sulla rete stradale.
+## Una singola merce (un tronco, un fascio di assi, una pietra, un sacco di farina...) che viaggia sulla rete stradale.
 
-const FOGLI := {"tronchi": "portatore_tronco", "assi": "portatore_asse", "pietra": "portatore_pietra"}
+const FOGLI := {"tronchi": "portatore_tronco", "assi": "portatore_asse", "pietra": "portatore_pietra",
+	"grano": "portatore_covone", "farina": "portatore_sacco", "acqua": "portatore_anfora", "pane": "portatore_cesta",
+	"pesce": "portatore_pesce", "maiale": "portatore_maiale", "carne": "portatore_carne", "latte": "portatore_anfora",
+	"lana": "portatore_lana", "formaggio": "portatore_formaggio", "miele": "portatore_anfora",
+	"olive": "portatore_olive", "olio": "portatore_anfora", "uva": "portatore_uva", "vino": "portatore_anfora",
+	"ortaggi": "portatore_ortaggi", "cipolle": "portatore_cipolle", "agrumi": "portatore_agrumi",
+	"pesce_spada": "portatore_spada"}
 
 var tipo := ""
 var destinazione: Edificio          # dove deve arrivare

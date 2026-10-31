@@ -153,7 +153,9 @@ func _percorso_tra_uscite(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 		_astar.set_point_solid(a, false)
 	for u in uscite_da.slice(0, 4):
 		for v in uscite_a.slice(0, 4):
-			var tratto := _astar.get_id_path(u, v) if u != v else [u] as Array[Vector2i]
+			var tratto: Array[Vector2i] = [u]
+			if u != v:
+				tratto = _astar.get_id_path(u, v)
 			if tratto.is_empty():
 				continue
 			var tot: Array[Vector2i] = [da]

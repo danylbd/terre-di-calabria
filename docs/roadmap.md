@@ -15,7 +15,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 05 | Prima catena | Boscaiolo abbatte gli alberi, guardaboschi ripianta, segheria fa assi, cava estrae pietra: tutto portato dai portatori | fatto |
 | M1 | Musica e suoni | Primi 3 brani (orchestra + strumenti calabresi), suoni di lavoro e natura | fatto (musica segnaposto sintetizzata, da sostituire: vedi domande) |
 | G2 | Grafica livello 2 | Edifici grandi e vissuti (2×2, magazzino 3×3), castagni, querce, pini laricio, ulivi, fiori e funghi, terreno saturo | fatto |
-| 06 | Cibo: campi, allevamenti, pesca | Coltivazioni (grano, vite, ortaggi, cipolla rossa, agrumi), allevamenti (maiali, pecore, capre, api), pesca dalla costa e pesce spada con la barca; mulino, forno, macelleria, caseificio | |
+| 06 | Cibo: campi, allevamenti, pesca | Coltivazioni (grano, vite, ortaggi, cipolla rossa, agrumi), allevamenti (maiali, pecore, capre, api), pesca dalla costa e pesce spada con la barca; mulino, forno, macelleria, caseificio | fatto |
 | 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | |
 | 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | |
 | 09 | Salvataggio | Salvare e caricare | |

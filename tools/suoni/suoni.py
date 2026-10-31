@@ -361,10 +361,46 @@ def cicale(rng):
     return normalizza(chiudi_loop(x, 1.5), 0.4)
 
 
+def falce(rng):
+    """Colpo di falce nel grano: fruscio rapido che sale, steli tagliati."""
+    n = int(0.45 * FC)
+    x = passa_banda(rumore(n, rng), 3200, 1.2)
+    env = [math.sin(math.pi * min(1.0, i / n * 1.6)) ** 2 if i < n / 1.6 else 0.0 for i in range(n)]
+    x = per(x, env)
+    steli = [v if rng.random() < 0.02 else 0.0 for v in rumore(n, rng)]
+    steli = passa_banda(steli, 5000, 2.0)
+    mescola(x, steli, 0.08, 2.5)
+    return dissolvi_bordi(normalizza(x, 0.7))
+
+
+def tuffo(rng):
+    """Acqua smossa: il secchio nel pozzo o il pesce tirato fuori dal mare."""
+    n = int(0.6 * FC)
+    x = per(passa_banda(rumore(n, rng), 900, 1.0), inviluppo(n, 0.005, 0.12))
+    for k in range(5):
+        t0 = rng.uniform(0.05, 0.35)
+        m = int(0.06 * FC)
+        f0 = rng.uniform(500, 1100)
+        bolla = [math.sin(DUE_PI * f0 * (1 + 2.5 * i / m) * i / FC) * math.sin(math.pi * i / m) for i in range(m)]
+        mescola(x, bolla, t0, 0.25)
+    return dissolvi_bordi(normalizza(x, 0.7))
+
+
+def macina(rng):
+    """La mola del mulino: pietra su pietra, rombo basso che gira."""
+    n = int(1.2 * FC)
+    x = passa_basso(rumore(n, rng), 300)
+    giro = [0.6 + 0.4 * math.sin(DUE_PI * 1.6 * i / FC) for i in range(n)]
+    grani = passa_banda(rumore(n, rng), 1800, 1.5)
+    x = [a * g + b * 0.15 * g for a, b, g in zip(x, grani, giro)]
+    return dissolvi_bordi(normalizza(x, 0.6), 0.08, 0.15)
+
+
 # ------------------------------------------------------------------ elenco
 
 VARIANTI = {"ascia": (ascia, 3), "piccone": (piccone, 3), "sega": (sega, 2), "vanga": (vanga, 2),
             "martello": (martello, 3), "albero_cade": (albero_cade, 1),
+            "falce": (falce, 2), "tuffo": (tuffo, 2), "macina": (macina, 1),
             "clic": (clic, 1), "posa": (posa, 1), "completato": (completato, 1), "errore": (errore, 1)}
 LOOP = {"vento": vento, "mare": mare, "uccelli": uccelli, "cicale": cicale}
 

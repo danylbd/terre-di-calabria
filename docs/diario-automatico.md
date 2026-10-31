@@ -19,3 +19,22 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Adottato il lavoro della sessione oraria (audio.gd, suoni.py, suoni di lavoro e interfaccia); aggiunta la classe `Suono` perché l'identificatore `Audio` rompeva i test con `--script`.
 - Musica segnaposto (3 brani, `tools/suoni/musica.py`), scaletta, tasto M, cicale. test_audio e test_catena OK; il gioco parte senza errori audio.
 - Versione 0.7.0, merge in main. Prossimo: step 06 cibo.
+
+## 2026-10-31 21:15 — step 06 cibo, pezzo 1 (pane e pesce)
+- Fattoria (contadino semina fino a 8 campi, crescono in 4 fasi, miete → grano), mulino (farina), forno (farina + acqua → pane), pozzo (acqua solo se serve: `Logistica.serve()`), pescatore (pesce dalla riva, si esaurisce e torna). Lavoratore generalizzato: `_lavora_dentro()` vale per segheria, mulino, forno, pozzo.
+- Sprite nuovi (studio opengl3): 4 edifici, campo_1..4, stoppie, 5 merci, 4 carichi del portatore, contadino e pescatore. Suoni falce, tuffo, macina.
+- Corretto bug in `rete_strade.gd` (_percorso_tra_uscite: array senza tipo).
+- test_cibo OK (pane 10, pesce 19 in 10 minuti di gioco), test_catena OK. Screenshot `docs/immagini/step06-cibo*.png`.
+- Resta per lo step 06: allevamenti (maiali, pecore, capre, api) con macelleria e caseificio; vite, orto/cipolla, agrumi; barca per il pesce spada; olive per il frantoio.
+
+## 2026-10-31 21:45 — step 06 cibo, pezzo 2 (allevamenti)
+- Porcile (grano + acqua → maiali), macelleria (carne), ovile (acqua → latte e lana a turno: `produce` può essere un elenco), capraio (latte), apiario (miele), caseificio (latte → formaggio). Campo `durata` nel catalogo per i tempi di lavoro.
+- Modelli con animali (maiali, pecore, capre) nei recinti; merci e carichi nuovi. Barra delle scorte: legno e pietra sempre, le altre merci solo quando ci sono, e si ricentra.
+- test_allevamenti OK (carne, lana, formaggio, miele al magazzino). Screenshot `docs/immagini/step06-allevamenti.png`.
+- Resta: vite/cantina, orto e cipolla, agrumi, olive per il frantoio, barca per il pesce spada. Animali fermi nel modello (in futuro: animali che si muovono).
+
+## 2026-10-31 22:30 — step 06 completato
+- Pezzo 3: colture generiche (vigneto, ortolano, agrumeto con vite e agrumi perenni), cantina, raccoglitore di olive + frantoio, barca del pesce spada (rema sull'acqua). Pescatore e barca solo vicino al mare.
+- Tutti i test OK: catena, audio, cibo, allevamenti, colture. Versione 0.8.0, merge in main.
+- Note per il futuro: olive e altre materie prime non hanno tetto (solo il pozzo si ferma); animali fermi nei modelli; la costa è lontana dal villaggio iniziale (servono 2 torri).
+- Prossimo: step 07 metallo.
