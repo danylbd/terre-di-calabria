@@ -17,7 +17,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | G2 | Grafica livello 2 | Edifici grandi e vissuti (2×2, magazzino 3×3), castagni, querce, pini laricio, ulivi, fiori e funghi, terreno saturo | fatto |
 | 06 | Cibo: campi, allevamenti, pesca | Coltivazioni (grano, vite, ortaggi, cipolla rossa, agrumi), allevamenti (maiali, pecore, capre, api), pesca dalla costa e pesce spada con la barca; mulino, forno, macelleria, caseificio | fatto |
 | 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | fatto |
-| 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | |
+| 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | fatto |
 | 09 | Salvataggio | Salvare e caricare | |
 | 10 | Stagioni | Inverno con neve, raccolti stagionali | |
 | 11 | Greci completi | Tutti i circa 30 edifici, olio e commercio, agorà | |

@@ -21,6 +21,9 @@ var ingresso := {}                   # merci in deposito per la produzione (es. 
 var in_arrivo := {}                  # merci per la produzione già in viaggio verso l'edificio
 var lavoratore: Node2D               # chi ci lavora (null se nessuno)
 var manca_attrezzo := false          # il lavoratore aspetta che arrivi il suo attrezzo
+var manca_colono := false            # non c'erano coloni liberi per mandare il lavoratore
+var prodotti := 0                    # merci prodotte finora
+var nascita := 0.0                   # abitazioni: secondi al prossimo colono
 var dati_mappa: DatiMappa
 var villaggio: Node
 

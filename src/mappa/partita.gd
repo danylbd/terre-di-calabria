@@ -15,6 +15,8 @@ var logistica: Logistica
 var risorse: RisorseNaturali
 
 var menu: MenuCostruzione
+var pannello: PannelloEdificio
+var pannello_villaggio: PannelloVillaggio
 var barra: BarraRisorse
 var _avviso: Label
 var _tween_avviso: Tween
@@ -78,9 +80,12 @@ func _ready() -> void:
 
 	_crea_interfaccia()
 	villaggio.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
+	villaggio.popolazione_cambiata.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
+	villaggio.territorio_cambiato.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
 	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	logistica.scorte_cambiate.connect(villaggio.richiama_lavoratori)
 	barra.aggiorna(villaggio.scorte)
+	barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita())
 	Suono.scaletta(["lavoro", "mattino", "sera"] as Array[String])
 	Suono.ambiente("uccelli", -6.0)
 	Suono.ambiente("vento", -12.0)
@@ -109,7 +114,10 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		if modalita != "":
+		if pannello.visible or pannello_villaggio.visible:
+			pannello.chiudi_pannello()
+			pannello_villaggio.visible = false
+		elif modalita != "":
 			_esci_modalita()
 		else:
 			get_tree().change_scene_to_file("res://src/main/title_screen.tscn")
@@ -120,6 +128,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				menu.premi_attrezzo("strada")
 			KEY_F:
 				menu.premi_attrezzo("bandierina")
+			KEY_I:
+				pannello_villaggio.alterna()
 			KEY_M:
 				_mostra_avviso("Musica accesa" if Suono.alterna_musica() else "Musica spenta", false)
 	elif event is InputEventMouseButton and event.pressed:
@@ -165,11 +175,17 @@ func _clic(c: Vector2i) -> void:
 			elif rete.rimuovi_strada_in(c):
 				_mostra_avviso("Strada rimossa", false)
 		"":
-			# clic su un edificio o su una bandierina: scorciatoia per iniziare una strada
+			# clic su un edificio: il suo pannello; su una bandierina: scorciatoia per iniziare una strada
 			var e := villaggio.edificio_in(c)
-			if rete.bandiera_in(c) or e:
+			if e:
+				Suono.suona("clic")
+				pannello.mostra(e)
+			elif rete.bandiera_in(c):
+				pannello.chiudi_pannello()
 				menu.premi_attrezzo("strada")
-				_clic_strada(e.bandiera if e else c)
+				_clic_strada(c)
+			else:
+				pannello.chiudi_pannello()
 
 
 func _clic_strada(c: Vector2i) -> void:
@@ -437,8 +453,43 @@ func _crea_interfaccia() -> void:
 	menu.edificio_scelto.connect(_scegli_edificio)
 	menu.strumento.connect(_strumento)
 
+	pannello = PannelloEdificio.new()
+	pannello.villaggio = villaggio
+	strato.add_child(pannello)
+	# in basso a destra, sopra la riga d'aiuto (il pannello del villaggio sta in alto a destra)
+	pannello.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 14)
+	pannello.offset_bottom = -46
+	pannello.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	pannello.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	pannello.strada_da.connect(func(e: Edificio):
+		pannello.chiudi_pannello()
+		menu.premi_attrezzo("strada")
+		_clic_strada(e.bandiera))
+	pannello.demolisci.connect(func(e: Edificio):
+		pannello.chiudi_pannello()
+		villaggio.demolisci(e)
+		segni.aggiorna())
+
+	pannello_villaggio = PannelloVillaggio.new()
+	pannello_villaggio.villaggio = villaggio
+	pannello_villaggio.logistica = logistica
+	pannello_villaggio.rete = rete
+	strato.add_child(pannello_villaggio)
+	pannello_villaggio.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 70)
+	pannello_villaggio.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+
+	var pulsante := Button.new()
+	pulsante.text = "Villaggio (I)"
+	pulsante.theme = TemaGioco.crea(17)
+	pulsante.custom_minimum_size = Vector2(140, 40)
+	pulsante.tooltip_text = "Popolazione, produzione e scorte"
+	pulsante.pressed.connect(pannello_villaggio.alterna)
+	strato.add_child(pulsante)
+	pulsante.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 14)
+	pulsante.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+
 	var aiuto := Label.new()
-	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  M: musica  ·  Maiusc+clic: più edifici  ·  Esc: menu"
+	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Clic: info edificio  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  I: villaggio  ·  M: musica  ·  Esc: menu"
 	aiuto.add_theme_font_size_override("font_size", 16)
 	aiuto.add_theme_color_override("font_color", Palette.PERGAMENA_CHIARA)
 	aiuto.add_theme_color_override("font_outline_color", Palette.INCHIOSTRO)

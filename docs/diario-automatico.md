@@ -45,3 +45,9 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Chi trasforma si ferma oltre 12 in magazzino se nessuno chiede (la carbonaia non brucia più tutti i tronchi).
 - Lezione: dopo lo studio serve `--import`, altrimenti gli edifici nuovi sono invisibili (successo nel primo screenshot).
 - Tutti i 6 test OK. Versione 0.9.0, merge in main. Prossimo: step 08 popolazione e statistiche.
+
+## 2026-10-31 23:50 — step 08 popolazione e statistiche completato
+- Coloni contati: 40 all'inizio, posti dalle abitazioni (8) e dal magazzino (24); portatori e lavoratori prendono un colono, demolendo tornano liberi; strade ed edifici aspettano se i coloni finiscono.
+- Le case fanno nascere coloni ogni 40 s (20 s consumando vino, agrumi o miele); il nuovo colono cammina fino al magazzino.
+- Pannello edificio (clic: stato, perché è fermo, ingressi, produzione, strada da qui, demolisci) e pannello villaggio (tasto I / pulsante). Barra: "Coloni N / M".
+- Tutti i 7 test OK. Versione 0.10.0, merge in main. Prossimo: step 09 salvataggio.

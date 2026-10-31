@@ -12,6 +12,7 @@ const COLORI := {"tronchi": Color("8a5a32"), "assi": Color("d8b07a"), "pietra": 
 
 var _etichette := {}
 var _scatole := {}
+var _coloni: Label
 
 
 func _ready() -> void:
@@ -40,6 +41,13 @@ func _ready() -> void:
 		_etichette[r] = n
 		_scatole[r] = box
 		riga.add_child(box)
+	_coloni = Label.new()
+	_coloni.add_theme_font_size_override("font_size", 20)
+	_coloni.add_theme_color_override("font_color", Palette.TERRACOTTA_SCURA)
+	_coloni.tooltip_text = "Coloni nel villaggio / posti nelle abitazioni"
+	_coloni.mouse_filter = Control.MOUSE_FILTER_STOP
+	riga.add_child(VSeparator.new())
+	riga.add_child(_coloni)
 
 
 func aggiorna(scorte: Dictionary) -> void:
@@ -60,6 +68,11 @@ func aggiorna(scorte: Dictionary) -> void:
 			cambiata = true
 	if cambiata:
 		_ricentra.call_deferred()
+
+
+func aggiorna_coloni(popolazione: int, capacita: int) -> void:
+	_coloni.text = "Coloni %d / %d" % [popolazione, capacita]
+	_ricentra.call_deferred()
 
 
 ## Le merci mostrate sono cambiate: la barra si stringe o si allarga restando al centro in alto.
