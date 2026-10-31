@@ -56,3 +56,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - `Salvataggio.salva/carica` (JSON): natura (alberi con posizione e crescita, massi, campi, ceppi, pesce, olive, giacimenti), edifici e cantieri, bandierine, strade (con o senza portatore), merci in viaggio, scorte, coloni, statistiche, camera.
 - F5/F9, salvataggio automatico con Esc e alla chiusura, "Continua la partita" nel menu iniziale. Tolta la scritta "step G2" dalla versione nel titolo.
 - test_salvataggio: tutto identico dopo il caricamento e la partita continua a produrre. Tutti gli 8 test OK. Versione 0.11.0. Prossimo: step 10 stagioni.
+
+## 2026-11-01 01:15 — step 10 stagioni completato
+- Calendario di 4 stagioni (5 minuti l'una), si parte in primavera. Crescita per stagione di grano, orto, vite, agrumi, alberelli, olive; d'inverno niente semina e api a riposo.
+- Neve nello shader del terreno, fiocchi che cadono, castagni e querce gialli d'autunno e spogli d'inverno, luce che cambia; cicale solo d'estate, più vento d'inverno. Stagione e anno nella barra e nel pannello.
+- Calendario nel salvataggio. Tutti i 9 test OK. Versione 0.12.0. Prossimo: step 11 Greci completi.

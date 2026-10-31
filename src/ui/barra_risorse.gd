@@ -13,6 +13,7 @@ const COLORI := {"tronchi": Color("8a5a32"), "assi": Color("d8b07a"), "pietra": 
 var _etichette := {}
 var _scatole := {}
 var _coloni: Label
+var _stagione: Label
 
 
 func _ready() -> void:
@@ -48,6 +49,11 @@ func _ready() -> void:
 	_coloni.mouse_filter = Control.MOUSE_FILTER_STOP
 	riga.add_child(VSeparator.new())
 	riga.add_child(_coloni)
+	_stagione = Label.new()
+	_stagione.add_theme_font_size_override("font_size", 20)
+	_stagione.add_theme_color_override("font_color", Palette.INCHIOSTRO)
+	riga.add_child(VSeparator.new())
+	riga.add_child(_stagione)
 
 
 func aggiorna(scorte: Dictionary) -> void:
@@ -68,6 +74,11 @@ func aggiorna(scorte: Dictionary) -> void:
 			cambiata = true
 	if cambiata:
 		_ricentra.call_deferred()
+
+
+func aggiorna_stagione(testo: String) -> void:
+	_stagione.text = testo
+	_ricentra.call_deferred()
 
 
 func aggiorna_coloni(popolazione: int, capacita: int) -> void:

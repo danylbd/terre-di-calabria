@@ -186,6 +186,8 @@ func _cerca_campo(da: Vector2i) -> bool:
 	if _bersaglio.x >= 0 and risorse.prenota_campo(_bersaglio):
 		return true
 	_semina = true
+	if risorse.stagioni and risorse.stagioni.inverno():
+		return false
 	if risorse.campi_vicini(da, RAGGIO_CAMPI + 1, _coltura) >= MAX_CAMPI:
 		return false
 	_bersaglio = risorse.posto_per_campo(da, RAGGIO_CAMPI, rete)
@@ -247,6 +249,8 @@ func _fine_lavoro() -> void:
 func _lavora_dentro() -> void:
 	var info := CatalogoEdifici.dati(mestiere)
 	var ingressi: Dictionary = info.get("ingressi", {})
+	if mestiere == "apiario" and risorse.stagioni and risorse.stagioni.inverno():
+		return
 	if mestiere == "fabbro":
 		_attrezzo_scelto = logistica.attrezzo_da_fare()
 		if _attrezzo_scelto == "":

@@ -19,7 +19,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | fatto |
 | 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | fatto |
 | 09 | Salvataggio | Salvare e caricare | fatto |
-| 10 | Stagioni | Inverno con neve, raccolti stagionali | |
+| 10 | Stagioni | Inverno con neve, raccolti stagionali | fatto |
 | 11 | Greci completi | Tutti i circa 30 edifici, olio e commercio, agorà | |
 
 ## Fase 2 — La guerra e l'avversario

@@ -14,6 +14,7 @@ const GRUPPI := [
 var villaggio: Villaggio
 var logistica: Logistica
 var rete: ReteStrade
+var stagioni: Stagioni
 var _testo: RichTextLabel
 var _aggiorna := 0.0
 
@@ -65,6 +66,8 @@ func _process(delta: float) -> void:
 func _riempi() -> void:
 	var v := villaggio
 	var righe := []
+	if stagioni:
+		righe.append("[b]%s[/b]%s" % [stagioni.nome(), "  —  d'inverno i campi non crescono e non si semina" if stagioni.inverno() else ""])
 	var case := v.edifici.values().filter(func(e): return e.tipo == "casa_greca" and e.finito).size()
 	righe.append("[b]Popolazione: %d[/b] su %d posti  (%d abitazioni)" % [v.popolazione(), v.capacita(), case])
 	righe.append("Coloni liberi %d  ·  portatori %d  ·  lavoratori %d%s" % [v.coloni_liberi, rete.portatori(), v.lavoratori(),

@@ -22,6 +22,7 @@ const SPRITE_COLTURA := {"grano": "campo", "vite": "vite", "orto": "orto", "agru
 
 var dati: DatiMappa
 var oggetti: Node2D
+var stagioni: Stagioni
 var alberi := {}      # Vector2i -> Array[Dictionary] {sprite, specie, crescita (0..3, 3 = adulto), prenotato}
 var rocce := {}       # Vector2i -> {sprite, riserva, prenotata}
 var ulivi := {}       # Vector2i -> Array[Sprite2D]
@@ -393,7 +394,7 @@ func _process(delta: float) -> void:
 		for a in alberi[c]:
 			if a["crescita"] < 3.0:
 				var prima := int(a["crescita"])
-				a["crescita"] = minf(3.0, a["crescita"] + delta / TEMPO_CRESCITA)
+				a["crescita"] = minf(3.0, a["crescita"] + delta * _fattore("alberi") / TEMPO_CRESCITA)
 				var dopo := int(a["crescita"])
 				if dopo != prima:
 					var s: Sprite2D = a["sprite"]
@@ -404,11 +405,11 @@ func _process(delta: float) -> void:
 		var campo: Dictionary = campi[c]
 		if campo["crescita"] < 3.0:
 			var prima := int(campo["crescita"])
-			campo["crescita"] = minf(3.0, campo["crescita"] + delta / TEMPO_CAMPO)
+			campo["crescita"] = minf(3.0, campo["crescita"] + delta * _fattore(campo["coltura"]) / TEMPO_CAMPO)
 			if int(campo["crescita"]) != prima:
 				_imposta_fase(campo)
 	for c in _olive_attesa.keys():
-		_olive_attesa[c] -= delta
+		_olive_attesa[c] -= delta * _fattore("olive")
 		if _olive_attesa[c] <= 0.0:
 			_olive_attesa.erase(c)
 	for c in _ripopola_spada.keys():
@@ -441,3 +442,7 @@ func _imposta_fase(campo: Dictionary) -> void:
 	var s: Sprite2D = campo["sprite"]
 	s.texture = Sprites.texture(nome)
 	s.offset = -Sprites.ancora(nome)
+
+
+func _fattore(coltura: String) -> float:
+	return stagioni.crescita(coltura) if stagioni else 1.0
