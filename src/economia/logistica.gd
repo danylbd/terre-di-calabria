@@ -133,7 +133,7 @@ func _assegna_trasporti() -> void:
 		if _merci_in(prossima) >= MAX_PER_BANDIERA and prossima != dest:
 			continue
 		var t = rete.tratto_tra(m.bandiera, prossima)
-		if t and t.portatore and t.portatore.libero():
+		if t and t.portatore and t.portatore.puo_prendere(m.bandiera):
 			t.portatore.trasporta(m, m.bandiera, prossima)
 	for m in _da_consegnare:
 		_consegna(m)

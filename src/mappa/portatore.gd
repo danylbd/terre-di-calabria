@@ -1,7 +1,8 @@
 class_name Portatore
 extends Colono
 ## Il portatore di un tratto di strada: aspetta a metà del tratto; quando una merce lo aspetta
-## a un capo, va a prenderla, la porta all'altro capo, la posa e torna a metà.
+## a un capo, va a prenderla, la porta all'altro capo, la posa e torna a metà. Se mentre rientra
+## una merce aspetta al capo dove l'ha appena posata, torna indietro a prenderla senza fermarsi.
 
 signal merce_posata(m: Merce, dove: Vector2i)
 
@@ -12,6 +13,7 @@ var tratto                     # ReteStrade.Tratto
 var _merce: Merce
 var _da := Vector2i.ZERO
 var _a := Vector2i.ZERO
+var _capo_lasciato := Vector2i(-1, -1)   # capo dove ha appena posato una merce (mentre rientra)
 
 
 func _ready() -> void:
@@ -22,14 +24,25 @@ func libero() -> bool:
 	return stato == Stato.ATTESA
 
 
+## Può prendere subito una merce che aspetta alla bandierina "da"?
+func puo_prendere(da: Vector2i) -> bool:
+	return stato == Stato.ATTESA or (stato == Stato.RIENTRA and da == _capo_lasciato)
+
+
 ## Incarico: prendere la merce m alla bandierina "da" e portarla alla bandierina "a" (i due capi del tratto).
 func trasporta(m: Merce, da: Vector2i, a: Vector2i) -> void:
 	_merce = m
 	_da = da
 	_a = a
 	m.prenotata = true
+	var tornando := stato == Stato.RIENTRA and da == _capo_lasciato
+	_capo_lasciato = Vector2i(-1, -1)
 	stato = Stato.VA_A_PRENDERE
-	percorri(_punti_verso(da))
+	if tornando:
+		var al_capo: Array[Vector2] = [_centro(da)]
+		percorri(al_capo)
+	else:
+		percorri(_punti_verso(da))
 
 
 ## Il tratto è stato tolto: la merce in spalla torna a terra alla bandierina di partenza.
@@ -47,6 +60,7 @@ func annulla() -> Merce:
 func _on_arrivato(_c: Colono) -> void:
 	match stato:
 		Stato.ARRIVO, Stato.RIENTRA:
+			_capo_lasciato = Vector2i(-1, -1)
 			stato = Stato.ATTESA
 			imposta_foglio("portatore_nessuno")
 		Stato.VA_A_PRENDERE:
@@ -63,6 +77,7 @@ func _on_arrivato(_c: Colono) -> void:
 			m.bandiera = _a
 			imposta_foglio("portatore_nessuno")
 			stato = Stato.RIENTRA
+			_capo_lasciato = _a
 			percorri(_punti_verso_meta(_a))
 			merce_posata.emit(m, _a)
 
