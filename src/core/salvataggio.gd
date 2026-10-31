@@ -85,9 +85,15 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	for e in v.edifici.values():
 		edifici.append({"id": e.id, "tipo": e.tipo, "casella": _v(e.casella), "finito": e.finito, "progresso": e.progresso,
 			"consegnati": e.consegnati, "richiesti": e.richiesti, "ingresso": e.ingresso, "in_arrivo": e.in_arrivo,
-			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "guadagno": e.guadagno, "presidiata": e.presidiata, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono,
+			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "guadagno": e.guadagno, "presidiata": e.presidiata, "soldati": e.soldati + e.soldati_in_arrivo, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono,
 			"lavoratore": e.lavoratore != null and is_instance_valid(e.lavoratore)})
 	d["edifici"] = edifici
+	var nemici := []
+	for n in v.nemici.values():
+		nemici.append([n.tipo, n.casella.x, n.casella.y, n.proprietario, n.soldati])
+	d["nemici"] = nemici
+	# i soldati in marcia tornano nella riserva (quelli all'attacco ricominceranno da capo)
+	d["soldati"] = v.soldati + p.guerra.in_marcia()
 	var bandiere := []
 	for c in rete.bandiere:
 		bandiere.append([c.x, c.y, rete.bandiere[c]["protetta"]])
@@ -130,6 +136,9 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 	_carica_natura(d, ris, dati)
 
 	v.caricamento = true
+	for n in d.get("nemici", []):
+		v.metti_nemico(n[0], Vector2i(int(n[1]), int(n[2])), int(n[3]), int(n[4]))
+	v.soldati = int(d.get("soldati", 0))
 	# prima gli edifici finiti (allargano i confini), poi i cantieri
 	var vecchi := {}                 # id salvato -> Edificio nuovo
 	var ordinati: Array = d["edifici"].duplicate()
@@ -150,6 +159,7 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		e.acquisto = s.get("acquisto", "")
 		e.guadagno = int(s.get("guadagno", 0))
 		e.presidiata = s.get("presidiata", false)
+		e.soldati = int(s.get("soldati", 0))
 		e.manca_attrezzo = s["manca_attrezzo"]
 		e.manca_colono = s["manca_colono"]
 	for b in d["bandiere"]:

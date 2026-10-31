@@ -13,7 +13,7 @@ const FOGLI := {"tronchi": "portatore_tronco", "assi": "portatore_asse", "pietra
 	"pala": "portatore_attrezzi", "falce": "portatore_attrezzi", "canna": "portatore_attrezzi",
 	"sega": "portatore_attrezzi", "martello": "portatore_attrezzi", "argilla": "portatore_sacco",
 	"anfore": "portatore_anfora", "sale": "portatore_sacco", "argento": "portatore_pietra", "monete": "portatore_sacco",
-	"stoffa": "portatore_lana"}
+	"stoffa": "portatore_lana", "armi": "portatore_armi"}
 
 var tipo := ""
 var destinazione: Edificio          # dove deve arrivare

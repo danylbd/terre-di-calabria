@@ -102,6 +102,9 @@ const EDIFICI := {
 	"zecca": {"nome": "Zecca", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Metallo",
 		"tempo": 28.0, "lavoratore": "portatore_nessuno", "ingressi": {"argento": 4, "carbone": 4}, "produce": "monete",
 		"durata": 7.0, "descrizione": "Fonde l'argento e conia le monete per il commercio."},
+	"armaiolo": {"nome": "Armaiolo", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Metallo",
+		"tempo": 26.0, "attrezzo": "martello", "lavoratore": "portatore_nessuno", "ingressi": {"lingotti": 4, "assi": 2},
+		"produce": "armi", "durata": 9.0, "descrizione": "Forgia lance, scudi ed elmi per gli opliti."},
 	"carbonaia": {"nome": "Carbonaia", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Metallo",
 		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "carbone", "durata": 9.0,
 		"descrizione": "Cuoce lentamente i tronchi sotto la terra e ne ricava carbone."},
@@ -113,11 +116,17 @@ const EDIFICI := {
 		"produce": "attrezzi", "durata": 8.0,
 		"descrizione": "Forgia gli attrezzi dei mestieri. Fa per primi quelli che mancano."},
 	"torre": {"nome": "Torre di guardia", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Difesa",
-		"tempo": 30.0, "territorio": 7, "presidio": 1, "lavoratore": "guardia",
-		"descrizione": "Allarga i confini quando una guardia la presidia."},
+		"tempo": 30.0, "territorio": 7, "presidio": 1, "lavoratore": "guardia", "soldati_max": 3,
+		"descrizione": "Allarga i confini quando una guardia la presidia. Ospita 3 soldati, che da qui possono attaccare."},
 	"castello": {"nome": "Castello", "taglia": 3, "costo": {"assi": 6, "pietra": 12}, "categoria": "Difesa",
-		"tempo": 60.0, "territorio": 11, "presidio": 1, "lavoratore": "guardia",
-		"descrizione": "Fortezza di pietra: allarga molto i confini quando è presidiata."},
+		"tempo": 60.0, "territorio": 11, "presidio": 1, "lavoratore": "guardia", "soldati_max": 8,
+		"descrizione": "Fortezza di pietra: allarga molto i confini quando è presidiata. Ospita 8 soldati."},
+	"caserma": {"nome": "Caserma", "taglia": 2, "costo": {"assi": 3, "pietra": 4}, "categoria": "Difesa",
+		"tempo": 30.0, "lavoratore": "portatore_nessuno", "ingressi": {"armi": 4}, "produce": "", "durata": 10.0,
+		"descrizione": "Addestra gli opliti: un colono libero e un'armatura diventano un soldato, che va a presidiare i forti."},
+	"torre_brettia": {"nome": "Torre dei Brettii", "taglia": 2, "costo": {}, "categoria": "Nemici",
+		"tempo": 1.0, "territorio": 7,
+		"descrizione": "Avamposto dei Brettii, il popolo delle montagne. I suoi guerrieri difendono la porta."},
 }
 
 const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra", "grano": "Grano",
@@ -127,7 +136,7 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
 	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
-	"monete": "Monete", "stoffa": "Stoffa"}
+	"monete": "Monete", "stoffa": "Stoffa", "armi": "Armi"}
 ## all'agorà: monete ricavate vendendo una merce (i Greci sono buoni mercanti: prezzi favorevoli)
 const VENDITA := {"olio": 3, "vino": 3, "stoffa": 3, "anfore": 2, "pesce_spada": 2, "miele": 2, "formaggio": 1, "sale": 1,
 	"agrumi": 1}

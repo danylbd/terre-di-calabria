@@ -27,6 +27,9 @@ var nascita := 0.0                   # abitazioni: secondi al prossimo colono
 var acquisto := ""                   # agorà: la merce da comprare con le monete ("" = niente)
 var guadagno := 0                    # agorà: monete ricavate finora
 var presidiata := false              # torri e castelli: la guardia è entrata, i confini si allargano
+var soldati := 0                     # soldati dentro il forte (o difensori di una torre nemica)
+var soldati_in_arrivo := 0
+var proprietario := 1                # 1 il giocatore, 2.. un altro popolo
 var dati_mappa: DatiMappa
 var villaggio: Node
 

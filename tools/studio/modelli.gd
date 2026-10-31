@@ -26,7 +26,7 @@ const REGOLAZIONI := {
 	"vino": [0.0, 0.0, 1.1], "spada": [0.0, 0.0, 1.0], "minerale": [0.3, 0.3, 1.15], "carbone": [0.0, 0.0, 1.0],
 	"lingotto": [0.1, 0.1, 1.0], "brace": [0.0, 0.0, 1.3], "fumo": [0.0, 0.0, 1.0], "argilla": [0.2, 0.2, 1.15],
 	"argilla_cruda": [0.3, 0.3, 1.05], "sale": [0.1, 0.1, 1.0], "moneta": [0.0, 0.0, 1.1], "argento_grezzo": [0.2, 0.2, 1.0],
-	"stoffa_rossa": [0.0, 0.0, 1.15], "bronzo": [0.1, 0.1, 1.1],
+	"stoffa_rossa": [0.0, 0.0, 1.15], "bronzo": [0.1, 0.1, 1.1], "pelliccia": [0.1, 0.2, 1.0],
 }
 
 
@@ -69,6 +69,10 @@ static func catalogo() -> Dictionary:
 		"tessitura": {"crea": tessitura},
 		"agora": {"crea": agora},
 		"castello": {"crea": castello},
+		"armaiolo": {"crea": armaiolo},
+		"caserma": {"crea": caserma},
+		"torre_brettia": {"crea": torre_brettia},
+		"merce_armi": {"crea": merce.bind("armi")},
 		"cantiere_0": {"crea": cantiere.bind(0)},
 		"cantiere_1": {"crea": cantiere.bind(1)},
 		"cantiere_2": {"crea": cantiere.bind(2)},
@@ -134,6 +138,10 @@ static func catalogo() -> Dictionary:
 		c["merce_" + att] = {"crea": merce.bind(att)}
 	c["guardia"] = {"crea": guardia, "posa": posa_cammino,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["guardia_lotta"] = {"crea": guardia, "posa": posa_lotta,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["brettio_lotta"] = {"crea": brettio, "posa": posa_lotta,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["barca_remi"] = {"crea": barca_remi, "posa": posa_remata,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(112, 96), "ancora": Vector2(56, 64)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
@@ -143,7 +151,7 @@ static func catalogo() -> Dictionary:
 		c["lavoratore_%s_lavoro" % att] = {"crea": lavoratore.bind(att), "posa": posa_pesca if att == "canna" else posa_lavoro,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	# persone: fogli di animazione 8 direzioni × 8 passi
-	for carico in ["nessuno", "tronco", "asse", "anfora", "pietra", "covone", "sacco", "cesta", "pesce", "maiale", "carne", "lana", "formaggio", "olive", "uva", "ortaggi", "cipolle", "agrumi", "spada", "carbone", "lingotti", "attrezzi"]:
+	for carico in ["nessuno", "tronco", "asse", "anfora", "pietra", "covone", "sacco", "cesta", "pesce", "maiale", "carne", "lana", "formaggio", "olive", "uva", "ortaggi", "cipolle", "agrumi", "spada", "carbone", "lingotti", "attrezzi", "armi"]:
 		c["portatore_" + carico] = {"crea": portatore.bind("" if carico == "nessuno" else carico), "posa": posa_cammino,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)}
 	return c
@@ -382,6 +390,8 @@ static func materiale(nome: String) -> Material:
 		"argento_grezzo":
 			m.albedo_texture = _rumore(51, 0.7, Color("4a4c54"), Color("c8ccd8"))
 			m.metallic = 0.4
+		"pelliccia":
+			m.albedo_texture = _rumore(53, 0.9, Color("3e2a1a"), Color("7a5a3a"))
 		"bronzo":
 			m.albedo_texture = _rumore(52, 0.5, Color("8a5a20"), Color("d8a048"))
 			m.metallic = 0.6
@@ -585,7 +595,7 @@ static func pila_assi(radice: Node3D, pos: Vector3, strati := 5, rot := 0.0) -> 
 # ------------------------------------------------------------------ persone
 
 ## Portatore: proporzioni esagerate (testa grande, carico ben visibile) per restare leggibile a 45 pixel.
-static func portatore(carico: String) -> Node3D:
+static func portatore(carico: String, squadra := "giocatore", veste := "tunica") -> Node3D:
 	var r := Node3D.new()
 	var corpo := Node3D.new()
 	corpo.name = "corpo"
@@ -598,9 +608,9 @@ static func portatore(carico: String) -> Node3D:
 		corpo.add_child(gamba)
 		gamba.add_child(cilindro(0.022, 0.018, 0.18, Vector3(0, -0.09, 0), "pelle", Vector3.ZERO, 6))
 		gamba.add_child(scatola(Vector3(0.04, 0.02, 0.07), Vector3(0, -0.185, 0.015), "sandali"))
-	corpo.add_child(cilindro(0.085, 0.06, 0.2, Vector3(0, anca + 0.07, 0), "tunica", Vector3.ZERO, 10))
-	corpo.add_child(cilindro(0.075, 0.075, 0.022, Vector3(0, anca + 0.1, 0), "giocatore", Vector3.ZERO, 10))
-	corpo.add_child(cilindro(0.087, 0.087, 0.018, Vector3(0, anca - 0.022, 0), "giocatore", Vector3.ZERO, 10))
+	corpo.add_child(cilindro(0.085, 0.06, 0.2, Vector3(0, anca + 0.07, 0), veste, Vector3.ZERO, 10))
+	corpo.add_child(cilindro(0.075, 0.075, 0.022, Vector3(0, anca + 0.1, 0), squadra, Vector3.ZERO, 10))
+	corpo.add_child(cilindro(0.087, 0.087, 0.018, Vector3(0, anca - 0.022, 0), squadra, Vector3.ZERO, 10))
 	corpo.add_child(sfera(0.075, Vector3(0, anca + 0.25, 0), "pelle"))
 	var capelli := sfera(0.078, Vector3(0, anca + 0.27, -0.01), "capelli", Vector3(1, 0.85, 1))
 	corpo.add_child(capelli)
@@ -645,6 +655,11 @@ static func portatore(carico: String) -> Node3D:
 		"lingotti":
 			for k in 3:
 				corpo.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(-0.01 * k, anca + 0.33 + k * 0.026, 0), "lingotto", Vector3(0, 10 * k, 0)))
+		"armi":
+			var fa := fascio_armi()
+			fa.position = spalla + Vector3(0.06, 0.0, -0.05)
+			fa.rotation_degrees = Vector3(0, 90, 20)
+			corpo.add_child(fa)
 		"attrezzi":
 			for k in 3:
 				var a := attrezzo(["ascia", "piccone", "pala"][k])
@@ -802,6 +817,8 @@ static func merce(tipo: String) -> Node3D:
 			r.add_child(cilindro(0.02, 0.02, 0.004, Vector3(0, 0.235, 0), "miele" if tipo == "olio" else "vino", Vector3.ZERO, 8))
 		"pesce_spada":
 			r.add_child(pesce_spada_modello())
+		"armi":
+			r.add_child(fascio_armi())
 		"ferro":
 			r.add_child(mucchio(Vector3.ZERO, "minerale", 5, 8, 0.04))
 		"carbone":
@@ -2759,4 +2776,116 @@ static func castello() -> Node3D:
 	for k in 3:
 		r.add_child(cassa(Vector3(0.55 + k * 0.12, 0.06, 0.55), k * 20))
 	r.add_child(barile(Vector3(-0.7, 0.06, 0.6), 1.1))
+	return r
+
+
+# =================================================================== SOLDATI (step 13)
+
+## Guerriero brettio: pelliccia, berretto di pelo, scudo di legno ovale e spada corta.
+static func brettio() -> Node3D:
+	var r := portatore("", "bandiera_rossa", "pelliccia")
+	var corpo: Node3D = r.get_node("corpo")
+	var anca := 0.2
+	corpo.add_child(sfera(0.082, Vector3(0, anca + 0.29, -0.01), "pelliccia", Vector3(1, 0.6, 1)))
+	var bs: Node3D = corpo.get_node("braccio_s")
+	bs.add_child(sfera(0.09, Vector3(-0.025, -0.07, 0.03), "legno", Vector3(0.2, 1.2, 0.85)))
+	bs.add_child(sfera(0.025, Vector3(-0.04, -0.07, 0.03), "ferro"))
+	var bd: Node3D = corpo.get_node("braccio_d")
+	bd.add_child(scatola(Vector3(0.012, 0.02, 0.2), Vector3(0, -0.14, 0.1), "ferro"))
+	bd.add_child(scatola(Vector3(0.04, 0.015, 0.02), Vector3(0, -0.14, 0.0), "legno_scuro"))
+	r.set_meta("carico", "spada")
+	return r
+
+
+## Colpo in combattimento: il braccio armato affonda in avanti, lo scudo si alza.
+static func posa_lotta(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale * TAU
+	var corpo: Node3D = modello.get_node("corpo")
+	var bd: Node3D = corpo.get_node("braccio_d")
+	var bs: Node3D = corpo.get_node("braccio_s")
+	var affondo := maxf(0.0, sin(t))
+	bd.rotation = Vector3(-1.0 - affondo * 0.9, 0, 0.2)
+	bs.rotation = Vector3(-0.9 + 0.2 * sin(t * 2.0), 0, -0.35)
+	corpo.rotation.x = 0.12 + affondo * 0.15
+	corpo.position.y = 0.0
+	(corpo.get_node("gamba_s") as Node3D).rotation.x = 0.35
+	(corpo.get_node("gamba_d") as Node3D).rotation.x = -0.25
+
+
+## Fascio di armi: lance, uno scudo rotondo e un elmo.
+static func fascio_armi() -> Node3D:
+	var n := Node3D.new()
+	for k in 3:
+		n.add_child(cilindro(0.006, 0.006, 0.34, Vector3(0, 0.015 + k * 0.012, -0.02 + k * 0.02), "legno", Vector3(0, 20, 90), 5))
+		n.add_child(cilindro(0.012, 0.0, 0.04, Vector3(0.18, 0.015 + k * 0.012, 0.045 - k * 0.02), "ferro", Vector3(0, 20, -90), 5))
+	n.add_child(cilindro(0.07, 0.07, 0.012, Vector3(-0.04, 0.05, 0.04), "bronzo", Vector3(70, 0, 0), 14))
+	n.add_child(sfera(0.04, Vector3(0.06, 0.03, -0.05), "bronzo", Vector3(1, 0.8, 1.1)))
+	return n
+
+
+static func armaiolo() -> Node3D:
+	var r := fabbro()
+	# rastrelliera di lance e scudi appesi al muro davanti
+	for k in 5:
+		r.add_child(cilindro(0.006, 0.006, 0.5, Vector3(0.38 + k * 0.05, 0.25, 0.42), "legno", Vector3(0, 0, -8), 5))
+		r.add_child(cilindro(0.012, 0.0, 0.05, Vector3(0.38 + k * 0.05 - 0.035, 0.52, 0.42), "ferro", Vector3(0, 0, -8), 5))
+	for k in 2:
+		r.add_child(cilindro(0.08, 0.08, 0.014, Vector3(0.62 + k * 0.05, 0.12, 0.2 + k * 0.18), "bronzo", Vector3(0, 0, 80), 16))
+	return r
+
+
+static func caserma() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.62
+	var lz := 0.5
+	var h := 0.38
+	casa_muri(c, lx, lz, h, 271, "pietra_vista")
+	porta_z(c, 0.08, lz * 0.5, 0.15, 0.25)
+	sottotetto(c, lx, lz, 0.07 + h, 22.0)
+	tetto(c, lx + 0.06, lz, 0.07 + h, 22.0, 271)
+	c.add_child(cilindro(0.01, 0.01, 0.5, Vector3(lx * 0.5 - 0.05, 0.07 + h + 0.25, lz * 0.5 - 0.05), "legno", Vector3.ZERO, 6))
+	c.add_child(scatola(Vector3(0.006, 0.16, 0.22), Vector3(lx * 0.5 - 0.05, 0.07 + h + 0.42, lz * 0.5 + 0.06), "stoffa"))
+	# campo d'addestramento: palo con lo scudo bersaglio, rastrelliera, opliti che si esercitano
+	r.add_child(scatola(Vector3(0.75, 0.01, 0.55), Vector3(0.25, 0.005, 0.4), "terra"))
+	r.add_child(cilindro(0.025, 0.025, 0.36, Vector3(0.5, 0.18, 0.35), "legno_vecchio", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.08, 0.08, 0.014, Vector3(0.5, 0.28, 0.39), "paglia", Vector3(90, 0, 0), 14))
+	r.add_child(cilindro(0.03, 0.03, 0.016, Vector3(0.5, 0.28, 0.4), "bandiera_rossa", Vector3(90, 0, 0), 10))
+	for k in 2:
+		var o := guardia()
+		o.position = Vector3(0.05 + k * 0.28, 0, 0.55 - k * 0.15)
+		o.rotation_degrees.y = 150 - k * 60
+		o.scale = Vector3.ONE * 0.95
+		r.add_child(o)
+	r.add_child(fascio_armi())
+	r.get_child(r.get_child_count() - 1).position = Vector3(-0.6, 0, 0.45)
+	return r
+
+
+## Torre dei Brettii: legno su base di pietra grezza, palizzata e pelli stese.
+static func torre_brettia() -> Node3D:
+	var r := Node3D.new()
+	r.add_child(cilindro(0.42, 0.46, 0.18, Vector3(0, 0.09, 0), "roccia_massi", Vector3.ZERO, 10))
+	for k in 10:
+		var a := k * TAU / 10
+		r.add_child(cilindro(0.04, 0.045, 0.75, Vector3(cos(a) * 0.3, 0.55, sin(a) * 0.3), "corteccia", Vector3.ZERO, 7))
+	r.add_child(cilindro(0.38, 0.38, 0.05, Vector3(0, 0.95, 0), "legno_vecchio", Vector3.ZERO, 10))
+	for k in 12:
+		var a := k * TAU / 12
+		r.add_child(cilindro(0.025, 0.02, 0.18, Vector3(cos(a) * 0.36, 1.05, sin(a) * 0.36), "corteccia", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.46, 0.0, 0.4, Vector3(0, 1.32, 0), "paglia", Vector3.ZERO, 12))
+	r.add_child(scatola(Vector3(0.16, 0.26, 0.04), Vector3(0.0, 0.31, 0.3), "buio"))
+	# palizzata di pali appuntiti davanti, pelli stese, fuoco
+	for k in 9:
+		var x := -0.75 + k * 0.08
+		r.add_child(cilindro(0.025, 0.0, 0.32, Vector3(x, 0.16, 0.6), "corteccia", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.2, 0.004, 0.16), Vector3(0.55, 0.2, -0.2), "pelliccia", Vector3(0, 0, 70)))
+	r.add_child(cilindro(0.01, 0.01, 0.3, Vector3(0.55, 0.15, -0.3), "legno_vecchio", Vector3.ZERO, 5))
+	for k in 5:
+		r.add_child(cilindro(0.012, 0.012, 0.12, Vector3(0.5 + 0.03 * cos(k), 0.02, 0.45 + 0.03 * sin(k)), "corteccia", Vector3(0, k * 36, 90), 5))
+	r.add_child(sfera(0.03, Vector3(0.5, 0.04, 0.45), "brace"))
+	r.add_child(cilindro(0.012, 0.012, 0.7, Vector3(-0.3, 1.4, -0.1), "legno", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.006, 0.16, 0.22), Vector3(-0.3, 1.62, 0.02), "bandiera_rossa"))
 	return r

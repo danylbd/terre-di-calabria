@@ -14,6 +14,8 @@ var villaggio: Villaggio
 var logistica: Logistica
 var risorse: RisorseNaturali
 var stagioni: Stagioni
+var guerra: Guerra
+var _attaccante: Edificio
 
 var menu: MenuCostruzione
 var pannello: PannelloEdificio
@@ -68,6 +70,11 @@ func _ready() -> void:
 	add_child(stagioni)
 	risorse.stagioni = stagioni
 	villaggio.risorse = risorse
+	guerra = Guerra.new()
+	add_child(guerra)
+	guerra.prepara(villaggio, rete, dati, oggetti)
+	villaggio.guerra = guerra
+	guerra.messaggio.connect(_mostra_avviso)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
@@ -78,6 +85,7 @@ func _ready() -> void:
 	Salvataggio.da_caricare = ""
 	if da_caricare == "":
 		_metti_villaggio()
+		_metti_brettii()
 
 	camera = CameraMappa.new()
 	camera.area = terreno.limiti()
@@ -101,6 +109,7 @@ func _ready() -> void:
 			_mostra_avviso("Partita caricata", false)
 		else:
 			_metti_villaggio()
+			_metti_brettii()
 			_mostra_avviso("Il salvataggio non si può leggere: nuova partita", true)
 	barra.aggiorna(villaggio.scorte)
 	barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita())
@@ -195,6 +204,12 @@ func _clic(c: Vector2i) -> void:
 				_mostra_avviso(perche, true)
 			elif rete.aggiungi_bandiera(c):
 				_mostra_avviso("Bandierina piantata", false)
+		"attacca":
+			var n := villaggio.nemico_in(c)
+			if n == null:
+				_mostra_avviso("Clicca una torre nemica", true)
+			elif is_instance_valid(_attaccante) and guerra.attacca(_attaccante, n) > 0:
+				_esci_modalita()
 		"demolisci":
 			var e := villaggio.edificio_in(c)
 			if e:
@@ -209,6 +224,8 @@ func _clic(c: Vector2i) -> void:
 		"":
 			# clic su un edificio: il suo pannello; su una bandierina: scorciatoia per iniziare una strada
 			var e := villaggio.edificio_in(c)
+			if e == null:
+				e = villaggio.nemico_in(c)
 			if e:
 				Suono.suona("clic")
 				pannello.mostra(e)
@@ -475,6 +492,43 @@ func _aggiorna_ambiente() -> void:
 		Suono.ambiente("uccelli", -22.0)
 
 
+# --------------------------------------------------------------- i Brettii
+
+## Due avamposti dei Brettii, il popolo delle montagne, a una ventina di caselle dal villaggio.
+func _metti_brettii() -> void:
+	var centro := dati.villaggio
+	var presi: Array[Vector2i] = []
+	for verso in [Vector2(-1, -0.4), Vector2(-0.3, 1)]:
+		var migliore := Vector2i(-1, -1)
+		var punteggio := -INF
+		for y in dati.altezza:
+			for x in dati.larghezza:
+				var c := Vector2i(x, y)
+				var d := Vector2(c - centro)
+				if d.length() < 18.0 or d.length() > 24.0 or not _posto_libero(c, 2):
+					continue
+				var s: float = d.normalized().dot((verso as Vector2).normalized())
+				for altro in presi:
+					if Vector2(c - altro).length() < 12.0:
+						s -= 10.0
+				if s > punteggio:
+					punteggio = s
+					migliore = c
+		if migliore.x >= 0:
+			presi.append(migliore)
+			villaggio.metti_nemico("torre_brettia", migliore, 2, 3)
+
+
+func _posto_libero(c: Vector2i, taglia: int) -> bool:
+	for y in range(c.y, c.y + taglia + 1):
+		for x in range(c.x, c.x + taglia):
+			if not dati.dentro(x, y) or dati.occupante(x, y) != 0 or dati.proprietario(x, y) != 0:
+				return false
+			if dati.tipo(x, y) not in [T.PRATO, T.SECCO, T.TERRA, T.BOSCO]:
+				return false
+	return true
+
+
 # --------------------------------------------------------------- stagioni
 
 ## Luce generale della mappa (le stagioni la scaldano o la raffreddano); non tocca l'interfaccia.
@@ -539,6 +593,13 @@ func _crea_interfaccia() -> void:
 		pannello.chiudi_pannello()
 		menu.premi_attrezzo("strada")
 		_clic_strada(e.bandiera))
+	pannello.attacca.connect(func(e: Edificio):
+		pannello.chiudi_pannello()
+		_esci_modalita()
+		modalita = "attacca"
+		_attaccante = e
+		Input.set_default_cursor_shape(Input.CURSOR_CROSS)
+		_mostra_avviso("Clicca la torre nemica da attaccare (Esc per annullare)", false))
 	pannello.demolisci.connect(func(e: Edificio):
 		pannello.chiudi_pannello()
 		villaggio.demolisci(e)

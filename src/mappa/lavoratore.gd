@@ -14,7 +14,7 @@ const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardab
 	"segheria": ["sega", 1.45], "fattoria": ["falce", 1.1], "vigneto": ["falce", 1.4], "ortolano": ["vanga", 1.3],
 	"agrumeto": ["falce", 1.6], "uliveto": ["falce", 1.5], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4],
 	"miniera_ferro": ["piccone", 0.9], "miniera_argento": ["piccone", 0.9], "fabbro": ["martello", 0.7],
-	"fonderia": ["macina", 2.0], "zecca": ["martello", 1.2], "argillaio": ["vanga", 1.3], "fornace": ["macina", 2.2]}
+	"fonderia": ["macina", 2.0], "zecca": ["martello", 1.2], "armaiolo": ["martello", 0.8], "caserma": ["scontro", 2.5], "argillaio": ["vanga", 1.3], "fornace": ["macina", 2.2]}
 ## secondi di lavoro sul posto (o dentro l'edificio)
 const DURATA := {"boscaiolo": 4.0, "cava": 4.0, "guardaboschi": 3.0, "fattoria": 3.5, "pescatore": 6.0,
 	"uliveto": 4.0, "pesca_spada": 9.0}
@@ -201,6 +201,12 @@ func _cerca_campo(da: Vector2i) -> bool:
 
 
 func _fine_lavoro() -> void:
+	if mestiere == "caserma":
+		edificio.villaggio.arruola()
+		edificio.prodotti += 1
+		stato = Stato.DENTRO
+		_attesa = PAUSA
+		return
 	if _coltura != "":
 		if _semina:
 			if dati.occupante(_bersaglio.x, _bersaglio.y) == 0:
@@ -259,6 +265,14 @@ func _lavora_dentro() -> void:
 		return
 	if info.has("presidio"):
 		return                 # la guardia sta di vedetta: niente da produrre
+	if mestiere == "caserma":
+		# un'armatura e un colono libero diventano un oplita
+		if edificio.ingresso.get("armi", 0) <= 0 or not edificio.villaggio.prendi_colono():
+			return
+		edificio.ingresso["armi"] -= 1
+		stato = Stato.LAVORO
+		_attesa = info.get("durata", DURATA_DENTRO)
+		return
 	if mestiere == "fabbro":
 		_attrezzo_scelto = logistica.attrezzo_da_fare()
 		if _attrezzo_scelto == "":
