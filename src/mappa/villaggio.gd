@@ -27,7 +27,7 @@ func _init(d: DatiMappa, nodo_oggetti: Node2D) -> void:
 
 # ------------------------------------------------------------ verifiche
 
-func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := true) -> String:
+func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> String:
 	var info := CatalogoEdifici.dati(tipo)
 	var s: int = info["taglia"]
 	for y in range(c.y, c.y + s):
@@ -79,10 +79,6 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
 		if perche != "":
 			messaggio.emit(perche, true)
 			return null
-		var costo: Dictionary = CatalogoEdifici.dati(tipo)["costo"]
-		for r in costo:
-			scorte[r] -= costo[r]
-		scorte_cambiate.emit()
 	var e := Edificio.new()
 	e.prepara(_prossimo_id, tipo, c, gia_finito)
 	_prossimo_id += 1
@@ -99,7 +95,7 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
 	rete.segna_ostacoli_vecchi()
 	if not gia_finito:
 		if rete.collegata(e.bandiera):
-			messaggio.emit("Cantiere aperto: %s" % CatalogoEdifici.dati(tipo)["nome"], false)
+			messaggio.emit("Cantiere aperto: %s — i portatori consegneranno %s" % [CatalogoEdifici.dati(tipo)["nome"], CatalogoEdifici.testo_costo(tipo)], false)
 		else:
 			messaggio.emit("Collega la bandierina del cantiere con una strada", false)
 	_aggiorna_collegamenti()
@@ -113,14 +109,20 @@ func demolisci(e: Edificio) -> void:
 	for y in range(e.casella.y, e.casella.y + e.taglia):
 		for x in range(e.casella.x, e.casella.x + e.taglia):
 			dati.occupa(x, y, 0)
-	# si recupera metà dei materiali
-	var costo: Dictionary = CatalogoEdifici.dati(e.tipo)["costo"]
-	for r in costo:
-		scorte[r] += int(costo[r] / 2)
+	# materiali recuperati: tutti quelli già arrivati al cantiere, metà del costo se l'edificio era finito
+	var recupero: Dictionary = e.consegnati
+	if e.finito:
+		recupero = {}
+		var costo: Dictionary = CatalogoEdifici.dati(e.tipo)["costo"]
+		for r in costo:
+			recupero[r] = int(costo[r] / 2)
+	for r in recupero:
+		scorte[r] = scorte.get(r, 0) + recupero[r]
 	edifici.erase(e.id)
 	rete.libera_protezione(e.bandiera)
 	rete.segna_ostacoli_vecchi()
 	e.queue_free()
+	rete._ricalcola()
 	scorte_cambiate.emit()
 	_ricalcola_territorio()
 	messaggio.emit("%s demolito" % CatalogoEdifici.dati(e.tipo)["nome"], false)

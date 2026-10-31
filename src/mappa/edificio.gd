@@ -14,6 +14,9 @@ var progresso := 0.0                 # 0..1
 var tempo_totale := 20.0
 var finito := false
 var collegato := false               # la sua bandierina è collegata a un magazzino
+var fabbisogno := {}                 # materiali che servono al cantiere
+var richiesti := {}                  # già partiti dal magazzino verso il cantiere
+var consegnati := {}                 # già arrivati
 
 var _sprite: Sprite2D
 var _fase := -1
@@ -26,6 +29,7 @@ func prepara(p_id: int, p_tipo: String, p_casella: Vector2i, gia_finito := false
 	var d := CatalogoEdifici.dati(tipo)
 	taglia = d["taglia"]
 	tempo_totale = d["tempo"]
+	fabbisogno = (d["costo"] as Dictionary).duplicate()
 	bandiera = Vector2i(casella.x + taglia - 1, casella.y + taglia)
 	_sprite = Sprite2D.new()
 	_sprite.centered = false
@@ -35,6 +39,15 @@ func prepara(p_id: int, p_tipo: String, p_casella: Vector2i, gia_finito := false
 		_finisci(false)
 	else:
 		_aggiorna_aspetto()
+
+
+func frazione_materiali() -> float:
+	var tot := 0
+	var ok := 0
+	for r in fabbisogno:
+		tot += fabbisogno[r]
+		ok += consegnati.get(r, 0)
+	return 1.0 if tot == 0 else float(ok) / tot
 
 
 func centro() -> Vector2:
@@ -47,9 +60,12 @@ func _process(delta: float) -> void:
 	if not collegato:
 		queue_redraw()
 		return
-	progresso = minf(1.0, progresso + delta / tempo_totale)
-	_aggiorna_aspetto()
+	# il cantiere avanza solo fin dove arrivano i materiali consegnati
+	var limite := frazione_materiali()
+	if progresso < limite:
+		progresso = minf(limite, progresso + delta / tempo_totale)
 	queue_redraw()
+	_aggiorna_aspetto()
 	if progresso >= 1.0:
 		_finisci(true)
 
@@ -87,8 +103,9 @@ func _draw() -> void:
 	# barra di avanzamento del cantiere
 	var w := 64.0
 	var y := -62.0 if taglia == 1 else -110.0
-	draw_rect(Rect2(-w * 0.5 - 2, y - 2, w + 4, 10), Color(Palette.INCHIOSTRO, 0.8))
-	draw_rect(Rect2(-w * 0.5, y, w * progresso, 6), Palette.OCRA if collegato else Color(0.6, 0.6, 0.6))
+	draw_rect(Rect2(-w * 0.5 - 2, y - 2, w + 4, 14), Color(Palette.INCHIOSTRO, 0.8))
+	draw_rect(Rect2(-w * 0.5, y, w * frazione_materiali(), 3), Palette.PERGAMENA_CHIARA)
+	draw_rect(Rect2(-w * 0.5, y + 4, w * progresso, 6), Palette.OCRA if collegato else Color(0.6, 0.6, 0.6))
 	if not collegato:
 		# segnale: manca la strada
 		var c := Vector2(0, y - 22)

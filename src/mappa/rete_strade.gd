@@ -5,6 +5,8 @@ extends Node2D
 ## (Nello step 04 i portatori inizieranno a passarsi le merci di bandierina in bandierina.)
 
 signal cambiata
+signal portatore_nuovo(p: Portatore)
+signal merce_rilasciata(m: Merce)
 
 const T := DatiMappa.Terreno
 const LUNGHEZZA_MAX := 32
@@ -17,7 +19,7 @@ class Tratto:
 	var b := Vector2i.ZERO
 	var percorso: Array[Vector2i] = []
 	var linea: Line2D
-	var portatore: Colono
+	var portatore: Portatore
 
 
 var dati: DatiMappa
@@ -31,6 +33,8 @@ var _ostacoli_vecchi := true
 var _prossimo_id := 1
 var _anteprima: Line2D
 var _collegate := {}          # bandierine raggiungibili da un magazzino
+var _adiacenti := {}          # bandierina -> [Tratto]
+var _instradamento := {}      # destinazione -> {bandierina: prossima bandierina}
 
 
 func prepara(d: DatiMappa, v: Villaggio, nodo_oggetti: Node2D) -> void:
@@ -210,6 +214,9 @@ func _rimuovi_tratto(t: Tratto) -> void:
 	if t.linea:
 		t.linea.queue_free()
 	if t.portatore:
+		var m := t.portatore.annulla()
+		if m:
+			merce_rilasciata.emit(m)
 		t.portatore.queue_free()
 	tratti.erase(t.id)
 
@@ -287,6 +294,8 @@ func _ricalcola() -> void:
 	for t in tratti.values():
 		adiacenti.get_or_add(t.a, []).append(t)
 		adiacenti.get_or_add(t.b, []).append(t)
+	_adiacenti = adiacenti
+	_instradamento.clear()
 	_collegate.clear()
 	var coda: Array[Vector2i] = []
 	for e in villaggio.edifici.values():
@@ -324,14 +333,54 @@ func _manda_portatore(t: Tratto, adiacenti: Dictionary) -> void:
 				for c in p:
 					punti.append(Vector2(c) + Vector2(0.5, 0.5))
 				break
-	var meta := t.percorso.size() / 2
-	for k in meta + 1:
+	var nuovo := Portatore.new()
+	nuovo.tratto = t
+	oggetti.add_child(nuovo)
+	var meta_punti := t.percorso.size() / 2
+	for k in meta_punti + 1:
 		punti.append(Vector2(t.percorso[k]) + Vector2(0.5, 0.5))
-	if t.percorso.size() % 2 == 0:
-		# tratto con numero pari di caselle: aspetta tra le due centrali
-		punti[-1] = (Vector2(t.percorso[meta - 1]) + Vector2(t.percorso[meta])) * 0.5 + Vector2(0.5, 0.5)
-	var c := Colono.new()
-	oggetti.add_child(c)
-	c.prepara(dati, punti[0] if punti.size() > 0 else Vector2(t.a) + Vector2(0.5, 0.5))
-	c.percorri(punti)
-	t.portatore = c
+	punti[-1] = nuovo.punto_meta()
+	nuovo.prepara(dati, punti[0])
+	nuovo.percorri(punti)
+	t.portatore = nuovo
+	portatore_nuovo.emit(nuovo)
+
+
+
+# ------------------------------------------------------------ instradamento delle merci
+
+func tratto_tra(f1: Vector2i, f2: Vector2i) -> Tratto:
+	for t in _adiacenti.get(f1, []):
+		if (t.a == f1 and t.b == f2) or (t.b == f1 and t.a == f2):
+			return t
+	return null
+
+
+## Prossima bandierina sulla strada più corta da "da" verso "a" (Vector2i(-1, -1) se non c'è strada).
+func prossimo_salto(da: Vector2i, a: Vector2i) -> Vector2i:
+	if not _instradamento.has(a):
+		_instradamento[a] = _calcola_verso(a)
+	return _instradamento[a].get(da, Vector2i(-1, -1))
+
+
+func _calcola_verso(a: Vector2i) -> Dictionary:
+	# Dijkstra all'indietro dalla destinazione: per ogni bandierina, il primo passo verso "a"
+	var dist := {a: 0.0}
+	var prossimo := {}
+	var aperti: Array[Vector2i] = [a]
+	while aperti.size() > 0:
+		var migliore := 0
+		for k in aperti.size():
+			if dist[aperti[k]] < dist[aperti[migliore]]:
+				migliore = k
+		var f: Vector2i = aperti[migliore]
+		aperti.remove_at(migliore)
+		for t in _adiacenti.get(f, []):
+			var altra: Vector2i = t.b if t.a == f else t.a
+			var d: float = dist[f] + t.percorso.size()
+			if d < dist.get(altra, INF):
+				dist[altra] = d
+				prossimo[altra] = f
+				if not aperti.has(altra):
+					aperti.append(altra)
+	return prossimo
