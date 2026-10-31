@@ -7,7 +7,7 @@ const GRUPPI := [
 	["Cibo", ["grano", "farina", "acqua", "pane", "pesce", "pesce_spada", "maiale", "carne", "latte", "formaggio",
 		"ortaggi", "cipolle", "olive"]],
 	["Lusso", ["vino", "olio", "agrumi", "miele", "lana", "stoffa", "anfore"]],
-	["Metallo", ["ferro", "carbone", "lingotti", "argento", "monete"]],
+	["Metallo", ["ferro", "carbone", "lingotti", "argento", "monete", "armi"]],
 	["Altro", ["argilla", "sale"]],
 	["Attrezzi", ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]],
 ]
@@ -73,6 +73,10 @@ func _riempi() -> void:
 	righe.append("[b]Popolazione: %d[/b] su %d posti  (%d abitazioni)" % [v.popolazione(), v.capacita(), case])
 	righe.append("Coloni liberi %d  ·  portatori %d  ·  lavoratori %d%s" % [v.coloni_liberi, rete.portatori(), v.lavoratori(),
 		"  ·  in arrivo %d" % v.in_cammino if v.in_cammino > 0 else ""])
+	var nei_forti := 0
+	for e in v.edifici.values():
+		nei_forti += e.soldati
+	righe.append("Soldati: %d nei forti, %d di riserva" % [nei_forti, v.soldati])
 	var senza := rete.tratti_senza_portatore()
 	if senza > 0:
 		righe.append("[color=#a8321e]%d strade aspettano un portatore[/color]" % senza)

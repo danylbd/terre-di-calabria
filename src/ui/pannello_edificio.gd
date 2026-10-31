@@ -5,6 +5,7 @@ extends PanelContainer
 
 signal strada_da(e: Edificio)
 signal demolisci(e: Edificio)
+signal attacca(e: Edificio)
 
 var edificio: Edificio
 var villaggio: Villaggio
@@ -14,6 +15,8 @@ var _icona: TextureRect
 var _aggiorna := 0.0
 var _compra: OptionButton
 var _riga_compra: HBoxContainer
+var _pulsanti: HBoxContainer
+var _attacca: Button
 
 
 func _ready() -> void:
@@ -70,6 +73,12 @@ func _ready() -> void:
 	var pulsanti := HBoxContainer.new()
 	pulsanti.add_theme_constant_override("separation", 8)
 	colonna.add_child(pulsanti)
+	_pulsanti = pulsanti
+	_attacca = Button.new()
+	_attacca.text = "Attacca"
+	_attacca.tooltip_text = "Scegli una torre nemica vicina: partono tutti i soldati tranne uno"
+	_attacca.custom_minimum_size = Vector2(100, 36)
+	_attacca.pressed.connect(func(): attacca.emit(edificio))
 	var strada := Button.new()
 	strada.text = "Strada da qui"
 	strada.custom_minimum_size = Vector2(150, 36)
@@ -80,6 +89,7 @@ func _ready() -> void:
 	demol.custom_minimum_size = Vector2(120, 36)
 	demol.pressed.connect(func(): demolisci.emit(edificio))
 	pulsanti.add_child(demol)
+	pulsanti.add_child(_attacca)
 	visible = false
 
 
@@ -89,6 +99,7 @@ func mostra(e: Edificio) -> void:
 	_icona.texture = Sprites.icona(e.tipo)
 	_titolo.text = CatalogoEdifici.dati(e.tipo)["nome"]
 	_riga_compra.visible = e.tipo == "agora"
+	_pulsanti.visible = e.proprietario == 1
 	if e.tipo == "agora":
 		_compra.select(0 if e.acquisto == "" else CatalogoEdifici.ACQUISTO.keys().find(e.acquisto) + 1)
 	_riempi()
@@ -116,6 +127,14 @@ func _riempi() -> void:
 	var info := CatalogoEdifici.dati(e.tipo)
 	var righe := []
 	righe.append("[i]%s[/i]" % info["descrizione"])
+	_attacca.visible = info.has("soldati_max") and e.presidiata
+	_attacca.disabled = e.soldati < 2
+	if e.proprietario != 1:
+		righe.append("[b]Difensori: %d[/b]" % e.soldati)
+		_testo.text = "\n".join(righe)
+		return
+	if info.has("soldati_max") and e.finito:
+		righe.append("Soldati: %d / %d%s" % [e.soldati, info["soldati_max"], "  (+%d in arrivo)" % e.soldati_in_arrivo if e.soldati_in_arrivo > 0 else ""])
 	righe.append("[b]%s[/b]" % stato(e, villaggio))
 	if not e.finito:
 		for r in e.fabbisogno:
@@ -165,6 +184,12 @@ static func stato(e: Edificio, v: Villaggio) -> String:
 		return "Il prossimo colono nasce tra %d s" % ceili(maxf(e.nascita, 0.0))
 	if not info.has("lavoratore"):
 		return "Pronto"
+	if e.tipo == "caserma" and e.lavoratore and e.lavoratore.entrato:
+		if e.ingresso.get("armi", 0) <= 0:
+			return "Aspetta le armi dall'armaiolo"
+		if v.coloni_liberi <= 0:
+			return "Non ci sono coloni liberi da addestrare"
+		return "Addestra gli opliti (finora %d)" % e.prodotti
 	if e.lavoratore == null:
 		if e.manca_attrezzo:
 			return "Aspetta un attrezzo: %s" % CatalogoEdifici.ATTREZZO_UNO[info["attrezzo"]]

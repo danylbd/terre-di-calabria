@@ -72,3 +72,9 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Confine che si ritira: edifici fuori bruciano, strade e bandierine fuori spariscono. Pali di confine colorati per popolo; cerchio dei nuovi confini mentre si piazza un forte. Messaggi di demolizione resi neutri.
 - Fase 2 della roadmap ora ha la colonna Stato. Versione 0.14.0. Prossimo: step 13 soldati e conquista.
 - Bug trovato dai test: un produttore si fermava se alla sua bandierina c'erano 3+ merci di passaggio (incrocio trafficato). Ora `merci_in_uscita` conta solo le merci prodotte da quell'edificio (`Merce.origine`).
+
+## 2026-11-01 04:00 — step 13 soldati e conquista
+- Armaiolo (lingotti + assi → armi), caserma (un colono libero + armi → oplita di riserva), forti che ospitano soldati (torre 3, castello 8): i soldati della riserva li raggiungono a piedi.
+- Due avamposti dei Brettii a inizio partita (sprite: torre di legno e paglia, guerriero con pelliccia). Attacco dal pannello del forte ("Attacca", poi clic sulla torre nemica): duelli alla porta (suono "scontro"), conquista → la torre diventa nostra con i vincitori dentro.
+- Bug trovato: più attaccanti conquistavano la stessa torre nello stesso istante (tre torri sovrapposte). Corretto.
+- Test: test_guerra (con strade non più lunghe di 14 caselle). Versione 0.15.0. Prossimo: step 14 avversario controllato dal computer.

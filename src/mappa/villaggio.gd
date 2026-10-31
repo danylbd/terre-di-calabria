@@ -27,6 +27,9 @@ var coloni_liberi := 40              # coloni in magazzino, pronti a fare i port
 var in_cammino := 0                  # coloni appena nati che vanno verso il magazzino
 var _richiamo := 0.0
 var centri_esterni := []             # territori di altri popoli: [casella, raggio, proprietario]
+var nemici := {}                     # id -> Edificio di un altro popolo (torri con i loro difensori)
+var soldati := 0                     # soldati di riserva, pronti a raggiungere i forti
+var guerra: Guerra
 var caricamento := false             # si sta ricostruendo una partita salvata: niente costi né messaggi
 
 const TEMPO_NASCITA := 40.0          # secondi tra una nascita e l'altra in ogni abitazione
@@ -188,7 +191,51 @@ func lavoratori() -> int:
 
 
 func popolazione() -> int:
-	return coloni_liberi + in_cammino + lavoratori() + (rete.portatori() if rete else 0)
+	var nei_forti := 0
+	for e in edifici.values():
+		nei_forti += e.soldati
+	return coloni_liberi + in_cammino + lavoratori() + (rete.portatori() if rete else 0) + soldati + nei_forti \
+		+ (guerra.in_marcia() if guerra else 0)
+
+
+func magazzino() -> Edificio:
+	for m in edifici.values():
+		if m.tipo == "magazzino" and m.finito:
+			return m
+	return null
+
+
+func nemico_in(c: Vector2i) -> Edificio:
+	return nemici.get(dati.occupante(c.x, c.y))
+
+
+## Un altro popolo costruisce una torre già finita, con i suoi difensori.
+func metti_nemico(tipo: String, c: Vector2i, chi: int, difensori: int) -> Edificio:
+	var e := Edificio.new()
+	e.dati_mappa = dati
+	e.villaggio = self
+	e.proprietario = chi
+	e.prepara(_prossimo_id, tipo, c, true)
+	_prossimo_id += 1
+	e.position = dati.a_schermo(e.centro().x, e.centro().y)
+	e.soldati = difensori
+	oggetti.add_child(e)
+	nemici[e.id] = e
+	for y in range(c.y, c.y + e.taglia):
+		for x in range(c.x, c.x + e.taglia):
+			dati.occupa(x, y, e.id)
+			togli_decori.emit(Vector2i(x, y))
+	_ricalcola_territorio()
+	return e
+
+
+func rimuovi_nemico(e: Edificio) -> void:
+	nemici.erase(e.id)
+	for y in range(e.casella.y, e.casella.y + e.taglia):
+		for x in range(e.casella.x, e.casella.x + e.taglia):
+			dati.occupa(x, y, 0)
+	e.queue_free()
+	_ricalcola_territorio()
 
 
 ## Quanti coloni il villaggio può ospitare: le abitazioni e i magazzini finiti.
@@ -284,6 +331,8 @@ func _ricalcola_territorio() -> void:
 			centri.append([Vector2i(e.centro()), RAGGIO_MAGAZZINO, 1])
 		elif CatalogoEdifici.dati(e.tipo).has("territorio") and e.presidiata:
 			centri.append([Vector2i(e.centro()), float(CatalogoEdifici.dati(e.tipo)["territorio"]), 1])
+	for n in nemici.values():
+		centri.append([Vector2i(n.centro()), float(CatalogoEdifici.dati(n.tipo)["territorio"]), n.proprietario])
 	centri.append_array(centri_esterni)
 	dati.calcola_territorio(centri)
 	if not caricamento:
@@ -391,6 +440,12 @@ func metti_lavoratore(e: Edificio) -> void:
 	var qui: Array[Vector2] = [e.centro()]
 	l.avvia(e, risorse, logistica, rete, qui)
 	e.lavoratore = l
+
+
+## La caserma arruola: un colono libero diventa un soldato di riserva.
+func arruola() -> void:
+	soldati += 1
+	popolazione_cambiata.emit()
 
 
 func _conta(tipo: String) -> int:

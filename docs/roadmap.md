@@ -27,7 +27,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | Step | Nome | Stato |
 |---|---|---|
 | 12 | Territorio e torri | fatto |
-| 13 | Soldati e conquista | |
+| 13 | Soldati e conquista | fatto |
 | 14 | Avversario controllato dal computer | |
 | 15 | Scelta all'avvio: solo pace / solo guerra / pace poi guerra | |
 

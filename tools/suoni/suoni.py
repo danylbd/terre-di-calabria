@@ -396,11 +396,25 @@ def macina(rng):
     return dissolvi_bordi(normalizza(x, 0.6), 0.08, 0.15)
 
 
+def scontro(rng):
+    """Bronzo contro bronzo: due colpi metallici ravvicinati e un tonfo sullo scudo."""
+    n = int(0.6 * FC)
+    x = [0.0] * n
+    for t0, f0 in ((0.0, rng.uniform(900, 1200)), (rng.uniform(0.12, 0.2), rng.uniform(700, 1000))):
+        for rapporto, vol, dec in ((1.0, 0.5, 0.12), (2.76, 0.3, 0.06), (5.4, 0.2, 0.03)):
+            m = int(0.4 * FC)
+            s = [math.sin(DUE_PI * f0 * rapporto * i / FC) for i in range(m)]
+            mescola(x, per(s, inviluppo(m, 0.0005, dec)), t0, vol)
+    colpo = per(passa_basso(rumore(int(0.2 * FC), rng), 300), inviluppo(int(0.2 * FC), 0.002, 0.05))
+    mescola(x, colpo, 0.05, 1.2)
+    return dissolvi_bordi(normalizza(x, 0.75))
+
+
 # ------------------------------------------------------------------ elenco
 
 VARIANTI = {"ascia": (ascia, 3), "piccone": (piccone, 3), "sega": (sega, 2), "vanga": (vanga, 2),
             "martello": (martello, 3), "albero_cade": (albero_cade, 1),
-            "falce": (falce, 2), "tuffo": (tuffo, 2), "macina": (macina, 1),
+            "falce": (falce, 2), "scontro": (scontro, 3), "tuffo": (tuffo, 2), "macina": (macina, 1),
             "clic": (clic, 1), "posa": (posa, 1), "completato": (completato, 1), "errore": (errore, 1)}
 LOOP = {"vento": vento, "mare": mare, "uccelli": uccelli, "cicale": cicale}
 
