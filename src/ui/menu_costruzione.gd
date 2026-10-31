@@ -80,7 +80,7 @@ func _mostra_categoria(cat: String) -> void:
 		c.queue_free()
 	_pulsanti.clear()
 	var tipi := CatalogoEdifici.della_categoria(cat)
-	_nota.text = "" if tipi.size() > 0 else "Miniere, fonderia e fabbro arriveranno con lo step 07."
+	_nota.text = "" if tipi.size() > 0 else "Torri e soldati arriveranno con la guerra."
 	_nota.visible = tipi.is_empty()
 	for tipo in tipi:
 		var d := CatalogoEdifici.dati(tipo)
@@ -96,6 +96,8 @@ func _mostra_categoria(cat: String) -> void:
 		b.add_theme_font_size_override("font_size", 12 if d["nome"].length() > 11 else 13)
 		b.add_theme_constant_override("icon_max_width", 84)
 		b.tooltip_text = "%s\n%s\nCosto: %s" % [d["nome"], d["descrizione"], CatalogoEdifici.testo_costo(tipo)]
+		if d.has("attrezzo"):
+			b.tooltip_text += "\nAttrezzo: %s (dal magazzino)" % CatalogoEdifici.ATTREZZO_UNO[d["attrezzo"]]
 		b.toggled.connect(func(on: bool):
 			if on:
 				edificio_scelto.emit(tipo)

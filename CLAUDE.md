@@ -48,14 +48,17 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06 (in `main`, release v0.8.0).
+Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07 (in `main`, release v0.9.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
 
 - Step 06 (cibo): campi generici per coltura in `risorse_naturali.gd` (`campi`, grano/vite/orto/agrumi, perenni), olive sugli ulivi, pesce e pesce spada che si ripopolano; nel catalogo i campi `coltura`, `durata`, `vicino_mare`, `produce` anche come elenco (prodotti a turno). `Logistica.serve()` ferma chi produce senza materie prime quando non serve. Barca: foglio `barca_remi` sull'acqua. Test: `tools/test/test_cibo.gd`, `test_allevamenti.gd`, `test_colture.gd`.
 
-**In corso: step 07 – metallo** (ramo `step-07-metallo`): miniere, fonderia, fabbro, attrezzi, nuovi mestieri. I minatori mangiano (pane, pesce, carne, ortaggi, cipolle: vedi `docs/design.md`).
+- Step 07 (metallo): giacimenti di ferro nella roccia (`RisorseNaturali.minerali`), miniera sulla roccia (anche sopra i massi) che mangia un cibo qualsiasi per turno (`cibo` nel catalogo, `CatalogoEdifici.CIBI`), carbonaia, fonderia, fabbro che forgia l'attrezzo più richiesto (`Logistica.attrezzo_da_fare()`). Gli artigiani arrivano solo con il loro attrezzo (`attrezzo` nel catalogo, scorte iniziali in `villaggio.gd`). Chi trasforma si ferma oltre `SCORTA_MASSIMA` se nessuno chiede il prodotto. Test: `tools/test/test_metallo.gd`.
+- **Dopo aver generato sprite con lo studio, esegui sempre `--import`** prima di test e screenshot, altrimenti le texture nuove non si caricano.
+
+**In corso: step 08 – popolazione e statistiche** (ramo `step-08-popolazione`): abitazioni che fanno crescere i coloni, portatori contati, pannelli informativi.
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

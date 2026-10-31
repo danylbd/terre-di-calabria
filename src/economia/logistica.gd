@@ -8,6 +8,7 @@ signal scorte_cambiate
 const INTERVALLO_USCITA := 0.7      # secondi tra un'uscita e l'altra da un magazzino
 const MAX_PER_BANDIERA := 8
 const SCORTA_MINIMA := 6            # chi produce senza materie prime (il pozzo) si ferma oltre questa scorta
+const SCORTA_MASSIMA := 12          # chi trasforma (carbonaia, mulino...) si ferma oltre questa, se nessuno ne chiede
 
 var dati: DatiMappa
 var villaggio: Villaggio
@@ -68,7 +69,7 @@ func _prossima_richiesta(mag: Edificio) -> Array:
 	for e in villaggio.edifici.values():
 		if not e.finito or not e.collegato:
 			continue
-		for tipo in CatalogoEdifici.dati(e.tipo).get("ingressi", {}):
+		for tipo in CatalogoEdifici.merci_in_ingresso(e.tipo):
 			if _spazio_ingresso(e, tipo) > 0 and villaggio.scorte.get(tipo, 0) > 0:
 				if rete.prossimo_salto(mag.bandiera, e.bandiera) != Vector2i(-1, -1):
 					return [e, tipo]
@@ -76,7 +77,13 @@ func _prossima_richiesta(mag: Edificio) -> Array:
 
 
 func _spazio_ingresso(e: Edificio, tipo: String) -> int:
-	var cap: int = CatalogoEdifici.dati(e.tipo).get("ingressi", {}).get(tipo, 0)
+	var cap := CatalogoEdifici.capacita(e.tipo, tipo)
+	if cap > 0 and tipo in CatalogoEdifici.CIBI and CatalogoEdifici.dati(e.tipo).has("cibo"):
+		# il cibo dei minatori: posto per quello che manca in tutto, qualunque sia il tipo
+		var tot := 0
+		for c in CatalogoEdifici.CIBI:
+			tot += e.ingresso.get(c, 0) + e.in_arrivo.get(c, 0)
+		return mini(cap - e.ingresso.get(tipo, 0) - e.in_arrivo.get(tipo, 0), CatalogoEdifici.dati(e.tipo)["cibo"] - tot)
 	return cap - e.ingresso.get(tipo, 0) - e.in_arrivo.get(tipo, 0)
 
 
@@ -95,9 +102,23 @@ func produci(tipo: String, da: Edificio) -> void:
 	_nuova_merce(tipo, dest, da.bandiera)
 
 
-## Serve ancora questa merce? Sì se un edificio ha posto per riceverla o se in magazzino ce n'è poca.
-func serve(tipo: String) -> bool:
-	if villaggio.scorte.get(tipo, 0) < SCORTA_MINIMA:
+## Quale attrezzo deve forgiare il fabbro: prima quello che manca a un edificio in attesa,
+## poi quello con meno scorte se ce ne sono meno di 2; "" se non serve niente.
+func attrezzo_da_fare() -> String:
+	for e in villaggio.edifici.values():
+		var att: String = CatalogoEdifici.dati(e.tipo).get("attrezzo", "")
+		if att != "" and e.finito and e.lavoratore == null and villaggio.scorte.get(att, 0) <= 0:
+			return att
+	var scelto := ""
+	for att in CatalogoEdifici.ATTREZZI:
+		if villaggio.scorte.get(att, 0) < 2 and (scelto == "" or villaggio.scorte.get(att, 0) < villaggio.scorte.get(scelto, 0)):
+			scelto = att
+	return scelto
+
+
+## Serve ancora questa merce? Sì se un edificio ha posto per riceverla o se in magazzino ce n'è meno della soglia.
+func serve(tipo: String, soglia := SCORTA_MINIMA) -> bool:
+	if villaggio.scorte.get(tipo, 0) < soglia:
 		return true
 	for e in villaggio.edifici.values():
 		if e.finito and e.collegato and _spazio_ingresso(e, tipo) > villaggio.scorte.get(tipo, 0):

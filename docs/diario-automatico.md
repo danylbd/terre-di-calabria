@@ -38,3 +38,10 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Tutti i test OK: catena, audio, cibo, allevamenti, colture. Versione 0.8.0, merge in main.
 - Note per il futuro: olive e altre materie prime non hanno tetto (solo il pozzo si ferma); animali fermi nei modelli; la costa è lontana dal villaggio iniziale (servono 2 torri).
 - Prossimo: step 07 metallo.
+
+## 2026-10-31 23:15 — step 07 metallo completato
+- Miniera di ferro (sulla roccia, anche sopra i massi; giacimenti nascosti che si esauriscono; i minatori mangiano pane/pesce/carne/formaggio/ortaggi/cipolle), carbonaia, fonderia, fabbro.
+- Attrezzi: ogni artigiano porta il suo dal magazzino (scorte iniziali); il fabbro forgia prima quello che manca. Barra: voce unica "Attrezzi" con il dettaglio nel suggerimento.
+- Chi trasforma si ferma oltre 12 in magazzino se nessuno chiede (la carbonaia non brucia più tutti i tronchi).
+- Lezione: dopo lo studio serve `--import`, altrimenti gli edifici nuovi sono invisibili (successo nel primo screenshot).
+- Tutti i 6 test OK. Versione 0.9.0, merge in main. Prossimo: step 08 popolazione e statistiche.

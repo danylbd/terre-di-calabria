@@ -11,6 +11,7 @@ const T := DatiMappa.Terreno
 const RAGGIO_MAGAZZINO := 9.0
 const TERRENI_EDIFICABILI := [T.PRATO, T.SECCO, T.TERRA]
 const PENDENZA_MAX := {1: 14.0, 2: 12.0, 3: 10.0}
+const PENDENZA_MINIERA := 40.0
 
 var dati: DatiMappa
 var rete: ReteStrade
@@ -18,7 +19,8 @@ var risorse: RisorseNaturali
 var logistica: Logistica
 var oggetti: Node2D                  # nodo con ordinamento in profondità dove vanno gli edifici
 var edifici := {}                    # id -> Edificio
-var scorte := {"tronchi": 20, "assi": 24, "pietra": 18}
+var scorte := {"tronchi": 20, "assi": 24, "pietra": 18,
+	"ascia": 3, "piccone": 3, "pala": 2, "falce": 4, "canna": 2, "sega": 2, "martello": 2}
 var _prossimo_id := 2
 
 
@@ -38,17 +40,18 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 				return "Fuori dalla mappa"
 			if not dati.nel_territorio(x, y):
 				return "Fuori dai tuoi confini"
-			if dati.tipo(x, y) not in TERRENI_EDIFICABILI:
+			if dati.tipo(x, y) not in TERRENI_EDIFICABILI and not (info.has("miniera") and dati.tipo(x, y) == T.ROCCIA):
 				return "Terreno non adatto"
 			var o := dati.occupante(x, y)
-			if o == DatiMappa.NATURA:
+			if o == DatiMappa.NATURA and not (info.has("miniera") and risorse and risorse.solo_massi(Vector2i(x, y))):
 				return "Ci sono alberi o rocce"
 			if o >= 2:
 				return "Posto occupato"
 			if rete and (rete.strada.has(Vector2i(x, y)) or rete.bandiere.has(Vector2i(x, y))):
 				return "C'è una strada"
 	var b := Vector2i(c.x + (s - 1) / 2, c.y + s)
-	if not dati.nel_territorio(b.x, b.y) or dati.tipo(b.x, b.y) in [T.ACQUA, T.ROCCIA, T.NEVE] or dati.occupante(b.x, b.y) != 0:
+	var vietati := [T.ACQUA, T.NEVE] if info.has("miniera") else [T.ACQUA, T.ROCCIA, T.NEVE]
+	if not dati.nel_territorio(b.x, b.y) or dati.tipo(b.x, b.y) in vietati or dati.occupante(b.x, b.y) != 0:
 		return "Serve spazio davanti alla porta per la bandierina"
 	if rete and not rete.bandiere.has(b) and rete.motivo_no_bandiera(b) != "":
 		return "Serve spazio davanti alla porta per la bandierina"
@@ -59,8 +62,10 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 			var q := dati.quota_vertice(i, j)
 			qmin = minf(qmin, q)
 			qmax = maxf(qmax, q)
-	if qmax - qmin > PENDENZA_MAX[s]:
+	if qmax - qmin > (PENDENZA_MINIERA if info.has("miniera") else PENDENZA_MAX[s]):
 		return "Terreno troppo in pendenza"
+	if info.has("miniera") and risorse and risorse.minerale_vicino(Vector2i(c.x + s / 2, c.y + s / 2), info["miniera"]) <= 0:
+		return "Qui sotto non c'è %s: cerca la roccia della montagna" % CatalogoEdifici.NOMI_RISORSE[info["miniera"]].to_lower()
 	if info.has("vicino_mare") and not _mare_entro(b, info["vicino_mare"]):
 		return "Va costruita vicino al mare"
 	if controlla_costo:
@@ -93,6 +98,8 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false) -> Edificio:
 	edifici[e.id] = e
 	for y in range(c.y, c.y + e.taglia):
 		for x in range(c.x, c.x + e.taglia):
+			if CatalogoEdifici.dati(tipo).has("miniera") and risorse and risorse.solo_massi(Vector2i(x, y)):
+				risorse.togli_massi(Vector2i(x, y))
 			dati.occupa(x, y, e.id)
 			togli_decori.emit(Vector2i(x, y))
 	e.completato.connect(_on_completato)
@@ -175,11 +182,19 @@ func _aggiorna_collegamenti() -> void:
 		_chiama_lavoratore(e)
 
 
-## Un edificio di produzione finito e collegato riceve il suo lavoratore, che arriva dal magazzino.
+## Un edificio di produzione finito e collegato riceve il suo lavoratore, che arriva dal magazzino
+## e prende con sé l'attrezzo del mestiere (se manca, aspetta che il fabbro lo forgi).
 func _chiama_lavoratore(e: Edificio) -> void:
 	if not e.finito or not e.collegato or e.lavoratore != null:
 		return
 	if not CatalogoEdifici.dati(e.tipo).has("lavoratore"):
+		return
+	var att: String = CatalogoEdifici.dati(e.tipo).get("attrezzo", "")
+	if att != "" and scorte.get(att, 0) <= 0:
+		if not e.manca_attrezzo:
+			e.manca_attrezzo = true
+			messaggio.emit("%s: manca %s in magazzino. Il fabbro può forgiarlo." % [CatalogoEdifici.dati(e.tipo)["nome"],
+				CatalogoEdifici.ATTREZZO_UNO[att]], true)
 		return
 	var mag: Edificio = null
 	for m in edifici.values():
@@ -191,6 +206,10 @@ func _chiama_lavoratore(e: Edificio) -> void:
 	var punti := rete.percorso_tra_bandiere(mag.bandiera, e.bandiera)
 	if punti.is_empty():
 		return
+	if att != "":
+		scorte[att] -= 1
+		e.manca_attrezzo = false
+		scorte_cambiate.emit()
 	var l := Lavoratore.new()
 	oggetti.add_child(l)
 	l.avvia(e, risorse, logistica, rete, punti)
@@ -203,6 +222,13 @@ func _mare_entro(c: Vector2i, raggio: int) -> bool:
 			if dati.dentro(x, y) and dati.tipo(x, y) == T.ACQUA and Vector2(Vector2i(x, y) - c).length() <= raggio:
 				return true
 	return false
+
+
+## Le scorte sono cambiate (per esempio il fabbro ha forgiato un attrezzo): chi aspettava può partire.
+func richiama_lavoratori() -> void:
+	for e in edifici.values():
+		if e.manca_attrezzo:
+			_chiama_lavoratore(e)
 
 
 func _conta(tipo: String) -> int:

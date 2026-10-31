@@ -79,6 +79,7 @@ func _ready() -> void:
 	_crea_interfaccia()
 	villaggio.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
 	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
+	logistica.scorte_cambiate.connect(villaggio.richiama_lavoratori)
 	barra.aggiorna(villaggio.scorte)
 	Suono.scaletta(["lavoro", "mattino", "sera"] as Array[String])
 	Suono.ambiente("uccelli", -6.0)

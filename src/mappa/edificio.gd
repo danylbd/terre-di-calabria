@@ -20,6 +20,7 @@ var consegnati := {}                 # già arrivati
 var ingresso := {}                   # merci in deposito per la produzione (es. tronchi alla segheria)
 var in_arrivo := {}                  # merci per la produzione già in viaggio verso l'edificio
 var lavoratore: Node2D               # chi ci lavora (null se nessuno)
+var manca_attrezzo := false          # il lavoratore aspetta che arrivi il suo attrezzo
 var dati_mappa: DatiMappa
 var villaggio: Node
 
