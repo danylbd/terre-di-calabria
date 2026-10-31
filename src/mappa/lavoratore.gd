@@ -36,6 +36,7 @@ var _turno := 0                      # per chi produce più merci a turno (ovile
 var _coltura := ""                   # per i contadini: grano, vite, orto, agrumi
 var _foglio_terra := ""              # foglio da usare a terra (la barca lo cambia sull'acqua)
 var _attrezzo_scelto := ""           # quello che il fabbro sta forgiando
+var entrato := false                 # è già arrivato all'edificio almeno una volta
 var _attesa := 0.0
 var _foglio_cammino := ""
 var _foglio_lavoro := ""
@@ -113,6 +114,7 @@ func _on_arrivato(_c: Colono) -> void:
 
 
 func _entra() -> void:
+	entrato = true
 	stato = Stato.DENTRO
 	visible = false
 	_attesa = PAUSA

@@ -6,6 +6,7 @@ signal scorte_cambiate
 signal territorio_cambiato
 signal messaggio(testo: String, errore: bool)
 signal togli_decori(c: Vector2i)
+signal popolazione_cambiata
 
 const T := DatiMappa.Terreno
 const RAGGIO_MAGAZZINO := 9.0
@@ -22,6 +23,12 @@ var edifici := {}                    # id -> Edificio
 var scorte := {"tronchi": 20, "assi": 24, "pietra": 18,
 	"ascia": 3, "piccone": 3, "pala": 2, "falce": 4, "canna": 2, "sega": 2, "martello": 2}
 var _prossimo_id := 2
+var coloni_liberi := 40              # coloni in magazzino, pronti a fare i portatori o i lavoratori
+var in_cammino := 0                  # coloni appena nati che vanno verso il magazzino
+var _richiamo := 0.0
+
+const TEMPO_NASCITA := 40.0          # secondi tra una nascita e l'altra in ogni abitazione
+const TEMPO_NASCITA_LUSSO := 20.0
 
 
 func _init(d: DatiMappa, nodo_oggetti: Node2D) -> void:
@@ -135,6 +142,7 @@ func demolisci(e: Edificio) -> void:
 	edifici.erase(e.id)
 	if e.lavoratore and is_instance_valid(e.lavoratore):
 		e.lavoratore.queue_free()
+		restituisci_colono()
 	for r in e.ingresso:
 		scorte[r] = scorte.get(r, 0) + e.ingresso[r]
 	rete.libera_protezione(e.bandiera)
@@ -144,6 +152,99 @@ func demolisci(e: Edificio) -> void:
 	scorte_cambiate.emit()
 	_ricalcola_territorio()
 	messaggio.emit("%s demolito" % CatalogoEdifici.dati(e.tipo)["nome"], false)
+
+
+# ------------------------------------------------------------ popolazione
+
+func prendi_colono() -> bool:
+	if coloni_liberi <= 0:
+		return false
+	coloni_liberi -= 1
+	popolazione_cambiata.emit()
+	return true
+
+
+func restituisci_colono() -> void:
+	coloni_liberi += 1
+	popolazione_cambiata.emit()
+
+
+func lavoratori() -> int:
+	var n := 0
+	for e in edifici.values():
+		if e.lavoratore and is_instance_valid(e.lavoratore):
+			n += 1
+	return n
+
+
+func popolazione() -> int:
+	return coloni_liberi + in_cammino + lavoratori() + (rete.portatori() if rete else 0)
+
+
+## Quanti coloni il villaggio può ospitare: le abitazioni e i magazzini finiti.
+func capacita() -> int:
+	var n := 0
+	for e in edifici.values():
+		if e.finito:
+			n += CatalogoEdifici.dati(e.tipo).get("abitanti", 0)
+	return n
+
+
+func _process(delta: float) -> void:
+	for e in edifici.values():
+		if e.finito and e.tipo == "casa_greca":
+			_cresci(e, delta)
+	# chi aspettava un colono (strade senza portatore, edifici senza lavoratore) riprova ogni tanto
+	_richiamo -= delta
+	if _richiamo <= 0.0:
+		_richiamo = 1.5
+		if coloni_liberi > 0 and rete:
+			rete.manda_portatori_mancanti()
+			for e in edifici.values():
+				if e.manca_colono:
+					_chiama_lavoratore(e)
+
+
+func _cresci(casa: Edificio, delta: float) -> void:
+	if popolazione() >= capacita() or not casa.collegato:
+		casa.nascita = 0.0
+		return
+	if casa.nascita <= 0.0:
+		casa.nascita = TEMPO_NASCITA
+		for l in CatalogoEdifici.LUSSO:
+			if scorte.get(l, 0) > 0:
+				scorte[l] -= 1
+				casa.nascita = TEMPO_NASCITA_LUSSO
+				scorte_cambiate.emit()
+				break
+		return
+	casa.nascita -= delta
+	if casa.nascita <= 0.0:
+		_nasce_colono(casa)
+
+
+## Un nuovo colono esce dalla casa e va a piedi lungo le strade fino al magazzino.
+func _nasce_colono(casa: Edificio) -> void:
+	var mag: Edificio = null
+	for m in edifici.values():
+		if m.tipo == "magazzino" and m.finito:
+			mag = m
+			break
+	if mag == null:
+		return
+	var punti: Array[Vector2] = [casa.centro()]
+	punti.append_array(rete.percorso_tra_bandiere(casa.bandiera, mag.bandiera))
+	punti.append(mag.centro())
+	var c := Colono.new()
+	oggetti.add_child(c)
+	c.prepara(dati, punti[0])
+	c.arrivato.connect(func(_c):
+		in_cammino -= 1
+		c.queue_free()
+		restituisci_colono())
+	c.percorri(punti)
+	in_cammino += 1
+	popolazione_cambiata.emit()
 
 
 func edificio_in(c: Vector2i) -> Edificio:
@@ -206,6 +307,10 @@ func _chiama_lavoratore(e: Edificio) -> void:
 	var punti := rete.percorso_tra_bandiere(mag.bandiera, e.bandiera)
 	if punti.is_empty():
 		return
+	if not prendi_colono():
+		e.manca_colono = true
+		return
+	e.manca_colono = false
 	if att != "":
 		scorte[att] -= 1
 		e.manca_attrezzo = false

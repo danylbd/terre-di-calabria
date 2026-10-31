@@ -16,6 +16,9 @@ var rete: ReteStrade
 var oggetti: Node2D
 var merci: Array[Merce] = []
 var _attesa_uscita := {}            # id magazzino -> secondi alla prossima uscita
+var tempo := 0.0                    # secondi di gioco trascorsi
+var storia: Array = []              # [tempo, merce] di ogni merce prodotta negli ultimi minuti
+const DURATA_STORIA := 300.0
 
 
 func prepara(d: DatiMappa, v: Villaggio, r: ReteStrade, nodo_oggetti: Node2D) -> void:
@@ -29,6 +32,9 @@ func prepara(d: DatiMappa, v: Villaggio, r: ReteStrade, nodo_oggetti: Node2D) ->
 
 
 func _process(delta: float) -> void:
+	tempo += delta
+	while storia.size() > 0 and storia[0][0] < tempo - DURATA_STORIA:
+		storia.pop_front()
 	_fai_uscire(delta)
 	_assegna_trasporti()
 
@@ -94,12 +100,22 @@ func _spazio_ingresso(e: Edificio, tipo: String) -> int:
 func produci(tipo: String, da: Edificio) -> void:
 	if tipo == "":
 		return
+	da.prodotti += 1
+	storia.append([tempo, tipo])
 	var dest := _destinazione_per(tipo, da.bandiera)
 	if dest == null:
 		return
 	if dest.tipo != "magazzino":
 		dest.in_arrivo[tipo] = dest.in_arrivo.get(tipo, 0) + 1
 	_nuova_merce(tipo, dest, da.bandiera)
+
+
+## Quante merci di ogni tipo sono state prodotte negli ultimi minuti.
+func produzione_recente() -> Dictionary:
+	var r := {}
+	for voce in storia:
+		r[voce[1]] = r.get(voce[1], 0) + 1
+	return r
 
 
 ## Quale attrezzo deve forgiare il fabbro: prima quello che manca a un edificio in attesa,

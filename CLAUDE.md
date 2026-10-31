@@ -24,7 +24,7 @@ Storia: `docs/storia.md` (Il Sigillo di Italo). Design: `docs/design.md`. Grafic
 - `src/core/` — `palette.gd`, `iso.gd` (coordinate isometriche, casella 112×56), `sprites.gd` (carica sprite + JSON di ancoraggio)
 - `src/mappa/` — `partita.gd/tscn` (scena di gioco), `dati_mappa.gd`, `generatore_mappa.gd`, `terreno.gd` + `terreno.gdshader` (terreno continuo con rilievi), `rete_strade.gd` (bandierine, tratti, A*, instradamento), `portatore.gd`/`colono.gd`, `edificio.gd`, `villaggio.gd` (regole, territorio, scorte), `segni.gd` (confini e segni), `camera_mappa.gd`
 - `src/economia/` — `catalogo_edifici.gd`, `merce.gd`, `logistica.gd`
-- `src/ui/` — `tema_gioco.gd`, `menu_costruzione.gd`, `barra_risorse.gd`
+- `src/ui/` — `tema_gioco.gd`, `menu_costruzione.gd`, `barra_risorse.gd`, `pannello_edificio.gd`, `pannello_villaggio.gd`
 - `src/main/` — schermata iniziale
 - `assets/grafica/` — sprite PNG + JSON (ancora, celle, fotogrammi) **generati**, non disegnati a mano
 - `assets/terreno/` — texture del terreno generate
@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07 (in `main`, release v0.9.0).
+Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07, 08 (in `main`, release v0.10.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -58,7 +58,9 @@ Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05, M1, 06, 07 (in `m
 - Step 07 (metallo): giacimenti di ferro nella roccia (`RisorseNaturali.minerali`), miniera sulla roccia (anche sopra i massi) che mangia un cibo qualsiasi per turno (`cibo` nel catalogo, `CatalogoEdifici.CIBI`), carbonaia, fonderia, fabbro che forgia l'attrezzo più richiesto (`Logistica.attrezzo_da_fare()`). Gli artigiani arrivano solo con il loro attrezzo (`attrezzo` nel catalogo, scorte iniziali in `villaggio.gd`). Chi trasforma si ferma oltre `SCORTA_MASSIMA` se nessuno chiede il prodotto. Test: `tools/test/test_metallo.gd`.
 - **Dopo aver generato sprite con lo studio, esegui sempre `--import`** prima di test e screenshot, altrimenti le texture nuove non si caricano.
 
-**In corso: step 08 – popolazione e statistiche** (ramo `step-08-popolazione`): abitazioni che fanno crescere i coloni, portatori contati, pannelli informativi.
+- Step 08 (popolazione): `Villaggio.coloni_liberi` (40 all'inizio), ogni portatore e lavoratore prende un colono; posti = `abitanti` nel catalogo (magazzino 24, casa 8); le case fanno nascere coloni (più in fretta col lusso) che camminano al magazzino. Pannello edificio (clic) con `PannelloEdificio.stato()`, pannello villaggio (tasto I) con la produzione degli ultimi 5 minuti (`Logistica.storia`). Test: `tools/test/test_popolazione.gd`.
+
+**In corso: step 09 – salvataggio** (ramo `step-09-salvataggio`): salvare e caricare la partita (mappa, natura, edifici, strade, merci in viaggio, coloni, scorte).
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

@@ -6,7 +6,8 @@ const CATEGORIE := ["Base", "Cibo", "Metallo", "Difesa"]
 
 const EDIFICI := {
 	"casa_greca": {"nome": "Abitazione", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Base",
-		"tempo": 20.0, "descrizione": "Fa crescere il villaggio con nuovi coloni."},
+		"tempo": 20.0, "abitanti": 8,
+		"descrizione": "Ospita 8 coloni e ne fa nascere di nuovi. Vino, agrumi e miele in magazzino li fanno crescere più in fretta."},
 	"boscaiolo": {"nome": "Boscaiolo", "taglia": 2, "costo": {"assi": 2}, "categoria": "Base",
 		"tempo": 16.0, "attrezzo": "ascia", "lavoratore": "lavoratore_ascia", "produce": "tronchi",
 		"descrizione": "Abbatte gli alberi vicini e porta i tronchi."},
@@ -20,7 +21,7 @@ const EDIFICI := {
 		"tempo": 16.0, "attrezzo": "piccone", "lavoratore": "lavoratore_piccone", "produce": "pietra",
 		"descrizione": "Estrae pietra dalle rocce vicine."},
 	"magazzino": {"nome": "Magazzino", "taglia": 3, "costo": {"assi": 6, "pietra": 6}, "categoria": "Base",
-		"tempo": 40.0, "descrizione": "Custodisce le merci. I portatori partono da qui."},
+		"tempo": 40.0, "abitanti": 24, "descrizione": "Custodisce le merci. I portatori partono da qui."},
 	"pozzo": {"nome": "Pozzo", "taglia": 1, "costo": {"pietra": 2}, "categoria": "Cibo",
 		"tempo": 12.0, "lavoratore": "portatore_nessuno", "produce": "acqua",
 		"descrizione": "Acqua per il forno e per il bestiame."},
@@ -106,6 +107,8 @@ const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "un
 	"canna": "una canna da pesca", "sega": "una sega", "martello": "un martello"}
 ## cibo che i minatori accettano (uno qualsiasi per ogni turno di lavoro)
 const CIBI := ["pane", "pesce", "carne", "formaggio", "ortaggi", "cipolle"]
+## merci di lusso: fanno nascere i coloni più in fretta
+const LUSSO := ["vino", "agrumi", "miele"]
 ## merci sempre visibili nella barra delle scorte (le altre compaiono quando ce ne sono)
 const RISORSE_BASE := ["tronchi", "assi", "pietra"]
 

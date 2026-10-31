@@ -253,6 +253,7 @@ func _rimuovi_tratto(t: Tratto) -> void:
 		if m:
 			merce_rilasciata.emit(m)
 		t.portatore.queue_free()
+		villaggio.restituisci_colono()
 	tratti.erase(t.id)
 
 
@@ -345,10 +346,31 @@ func _ricalcola() -> void:
 			if not _collegate.has(altra):
 				_collegate[altra] = f
 				coda.append(altra)
+	manda_portatori_mancanti()
+	cambiata.emit()
+
+
+## Ogni tratto collegato senza portatore ne riceve uno, se nel villaggio ci sono coloni liberi.
+func manda_portatori_mancanti() -> void:
+	for t in tratti.values():
+		if t.portatore == null and _collegate.has(t.a) and villaggio.prendi_colono():
+			_manda_portatore(t, _adiacenti)
+
+
+func tratti_senza_portatore() -> int:
+	var n := 0
 	for t in tratti.values():
 		if t.portatore == null and _collegate.has(t.a):
-			_manda_portatore(t, adiacenti)
-	cambiata.emit()
+			n += 1
+	return n
+
+
+func portatori() -> int:
+	var n := 0
+	for t in tratti.values():
+		if t.portatore:
+			n += 1
+	return n
 
 
 func _manda_portatore(t: Tratto, adiacenti: Dictionary) -> void:
