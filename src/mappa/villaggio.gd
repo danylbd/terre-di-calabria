@@ -61,6 +61,8 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 			qmax = maxf(qmax, q)
 	if qmax - qmin > PENDENZA_MAX[s]:
 		return "Terreno troppo in pendenza"
+	if info.has("vicino_mare") and not _mare_entro(b, info["vicino_mare"]):
+		return "Va costruita vicino al mare"
 	if controlla_costo:
 		var costo: Dictionary = info["costo"]
 		for r in costo:
@@ -193,6 +195,14 @@ func _chiama_lavoratore(e: Edificio) -> void:
 	oggetti.add_child(l)
 	l.avvia(e, risorse, logistica, rete, punti)
 	e.lavoratore = l
+
+
+func _mare_entro(c: Vector2i, raggio: int) -> bool:
+	for y in range(c.y - raggio, c.y + raggio + 1):
+		for x in range(c.x - raggio, c.x + raggio + 1):
+			if dati.dentro(x, y) and dati.tipo(x, y) == T.ACQUA and Vector2(Vector2i(x, y) - c).length() <= raggio:
+				return true
+	return false
 
 
 func _conta(tipo: String) -> int:

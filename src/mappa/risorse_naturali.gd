@@ -1,7 +1,7 @@
 class_name RisorseNaturali
 extends Node
 ## Alberi, rocce e ulivi della mappa: si consumano (abbattuti, estratti) e ricrescono (piantati).
-## Anche i campi di grano seminati dai contadini e il pesce nei tratti di mare vicino alla riva.
+## Anche i campi (grano, vite, orto, agrumi) dei contadini, le olive sugli ulivi e il pesce in mare.
 
 const SPECIE_ABBATTIBILI := ["pino", "castagno", "quercia"]
 const RISERVA_ROCCIA := 6
@@ -11,15 +11,26 @@ const TEMPO_CAMPO := 35.0           # secondi per ogni fase del grano (seminato,
 const DURATA_STOPPIE := 40.0
 const PESCE_MAX := 4                # pesci in ogni casella di mare vicino alla riva
 const TEMPO_PESCE := 50.0           # secondi perché torni un pesce
+const TEMPO_OLIVE := 90.0           # secondi perché un ulivo raccolto rimetta le olive
+const SPADA_MAX := 2                # pesci spada in ogni casella al largo
+const TEMPO_SPADA := 120.0
+## colture perenni: dopo la raccolta la pianta resta e torna alla fase indicata
+const PERENNI := {"vite": 2.0, "agrumi": 2.0}
+## nome degli sprite di ogni coltura (fasi 1..4)
+const SPRITE_COLTURA := {"grano": "campo", "vite": "vite", "orto": "orto", "agrumi": "agrumi"}
 
 var dati: DatiMappa
 var oggetti: Node2D
 var alberi := {}      # Vector2i -> Array[Dictionary] {sprite, specie, crescita (0..3, 3 = adulto), prenotato}
 var rocce := {}       # Vector2i -> {sprite, riserva, prenotata}
 var ulivi := {}       # Vector2i -> Array[Sprite2D]
-var campi := {}       # Vector2i -> {sprite, crescita (0..3, 3 = maturo), prenotato}
+var campi := {}       # Vector2i -> {sprite, coltura, crescita (0..3, 3 = maturo), prenotato}
 var pesci := {}       # Vector2i (casella d'acqua) -> pesci rimasti (assente = pieno)
 var _ripopola := {}   # Vector2i -> secondi al prossimo pesce
+var spada := {}       # Vector2i (al largo) -> pesci spada rimasti (assente = pieno)
+var _ripopola_spada := {}
+var _olive_attesa := {}   # Vector2i -> secondi prima che l'ulivo abbia di nuovo olive
+var _olive_prenotate := {}
 var _ceppi: Array = []  # [sprite, secondi rimasti]
 var _rng := RandomNumberGenerator.new()
 
@@ -106,17 +117,69 @@ func _raggiungibile(da: Vector2i, a: Vector2i) -> bool:
 	return true
 
 
-## Campo di grano maturo e libero più vicino.
-func campo_maturo(da: Vector2i, raggio: int) -> Vector2i:
-	return _piu_vicino(da, raggio, func(c: Vector2i): return campi.has(c) and campi[c]["crescita"] >= 3.0 and not campi[c]["prenotato"])
+## Campo maturo e libero più vicino, della coltura data.
+func campo_maturo(da: Vector2i, raggio: int, coltura := "grano") -> Vector2i:
+	return _piu_vicino(da, raggio, func(c: Vector2i): return campi.has(c) and campi[c]["coltura"] == coltura \
+		and campi[c]["crescita"] >= 3.0 and not campi[c]["prenotato"])
 
 
-func campi_vicini(da: Vector2i, raggio: int) -> int:
+func campi_vicini(da: Vector2i, raggio: int, coltura := "grano") -> int:
 	var n := 0
 	for c in campi:
-		if Vector2(c - da).length() <= raggio:
+		if campi[c]["coltura"] == coltura and Vector2(c - da).length() <= raggio:
 			n += 1
 	return n
+
+
+## Ulivo con le olive pronte più vicino.
+func ulivo_con_olive(da: Vector2i, raggio: int) -> Vector2i:
+	return _piu_vicino(da, raggio, func(c: Vector2i): return ulivi.has(c) and not _olive_attesa.has(c) and not _olive_prenotate.has(c))
+
+
+func prenota_ulivo(c: Vector2i) -> bool:
+	if not ulivi.has(c) or _olive_attesa.has(c) or _olive_prenotate.has(c):
+		return false
+	_olive_prenotate[c] = true
+	return true
+
+
+func raccogli_olive(c: Vector2i) -> void:
+	_olive_prenotate.erase(c)
+	_olive_attesa[c] = TEMPO_OLIVE
+
+
+## Casella di mare aperto (ad almeno 2 caselle dalla riva) con pesce spada, entro il raggio.
+func posto_al_largo(da: Vector2i, raggio: int) -> Vector2i:
+	var migliore := Vector2i(-1, -1)
+	var dist := INF
+	for y in range(da.y - raggio, da.y + raggio + 1):
+		for x in range(da.x - raggio, da.x + raggio + 1):
+			var c := Vector2i(x, y)
+			var d := Vector2(c - da).length()
+			if d > raggio or d >= dist or not dati.dentro(x, y) or spada.get(c, SPADA_MAX) <= 0:
+				continue
+			if _al_largo(c):
+				dist = d
+				migliore = c
+	return migliore
+
+
+func _al_largo(c: Vector2i) -> bool:
+	for dy in range(-2, 3):
+		for dx in range(-2, 3):
+			if not dati.dentro(c.x + dx, c.y + dy) or dati.tipo(c.x + dx, c.y + dy) != DatiMappa.Terreno.ACQUA:
+				return false
+	return true
+
+
+func pesca_spada(c: Vector2i) -> bool:
+	var n: int = spada.get(c, SPADA_MAX)
+	if n <= 0:
+		return false
+	spada[c] = n - 1
+	if not _ripopola_spada.has(c):
+		_ripopola_spada[c] = TEMPO_SPADA
+	return true
 
 
 ## Casella libera per un nuovo campo: dentro i confini, vicino alla fattoria, lontano da strade e bandierine.
@@ -216,11 +279,11 @@ func pianta(c: Vector2i) -> void:
 	dati.occupa(c.x, c.y, DatiMappa.NATURA)
 
 
-func semina(c: Vector2i) -> void:
-	var s := Sprites.crea("campo_1")
+func semina(c: Vector2i, coltura := "grano") -> void:
+	var s := Sprites.crea(SPRITE_COLTURA[coltura] + "_1")
 	s.position = dati.a_schermo(c.x + 0.5, c.y + 0.5)
 	oggetti.add_child(s)
-	campi[c] = {"sprite": s, "crescita": 0.0, "prenotato": false}
+	campi[c] = {"sprite": s, "coltura": coltura, "crescita": 0.0, "prenotato": false}
 	dati.occupa(c.x, c.y, DatiMappa.NATURA)
 
 
@@ -231,11 +294,17 @@ func prenota_campo(c: Vector2i) -> bool:
 	return false
 
 
-## Mietitura: il campo diventa stoppie e la casella torna libera.
+## Raccolta: il grano e l'orto lasciano le stoppie e liberano la casella; vite e agrumi restano e ricrescono.
 func mieti(c: Vector2i) -> bool:
 	if not campi.has(c):
 		return false
-	var s: Sprite2D = campi[c]["sprite"]
+	var campo: Dictionary = campi[c]
+	var s: Sprite2D = campo["sprite"]
+	if PERENNI.has(campo["coltura"]):
+		campo["crescita"] = PERENNI[campo["coltura"]]
+		campo["prenotato"] = false
+		_imposta_fase(campo)
+		return true
 	_metti_ceppo(s.position, "stoppie", DURATA_STOPPIE)
 	s.queue_free()
 	campi.erase(c)
@@ -279,12 +348,21 @@ func _process(delta: float) -> void:
 		if campo["crescita"] < 3.0:
 			var prima := int(campo["crescita"])
 			campo["crescita"] = minf(3.0, campo["crescita"] + delta / TEMPO_CAMPO)
-			var dopo := int(campo["crescita"])
-			if dopo != prima:
-				var nome := "campo_%d" % (dopo + 1)
-				var s: Sprite2D = campo["sprite"]
-				s.texture = Sprites.texture(nome)
-				s.offset = -Sprites.ancora(nome)
+			if int(campo["crescita"]) != prima:
+				_imposta_fase(campo)
+	for c in _olive_attesa.keys():
+		_olive_attesa[c] -= delta
+		if _olive_attesa[c] <= 0.0:
+			_olive_attesa.erase(c)
+	for c in _ripopola_spada.keys():
+		_ripopola_spada[c] -= delta
+		if _ripopola_spada[c] <= 0.0:
+			spada[c] = spada.get(c, SPADA_MAX) + 1
+			if spada[c] >= SPADA_MAX:
+				spada.erase(c)
+				_ripopola_spada.erase(c)
+			else:
+				_ripopola_spada[c] = TEMPO_SPADA
 	for w in _ripopola.keys():
 		_ripopola[w] -= delta
 		if _ripopola[w] <= 0.0:
@@ -299,3 +377,10 @@ func _process(delta: float) -> void:
 		if _ceppi[i][1] <= 0.0:
 			_ceppi[i][0].queue_free()
 			_ceppi.remove_at(i)
+
+
+func _imposta_fase(campo: Dictionary) -> void:
+	var nome := "%s_%d" % [SPRITE_COLTURA[campo["coltura"]], int(campo["crescita"]) + 1]
+	var s: Sprite2D = campo["sprite"]
+	s.texture = Sprites.texture(nome)
+	s.offset = -Sprites.ancora(nome)

@@ -11,11 +11,14 @@ const RAGGIO := 7
 const PAUSA := 3.5
 ## suono di lavoro di ogni mestiere e secondi tra un colpo e l'altro
 const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardaboschi": ["vanga", 1.3],
-	"segheria": ["sega", 1.45], "fattoria": ["falce", 1.1], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4]}
+	"segheria": ["sega", 1.45], "fattoria": ["falce", 1.1], "vigneto": ["falce", 1.4], "ortolano": ["vanga", 1.3],
+	"agrumeto": ["falce", 1.6], "uliveto": ["falce", 1.5], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4]}
 ## secondi di lavoro sul posto (o dentro l'edificio)
-const DURATA := {"boscaiolo": 4.0, "cava": 4.0, "guardaboschi": 3.0, "fattoria": 3.5, "pescatore": 6.0}
+const DURATA := {"boscaiolo": 4.0, "cava": 4.0, "guardaboschi": 3.0, "fattoria": 3.5, "pescatore": 6.0,
+	"uliveto": 4.0, "pesca_spada": 9.0}
 const DURATA_DENTRO := 5.0
-const MESTIERI_FUORI := ["boscaiolo", "cava", "guardaboschi", "fattoria", "pescatore"]
+const MESTIERI_FUORI := ["boscaiolo", "cava", "guardaboschi", "pescatore", "uliveto", "pesca_spada"]
+const RAGGIO_LARGO := 12
 const RAGGIO_CAMPI := 4
 const MAX_CAMPI := 8
 
@@ -29,6 +32,8 @@ var _bersaglio := Vector2i(-1, -1)
 var _acqua := Vector2i(-1, -1)       # casella di mare dove pesca il pescatore
 var _semina := false                 # il contadino sta seminando (non mietendo)
 var _turno := 0                      # per chi produce più merci a turno (ovile: latte e lana)
+var _coltura := ""                   # per i contadini: grano, vite, orto, agrumi
+var _foglio_terra := ""              # foglio da usare a terra (la barca lo cambia sull'acqua)
 var _attesa := 0.0
 var _foglio_cammino := ""
 var _foglio_lavoro := ""
@@ -45,6 +50,7 @@ func avvia(e: Edificio, r: RisorseNaturali, l: Logistica, rs: ReteStrade, parten
 	var info := CatalogoEdifici.dati(e.tipo)
 	_foglio_cammino = info.get("lavoratore", "portatore_nessuno")
 	_foglio_lavoro = _foglio_cammino + "_lavoro" if _foglio_cammino.begins_with("lavoratore") else ""
+	_coltura = info.get("coltura", "")
 	prepara(e.dati_mappa, partenza[0], _foglio_cammino)
 	arrivato.connect(_on_arrivato)
 	partenza.append(e.centro())
@@ -55,11 +61,21 @@ func _porta() -> Vector2:
 	return Vector2(edificio.bandiera) + Vector2(0.5, 0.5)
 
 
+## La barca del pesce spada: sull'acqua il pescatore rema, a terra cammina.
+func imposta_foglio(foglio: String) -> void:
+	_foglio_terra = foglio
+	if mestiere == "pesca_spada" and dati and dati.tipo(int(pos.x), int(pos.y)) == DatiMappa.Terreno.ACQUA:
+		foglio = "barca_remi"
+	super.imposta_foglio(foglio)
+
+
 func _process(delta: float) -> void:
 	super._process(delta)
 	if not is_instance_valid(edificio) or edificio.is_queued_for_deletion():
 		queue_free()
 		return
+	if mestiere == "pesca_spada" and visible:
+		imposta_foglio(_foglio_terra)
 	match stato:
 		Stato.DENTRO:
 			_attesa -= delta
@@ -80,6 +96,8 @@ func _on_arrivato(_c: Colono) -> void:
 			stato = Stato.LAVORO
 			_colpo = 0.3
 			_attesa = DURATA.get(mestiere, 4.0)
+			if _coltura != "":
+				_attesa = 3.5
 			if _foglio_lavoro != "":
 				imposta_foglio(_foglio_lavoro)
 				_anim.play()
@@ -103,6 +121,11 @@ func _cerca_lavoro() -> void:
 	if logistica.merci_in_uscita(edificio) >= 3:
 		return
 	var da := edificio.bandiera
+	if _coltura != "":
+		if not _cerca_campo(da):
+			return
+		_esci_verso_bersaglio()
+		return
 	match mestiere:
 		"boscaiolo":
 			_bersaglio = risorse.albero_vicino(da, RAGGIO)
@@ -118,17 +141,16 @@ func _cerca_lavoro() -> void:
 			_bersaglio = risorse.posto_per_albero(da, RAGGIO - 1, rete)
 			if _bersaglio.x < 0:
 				return
-		"fattoria":
-			_semina = false
-			_bersaglio = risorse.campo_maturo(da, RAGGIO_CAMPI + 1)
-			if _bersaglio.x < 0 or not risorse.prenota_campo(_bersaglio):
-				_semina = true
-				if risorse.campi_vicini(da, RAGGIO_CAMPI + 1) >= MAX_CAMPI:
-					return
-				_bersaglio = risorse.posto_per_campo(da, RAGGIO_CAMPI, rete)
-				if _bersaglio.x < 0:
-					_segnala("La fattoria non ha spazio per i campi")
-					return
+		"uliveto":
+			_bersaglio = risorse.ulivo_con_olive(da, RAGGIO)
+			if _bersaglio.x < 0 or not risorse.prenota_ulivo(_bersaglio):
+				return
+		"pesca_spada":
+			_acqua = risorse.posto_al_largo(da, RAGGIO_LARGO)
+			if _acqua.x < 0:
+				_segnala("La barca non trova mare aperto vicino")
+				return
+			_bersaglio = _acqua
 		"pescatore":
 			var posto := risorse.posto_di_pesca(da, RAGGIO)
 			if posto.is_empty():
@@ -141,6 +163,10 @@ func _cerca_lavoro() -> void:
 				return
 			_lavora_dentro()
 			return
+	_esci_verso_bersaglio()
+
+
+func _esci_verso_bersaglio() -> void:
 	_avvisato = false
 	visible = true
 	stato = Stato.ANDATA
@@ -149,7 +175,32 @@ func _cerca_lavoro() -> void:
 	percorri(punti)
 
 
+## Contadino: raccoglie un campo maturo della sua coltura, altrimenti ne semina uno nuovo.
+func _cerca_campo(da: Vector2i) -> bool:
+	_semina = false
+	_bersaglio = risorse.campo_maturo(da, RAGGIO_CAMPI + 1, _coltura)
+	if _bersaglio.x >= 0 and risorse.prenota_campo(_bersaglio):
+		return true
+	_semina = true
+	if risorse.campi_vicini(da, RAGGIO_CAMPI + 1, _coltura) >= MAX_CAMPI:
+		return false
+	_bersaglio = risorse.posto_per_campo(da, RAGGIO_CAMPI, rete)
+	if _bersaglio.x < 0:
+		_segnala("%s: non c'è spazio per i campi" % CatalogoEdifici.dati(mestiere)["nome"])
+		return false
+	return true
+
+
 func _fine_lavoro() -> void:
+	if _coltura != "":
+		if _semina:
+			if dati.occupante(_bersaglio.x, _bersaglio.y) == 0:
+				risorse.semina(_bersaglio, _coltura)
+			_rientra_vuoto()
+		else:
+			risorse.mieti(_bersaglio)
+			_torna(Merce.FOGLI[_merce_prodotta()])
+		return
 	match mestiere:
 		"boscaiolo":
 			risorse.abbatti(_bersaglio)
@@ -162,14 +213,15 @@ func _fine_lavoro() -> void:
 			if dati.occupante(_bersaglio.x, _bersaglio.y) == 0:
 				risorse.pianta(_bersaglio)
 			_rientra_vuoto()
-		"fattoria":
-			if _semina:
-				if dati.occupante(_bersaglio.x, _bersaglio.y) == 0:
-					risorse.semina(_bersaglio)
-				_rientra_vuoto()
+		"uliveto":
+			risorse.raccogli_olive(_bersaglio)
+			_torna(Merce.FOGLI["olive"])
+		"pesca_spada":
+			if risorse.pesca_spada(_acqua):
+				Suono.suona_in("tuffo", global_position, -2.0)
+				_torna(Merce.FOGLI["pesce_spada"])
 			else:
-				risorse.mieti(_bersaglio)
-				_torna(Merce.FOGLI["grano"])
+				_rientra_vuoto()
 		"pescatore":
 			if risorse.pesca(_acqua):
 				Suono.suona_in("tuffo", global_position, -4.0)
