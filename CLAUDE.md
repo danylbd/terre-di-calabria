@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) e gli step 12–13 (in `main`, release v0.15.0).
+Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) e gli step 12–14 (in `main`, release v0.16.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -70,7 +70,9 @@ Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) e gli s
 
 - Step 13 (soldati): `src/mappa/guerra.gd` (rinforzi dalla riserva ai forti, attacco da un forte entro 18 caselle, duelli alla porta, conquista che trasforma la torre nemica in una nostra torre). Armaiolo (armi), caserma (colono + armi → soldato di riserva, `Villaggio.soldati`), forti con `soldati_max` (torre 3, castello 8). Altri popoli: `Villaggio.nemici` (Edificio con `proprietario` 2), due avamposti dei Brettii a inizio partita (`partita._metti_brettii`), difensori che si rigenerano. Test: `tools/test/test_guerra.gd`.
 
-**In corso: step 14 – avversario controllato dal computer** (ramo `step-14-avversario`): i Brettii crescono (nuove torri, più difensori) e attaccano i forti del giocatore; il giocatore può perdere territorio.
+- Step 14 (avversario): `src/mappa/avversario.gd` (i Brettii alzano una torre ogni 300 s fino a 6, tregua di 900 s, poi ogni 240 s attaccano il nostro forte più debole se hanno più guerrieri dei difensori). `guerra.gd` vale per entrambi i lati (`lato` del soldato, fogli `guardia`/`brettio`): se vincono i Brettii il nostro forte brucia e diventa una loro torre. `Avversario.attivo` servirà per la partita «solo pace». Test: `tools/test/test_avversario.gd`.
+
+**In corso: step 15 – scelta all'avvio** (ramo `step-15-modalita`): solo pace / solo guerra / pace poi guerra (vedi `docs/decisioni.md`).
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

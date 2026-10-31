@@ -15,6 +15,7 @@ var logistica: Logistica
 var risorse: RisorseNaturali
 var stagioni: Stagioni
 var guerra: Guerra
+var avversario: Avversario
 var _attaccante: Edificio
 
 var menu: MenuCostruzione
@@ -75,6 +76,9 @@ func _ready() -> void:
 	guerra.prepara(villaggio, rete, dati, oggetti)
 	villaggio.guerra = guerra
 	guerra.messaggio.connect(_mostra_avviso)
+	avversario = Avversario.new()
+	add_child(avversario)
+	avversario.prepara(villaggio, guerra, dati)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
