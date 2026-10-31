@@ -4,6 +4,7 @@ class_name Sprites
 static var _info := {}
 static var _texture := {}
 static var _animazioni := {}
+static var _icone := {}
 
 const DIREZIONI := ["S", "SE", "E", "NE", "N", "NO", "O", "SO"]
 
@@ -63,3 +64,15 @@ static func ancora(nome: String) -> Vector2:
 static func direzione(movimento: Vector2) -> int:
 	var gradi := rad_to_deg(movimento.angle())
 	return posmod(roundi((90.0 - gradi) / 45.0), 8)
+
+
+## Icona per i menu: lo sprite ritagliato sulla parte visibile (senza i margini trasparenti).
+static func icona(nome: String) -> Texture2D:
+	if not _icone.has(nome):
+		var tex := texture(nome)
+		var img := tex.get_image()
+		var at := AtlasTexture.new()
+		at.atlas = tex
+		at.region = Rect2(img.get_used_rect())
+		_icone[nome] = at
+	return _icone[nome]

@@ -9,6 +9,10 @@ var altezza: int
 var tipi := PackedByteArray()        # larghezza * altezza
 var quote := PackedFloat32Array()    # (larghezza + 1) * (altezza + 1), in pixel verso l'alto
 var villaggio := Vector2i.ZERO       # casella del centro del villaggio iniziale
+var occupazione := PackedInt32Array() # 0 libero, 1 natura (alberi, rocce), >=2 id di un edificio
+var territorio := PackedByteArray()   # 1 = casella del giocatore
+
+const NATURA := 1
 
 
 func _init(w: int, h: int) -> void:
@@ -16,6 +20,44 @@ func _init(w: int, h: int) -> void:
 	altezza = h
 	tipi.resize(w * h)
 	quote.resize((w + 1) * (h + 1))
+	occupazione.resize(w * h)
+	territorio.resize(w * h)
+
+
+func occupante(x: int, y: int) -> int:
+	if not dentro(x, y):
+		return -1
+	return occupazione[y * larghezza + x]
+
+
+func occupa(x: int, y: int, id: int) -> void:
+	if dentro(x, y):
+		occupazione[y * larghezza + x] = id
+
+
+func nel_territorio(x: int, y: int) -> bool:
+	return dentro(x, y) and territorio[y * larghezza + x] == 1
+
+
+## Ricalcola il territorio da un elenco di centri [casella, raggio].
+func calcola_territorio(centri: Array) -> void:
+	territorio.fill(0)
+	for c in centri:
+		var p: Vector2i = c[0]
+		var r: float = c[1]
+		for y in range(p.y - int(r) - 1, p.y + int(r) + 2):
+			for x in range(p.x - int(r) - 1, p.x + int(r) + 2):
+				if dentro(x, y) and Vector2(x - p.x, y - p.y).length() <= r:
+					territorio[y * larghezza + x] = 1
+
+
+## Casella sotto un punto dello schermo, tenendo conto del rilievo.
+func casella_da_schermo(p: Vector2) -> Vector2i:
+	var v := Iso.da_schermo(p)
+	for k in 5:
+		var q := quota(clampf(v.x, 0, larghezza), clampf(v.y, 0, altezza))
+		v = Iso.da_schermo(p + Vector2(0, q))
+	return Vector2i(floori(v.x), floori(v.y))
 
 
 func tipo(x: int, y: int) -> int:
