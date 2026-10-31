@@ -108,7 +108,7 @@ func produci(tipo: String, da: Edificio) -> void:
 		return
 	if dest.tipo != "magazzino":
 		dest.in_arrivo[tipo] = dest.in_arrivo.get(tipo, 0) + 1
-	_nuova_merce(tipo, dest, da.bandiera)
+	_nuova_merce(tipo, dest, da.bandiera).origine = da.id
 
 
 ## Quante merci di ogni tipo sono state prodotte negli ultimi minuti.
@@ -160,8 +160,13 @@ func _destinazione_per(tipo: String, da: Vector2i) -> Edificio:
 	return migliore if migliore else (_magazzini()[0] if _magazzini().size() > 0 else null)
 
 
+## Merci prodotte da questo edificio che aspettano ancora alla sua bandierina (non quelle di passaggio).
 func merci_in_uscita(e: Edificio) -> int:
-	return _merci_in(e.bandiera)
+	var n := 0
+	for m in merci:
+		if m.origine == e.id and m.bandiera == e.bandiera and not m.in_spalla:
+			n += 1
+	return n
 
 
 # ------------------------------------------------------------ viaggio
@@ -213,11 +218,12 @@ func _consegna(m: Merce) -> void:
 	_disponi(m.bandiera)
 
 
-func _nuova_merce(tipo: String, dest: Edificio, dove: Vector2i) -> void:
+func _nuova_merce(tipo: String, dest: Edificio, dove: Vector2i) -> Merce:
 	var m := Merce.new(tipo, dest, dove)
 	oggetti.add_child(m.sprite)
 	merci.append(m)
 	_disponi(dove)
+	return m
 
 
 func _rimetti_a_terra(m: Merce) -> void:

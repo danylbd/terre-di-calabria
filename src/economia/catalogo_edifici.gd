@@ -113,7 +113,11 @@ const EDIFICI := {
 		"produce": "attrezzi", "durata": 8.0,
 		"descrizione": "Forgia gli attrezzi dei mestieri. Fa per primi quelli che mancano."},
 	"torre": {"nome": "Torre di guardia", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Difesa",
-		"tempo": 30.0, "territorio": 7, "descrizione": "Allarga i confini del territorio."},
+		"tempo": 30.0, "territorio": 7, "presidio": 1, "lavoratore": "guardia",
+		"descrizione": "Allarga i confini quando una guardia la presidia."},
+	"castello": {"nome": "Castello", "taglia": 3, "costo": {"assi": 6, "pietra": 12}, "categoria": "Difesa",
+		"tempo": 60.0, "territorio": 11, "presidio": 1, "lavoratore": "guardia",
+		"descrizione": "Fortezza di pietra: allarga molto i confini quando è presidiata."},
 }
 
 const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra", "grano": "Grano",

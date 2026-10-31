@@ -117,6 +117,8 @@ func _on_arrivato(_c: Colono) -> void:
 func _entra() -> void:
 	entrato = true
 	stato = Stato.DENTRO
+	if CatalogoEdifici.dati(mestiere).has("presidio"):
+		edificio.villaggio.presidia(edificio)
 	visible = false
 	_attesa = PAUSA
 
@@ -255,6 +257,8 @@ func _lavora_dentro() -> void:
 	if mestiere == "agora":
 		_lavora_agora()
 		return
+	if info.has("presidio"):
+		return                 # la guardia sta di vedetta: niente da produrre
 	if mestiere == "fabbro":
 		_attrezzo_scelto = logistica.attrezzo_da_fare()
 		if _attrezzo_scelto == "":
