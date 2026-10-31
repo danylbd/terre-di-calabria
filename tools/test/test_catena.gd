@@ -2,6 +2,7 @@ extends SceneTree
 ## Test automatico dello step 05: costruisce boscaiolo, segheria, cava e guardaboschi vicino
 ## al magazzino, li collega con le strade, accelera il tempo e controlla che la catena funzioni.
 ## Uso: godot --headless --path . --script tools/test/test_catena.gd
+## (MINUTI=n per la durata in mezzi minuti di gioco, FOTO=file.png senza --headless per lo screenshot)
 
 const VELOCITA := 8.0
 
@@ -69,6 +70,16 @@ func _prova() -> void:
 	# la segheria deve aver ricevuto tronchi e consegnato assi al magazzino
 	_controlla(v.scorte["assi"] > 24 - 2 * 4 - 2, "assi prodotte dalla segheria arrivate al magazzino (assi=%d)" % v.scorte["assi"])
 	_controlla(v.scorte["pietra"] > 18 - 2, "pietra arrivata al magazzino (pietra=%d)" % v.scorte["pietra"])
+	var foto := OS.get_environment("FOTO")
+	if foto != "":
+		# FOTO=percorso.png: inquadra la catena e salva uno screenshot (serve lanciarlo senza --headless)
+		var centro := (bosc.centro() + cava.centro() + seg.centro() + mag.centro()) / 4.0
+		p.camera.position = p.dati.a_schermo(centro.x, centro.y)
+		Engine.time_scale = 1.0
+		for k in 10:
+			await process_frame
+		root.get_viewport().get_texture().get_image().save_png(foto)
+		print("Screenshot salvato in ", foto)
 	_fine()
 
 
