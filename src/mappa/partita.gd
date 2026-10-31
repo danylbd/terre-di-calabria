@@ -79,6 +79,8 @@ func _ready() -> void:
 	avversario = Avversario.new()
 	add_child(avversario)
 	avversario.prepara(villaggio, guerra, dati)
+	avversario.messaggio.connect(_mostra_avviso)
+	avversario.imposta_modalita(Impostazioni.modalita)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
@@ -89,7 +91,8 @@ func _ready() -> void:
 	Salvataggio.da_caricare = ""
 	if da_caricare == "":
 		_metti_villaggio()
-		_metti_brettii()
+		if Impostazioni.modalita != "pace":
+			_metti_brettii()
 
 	camera = CameraMappa.new()
 	camera.area = terreno.limiti()
@@ -520,7 +523,7 @@ func _metti_brettii() -> void:
 					migliore = c
 		if migliore.x >= 0:
 			presi.append(migliore)
-			villaggio.metti_nemico("torre_brettia", migliore, 2, 3)
+			villaggio.metti_nemico("torre_brettia", migliore, 2, 4 if Impostazioni.modalita == "guerra" else 3)
 
 
 func _posto_libero(c: Vector2i, taglia: int) -> bool:
@@ -614,6 +617,7 @@ func _crea_interfaccia() -> void:
 	pannello_villaggio.logistica = logistica
 	pannello_villaggio.rete = rete
 	pannello_villaggio.stagioni = stagioni
+	pannello_villaggio.avversario = avversario
 	strato.add_child(pannello_villaggio)
 	pannello_villaggio.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 70)
 	pannello_villaggio.grow_horizontal = Control.GROW_DIRECTION_BEGIN

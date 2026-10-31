@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) e gli step 12–14 (in `main`, release v0.16.0).
+Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1) e Fase 2 (12–15) (in `main`, release v0.17.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -72,7 +72,9 @@ Vedi `docs/roadmap.md`. Fatti: tutta la Fase 1 (00, G1, 01–11, G2, M1) e gli s
 
 - Step 14 (avversario): `src/mappa/avversario.gd` (i Brettii alzano una torre ogni 300 s fino a 6, tregua di 900 s, poi ogni 240 s attaccano il nostro forte più debole se hanno più guerrieri dei difensori). `guerra.gd` vale per entrambi i lati (`lato` del soldato, fogli `guardia`/`brettio`): se vincono i Brettii il nostro forte brucia e diventa una loro torre. `Avversario.attivo` servirà per la partita «solo pace». Test: `tools/test/test_avversario.gd`.
 
-**In corso: step 15 – scelta all'avvio** (ramo `step-15-modalita`): solo pace / solo guerra / pace poi guerra (vedi `docs/decisioni.md`).
+- Step 15 (modalità): `src/core/impostazioni.gd` (`Impostazioni.modalita`: «pace», «pace_poi_guerra», «guerra»), scelta nel menu «Nuova partita»; `Avversario.imposta_modalita`, dichiarazione di guerra con preavviso quando il villaggio arriva a 60 coloni o dopo 40 minuti. Salvata. Test: `tools/test/test_modalita.gd`.
+
+**In corso: step 16 – tutorial «Il naufragio»** (ramo `step-16-tutorial`), inizio della Fase 3 (la storia): prima missione dei Greci, vedi `docs/storia.md`.
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

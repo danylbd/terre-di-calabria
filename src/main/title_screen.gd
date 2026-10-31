@@ -19,6 +19,7 @@ custodirà la terra tra due mari.»"""
 var _menu: VBoxContainer
 var _strato_leggenda: CenterContainer
 var _strato_crediti: CenterContainer
+var _strato_modalita: CenterContainer
 var _avviso: Label
 var _tween_avviso: Tween
 
@@ -29,6 +30,7 @@ func _ready() -> void:
 	_crea_titolo_e_menu()
 	_strato_leggenda = _crea_strato(_crea_pannello_leggenda())
 	_strato_crediti = _crea_strato(_crea_pannello_crediti())
+	_strato_modalita = _crea_strato(_crea_pannello_modalita())
 	_crea_versione()
 	_crea_avviso()
 	_menu.get_child(0).grab_focus()
@@ -37,7 +39,7 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel") and (_strato_leggenda.visible or _strato_crediti.visible):
+	if event.is_action_pressed("ui_cancel") and (_strato_leggenda.visible or _strato_crediti.visible or _strato_modalita.visible):
 		_torna_al_menu()
 		get_viewport().set_input_as_handled()
 
@@ -87,7 +89,7 @@ func _crea_titolo_e_menu() -> void:
 		_aggiungi_voce("Continua la partita", func():
 			Salvataggio.da_caricare = Salvataggio.PERCORSO
 			get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
-	_aggiungi_voce("Nuova partita", _on_nuova_partita)
+	_aggiungi_voce("Nuova partita", func(): _mostra(_strato_modalita))
 	_aggiungi_voce("La leggenda", func(): _mostra(_strato_leggenda))
 	_aggiungi_voce("Crediti", func(): _mostra(_strato_crediti))
 	_aggiungi_voce("Esci", func(): get_tree().quit())
@@ -168,6 +170,31 @@ func _crea_pannello_crediti() -> PanelContainer:
 	return pannello
 
 
+## Nuova partita: si sceglie se giocare in pace, in guerra o prima in pace e poi in guerra.
+func _crea_pannello_modalita() -> PanelContainer:
+	var pannello := PanelContainer.new()
+	pannello.custom_minimum_size = Vector2(860, 0)
+	var colonna := VBoxContainer.new()
+	colonna.add_theme_constant_override("separation", 16)
+	pannello.add_child(colonna)
+	colonna.add_child(_etichetta("Nuova partita", 48, Palette.TERRACOTTA_SCURA))
+	colonna.add_child(_etichetta("Come vuoi giocare?", 26, Palette.INCHIOSTRO))
+	for m in ["pace", "pace_poi_guerra", "guerra"]:
+		var b := Button.new()
+		b.text = Impostazioni.MODALITA[m][0]
+		b.custom_minimum_size = Vector2(520, 0)
+		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		b.pressed.connect(func():
+			Impostazioni.modalita = m
+			_on_nuova_partita())
+		colonna.add_child(b)
+		var spiega := _etichetta(Impostazioni.MODALITA[m][1], 20, Color(Palette.INCHIOSTRO, 0.8))
+		spiega.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		colonna.add_child(spiega)
+	colonna.add_child(_bottone_indietro())
+	return pannello
+
+
 func _crea_versione() -> void:
 	var etichetta := Label.new()
 	etichetta.text = "v%s" % ProjectSettings.get_setting("application/config/version", "0.0.0")
@@ -232,7 +259,7 @@ func _mostra(strato: CenterContainer) -> void:
 
 
 func _torna_al_menu() -> void:
-	for strato in [_strato_leggenda, _strato_crediti]:
+	for strato in [_strato_leggenda, _strato_crediti, _strato_modalita]:
 		strato.visible = false
 		(strato.get_meta("velo") as ColorRect).visible = false
 	_menu.get_child(0).grab_focus()

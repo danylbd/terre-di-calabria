@@ -16,6 +16,7 @@ var villaggio: Villaggio
 var logistica: Logistica
 var rete: ReteStrade
 var stagioni: Stagioni
+var avversario: Avversario
 var _testo: RichTextLabel
 var _aggiorna := 0.0
 
@@ -69,6 +70,11 @@ func _riempi() -> void:
 	var righe := []
 	if stagioni:
 		righe.append("[b]%s[/b]%s" % [stagioni.nome(), "  —  d'inverno i campi non crescono e non si semina" if stagioni.inverno() else ""])
+	if avversario:
+		var stato := "nessun nemico" if not avversario.attivo else (
+			"i Brettii sono in pace" if not avversario.guerra_dichiarata else (
+			"guerra fra %d s" % ceili(avversario.tregua - avversario.tempo) if avversario.tempo < avversario.tregua else "in guerra con i Brettii"))
+		righe.append("Partita: %s  —  %s" % [Impostazioni.MODALITA[avversario.modalita][0], stato])
 	var case := v.edifici.values().filter(func(e): return e.tipo == "casa_greca" and e.finito).size()
 	righe.append("[b]Popolazione: %d[/b] su %d posti  (%d abitazioni)" % [v.popolazione(), v.capacita(), case])
 	righe.append("Coloni liberi %d  ·  portatori %d  ·  lavoratori %d%s" % [v.coloni_liberi, rete.portatori(), v.lavoratori(),

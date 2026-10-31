@@ -83,3 +83,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - I Brettii giocati dal computer: alzano torri nuove ai margini del loro territorio, rispettano una tregua di 15 minuti, poi attaccano il nostro forte più debole alla loro portata se sono più numerosi; se vincono il forte brucia e diventa loro (perdiamo i confini e gli edifici fuori).
 - guerra.gd generalizzato ai due lati; nuovo sprite "brettio" che cammina; stato dell'avversario nel salvataggio.
 - Corretto un errore con edifici già distrutti assegnati a variabili con tipo. Versione 0.16.0. Prossimo: step 15 scelta della modalità all'avvio.
+
+## 2026-11-01 05:20 — step 15 modalità all'avvio (Fase 2 finita)
+- «Nuova partita» apre la scelta: Solo pace (niente Brettii), Pace poi guerra (guerra dichiarata a 60 coloni o dopo 40 minuti, con 2 minuti di preavviso), Solo guerra (avamposti con 4 difensori, tregua di 4 minuti).
+- Modalità e stato della guerra nel salvataggio e nel pannello del villaggio. Versione 0.17.0. Prossimo: step 16 tutorial «Il naufragio».
