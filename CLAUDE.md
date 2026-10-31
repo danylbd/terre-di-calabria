@@ -47,20 +47,15 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2 (in `main`, release v0.5.0).
+Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2, 05 (in `main`, release v0.6.0).
 
-**In corso: step 05 – prima catena** (ramo `step-05-catena`). Già scritto, da **verificare e rifinire**:
-- `src/mappa/risorse_naturali.gd`: alberi (abbattibili: pino, castagno, quercia), rocce (riserva 6), ulivi; ceppi; alberelli che crescono in 3 fasi.
-- `src/mappa/lavoratore.gd`: lavoratore che arriva dal magazzino lungo le strade e lavora (boscaiolo, cava, guardaboschi, segheria).
-- `catalogo_edifici.gd`: campi `lavoratore`, `produce`, `ingressi`.
-- `logistica.gd`: `produci()`, destinazione delle merci prodotte (chi le usa, altrimenti magazzino), richieste di materie prime dal magazzino per gli edifici di produzione.
-- `villaggio.gd`: `_chiama_lavoratore()`; `rete_strade.gd`: `percorso_tra_bandiere()`.
-- Nuovi sprite: `lavoratore_{ascia,piccone,pala}` (+ `_lavoro`), `ceppo`, `alberello_1..3`.
-Da fare per chiudere lo step: test automatico di una catena completa (boscaiolo → segheria → magazzino, cava → magazzino, guardaboschi pianta), screenshot, aggiornare roadmap, versione 0.6.0, merge in `main`.
+Step 05 (prima catena): risorse naturali (`risorse_naturali.gd`), lavoratori (`lavoratore.gd`: boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 
-Poi: M1 musica e suoni, 06 cibo (coltivazioni, allevamenti, pesca: vedi `docs/design.md` §5b).
+**In corso: step M1 – musica e suoni** (ramo `step-m1-musica`): primi 3 brani (orchestra + strumenti calabresi) e suoni di lavoro e natura.
+
+Poi: 06 cibo (coltivazioni, allevamenti, pesca: vedi `docs/design.md` §5b).
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 
 ### Note pratiche
-- Test automatici: script `extends SceneTree` lanciati con `--script` che caricano `res://src/mappa/partita.tscn`, accelerano con `Engine.time_scale` e stampano lo stato (vedi esempi nella cronologia dei commit degli step 03–04).
+- Test automatici: script `extends SceneTree` lanciati con `--script` che caricano `res://src/mappa/partita.tscn`, accelerano con `Engine.time_scale` e stampano lo stato. Esempio completo: `tools/test/test_catena.gd` (`--headless`; con `FOTO=file.png` e senza `--headless` salva anche uno screenshot).
 - Se lo studio di rendering resta "appeso" senza output, quasi sempre c'è un errore di sintassi in `modelli.gd`: controlla con `godot --headless --path . --check-only --script tools/studio/modelli.gd`.

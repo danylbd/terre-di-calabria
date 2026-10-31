@@ -17,6 +17,11 @@ var collegato := false               # la sua bandierina è collegata a un magaz
 var fabbisogno := {}                 # materiali che servono al cantiere
 var richiesti := {}                  # già partiti dal magazzino verso il cantiere
 var consegnati := {}                 # già arrivati
+var ingresso := {}                   # merci in deposito per la produzione (es. tronchi alla segheria)
+var in_arrivo := {}                  # merci per la produzione già in viaggio verso l'edificio
+var lavoratore: Node2D               # chi ci lavora (null se nessuno)
+var dati_mappa: DatiMappa
+var villaggio: Node
 
 var _sprite: Sprite2D
 var _fase := -1

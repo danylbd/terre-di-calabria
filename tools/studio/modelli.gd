@@ -56,6 +56,16 @@ static func catalogo() -> Dictionary:
 		c["quercia_%d" % (k + 1)] = {"crea": quercia.bind(k + 21)}
 	for k in 3:
 		c["ulivo_%d" % (k + 1)] = {"crea": ulivo.bind(k + 3)}
+	# risorse naturali che cambiano: ceppo, alberelli che crescono, rocce consumate
+	c["ceppo"] = {"crea": ceppo}
+	for k in 3:
+		c["alberello_%d" % (k + 1)] = {"crea": alberello.bind(k)}
+	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
+	for att in ["ascia", "piccone", "pala"]:
+		c["lavoratore_%s" % att] = {"crea": lavoratore.bind(att), "posa": posa_cammino,
+			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+		c["lavoratore_%s_lavoro" % att] = {"crea": lavoratore.bind(att), "posa": posa_lavoro,
+			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	# persone: fogli di animazione 8 direzioni × 8 passi
 	for carico in ["nessuno", "tronco", "asse", "anfora", "pietra"]:
 		c["portatore_" + carico] = {"crea": portatore.bind("" if carico == "nessuno" else carico), "posa": posa_cammino,
@@ -464,7 +474,12 @@ static func posa_cammino(modello: Node3D, fotogramma: int, totale: int) -> void:
 	var carico: String = modello.get_meta("carico", "")
 	var bs: Node3D = corpo.get_node("braccio_s")
 	var bd: Node3D = corpo.get_node("braccio_d")
-	if carico == "":
+	corpo.rotation.x = 0.0
+	if carico == "attrezzo":
+		# attrezzo in spalla
+		bs.rotation = Vector3(-oscill * 0.45, 0, 0)
+		bd.rotation = Vector3(-2.6, 0, 0.2)
+	elif carico == "":
 		bs.rotation.x = -oscill * 0.45
 		bd.rotation.x = oscill * 0.45
 	elif carico == "anfora" or carico == "pietra":
@@ -1188,4 +1203,68 @@ static func pozzo() -> Node3D:
 	r.add_child(anfora(Vector3(0.26, 0.0, 0.18), 1.1))
 	r.add_child(scatola(Vector3(0.16, 0.05, 0.06), Vector3(-0.2, 0.025, 0.24), "legno_vecchio", Vector3(0, 30, 0)))
 	r.scale = Vector3.ONE * 1.2
+	return r
+
+
+
+# =================================================================== MESTIERI (step 05)
+
+## Lavoratore con l'attrezzo in mano destra: ascia (boscaiolo), piccone (cavapietre), pala (guardaboschi).
+static func lavoratore(attrezzo: String) -> Node3D:
+	var r := portatore("")
+	var corpo: Node3D = r.get_node("corpo")
+	var bd: Node3D = corpo.get_node("braccio_d")
+	var att := Node3D.new()
+	att.name = "attrezzo"
+	att.position = Vector3(0, -0.14, 0.0)
+	bd.add_child(att)
+	match attrezzo:
+		"ascia":
+			att.add_child(cilindro(0.009, 0.009, 0.24, Vector3(0, 0.0, 0.08), "legno", Vector3(90, 0, 0), 6))
+			att.add_child(scatola(Vector3(0.012, 0.07, 0.05), Vector3(0, -0.02, 0.19), "ferro"))
+		"piccone":
+			att.add_child(cilindro(0.009, 0.009, 0.24, Vector3(0, 0.0, 0.08), "legno", Vector3(90, 0, 0), 6))
+			att.add_child(scatola(Vector3(0.014, 0.16, 0.022), Vector3(0, 0.0, 0.2), "ferro"))
+		"pala":
+			att.add_child(cilindro(0.008, 0.008, 0.26, Vector3(0, 0.0, 0.09), "legno", Vector3(90, 0, 0), 6))
+			att.add_child(scatola(Vector3(0.06, 0.008, 0.07), Vector3(0, 0.0, 0.24), "ferro"))
+	# berretto di lana per riconoscere i mestieri
+	corpo.add_child(sfera(0.07, Vector3(0, 0.2 + 0.31, -0.005), "giocatore" if attrezzo == "ascia" else ("terra" if attrezzo == "piccone" else "orto"), Vector3(1, 0.55, 1)))
+	r.set_meta("carico", "attrezzo")
+	return r
+
+
+## Gesto di lavoro: braccio che si alza e cala (ascia e piccone colpiscono in avanti, la pala scava).
+static func posa_lavoro(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale
+	var corpo: Node3D = modello.get_node("corpo")
+	var bd: Node3D = corpo.get_node("braccio_d")
+	var bs: Node3D = corpo.get_node("braccio_s")
+	# su fino a metà, poi giù veloce
+	var alzata := sin(t * PI) if t < 0.65 else sin(0.65 * PI) * (1.0 - (t - 0.65) / 0.35)
+	bd.rotation = Vector3(-0.3 - alzata * 2.4, 0, 0.15)
+	bs.rotation = Vector3(-0.5 - alzata * 1.6, 0, -0.2)
+	corpo.rotation.x = 0.15 - alzata * 0.25
+	corpo.position.y = 0.0
+	(corpo.get_node("gamba_s") as Node3D).rotation.x = 0.2
+	(corpo.get_node("gamba_d") as Node3D).rotation.x = -0.2
+
+
+static func ceppo() -> Node3D:
+	var r := Node3D.new()
+	r.add_child(cilindro(0.06, 0.075, 0.06, Vector3(0, 0.03, 0), "corteccia", Vector3.ZERO, 10))
+	r.add_child(cilindro(0.056, 0.056, 0.005, Vector3(0, 0.062, 0), "legno_chiaro", Vector3.ZERO, 10))
+	for k in 5:
+		r.add_child(cilindro(0.01, 0.01, 0.03, Vector3(0.09 * cos(k * 1.3), 0.01, 0.09 * sin(k * 1.3)), "legno_chiaro", Vector3(0, k * 50, 90), 4))
+	return r
+
+
+static func alberello(fase: int) -> Node3D:
+	var r := Node3D.new()
+	var s: float = [0.28, 0.48, 0.72][fase]
+	var albero := pino_laricio(60 + fase)
+	albero.scale = Vector3.ONE * s
+	r.add_child(albero)
+	if fase == 0:
+		r.add_child(cilindro(0.004, 0.004, 0.14, Vector3(0.05, 0.07, 0.0), "legno", Vector3.ZERO, 4))
 	return r
