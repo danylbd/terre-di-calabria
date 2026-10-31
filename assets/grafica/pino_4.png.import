@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://df71ps2c88x1w"
-path="res://.godot/imported/pino.png-55d08fdec960b6a887fc8bc7bf9d0455.ctex"
+uid="uid://csvpubklcrfeg"
+path="res://.godot/imported/pino_4.png-1785b0bea89b8eaece50e38402ab71b8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/grafica/pino.png"
-dest_files=["res://.godot/imported/pino.png-55d08fdec960b6a887fc8bc7bf9d0455.ctex"]
+source_file="res://assets/grafica/pino_4.png"
+dest_files=["res://.godot/imported/pino_4.png-1785b0bea89b8eaece50e38402ab71b8.ctex"]
 
 [params]
 

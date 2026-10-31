@@ -9,8 +9,18 @@ static var _cache_mat := {}
 static func catalogo() -> Dictionary:
 	return {
 		"casa_greca": {"crea": casa_greca, "dimensione": Vector2i(256, 256), "ancora": Vector2(128, 196)},
-		"pino": {"crea": pino.bind(1), "dimensione": Vector2i(160, 240), "ancora": Vector2(80, 214)},
-		"ulivo": {"crea": ulivo.bind(3), "dimensione": Vector2i(176, 176), "ancora": Vector2(88, 150)},
+		"pino_1": {"crea": pino.bind(1), "dimensione": Vector2i(160, 240), "ancora": Vector2(80, 214)},
+		"pino_2": {"crea": pino.bind(2), "dimensione": Vector2i(160, 240), "ancora": Vector2(80, 214)},
+		"pino_3": {"crea": pino.bind(3), "dimensione": Vector2i(160, 240), "ancora": Vector2(80, 214)},
+		"pino_4": {"crea": pino.bind(4), "dimensione": Vector2i(160, 240), "ancora": Vector2(80, 214)},
+		"ulivo_1": {"crea": ulivo.bind(3), "dimensione": Vector2i(176, 176), "ancora": Vector2(88, 150)},
+		"ulivo_2": {"crea": ulivo.bind(7), "dimensione": Vector2i(176, 176), "ancora": Vector2(88, 150)},
+		"ulivo_3": {"crea": ulivo.bind(11), "dimensione": Vector2i(176, 176), "ancora": Vector2(88, 150)},
+		"rocce_1": {"crea": rocce.bind(1), "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 80)},
+		"rocce_2": {"crea": rocce.bind(2), "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 80)},
+		"rocce_3": {"crea": rocce.bind(3), "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 80)},
+		"cespuglio_1": {"crea": cespuglio.bind(1), "dimensione": Vector2i(96, 80), "ancora": Vector2(48, 60)},
+		"cespuglio_2": {"crea": cespuglio.bind(2), "dimensione": Vector2i(96, 80), "ancora": Vector2(48, 60)},
 		"magazzino": {"crea": magazzino, "dimensione": Vector2i(384, 320), "ancora": Vector2(192, 230)},
 		"boscaiolo": {"crea": boscaiolo, "dimensione": Vector2i(256, 256), "ancora": Vector2(128, 196)},
 		"segheria": {"crea": segheria, "dimensione": Vector2i(288, 272), "ancora": Vector2(144, 206)},
@@ -102,6 +112,12 @@ static func materiale(nome: String) -> StandardMaterial3D:
 			m.albedo_color = Color("2f78a8")
 		"sandali":
 			m.albedo_color = Color("5a3a22")
+		"roccia_massi":
+			m.albedo_texture = _rumore(16, 0.12, Color("4a443c"), Color("857a68"))
+		"macchia":
+			m.albedo_texture = _rumore(17, 0.35, Color("2f4a24"), Color("5f7a3c"))
+		"fiore":
+			m.albedo_color = Color("e8c94a")
 		"persiana":
 			m.albedo_color = Color("3f6f96")
 		"buio":
@@ -539,3 +555,38 @@ static func posa_cammino(modello: Node3D, fotogramma: int, totale: int) -> void:
 	else:
 		bs.rotation = Vector3(-0.3 - oscill * 0.2, 0, 0)
 		bd.rotation = Vector3(-0.4, 0, 2.2)
+
+
+static func rocce(seme: int) -> Node3D:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seme * 31
+	var r := Node3D.new()
+	for k in 3 + seme % 2:
+		var mi := MeshInstance3D.new()
+		var sm := SphereMesh.new()
+		sm.radius = 0.5
+		sm.height = 1.0
+		sm.radial_segments = 7
+		sm.rings = 4
+		mi.mesh = sm
+		var dim := rng.randf_range(0.12, 0.26)
+		mi.scale = Vector3(dim * rng.randf_range(1.0, 1.6), dim * rng.randf_range(0.6, 1.0), dim * rng.randf_range(0.9, 1.4))
+		mi.position = Vector3(rng.randf_range(-0.18, 0.18), dim * 0.3, rng.randf_range(-0.15, 0.15))
+		mi.rotation = Vector3(rng.randf_range(-0.3, 0.3), rng.randf() * TAU, rng.randf_range(-0.3, 0.3))
+		mi.material_override = materiale("roccia_massi")
+		r.add_child(mi)
+	r.add_child(sfera(0.05, Vector3(0.2, 0.02, 0.18), "aghi", Vector3(1.4, 0.5, 1.0)))
+	return r
+
+
+static func cespuglio(seme: int) -> Node3D:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seme * 17
+	var r := Node3D.new()
+	for k in 7:
+		var p := Vector3(rng.randf_range(-0.12, 0.12), rng.randf_range(0.05, 0.14), rng.randf_range(-0.12, 0.12))
+		r.add_child(sfera(rng.randf_range(0.06, 0.1), p, "macchia", Vector3(1, 0.8, 1)))
+	if seme % 2 == 0:
+		for k in 5:
+			r.add_child(sfera(0.012, Vector3(rng.randf_range(-0.12, 0.12), rng.randf_range(0.12, 0.2), rng.randf_range(-0.05, 0.14)), "fiore"))
+	return r

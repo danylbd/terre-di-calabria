@@ -106,9 +106,9 @@ metti("casa_greca", 1000, 610)
 metti("casa_greca", 690, 760)
 metti("casa_greca", 1110, 760)
 for (x, y) in [(70, 300), (150, 250), (40, 420), (210, 340), (120, 500), (260, 200), (60, 620), (180, 600), (330, 170), (420, 150)]:
-    metti("pino", x, y)
+    metti("pino_%d" % (1 + (x + y) % 4), x, y)
 for (x, y) in [(1080, 300), (1160, 250), (1330, 280), (1260, 200), (1420, 330), (1380, 450), (880, 250), (940, 180)]:
-    metti("ulivo", x, y)
+    metti("ulivo_%d" % (1 + (x + y) % 3), x, y)
 for (nome, x, y, dd, f) in [
     ("portatore_tronco", 420, 515, 2, 1), ("portatore_tronco", 470, 540, 2, 5),
     ("portatore_asse", 610, 520, 3, 2), ("portatore_asse", 860, 495, 1, 6),

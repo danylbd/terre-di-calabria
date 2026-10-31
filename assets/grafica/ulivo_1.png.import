@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dsaqg1yc4dd21"
-path="res://.godot/imported/ulivo.png-b77720ebb7906908ff7728830d17c613.ctex"
+uid="uid://drb7fgr11r3n7"
+path="res://.godot/imported/ulivo_1.png-6f35a3c3187e616f19aa5937e78e3114.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/grafica/ulivo.png"
-dest_files=["res://.godot/imported/ulivo.png-b77720ebb7906908ff7728830d17c613.ctex"]
+source_file="res://assets/grafica/ulivo_1.png"
+dest_files=["res://.godot/imported/ulivo_1.png-6f35a3c3187e616f19aa5937e78e3114.ctex"]
 
 [params]
 
