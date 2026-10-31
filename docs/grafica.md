@@ -53,7 +53,7 @@ tools/studio/modelli.gd  ──▶  modello 3D (pietra, intonaco, coppi veri, le
 
 | Fase | Contenuto | Stato |
 |---|---|---|
-| **G1** | Studio di rendering 3D + primi modelli (casa greca, pino, ulivo) | in corso |
+| **G1** | Studio di rendering 3D; casa, magazzino, boscaiolo, segheria, frantoio; pino, ulivo; portatore animato (8 direzioni × 8 passi, 4 carichi) | fatto, da rifinire |
 | G2 | Transizioni tra terreni, riva con schiuma, fiumi, varianti | |
 | G3 | Tutti gli edifici greci (≈ 20) con cantiere in 3 fasi | |
 | G4 | Mestieri: 12 lavoratori animati; soldati greci | |
@@ -80,3 +80,14 @@ tools/studio/modelli.gd  ──▶  modello 3D (pietra, intonaco, coppi veri, le
 - **Edifici greci:** magazzino, casa, boscaiolo, segheria, frantoio, cantiere
 - **Persone:** portatore che cammina (4 fotogrammi × 2 direzioni base, specchiabili) con 6 carichi diversi
 - **Varie:** bandierina (4 fotogrammi), nave
+
+## 7. Da rifinire dopo G1
+
+- Tetti: tono della terracotta meno acceso, coppi più irregolari.
+- Ulivi: chioma più sfrangiata e argentata, tronco contorto più visibile.
+- Terreno: macchie meno marcate, più dettaglio fine (ciuffi, sassi, fiori).
+- Persone: visi, capelli vari, tuniche di colori diversi; pose di lavoro.
+- Edifici: più "sporcizia" (muschio alla base, macchie di pioggia), più oggetti attorno.
+- Ombre a terra un po' più morbide.
+
+Anteprima: `python3 tools/studio/anteprima.py assets/grafica docs/immagini/g1-villaggio.png`

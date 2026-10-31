@@ -58,25 +58,50 @@ func _fotografa(nome: String, voce: Dictionary) -> void:
 	var modello: Node3D = voce["crea"].call()
 	mondo.add_child(modello)
 
-	# Passo 1: solo l'oggetto (sfondo trasparente)
-	var oggetto := await _scatta(vp)
+	# Riferimento: piano illuminato senza oggetto (serve a misurare quanto è scura l'ombra)
+	var senza_ombra := await _scatta_piano_libero(vp, mondo, modello)
 
-	# Passo 2: solo l'ombra, su un piano chiaro, con l'oggetto invisibile ma che proietta ombra
+	if voce.has("posa"):
+		var fotogrammi: int = voce["fotogrammi"]
+		var direzioni: int = voce["direzioni"]
+		var foglio := Image.create(dim.x * fotogrammi, dim.y * direzioni, false, Image.FORMAT_RGBA8)
+		for d in direzioni:
+			# direzione 0 = verso chi guarda (sud), poi in senso antiorario visto dall'alto: SE, E, NE, N, NO, O, SO
+			modello.rotation.y = deg_to_rad(45.0 + d * 360.0 / direzioni)
+			for f in fotogrammi:
+				voce["posa"].call(modello, f, fotogrammi)
+				var img := await _foto(vp, mondo, modello, senza_ombra, dim)
+				foglio.blit_rect(img, Rect2i(Vector2i.ZERO, dim), Vector2i(f * dim.x, d * dim.y))
+		foglio.save_png(_uscita.path_join(nome + ".png"))
+		_salva_info(nome, {"cella": [dim.x, dim.y], "ancora": [ancora.x, ancora.y], "fotogrammi": fotogrammi,
+			"direzioni": ["S", "SE", "E", "NE", "N", "NO", "O", "SO"]})
+		print("  ✓ %s (%d direzioni × %d fotogrammi)" % [nome, direzioni, fotogrammi])
+	else:
+		var finale := await _foto(vp, mondo, modello, senza_ombra, dim)
+		finale.save_png(_uscita.path_join(nome + ".png"))
+		_salva_info(nome, {"dimensione": [dim.x, dim.y], "ancora": [ancora.x, ancora.y]})
+		print("  ✓ %s (%dx%d)" % [nome, dim.x, dim.y])
+	vp.queue_free()
+	await process_frame
+
+
+func _foto(vp: SubViewport, mondo: Node3D, modello: Node3D, senza_ombra: Image, dim: Vector2i) -> Image:
+	var oggetto := await _scatta(vp)
 	_imposta_solo_ombra(modello, true)
 	var piano := _piano_ombra()
 	mondo.add_child(piano)
 	var con_ombra := await _scatta(vp)
-	piano.queue_free()
+	mondo.remove_child(piano)
+	piano.free()
 	_imposta_solo_ombra(modello, false)
-	await process_frame
-	var senza_ombra := await _scatta_piano_libero(vp, mondo, modello)
-
 	var finale := _componi(oggetto, con_ombra, senza_ombra)
 	finale.resize(dim.x, dim.y, Image.INTERPOLATE_LANCZOS)
-	finale.save_png(_uscita.path_join(nome + ".png"))
-	print("  ✓ %s (%dx%d)" % [nome, dim.x, dim.y])
-	vp.queue_free()
-	await process_frame
+	return finale
+
+
+func _salva_info(nome: String, info: Dictionary) -> void:
+	var f := FileAccess.open(_uscita.path_join(nome + ".json"), FileAccess.WRITE)
+	f.store_string(JSON.stringify(info, "  "))
 
 
 func _scatta(vp: SubViewport) -> Image:
@@ -91,7 +116,8 @@ func _scatta_piano_libero(vp: SubViewport, mondo: Node3D, modello: Node3D) -> Im
 	var piano := _piano_ombra()
 	mondo.add_child(piano)
 	var img := await _scatta(vp)
-	piano.queue_free()
+	mondo.remove_child(piano)
+	piano.free()
 	modello.visible = true
 	return img
 

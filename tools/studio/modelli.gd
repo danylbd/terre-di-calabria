@@ -11,6 +11,18 @@ static func catalogo() -> Dictionary:
 		"casa_greca": {"crea": casa_greca, "dimensione": Vector2i(256, 256), "ancora": Vector2(128, 196)},
 		"pino": {"crea": pino.bind(1), "dimensione": Vector2i(160, 240), "ancora": Vector2(80, 214)},
 		"ulivo": {"crea": ulivo.bind(3), "dimensione": Vector2i(176, 176), "ancora": Vector2(88, 150)},
+		"magazzino": {"crea": magazzino, "dimensione": Vector2i(384, 320), "ancora": Vector2(192, 230)},
+		"boscaiolo": {"crea": boscaiolo, "dimensione": Vector2i(256, 256), "ancora": Vector2(128, 196)},
+		"segheria": {"crea": segheria, "dimensione": Vector2i(288, 272), "ancora": Vector2(144, 206)},
+		"frantoio": {"crea": frantoio, "dimensione": Vector2i(288, 272), "ancora": Vector2(144, 206)},
+		"portatore_nessuno": {"crea": portatore.bind(""), "posa": posa_cammino, "fotogrammi": 8, "direzioni": 8,
+			"dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)},
+		"portatore_tronco": {"crea": portatore.bind("tronco"), "posa": posa_cammino, "fotogrammi": 8, "direzioni": 8,
+			"dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)},
+		"portatore_asse": {"crea": portatore.bind("asse"), "posa": posa_cammino, "fotogrammi": 8, "direzioni": 8,
+			"dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)},
+		"portatore_anfora": {"crea": portatore.bind("anfora"), "posa": posa_cammino, "fotogrammi": 8, "direzioni": 8,
+			"dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)},
 	}
 
 
@@ -48,10 +60,10 @@ static func materiale(nome: String) -> StandardMaterial3D:
 			m.albedo_texture = _rumore(3, 0.09, Color("8f8270"), Color("c4b69c"))
 			m.uv1_scale = Vector3(3, 3, 3)
 		"tegola":
-			m.albedo_texture = _rumore(4, 0.08, Color("8a3a22"), Color("b85a36"))
+			m.albedo_texture = _rumore(4, 0.11, Color("6e2f1d"), Color("a14c2e"))
 			m.uv1_scale = Vector3(4, 4, 4)
 		"tegola_scura":
-			m.albedo_texture = _rumore(5, 0.08, Color("7a3019"), Color("a24a2a"))
+			m.albedo_texture = _rumore(5, 0.08, Color("5c2616"), Color("853b22"))
 		"legno":
 			m.albedo_texture = _rumore(6, 0.15, Color("5a3a22"), Color("8a5a32"))
 			m.uv1_scale = Vector3(1, 6, 1)
@@ -69,6 +81,27 @@ static func materiale(nome: String) -> StandardMaterial3D:
 		"terracotta":
 			m.albedo_texture = _rumore(11, 0.1, Color("a8582f"), Color("c97a4a"))
 			m.roughness = 0.75
+		"legno_chiaro":
+			m.albedo_texture = _rumore(12, 0.2, Color("b88a55"), Color("e0bd88"))
+			m.uv1_scale = Vector3(1, 5, 1)
+		"lino":
+			m.albedo_texture = _rumore(13, 0.3, Color("c9b48a"), Color("e8d9b4"))
+		"marmo":
+			m.albedo_texture = _rumore(14, 0.05, Color("e2dccf"), Color("fbfaf6"))
+		"ferro":
+			m.albedo_color = Color("7d8287")
+			m.metallic = 0.6
+			m.roughness = 0.45
+		"pelle":
+			m.albedo_color = Color("d39a72")
+		"capelli":
+			m.albedo_color = Color("3a2416")
+		"tunica":
+			m.albedo_texture = _rumore(15, 0.4, Color("c8b48e"), Color("e4d6b6"))
+		"giocatore":
+			m.albedo_color = Color("2f78a8")
+		"sandali":
+			m.albedo_color = Color("5a3a22")
 		"persiana":
 			m.albedo_color = Color("3f6f96")
 		"buio":
@@ -225,3 +258,284 @@ static func ulivo(seme: int) -> Node3D:
 		var rr := rng.randf_range(0.09, 0.14)
 		r.add_child(sfera(rr, p, "foglie_ulivo", Vector3(1, 0.62, 1)))
 	return r
+
+
+## Riempie il sottotetto (i due timpani triangolari) sotto un tetto a due falde con colmo lungo X.
+static func sottotetto(radice: Node3D, lx: float, lz: float, base_y: float, pendenza_gradi: float, mat := "intonaco") -> void:
+	var alt := (lz * 0.5) * tan(deg_to_rad(pendenza_gradi))
+	var mi := MeshInstance3D.new()
+	var pm := PrismMesh.new()
+	pm.size = Vector3(lz, alt, lx)
+	mi.mesh = pm
+	mi.rotation_degrees = Vector3(0, 90, 0)
+	mi.position = Vector3(0, base_y + alt * 0.5, 0)
+	mi.material_override = materiale(mat)
+	radice.add_child(mi)
+
+
+## Tetto a scandole di legno (file di tavolette sovrapposte).
+static func tetto_scandole(radice: Node3D, larg: float, prof: float, base_y: float, pendenza_gradi: float) -> void:
+	var meta := prof * 0.5 + 0.06
+	var ang := deg_to_rad(pendenza_gradi)
+	var lung := meta / cos(ang)
+	var alt := meta * tan(ang)
+	for lato in [-1, 1]:
+		var falda := Node3D.new()
+		falda.position = Vector3(0, base_y + alt * 0.5, lato * meta * 0.5)
+		falda.rotation.x = lato * ang
+		radice.add_child(falda)
+		falda.add_child(scatola(Vector3(larg + 0.12, 0.025, lung), Vector3.ZERO, "legno_scuro"))
+		var file := int(lung / 0.07)
+		for k in file:
+			var z := -lung * 0.5 + (k + 0.5) * lung / file
+			var fila := scatola(Vector3(larg + 0.12, 0.018, lung / file * 1.3), Vector3(0, 0.02, z * lato * -1.0), "legno" if k % 2 == 0 else "legno_scuro")
+			fila.rotation_degrees.x = 6 * lato
+			falda.add_child(fila)
+	radice.add_child(cilindro(0.035, 0.035, larg + 0.16, Vector3(0, base_y + alt + 0.02, 0), "legno_scuro", Vector3(0, 0, 90), 8))
+
+
+static func anfora(pos: Vector3, scala := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.scale = Vector3.ONE * scala
+	n.add_child(sfera(0.045, Vector3(0, 0.05, 0), "terracotta", Vector3(1, 1.35, 1)))
+	n.add_child(cilindro(0.018, 0.022, 0.04, Vector3(0, 0.12, 0), "terracotta", Vector3.ZERO, 8))
+	n.add_child(cilindro(0.026, 0.026, 0.01, Vector3(0, 0.14, 0), "terracotta", Vector3.ZERO, 8))
+	return n
+
+
+static func sacco(pos: Vector3, rot := 0.0) -> MeshInstance3D:
+	var s := sfera(0.06, pos + Vector3(0, 0.045, 0), "lino", Vector3(1, 0.8, 0.8))
+	s.rotation.y = rot
+	return s
+
+
+static func cassa(pos: Vector3, rot := 0.0, lato := 0.11) -> MeshInstance3D:
+	return scatola(Vector3(lato, lato * 0.8, lato), pos + Vector3(0, lato * 0.4, 0), "legno", Vector3(0, rot, 0))
+
+
+static func catasta_tronchi(radice: Node3D, pos: Vector3, file := 3, lung := 0.36) -> void:
+	for f in file:
+		for k in file - f:
+			var x := (k - (file - f - 1) * 0.5) * 0.075
+			radice.add_child(cilindro(0.035, 0.035, lung, pos + Vector3(x, 0.035 + f * 0.062, 0), "corteccia", Vector3(90, 0, 0), 8))
+			radice.add_child(cilindro(0.028, 0.028, lung + 0.004, pos + Vector3(x, 0.035 + f * 0.062, 0), "legno_chiaro", Vector3(90, 0, 0), 8))
+
+
+static func pila_assi(radice: Node3D, pos: Vector3, strati := 5, rot := 0.0) -> void:
+	for k in strati:
+		var a := scatola(Vector3(0.34, 0.018, 0.14), pos + Vector3(0, 0.012 + k * 0.021, 0), "legno_chiaro", Vector3(0, rot + (k % 2) * 3, 0))
+		radice.add_child(a)
+
+
+# ------------------------------------------------------------------ edifici greci
+
+static func magazzino() -> Node3D:
+	var r := Node3D.new()
+	var lx := 1.6
+	var lz := 1.2
+	var h := 0.52
+	var portico := 0.28
+	# basamento a gradini
+	r.add_child(scatola(Vector3(lx + 0.16, 0.05, lz + 0.16), Vector3(0, 0.025, 0), "pietra"))
+	r.add_child(scatola(Vector3(lx + 0.08, 0.05, lz + 0.08), Vector3(0, 0.075, 0), "marmo"))
+	# cella (muri arretrati dietro il portico)
+	var cz := lz - portico
+	r.add_child(scatola(Vector3(lx - 0.08, h, cz), Vector3(0, 0.1 + h * 0.5, -portico * 0.5), "intonaco"))
+	r.add_child(scatola(Vector3(lx - 0.075, 0.08, cz + 0.005), Vector3(0, 0.14, -portico * 0.5), "intonaco_sporco"))
+	# porta grande e due finestrelle
+	var fz := -portico * 0.5 + cz * 0.5 + 0.006
+	r.add_child(scatola(Vector3(0.24, 0.32, 0.02), Vector3(0.0, 0.26, fz), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.012, 0.32, 0.025), Vector3(0.0, 0.26, fz + 0.004), "ferro"))
+	for fx in [-0.5, 0.5]:
+		r.add_child(scatola(Vector3(0.1, 0.12, 0.02), Vector3(fx, 0.38, fz), "buio"))
+	# colonne doriche
+	var n := 7
+	for k in n:
+		var x := -lx * 0.5 + 0.1 + k * (lx - 0.2) / (n - 1)
+		var zc := lz * 0.5 - 0.06
+		r.add_child(cilindro(0.045, 0.036, h - 0.04, Vector3(x, 0.1 + (h - 0.04) * 0.5, zc), "marmo", Vector3.ZERO, 12))
+		r.add_child(scatola(Vector3(0.1, 0.025, 0.1), Vector3(x, 0.1 + h - 0.03, zc), "marmo"))
+	# colonne sul lato destro (+X) del portico
+	r.add_child(cilindro(0.045, 0.036, h - 0.04, Vector3(lx * 0.5 - 0.1, 0.1 + (h - 0.04) * 0.5, lz * 0.5 - 0.2), "marmo"))
+	# trabeazione con fregio
+	var ty := 0.1 + h
+	r.add_child(scatola(Vector3(lx + 0.02, 0.06, lz + 0.02), Vector3(0, ty + 0.01, 0), "marmo"))
+	for k in 16:
+		var x := -lx * 0.5 + 0.05 + k * (lx - 0.1) / 15
+		r.add_child(scatola(Vector3(0.03, 0.04, 0.012), Vector3(x, ty + 0.012, lz * 0.5 + 0.012), "intonaco_sporco"))
+	r.add_child(scatola(Vector3(lx + 0.06, 0.02, lz + 0.06), Vector3(0, ty + 0.05, 0), "marmo"))
+	# tetto e frontone
+	sottotetto(r, lx + 0.02, lz + 0.02, ty + 0.06, 17.0, "marmo")
+	tetto_coppi(r, lx + 0.06, lz + 0.02, ty + 0.06, 17.0)
+	# merci davanti
+	for i in 3:
+		r.add_child(anfora(Vector3(-0.62 + i * 0.09, 0.1, lz * 0.5 + 0.17), 1.1))
+	r.add_child(anfora(Vector3(-0.58, 0.1, lz * 0.5 + 0.27), 1.1))
+	r.add_child(cassa(Vector3(0.45, 0.0, lz * 0.5 + 0.22), 15))
+	r.add_child(cassa(Vector3(0.58, 0.0, lz * 0.5 + 0.2), -10))
+	r.add_child(cassa(Vector3(0.5, 0.088, lz * 0.5 + 0.21), 30, 0.09))
+	r.add_child(sacco(Vector3(0.7, 0.0, lz * 0.5 + 0.08), 0.3))
+	r.add_child(sacco(Vector3(0.72, 0.0, lz * 0.5 - 0.06), -0.4))
+	return r
+
+
+static func boscaiolo() -> Node3D:
+	var r := Node3D.new()
+	var lx := 0.6
+	var lz := 0.5
+	var h := 0.3
+	r.add_child(scatola(Vector3(lx + 0.05, 0.04, lz + 0.05), Vector3(0, 0.02, 0), "pietra"))
+	r.add_child(scatola(Vector3(lx, h, lz), Vector3(0, 0.04 + h * 0.5, 0), "legno"))
+	# tronchi orizzontali sulle due facce visibili (capanna di tronchi)
+	var file := 6
+	for k in file:
+		var y := 0.06 + k * (h / file)
+		r.add_child(cilindro(0.026, 0.026, lx + 0.08, Vector3(0, y, lz * 0.5), "corteccia", Vector3(0, 0, 90), 7))
+		r.add_child(cilindro(0.026, 0.026, lz + 0.08, Vector3(lx * 0.5, y + 0.025, 0), "corteccia", Vector3(90, 0, 0), 7))
+	r.add_child(scatola(Vector3(0.12, 0.2, 0.03), Vector3(-0.1, 0.14, lz * 0.5 + 0.02), "legno_scuro"))
+	sottotetto(r, lx, lz, 0.04 + h, 32.0, "legno")
+	tetto_scandole(r, lx + 0.04, lz, 0.04 + h, 32.0)
+	# catasta di tronchi sul lato
+	catasta_tronchi(r, Vector3(lx * 0.5 + 0.17, 0, -0.02), 3)
+	# ceppo con ascia
+	r.add_child(cilindro(0.06, 0.065, 0.08, Vector3(0.12, 0.04, lz * 0.5 + 0.2), "corteccia", Vector3.ZERO, 10))
+	r.add_child(cilindro(0.058, 0.058, 0.005, Vector3(0.12, 0.081, lz * 0.5 + 0.2), "legno_chiaro", Vector3.ZERO, 10))
+	var manico := cilindro(0.008, 0.008, 0.2, Vector3(0.12, 0.16, lz * 0.5 + 0.2), "legno", Vector3(0, 0, 25), 6)
+	r.add_child(manico)
+	r.add_child(scatola(Vector3(0.05, 0.035, 0.012), Vector3(0.08, 0.245, lz * 0.5 + 0.2), "ferro", Vector3(0, 0, 25)))
+	# trucioli e ciocchi a terra
+	for i in 4:
+		r.add_child(cilindro(0.022, 0.022, 0.06, Vector3(0.0 + i * 0.05, 0.022, lz * 0.5 + 0.32 - (i % 2) * 0.05), "legno_chiaro", Vector3(0, i * 40, 90), 6))
+	r.scale = Vector3.ONE * 1.5
+	return r
+
+
+static func segheria() -> Node3D:
+	var r := Node3D.new()
+	var lx := 0.7
+	var lz := 0.55
+	var h := 0.38
+	r.position = Vector3(-0.08, 0, -0.08)
+	r.add_child(scatola(Vector3(lx + 0.05, 0.05, lz + 0.05), Vector3(0, 0.025, 0), "pietra"))
+	r.add_child(scatola(Vector3(lx, h, lz), Vector3(0, 0.05 + h * 0.5, 0), "pietra"))
+	r.add_child(scatola(Vector3(lx + 0.005, 0.1, lz + 0.005), Vector3(0, 0.1, 0), "intonaco_sporco"))
+	r.add_child(scatola(Vector3(0.16, 0.24, 0.03), Vector3(-0.15, 0.17, lz * 0.5 + 0.01), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.02, 0.1, 0.09), Vector3(lx * 0.5 + 0.005, 0.3, 0.05), "buio"))
+	sottotetto(r, lx, lz, 0.05 + h, 22.0, "pietra")
+	tetto_coppi(r, lx + 0.04, lz, 0.05 + h, 22.0)
+	# tettoia aperta sul davanti, su pali
+	var tz := lz * 0.5 + 0.22
+	for px in [-0.3, 0.3]:
+		r.add_child(cilindro(0.02, 0.02, 0.32, Vector3(px, 0.16, tz + 0.1), "legno", Vector3.ZERO, 6))
+	var tettoia := scatola(Vector3(0.72, 0.025, 0.36), Vector3(0, 0.34, tz - 0.02), "legno_scuro", Vector3(-14, 0, 0))
+	r.add_child(tettoia)
+	# cavalletti con tronco e sega a telaio
+	for px in [-0.18, 0.18]:
+		r.add_child(scatola(Vector3(0.025, 0.12, 0.1), Vector3(px, 0.06, tz), "legno"))
+	r.add_child(cilindro(0.045, 0.045, 0.56, Vector3(0, 0.15, tz), "corteccia", Vector3(0, 0, 90), 8))
+	r.add_child(scatola(Vector3(0.012, 0.22, 0.012), Vector3(0.05, 0.2, tz), "legno"))
+	r.add_child(scatola(Vector3(0.012, 0.22, 0.012), Vector3(0.05, 0.2, tz + 0.12), "legno"))
+	r.add_child(scatola(Vector3(0.006, 0.006, 0.12), Vector3(0.05, 0.13, tz + 0.06), "ferro"))
+	r.add_child(scatola(Vector3(0.01, 0.01, 0.13), Vector3(0.05, 0.3, tz + 0.06), "legno"))
+	# pile di assi
+	pila_assi(r, Vector3(lx * 0.5 + 0.2, 0, 0.15), 6, 90)
+	pila_assi(r, Vector3(lx * 0.5 + 0.2, 0, -0.2), 3, 90)
+	catasta_tronchi(r, Vector3(-lx * 0.5 - 0.02, 0, lz * 0.5 + 0.35), 2, 0.3)
+	r.scale = Vector3.ONE * 1.45
+	return r
+
+
+static func frantoio() -> Node3D:
+	var r := Node3D.new()
+	var lx := 0.66
+	var lz := 0.5
+	var h := 0.36
+	r.position = Vector3(-0.08, 0, -0.1)
+	r.add_child(scatola(Vector3(lx + 0.05, 0.05, lz + 0.05), Vector3(0, 0.025, 0), "pietra"))
+	r.add_child(scatola(Vector3(lx, h, lz), Vector3(0, 0.05 + h * 0.5, 0), "intonaco"))
+	r.add_child(scatola(Vector3(lx + 0.005, 0.08, lz + 0.005), Vector3(0, 0.09, 0), "intonaco_sporco"))
+	r.add_child(scatola(Vector3(0.14, 0.22, 0.02), Vector3(0.12, 0.16, lz * 0.5 + 0.005), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.08, 0.08, 0.02), Vector3(-0.15, 0.28, lz * 0.5 + 0.005), "buio"))
+	sottotetto(r, lx, lz, 0.05 + h, 20.0, "intonaco")
+	tetto_coppi(r, lx + 0.04, lz, 0.05 + h, 20.0)
+	# macina: vasca di pietra con ruota verticale e palo
+	var mz := lz * 0.5 + 0.3
+	var mx := -0.18
+	r.add_child(cilindro(0.2, 0.21, 0.08, Vector3(mx, 0.04, mz), "pietra", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.16, 0.16, 0.01, Vector3(mx, 0.081, mz), "intonaco_sporco", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.025, 0.025, 0.16, Vector3(mx, 0.14, mz), "legno", Vector3.ZERO, 6))
+	r.add_child(cilindro(0.1, 0.1, 0.06, Vector3(mx + 0.08, 0.18, mz), "pietra", Vector3(0, 0, 90), 16))
+	r.add_child(scatola(Vector3(0.42, 0.025, 0.025), Vector3(mx + 0.12, 0.2, mz), "legno"))
+	# anfore d'olio e ceste di olive
+	for i in 4:
+		r.add_child(anfora(Vector3(0.22 + (i % 2) * 0.09, 0.0, mz - 0.05 + (i / 2) * 0.1), 1.0))
+	for i in 2:
+		r.add_child(cilindro(0.05, 0.04, 0.05, Vector3(lx * 0.5 + 0.12, 0.025, 0.1 - i * 0.14), "legno_chiaro", Vector3.ZERO, 10))
+		r.add_child(sfera(0.042, Vector3(lx * 0.5 + 0.12, 0.05, 0.1 - i * 0.14), "foglie_ulivo", Vector3(1, 0.4, 1)))
+	r.scale = Vector3.ONE * 1.45
+	return r
+
+
+# ------------------------------------------------------------------ persone
+
+## Portatore: proporzioni esagerate (testa grande, carico ben visibile) per restare leggibile a 45 pixel.
+static func portatore(carico: String) -> Node3D:
+	var r := Node3D.new()
+	var corpo := Node3D.new()
+	corpo.name = "corpo"
+	r.add_child(corpo)
+	var anca := 0.2
+	for lato in [-1, 1]:
+		var gamba := Node3D.new()
+		gamba.name = "gamba_s" if lato < 0 else "gamba_d"
+		gamba.position = Vector3(lato * 0.035, anca, 0)
+		corpo.add_child(gamba)
+		gamba.add_child(cilindro(0.022, 0.018, 0.18, Vector3(0, -0.09, 0), "pelle", Vector3.ZERO, 6))
+		gamba.add_child(scatola(Vector3(0.04, 0.02, 0.07), Vector3(0, -0.185, 0.015), "sandali"))
+	corpo.add_child(cilindro(0.085, 0.06, 0.2, Vector3(0, anca + 0.07, 0), "tunica", Vector3.ZERO, 10))
+	corpo.add_child(cilindro(0.075, 0.075, 0.022, Vector3(0, anca + 0.1, 0), "giocatore", Vector3.ZERO, 10))
+	corpo.add_child(cilindro(0.087, 0.087, 0.018, Vector3(0, anca - 0.022, 0), "giocatore", Vector3.ZERO, 10))
+	corpo.add_child(sfera(0.075, Vector3(0, anca + 0.25, 0), "pelle"))
+	var capelli := sfera(0.078, Vector3(0, anca + 0.27, -0.01), "capelli", Vector3(1, 0.85, 1))
+	corpo.add_child(capelli)
+	corpo.add_child(sfera(0.012, Vector3(0, anca + 0.24, 0.075), "pelle"))  # naso
+	for lato in [-1, 1]:
+		var braccio := Node3D.new()
+		braccio.name = "braccio_s" if lato < 0 else "braccio_d"
+		braccio.position = Vector3(lato * 0.07, anca + 0.155, 0)
+		corpo.add_child(braccio)
+		braccio.add_child(cilindro(0.017, 0.015, 0.14, Vector3(0, -0.07, 0), "pelle", Vector3.ZERO, 6))
+	var spalla := Vector3(0, anca + 0.2, 0)
+	match carico:
+		"tronco":
+			corpo.add_child(cilindro(0.038, 0.038, 0.3, spalla + Vector3(0.085, 0.01, 0), "corteccia", Vector3(90, 0, 0), 8))
+			corpo.add_child(cilindro(0.03, 0.03, 0.302, spalla + Vector3(0.085, 0.01, 0), "legno_chiaro", Vector3(90, 0, 0), 8))
+		"asse":
+			corpo.add_child(scatola(Vector3(0.05, 0.016, 0.36), spalla + Vector3(0.08, 0.02, 0), "legno_chiaro"))
+			corpo.add_child(scatola(Vector3(0.05, 0.016, 0.34), spalla + Vector3(0.08, 0.038, 0.01), "legno_chiaro"))
+		"anfora":
+			corpo.add_child(anfora(Vector3(0, anca + 0.31, 0), 1.25))
+	r.set_meta("carico", carico)
+	return r
+
+
+static func posa_cammino(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale * TAU
+	var oscill := sin(t)
+	var corpo: Node3D = modello.get_node("corpo")
+	corpo.position.y = absf(cos(t)) * 0.012
+	(corpo.get_node("gamba_s") as Node3D).rotation.x = oscill * 0.5
+	(corpo.get_node("gamba_d") as Node3D).rotation.x = -oscill * 0.5
+	var carico: String = modello.get_meta("carico", "")
+	var bs: Node3D = corpo.get_node("braccio_s")
+	var bd: Node3D = corpo.get_node("braccio_d")
+	if carico == "":
+		bs.rotation.x = -oscill * 0.45
+		bd.rotation.x = oscill * 0.45
+	elif carico == "anfora":
+		bs.rotation = Vector3(0, 0, -2.6)
+		bd.rotation = Vector3(0, 0, 2.6)
+	else:
+		bs.rotation = Vector3(-0.3 - oscill * 0.2, 0, 0)
+		bd.rotation = Vector3(-0.4, 0, 2.2)
