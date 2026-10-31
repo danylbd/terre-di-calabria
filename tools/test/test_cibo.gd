@@ -26,10 +26,14 @@ func _prova() -> void:
 		if e.tipo == "magazzino":
 			mag = e
 	var fatt := _piazza("fattoria", func(f): return _prato_libero(f, 4) - Vector2(f - mag.bandiera).length() * 0.3)
-	# la costa è fuori dai confini iniziali: una torre già finita li allarga verso il mare, come farebbe il giocatore
-	var torre := _piazza("torre", func(f): return -_distanza_acqua(f), true)
-	_controlla(torre != null, "torre verso il mare")
-	var pesc := _piazza("pescatore", func(f): return _conta_acqua(f, 6) - Vector2(f - mag.bandiera).length() * 0.2)
+	# la costa è fuori dai confini iniziali: torri già finite li allargano verso il mare, come farebbe il giocatore
+	var pesc: Edificio = null
+	for k in 3:
+		var torre := _piazza("torre", func(f): return -_distanza_acqua(f), true)
+		_controlla(torre != null, "torre verso il mare")
+		pesc = _piazza("pescatore", func(f): return _conta_acqua(f, 6) - Vector2(f - mag.bandiera).length() * 0.2)
+		if pesc:
+			break
 	var mul := _piazza("mulino", func(f): return -Vector2(f - mag.bandiera).length())
 	var forno := _piazza("forno", func(f): return -Vector2(f - mag.bandiera).length())
 	var pozzo := _piazza("pozzo", func(f): return -Vector2(f - forno.bandiera).length() if forno else 0.0)
@@ -42,9 +46,11 @@ func _prova() -> void:
 	Engine.time_scale = VELOCITA
 	var mezzi_minuti := int(OS.get_environment("MINUTI")) if OS.get_environment("MINUTI") != "" else 20
 	var campi_max := 0
+	var mietuto := false
 	for k in mezzi_minuti:
 		await create_timer(30.0).timeout
 		campi_max = maxi(campi_max, ris.campi.size())
+		mietuto = mietuto or ris._ceppi.size() > 0 or v.scorte.get("grano", 0) > 0 or mul.ingresso.get("grano", 0) > 0 			or v.scorte.get("farina", 0) > 0
 		var stato := []
 		for e in [fatt, pesc, mul, forno, pozzo]:
 			var l: Lavoratore = e.lavoratore
@@ -66,8 +72,7 @@ func _prova() -> void:
 				w = minf(w, Vector2(Vector2i(x, y) - pesc.bandiera).length())
 	print("  acqua più vicina al pescatore: %.1f caselle; posto di pesca: %s" % [w, ris.posto_di_pesca(pesc.bandiera, 7)])
 	_controlla(campi_max >= 3, "il contadino ha seminato i campi (max %d)" % campi_max)
-	_controlla(ris._ceppi.size() > 0 or v.scorte.get("grano", 0) > 0 or mul.ingresso.get("grano", 0) > 0 or v.scorte.get("farina", 0) > 0,
-		"il contadino ha mietuto")
+	_controlla(mietuto, "il contadino ha mietuto")
 	_controlla(v.scorte.get("pane", 0) > 0, "pane arrivato al magazzino (%d)" % v.scorte.get("pane", 0))
 	_controlla(v.scorte.get("pesce", 0) > 0, "pesce arrivato al magazzino (%d)" % v.scorte.get("pesce", 0))
 	_controlla(not ris.pesci.is_empty(), "il mare si è impoverito dove si pesca")

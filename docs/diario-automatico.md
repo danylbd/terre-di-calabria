@@ -32,3 +32,9 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Modelli con animali (maiali, pecore, capre) nei recinti; merci e carichi nuovi. Barra delle scorte: legno e pietra sempre, le altre merci solo quando ci sono, e si ricentra.
 - test_allevamenti OK (carne, lana, formaggio, miele al magazzino). Screenshot `docs/immagini/step06-allevamenti.png`.
 - Resta: vite/cantina, orto e cipolla, agrumi, olive per il frantoio, barca per il pesce spada. Animali fermi nel modello (in futuro: animali che si muovono).
+
+## 2026-10-31 22:30 — step 06 completato
+- Pezzo 3: colture generiche (vigneto, ortolano, agrumeto con vite e agrumi perenni), cantina, raccoglitore di olive + frantoio, barca del pesce spada (rema sull'acqua). Pescatore e barca solo vicino al mare.
+- Tutti i test OK: catena, audio, cibo, allevamenti, colture. Versione 0.8.0, merge in main.
+- Note per il futuro: olive e altre materie prime non hanno tetto (solo il pozzo si ferma); animali fermi nei modelli; la costa è lontana dal villaggio iniziale (servono 2 torri).
+- Prossimo: step 07 metallo.
