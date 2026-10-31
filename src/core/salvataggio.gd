@@ -85,7 +85,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	for e in v.edifici.values():
 		edifici.append({"id": e.id, "tipo": e.tipo, "casella": _v(e.casella), "finito": e.finito, "progresso": e.progresso,
 			"consegnati": e.consegnati, "richiesti": e.richiesti, "ingresso": e.ingresso, "in_arrivo": e.in_arrivo,
-			"prodotti": e.prodotti, "nascita": e.nascita, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono,
+			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "guadagno": e.guadagno, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono,
 			"lavoratore": e.lavoratore != null and is_instance_valid(e.lavoratore)})
 	d["edifici"] = edifici
 	var bandiere := []
@@ -147,6 +147,8 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		e.in_arrivo = _interi(s["in_arrivo"])
 		e.prodotti = int(s["prodotti"])
 		e.nascita = s["nascita"]
+		e.acquisto = s.get("acquisto", "")
+		e.guadagno = int(s.get("guadagno", 0))
 		e.manca_attrezzo = s["manca_attrezzo"]
 		e.manca_colono = s["manca_colono"]
 	for b in d["bandiere"]:

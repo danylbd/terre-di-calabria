@@ -13,7 +13,8 @@ const PAUSA := 3.5
 const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardaboschi": ["vanga", 1.3],
 	"segheria": ["sega", 1.45], "fattoria": ["falce", 1.1], "vigneto": ["falce", 1.4], "ortolano": ["vanga", 1.3],
 	"agrumeto": ["falce", 1.6], "uliveto": ["falce", 1.5], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4],
-	"miniera_ferro": ["piccone", 0.9], "fabbro": ["martello", 0.7], "fonderia": ["macina", 2.0]}
+	"miniera_ferro": ["piccone", 0.9], "miniera_argento": ["piccone", 0.9], "fabbro": ["martello", 0.7],
+	"fonderia": ["macina", 2.0], "zecca": ["martello", 1.2], "argillaio": ["vanga", 1.3], "fornace": ["macina", 2.2]}
 ## secondi di lavoro sul posto (o dentro l'edificio)
 const DURATA := {"boscaiolo": 4.0, "cava": 4.0, "guardaboschi": 3.0, "fattoria": 3.5, "pescatore": 6.0,
 	"uliveto": 4.0, "pesca_spada": 9.0}
@@ -251,6 +252,9 @@ func _lavora_dentro() -> void:
 	var ingressi: Dictionary = info.get("ingressi", {})
 	if mestiere == "apiario" and risorse.stagioni and risorse.stagioni.inverno():
 		return
+	if mestiere == "agora":
+		_lavora_agora()
+		return
 	if mestiere == "fabbro":
 		_attrezzo_scelto = logistica.attrezzo_da_fare()
 		if _attrezzo_scelto == "":
@@ -282,6 +286,30 @@ func _lavora_dentro() -> void:
 	_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO)
 
 
+## Agorà: vende una merce arrivata (le monete vanno subito in cassa), altrimenti compra quella scelta
+## con le monete del magazzino e il mercante la porta fuori.
+func _lavora_agora() -> void:
+	var v: Villaggio = edificio.villaggio
+	_attrezzo_scelto = ""
+	for m in CatalogoEdifici.VENDITA:
+		if edificio.ingresso.get(m, 0) > 0:
+			edificio.ingresso[m] -= 1
+			var ricavo: int = CatalogoEdifici.VENDITA[m]
+			v.scorte["monete"] = v.scorte.get("monete", 0) + ricavo
+			edificio.guadagno += ricavo
+			v.scorte_cambiate.emit()
+			Suono.suona_in("completato", edificio.global_position, -10.0)
+			_attesa = 2.0          # il mercante resta al banco: la prossima vendita tra poco
+			return
+	var a := edificio.acquisto
+	if a != "" and v.scorte.get("monete", 0) >= CatalogoEdifici.ACQUISTO[a] and logistica.serve(a, Logistica.SCORTA_MASSIMA):
+		v.scorte["monete"] -= CatalogoEdifici.ACQUISTO[a]
+		v.scorte_cambiate.emit()
+		_attrezzo_scelto = a
+		stato = Stato.LAVORO
+		_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO)
+
+
 func _rientra_vuoto() -> void:
 	imposta_foglio(_foglio_cammino)
 	stato = Stato.ARRIVO
@@ -307,7 +335,7 @@ func _torna(foglio: String) -> void:
 
 
 func _merce_prodotta() -> String:
-	if mestiere == "fabbro":
+	if mestiere == "fabbro" or mestiere == "agora":
 		return _attrezzo_scelto
 	var p := CatalogoEdifici.prodotti(mestiere)
 	return "" if p.is_empty() else p[_turno % p.size()]

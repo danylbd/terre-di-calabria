@@ -61,3 +61,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Calendario di 4 stagioni (5 minuti l'una), si parte in primavera. Crescita per stagione di grano, orto, vite, agrumi, alberelli, olive; d'inverno niente semina e api a riposo.
 - Neve nello shader del terreno, fiocchi che cadono, castagni e querce gialli d'autunno e spogli d'inverno, luce che cambia; cicale solo d'estate, più vento d'inverno. Stagione e anno nella barra e nel pannello.
 - Calendario nel salvataggio. Tutti i 9 test OK. Versione 0.12.0. Prossimo: step 11 Greci completi.
+
+## 2026-11-01 02:10 — step 11 Greci completi (Fase 1 finita)
+- 7 edifici nuovi (36 in tutto): argillaio, fornace, saline, tessitura, miniera d'argento, zecca, agorà (3×3, edificio unico dei Greci).
+- Agorà: vende olio, vino, stoffa, anfore, pesce spada, miele, formaggio, sale, agrumi per monete (prezzi favorevoli); compra la merce scelta nel pannello. Le monete non hanno tetto di scorta.
+- Generalizzato il gruppo "una qualsiasi" (`CatalogoEdifici.gruppo`). Versione 0.13.0. Prossimo: step 12 territorio e torri.

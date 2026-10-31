@@ -12,6 +12,8 @@ var _titolo: Label
 var _testo: RichTextLabel
 var _icona: TextureRect
 var _aggiorna := 0.0
+var _compra: OptionButton
+var _riga_compra: HBoxContainer
 
 
 func _ready() -> void:
@@ -49,6 +51,22 @@ func _ready() -> void:
 	_testo.add_theme_color_override("default_color", Palette.INCHIOSTRO)
 	colonna.add_child(_testo)
 
+	_riga_compra = HBoxContainer.new()
+	_riga_compra.add_theme_constant_override("separation", 8)
+	colonna.add_child(_riga_compra)
+	var et := Label.new()
+	et.text = "Compra con le monete:"
+	et.add_theme_color_override("font_color", Palette.INCHIOSTRO)
+	_riga_compra.add_child(et)
+	_compra = OptionButton.new()
+	_compra.add_item("niente")
+	for m in CatalogoEdifici.ACQUISTO:
+		_compra.add_item("%s (%d)" % [CatalogoEdifici.NOMI_RISORSE[m], CatalogoEdifici.ACQUISTO[m]])
+	_compra.item_selected.connect(func(i: int):
+		if edificio:
+			edificio.acquisto = "" if i == 0 else CatalogoEdifici.ACQUISTO.keys()[i - 1])
+	_riga_compra.add_child(_compra)
+
 	var pulsanti := HBoxContainer.new()
 	pulsanti.add_theme_constant_override("separation", 8)
 	colonna.add_child(pulsanti)
@@ -70,6 +88,9 @@ func mostra(e: Edificio) -> void:
 	visible = true
 	_icona.texture = Sprites.icona(e.tipo)
 	_titolo.text = CatalogoEdifici.dati(e.tipo)["nome"]
+	_riga_compra.visible = e.tipo == "agora"
+	if e.tipo == "agora":
+		_compra.select(0 if e.acquisto == "" else CatalogoEdifici.ACQUISTO.keys().find(e.acquisto) + 1)
 	_riempi()
 
 
@@ -104,14 +125,23 @@ func _riempi() -> void:
 		if not ingressi.is_empty():
 			var parti := []
 			for r in ingressi:
-				if r in CatalogoEdifici.CIBI and info.has("cibo") and e.ingresso.get(r, 0) + e.in_arrivo.get(r, 0) == 0:
+				var g := CatalogoEdifici.gruppo(e.tipo)
+				if not g.is_empty() and r in g[0] and e.ingresso.get(r, 0) + e.in_arrivo.get(r, 0) == 0:
 					continue
 				parti.append("%s %d%s" % [CatalogoEdifici.NOMI_RISORSE[r], e.ingresso.get(r, 0),
 					" (+%d in arrivo)" % e.in_arrivo[r] if e.in_arrivo.get(r, 0) > 0 else ""])
 			if info.has("cibo"):
 				parti.append("cibo per i minatori fino a %d" % info["cibo"])
+			if info.has("vende"):
+				parti.append("merci da vendere fino a %d" % info["vende"])
 			righe.append("Riceve: " + ", ".join(parti))
-		var prodotti := CatalogoEdifici.prodotti(e.tipo)
+		if e.tipo == "agora":
+			righe.append("Monete in cassa: %d  —  guadagnate qui: %d" % [villaggio.scorte.get("monete", 0), e.guadagno])
+			var listino := []
+			for m in CatalogoEdifici.VENDITA:
+				listino.append("%s %d" % [CatalogoEdifici.NOMI_RISORSE[m].to_lower(), CatalogoEdifici.VENDITA[m]])
+			righe.append("[font_size=14]Vende (monete): %s[/font_size]" % ", ".join(listino))
+		var prodotti := CatalogoEdifici.prodotti(e.tipo).filter(func(p): return p != "")
 		if not prodotti.is_empty():
 			var nomi := prodotti.map(func(p): return "attrezzi" if p == "attrezzi" else CatalogoEdifici.NOMI_RISORSE[p].to_lower())
 			righe.append("Produce: %s  —  finora %d" % [", ".join(nomi), e.prodotti])

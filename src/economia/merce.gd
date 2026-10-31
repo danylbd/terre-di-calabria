@@ -11,7 +11,9 @@ const FOGLI := {"tronchi": "portatore_tronco", "assi": "portatore_asse", "pietra
 	"pesce_spada": "portatore_spada", "ferro": "portatore_pietra", "carbone": "portatore_carbone",
 	"lingotti": "portatore_lingotti", "ascia": "portatore_attrezzi", "piccone": "portatore_attrezzi",
 	"pala": "portatore_attrezzi", "falce": "portatore_attrezzi", "canna": "portatore_attrezzi",
-	"sega": "portatore_attrezzi", "martello": "portatore_attrezzi"}
+	"sega": "portatore_attrezzi", "martello": "portatore_attrezzi", "argilla": "portatore_sacco",
+	"anfore": "portatore_anfora", "sale": "portatore_sacco", "argento": "portatore_pietra", "monete": "portatore_sacco",
+	"stoffa": "portatore_lana"}
 
 var tipo := ""
 var destinazione: Edificio          # dove deve arrivare
