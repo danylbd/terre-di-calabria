@@ -47,6 +47,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04 (in `main`, release v0.4.0).
-In corso: `step-g2-grafica` (rifacimento grafico verso la qualità di Settlers 3; bozza: materiale "vissuto"
-`tools/studio/vissuto.gdshader` e luce più contrastata). Poi: 05 prima catena di produzione.
+Vedi `docs/roadmap.md`. Fatti: 00, G1, 01, 02, 03, 04, G2 (in `main`, release v0.5.0).
+Prossimo: 05 prima catena di produzione (boscaiolo abbatte, guardaboschi ripianta, segheria, cava).
+Poi M1 musica e suoni, 06 cibo (coltivazioni, allevamenti, pesca: vedi `docs/design.md` §5b).
+Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
