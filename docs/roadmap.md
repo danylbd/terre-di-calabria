@@ -14,8 +14,8 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 04 | Trasporto | Le merci viaggiano di bandierina in bandierina; i cantieri crescono con i materiali consegnati | fatto |
 | 05 | Prima catena | Boscaiolo abbatte gli alberi, guardaboschi ripianta, segheria fa assi, cava estrae pietra: tutto portato dai portatori | |
 | M1 | Musica e suoni | Primi 3 brani (orchestra + strumenti calabresi), suoni di lavoro e natura | |
-| G2 | Grafica livello 2 | Rifinitura verso la qualità di Settlers 3: texture sporcate, varietà, transizioni del terreno | |
-| 06 | Cibo | Grano, mulino, forno, pesca, allevamento, pozzo | |
+| G2 | Grafica livello 2 | Edifici grandi e vissuti (2×2, magazzino 3×3), castagni, querce, pini laricio, ulivi, fiori e funghi, terreno saturo | fatto |
+| 06 | Cibo: campi, allevamenti, pesca | Coltivazioni (grano, vite, ortaggi, cipolla rossa, agrumi), allevamenti (maiali, pecore, capre, api), pesca dalla costa e pesce spada con la barca; mulino, forno, macelleria, caseificio | |
 | 07 | Metallo | Miniere, fonderia, fabbro, attrezzi, nuovi mestieri | |
 | 08 | Popolazione e statistiche | Abitazioni, crescita, pannelli informativi | |
 | 09 | Salvataggio | Salvare e caricare | |
@@ -51,3 +51,9 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 24 | Versione iPhone |
 
 L'ordine può cambiare strada facendo: è un progetto da fare con calma.
+
+## Fase 5 — Idee per le versioni future
+
+| Idea | Note |
+|---|---|
+| Ispirazione «Coral Island» | Integrare alcune logiche da gioco di vita e fattoria (da definire con domande al proprietario prima di iniziare): es. personaggi del villaggio con cui stringere rapporti, feste stagionali, cura del mare e della costa, raccolta e collezioni, mestieri più personali. Va adattato a un gioco di strategia/economia con tanti coloni. |

@@ -25,6 +25,7 @@ var tipo_scelto := ""
 var _fantasma: Sprite2D
 var _casella_mouse := Vector2i(-1, -1)
 var _evidenziato: Edificio
+var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
 
 
 func _ready() -> void:
@@ -57,6 +58,7 @@ func _ready() -> void:
 	logistica.prepara(dati, villaggio, rete, oggetti)
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
 	villaggio.messaggio.connect(_mostra_avviso)
+	villaggio.togli_decori.connect(_togli_decori)
 
 	_metti_natura()
 	_metti_villaggio()
@@ -168,6 +170,8 @@ func _clic_strada(c: Vector2i) -> void:
 		_mostra_avviso("Qui la strada non può arrivare", true)
 		return
 	if rete.costruisci_strada(p):
+		for c2 in p:
+			_togli_decori(c2)
 		# si continua dalla bandierina d'arrivo, come una penna che non si stacca dal foglio
 		_inizio_strada = p[-1]
 		segni.inizio_strada = _inizio_strada
@@ -280,7 +284,10 @@ func _metti_villaggio() -> void:
 			magazzino = ed
 	for ed in villaggio.edifici.values():
 		if ed != magazzino:
-			rete.costruisci_strada(rete.trova_percorso(magazzino.bandiera, ed.bandiera))
+			var percorso := rete.trova_percorso(magazzino.bandiera, ed.bandiera)
+			rete.costruisci_strada(percorso)
+			for c2 in percorso:
+				_togli_decori(c2)
 
 
 # --------------------------------------------------------------- natura
@@ -291,40 +298,65 @@ func _metti_natura() -> void:
 	var oliveti := FastNoiseLite.new()
 	oliveti.seed = SEME + 9
 	oliveti.frequency = 0.08
+	var latifoglie := FastNoiseLite.new()
+	latifoglie.seed = SEME + 13
+	latifoglie.frequency = 0.06
 	for y in dati.altezza:
 		for x in dati.larghezza:
-			if Vector2(x - dati.villaggio.x - 1, y - dati.villaggio.y - 1).length() < 6.5:
+			if Vector2(x - dati.villaggio.x - 1, y - dati.villaggio.y - 1).length() < 7.0:
 				continue
 			var t := dati.tipo(x, y)
 			match t:
 				T.BOSCO:
-					for k in (2 if rng.randf() < 0.55 else 1):
-						_metti("pino_%d" % rng.randi_range(1, 4), x, y, rng)
-					if rng.randf() < 0.08:
-						_metti("cespuglio_1", x, y, rng)
+					# la Sila: pini laricio in alto, castagni e querce più in basso
+					var quota := dati.quota(x + 0.5, y + 0.5)
+					var albero := "pino_%d" % rng.randi_range(1, 4)
+					if quota < 70.0 and latifoglie.get_noise_2d(x, y) > -0.1:
+						albero = ("castagno_%d" if rng.randf() < 0.6 else "quercia_%d") % rng.randi_range(1, 4)
+					_metti(albero, x, y, rng)
+					if rng.randf() < 0.45:
+						_metti("pino_%d" % rng.randi_range(1, 4) if quota >= 70.0 else "castagno_%d" % rng.randi_range(1, 4), x, y, rng)
+					if rng.randf() < 0.18:
+						_metti_decoro("funghi" if rng.randf() < 0.5 else "cespuglio_1", x, y, rng)
 				T.PRATO:
 					var o := oliveti.get_noise_2d(x, y)
-					if o > 0.25 and rng.randf() < 0.45:
+					if o > 0.25 and rng.randf() < 0.5:
 						_metti("ulivo_%d" % rng.randi_range(1, 3), x, y, rng)
-					elif rng.randf() < 0.035:
-						_metti("cespuglio_%d" % rng.randi_range(1, 2), x, y, rng)
-					elif rng.randf() < 0.012:
-						_metti("pino_%d" % rng.randi_range(1, 4), x, y, rng)
+					elif rng.randf() < 0.03:
+						_metti(("quercia_%d" if rng.randf() < 0.5 else "castagno_%d") % rng.randi_range(1, 4), x, y, rng)
+					elif rng.randf() < 0.07:
+						_metti_decoro("cespuglio_%d" % rng.randi_range(1, 2), x, y, rng)
+					elif rng.randf() < 0.07:
+						_metti_decoro("fiori_%d" % rng.randi_range(1, 2), x, y, rng)
 				T.SECCO:
-					if rng.randf() < 0.06:
-						_metti("cespuglio_%d" % rng.randi_range(1, 2), x, y, rng)
-					elif rng.randf() < 0.025:
-						_metti("rocce_%d" % rng.randi_range(1, 3), x, y, rng)
-					elif rng.randf() < 0.05:
-						_metti("ulivo_%d" % rng.randi_range(1, 3), x, y, rng)
-				T.ROCCIA:
-					if rng.randf() < 0.22:
+					if rng.randf() < 0.08:
+						_metti_decoro("cespuglio_%d" % rng.randi_range(1, 2), x, y, rng)
+					elif rng.randf() < 0.03:
 						_metti("rocce_%d" % rng.randi_range(1, 3), x, y, rng)
 					elif rng.randf() < 0.07:
+						_metti("ulivo_%d" % rng.randi_range(1, 3), x, y, rng)
+				T.ROCCIA:
+					if rng.randf() < 0.25:
+						_metti("rocce_%d" % rng.randi_range(1, 3), x, y, rng)
+					elif rng.randf() < 0.08:
 						_metti("pino_%d" % rng.randi_range(1, 4), x, y, rng)
 				T.SABBIA:
 					if rng.randf() < 0.015:
 						_metti("rocce_%d" % rng.randi_range(1, 3), x, y, rng)
+
+
+func _togli_decori(c: Vector2i) -> void:
+	for d in decori.get(c, []):
+		d.queue_free()
+	decori.erase(c)
+
+
+## Decorazioni che non occupano la casella (si può costruire sopra: spariscono).
+func _metti_decoro(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> void:
+	var s := Sprites.crea(nome)
+	s.position = dati.a_schermo(x + rng.randf_range(0.2, 0.8), y + rng.randf_range(0.2, 0.8))
+	oggetti.add_child(s)
+	decori.get_or_add(Vector2i(x, y), []).append(s)
 
 
 func _metti(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> void:
@@ -333,7 +365,7 @@ func _metti(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> void:
 	var s := Sprites.crea(nome)
 	s.position = dati.a_schermo(px, py)
 	oggetti.add_child(s)
-	if not nome.begins_with("cespuglio"):
+	if true:
 		dati.occupa(x, y, DatiMappa.NATURA)
 		var c := Vector2i(x, y)
 		if not villaggio.natura.has(c):

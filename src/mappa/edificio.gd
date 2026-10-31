@@ -30,7 +30,7 @@ func prepara(p_id: int, p_tipo: String, p_casella: Vector2i, gia_finito := false
 	taglia = d["taglia"]
 	tempo_totale = d["tempo"]
 	fabbisogno = (d["costo"] as Dictionary).duplicate()
-	bandiera = Vector2i(casella.x + taglia - 1, casella.y + taglia)
+	bandiera = Vector2i(casella.x + (taglia - 1) / 2, casella.y + taglia)
 	_sprite = Sprite2D.new()
 	_sprite.centered = false
 	add_child(_sprite)
@@ -75,7 +75,7 @@ func _aggiorna_aspetto() -> void:
 	if fase != _fase:
 		_fase = fase
 		_imposta_sprite("cantiere_%d" % fase)
-		_sprite.scale = Vector2.ONE * (1.0 if taglia == 1 else 1.75)
+		_sprite.scale = Vector2.ONE * (1.0 + (taglia - 1) * 0.7)
 		_sprite.offset = -Sprites.ancora("cantiere_%d" % fase)
 
 
@@ -102,7 +102,7 @@ func _draw() -> void:
 		return
 	# barra di avanzamento del cantiere
 	var w := 64.0
-	var y := -62.0 if taglia == 1 else -110.0
+	var y := -40.0 - taglia * 45.0
 	draw_rect(Rect2(-w * 0.5 - 2, y - 2, w + 4, 14), Color(Palette.INCHIOSTRO, 0.8))
 	draw_rect(Rect2(-w * 0.5, y, w * frazione_materiali(), 3), Palette.PERGAMENA_CHIARA)
 	draw_rect(Rect2(-w * 0.5, y + 4, w * progresso, 6), Palette.OCRA if collegato else Color(0.6, 0.6, 0.6))
