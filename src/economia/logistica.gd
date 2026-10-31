@@ -7,6 +7,7 @@ signal scorte_cambiate
 
 const INTERVALLO_USCITA := 0.7      # secondi tra un'uscita e l'altra da un magazzino
 const MAX_PER_BANDIERA := 8
+const SCORTA_MINIMA := 6            # chi produce senza materie prime (il pozzo) si ferma oltre questa scorta
 
 var dati: DatiMappa
 var villaggio: Villaggio
@@ -92,6 +93,16 @@ func produci(tipo: String, da: Edificio) -> void:
 	if dest.tipo != "magazzino":
 		dest.in_arrivo[tipo] = dest.in_arrivo.get(tipo, 0) + 1
 	_nuova_merce(tipo, dest, da.bandiera)
+
+
+## Serve ancora questa merce? Sì se un edificio ha posto per riceverla o se in magazzino ce n'è poca.
+func serve(tipo: String) -> bool:
+	if villaggio.scorte.get(tipo, 0) < SCORTA_MINIMA:
+		return true
+	for e in villaggio.edifici.values():
+		if e.finito and e.collegato and _spazio_ingresso(e, tipo) > villaggio.scorte.get(tipo, 0):
+			return true
+	return false
 
 
 func _destinazione_per(tipo: String, da: Vector2i) -> Edificio:

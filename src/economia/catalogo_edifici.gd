@@ -22,14 +22,28 @@ const EDIFICI := {
 	"magazzino": {"nome": "Magazzino", "taglia": 3, "costo": {"assi": 6, "pietra": 6}, "categoria": "Base",
 		"tempo": 40.0, "descrizione": "Custodisce le merci. I portatori partono da qui."},
 	"pozzo": {"nome": "Pozzo", "taglia": 1, "costo": {"pietra": 2}, "categoria": "Cibo",
-		"tempo": 12.0, "descrizione": "Acqua per il forno e per il bestiame."},
+		"tempo": 12.0, "lavoratore": "portatore_nessuno", "produce": "acqua",
+		"descrizione": "Acqua per il forno e per il bestiame."},
+	"fattoria": {"nome": "Fattoria", "taglia": 2, "costo": {"assi": 3, "pietra": 1}, "categoria": "Cibo",
+		"tempo": 20.0, "lavoratore": "lavoratore_falce", "produce": "grano",
+		"descrizione": "Il contadino semina i campi di grano intorno e li miete quando sono dorati."},
+	"mulino": {"nome": "Mulino", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Cibo",
+		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"grano": 4}, "produce": "farina",
+		"descrizione": "Macina il grano e ne fa farina."},
+	"forno": {"nome": "Forno", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Cibo",
+		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"farina": 4, "acqua": 4}, "produce": "pane",
+		"descrizione": "Impasta farina e acqua e cuoce il pane."},
+	"pescatore": {"nome": "Pescatore", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
+		"tempo": 16.0, "lavoratore": "lavoratore_canna", "produce": "pesce",
+		"descrizione": "Pesca dalla riva. Il pesce finisce e torna col tempo: costruiscilo vicino al mare."},
 	"frantoio": {"nome": "Frantoio", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Cibo",
 		"tempo": 24.0, "descrizione": "Spreme le olive e produce olio."},
 	"torre": {"nome": "Torre di guardia", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Difesa",
 		"tempo": 30.0, "territorio": 7, "descrizione": "Allarga i confini del territorio."},
 }
 
-const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra"}
+const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra", "grano": "Grano",
+	"farina": "Farina", "acqua": "Acqua", "pane": "Pane", "pesce": "Pesce"}
 
 
 static func dati(tipo: String) -> Dictionary:

@@ -18,7 +18,8 @@ const REGOLAZIONI := {
 	"persiana": [0.2, 0.3, 1.2], "lino": [0.2, 0.2, 1.1], "terracotta": [0.25, 0.3, 1.25],
 	"tegola_b": [0.15, 0.5, 1.0], "tegola_c": [0.15, 0.5, 1.0], "orto": [0.0, 0.0, 1.3], "geranio": [0.0, 0.0, 1.3],
 	"foglie_chiare": [0.0, 0.0, 1.15], "paglia": [0.2, 0.2, 1.15], "terra": [0.0, 0.3, 1.1], "pietra_vista": [0.5, 0.4, 1.1],
-	"bandiera_rossa": [0.0, 0.0, 1.2],
+	"bandiera_rossa": [0.0, 0.0, 1.2], "grano": [0.0, 0.1, 1.25], "grano_verde": [0.0, 0.0, 1.25], "pane": [0.1, 0.2, 1.2],
+	"pesce": [0.0, 0.0, 1.0], "rete": [0.1, 0.1, 1.0], "asino": [0.0, 0.1, 1.0],
 }
 
 
@@ -33,6 +34,10 @@ static func catalogo() -> Dictionary:
 		"guardaboschi": {"crea": guardaboschi},
 		"torre": {"crea": torre},
 		"pozzo": {"crea": pozzo},
+		"fattoria": {"crea": fattoria},
+		"mulino": {"crea": mulino},
+		"forno": {"crea": forno},
+		"pescatore": {"crea": capanna_pescatore},
 		"cantiere_0": {"crea": cantiere.bind(0)},
 		"cantiere_1": {"crea": cantiere.bind(1)},
 		"cantiere_2": {"crea": cantiere.bind(2)},
@@ -40,6 +45,12 @@ static func catalogo() -> Dictionary:
 		"merce_assi": {"crea": merce.bind("assi")},
 		"merce_tronchi": {"crea": merce.bind("tronchi")},
 		"merce_pietra": {"crea": merce.bind("pietra")},
+		"merce_grano": {"crea": merce.bind("grano")},
+		"merce_farina": {"crea": merce.bind("farina")},
+		"merce_pane": {"crea": merce.bind("pane")},
+		"merce_acqua": {"crea": merce.bind("acqua")},
+		"merce_pesce": {"crea": merce.bind("pesce")},
+		"stoppie": {"crea": stoppie},
 		"cespuglio_1": {"crea": cespuglio.bind(1)},
 		"cespuglio_2": {"crea": cespuglio.bind(2)},
 		"fiori_1": {"crea": fiori.bind(1)},
@@ -60,14 +71,16 @@ static func catalogo() -> Dictionary:
 	c["ceppo"] = {"crea": ceppo}
 	for k in 3:
 		c["alberello_%d" % (k + 1)] = {"crea": alberello.bind(k)}
+	for k in 4:
+		c["campo_%d" % (k + 1)] = {"crea": campo.bind(k)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
-	for att in ["ascia", "piccone", "pala"]:
+	for att in ["ascia", "piccone", "pala", "falce", "canna"]:
 		c["lavoratore_%s" % att] = {"crea": lavoratore.bind(att), "posa": posa_cammino,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
-		c["lavoratore_%s_lavoro" % att] = {"crea": lavoratore.bind(att), "posa": posa_lavoro,
+		c["lavoratore_%s_lavoro" % att] = {"crea": lavoratore.bind(att), "posa": posa_pesca if att == "canna" else posa_lavoro,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	# persone: fogli di animazione 8 direzioni × 8 passi
-	for carico in ["nessuno", "tronco", "asse", "anfora", "pietra"]:
+	for carico in ["nessuno", "tronco", "asse", "anfora", "pietra", "covone", "sacco", "cesta", "pesce"]:
 		c["portatore_" + carico] = {"crea": portatore.bind("" if carico == "nessuno" else carico), "posa": posa_cammino,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(80, 80), "ancora": Vector2(34, 68)}
 	return c
@@ -233,6 +246,23 @@ static func materiale(nome: String) -> Material:
 			m.albedo_color = Color("3f6f96")
 		"buio":
 			m.albedo_color = Color("1e140d")
+		"grano":
+			m.albedo_texture = _rumore(31, 0.5, Color("c08a22"), Color("f2cf5e"))
+			m.uv1_scale = Vector3(3, 6, 3)
+		"grano_verde":
+			m.albedo_texture = _rumore(32, 0.5, Color("4f7d1f"), Color("9cc04a"))
+			m.uv1_scale = Vector3(3, 6, 3)
+		"pane":
+			m.albedo_texture = _rumore(33, 0.4, Color("8a4a1c"), Color("d08a44"))
+		"pesce":
+			m.albedo_texture = _rumore(34, 0.5, Color("6f8c9c"), Color("d6e2e8"))
+			m.metallic = 0.3
+			m.roughness = 0.45
+		"rete":
+			m.albedo_color = Color("8a7550")
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"asino":
+			m.albedo_texture = _rumore(35, 0.3, Color("5e5650"), Color("8f857a"))
 	var finale: Material = m if nome in MATERIALI_SEMPLICI else _a_vissuto(m, nome)
 	_cache_mat[nome] = finale
 	return finale
@@ -460,6 +490,15 @@ static func portatore(carico: String) -> Node3D:
 			corpo.add_child(anfora(Vector3(0, anca + 0.31, 0), 1.25))
 		"pietra":
 			corpo.add_child(scatola(Vector3(0.1, 0.075, 0.09), Vector3(0, anca + 0.36, 0), "blocco", Vector3(0, 15, 0)))
+		"covone":
+			var cv := covone(1.0)
+			cv.position = spalla + Vector3(0.08, 0.0, 0)
+			cv.rotation_degrees = Vector3(70, 0, 0)
+			corpo.add_child(cv)
+		"sacco":
+			corpo.add_child(sfera(0.075, spalla + Vector3(0.06, 0.04, -0.01), "lino", Vector3(0.8, 0.9, 1.25)))
+		"cesta", "pesce":
+			corpo.add_child(cesta(Vector3(0, anca + 0.31, 0), "pane" if carico == "cesta" else "pesce", 1.15))
 	r.set_meta("carico", carico)
 	return r
 
@@ -572,6 +611,20 @@ static func merce(tipo: String) -> Node3D:
 		"pietra":
 			r.add_child(scatola(Vector3(0.12, 0.08, 0.1), Vector3(0, 0.04, 0), "blocco", Vector3(0, 20, 0)))
 			r.add_child(scatola(Vector3(0.07, 0.05, 0.06), Vector3(0.07, 0.025, 0.05), "blocco", Vector3(0, -10, 0)))
+		"grano":
+			var cv := covone(1.1)
+			cv.rotation_degrees = Vector3(0, 0, 80)
+			cv.position = Vector3(0.0, 0.05, 0)
+			r.add_child(cv)
+		"farina":
+			r.add_child(sfera(0.07, Vector3(0, 0.06, 0), "lino", Vector3(1, 0.85, 0.8)))
+			r.add_child(cilindro(0.025, 0.02, 0.03, Vector3(0, 0.125, 0), "lino", Vector3.ZERO, 8))
+		"pane":
+			r.add_child(cesta(Vector3.ZERO, "pane"))
+		"acqua":
+			r.add_child(anfora(Vector3.ZERO, 1.3))
+		"pesce":
+			r.add_child(cesta(Vector3.ZERO, "pesce"))
 	r.scale = Vector3.ONE * 1.25
 	return r
 
@@ -1209,7 +1262,8 @@ static func pozzo() -> Node3D:
 
 # =================================================================== MESTIERI (step 05)
 
-## Lavoratore con l'attrezzo in mano destra: ascia (boscaiolo), piccone (cavapietre), pala (guardaboschi).
+## Lavoratore con l'attrezzo in mano destra: ascia (boscaiolo), piccone (cavapietre), pala (guardaboschi),
+## falce (contadino), canna (pescatore).
 static func lavoratore(attrezzo: String) -> Node3D:
 	var r := portatore("")
 	var corpo: Node3D = r.get_node("corpo")
@@ -1228,8 +1282,17 @@ static func lavoratore(attrezzo: String) -> Node3D:
 		"pala":
 			att.add_child(cilindro(0.008, 0.008, 0.26, Vector3(0, 0.0, 0.09), "legno", Vector3(90, 0, 0), 6))
 			att.add_child(scatola(Vector3(0.06, 0.008, 0.07), Vector3(0, 0.0, 0.24), "ferro"))
+		"falce":
+			# falcetto: manico corto e lama a mezzaluna
+			att.add_child(cilindro(0.009, 0.009, 0.1, Vector3(0, 0.0, 0.03), "legno", Vector3(90, 0, 0), 6))
+			for k in 5:
+				var a := k * 0.35
+				att.add_child(scatola(Vector3(0.008, 0.02, 0.04), Vector3(0, 0.05 * sin(a), 0.09 + 0.05 * (1.0 - cos(a)) + k * 0.012), "ferro", Vector3(rad_to_deg(a), 0, 0)))
+		"canna":
+			att.add_child(cilindro(0.006, 0.003, 0.5, Vector3(0, 0.08, 0.2), "legno_chiaro", Vector3(70, 0, 0), 5))
+			att.add_child(cilindro(0.002, 0.002, 0.2, Vector3(0, 0.22, 0.45), "corda", Vector3.ZERO, 3))
 	# berretto di lana per riconoscere i mestieri
-	corpo.add_child(sfera(0.07, Vector3(0, 0.2 + 0.31, -0.005), "giocatore" if attrezzo == "ascia" else ("terra" if attrezzo == "piccone" else "orto"), Vector3(1, 0.55, 1)))
+	corpo.add_child(sfera(0.07, Vector3(0, 0.2 + 0.31, -0.005), {"ascia": "giocatore", "piccone": "terra", "pala": "orto", "falce": "paglia", "canna": "persiana"}[attrezzo], Vector3(1, 0.55, 1)))
 	r.set_meta("carico", "attrezzo")
 	return r
 
@@ -1268,3 +1331,254 @@ static func alberello(fase: int) -> Node3D:
 	if fase == 0:
 		r.add_child(cilindro(0.004, 0.004, 0.14, Vector3(0.05, 0.07, 0.0), "legno", Vector3.ZERO, 4))
 	return r
+
+
+# =================================================================== CIBO (step 06)
+
+## Covone di grano legato in mezzo (in piedi lungo Y).
+static func covone(scala := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.scale = Vector3.ONE * scala
+	n.add_child(cilindro(0.035, 0.05, 0.2, Vector3(0, 0.1, 0), "grano", Vector3.ZERO, 10))
+	n.add_child(cilindro(0.05, 0.03, 0.06, Vector3(0, 0.23, 0), "grano", Vector3.ZERO, 10))
+	n.add_child(cilindro(0.038, 0.038, 0.015, Vector3(0, 0.13, 0), "corda", Vector3.ZERO, 10))
+	return n
+
+
+## Cesta di vimini con pani o pesci.
+static func cesta(pos: Vector3, contenuto: String, scala := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.scale = Vector3.ONE * scala
+	n.add_child(cilindro(0.08, 0.065, 0.06, Vector3(0, 0.03, 0), "paglia", Vector3.ZERO, 14))
+	n.add_child(cilindro(0.083, 0.083, 0.012, Vector3(0, 0.062, 0), "legno_vecchio", Vector3.ZERO, 14))
+	if contenuto == "pane":
+		for k in 4:
+			var a := k * TAU / 4 + 0.4
+			n.add_child(sfera(0.035, Vector3(cos(a) * 0.035, 0.07, sin(a) * 0.035), "pane", Vector3(1, 0.6, 1)))
+		n.add_child(sfera(0.033, Vector3(0, 0.09, 0), "pane", Vector3(1, 0.6, 1)))
+	else:
+		for k in 5:
+			var pesce := sfera(0.022, Vector3(-0.04 + k * 0.02, 0.07 + (k % 2) * 0.01, (k % 3 - 1) * 0.025), "pesce", Vector3(3.0, 0.6, 0.8))
+			pesce.rotation_degrees.y = k * 37
+			n.add_child(pesce)
+	return n
+
+
+## Campo di grano su una casella: 0 seminato, 1 verde basso, 2 verde alto, 3 maturo e dorato.
+static func campo(fase: int) -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(70 + fase)
+	r.add_child(scatola(Vector3(0.92, 0.02, 0.92), Vector3(0, 0.01, 0), "terra"))
+	for f in 7:
+		r.add_child(scatola(Vector3(0.88, 0.018, 0.04), Vector3(0, 0.022, -0.39 + f * 0.13), "terra"))
+	var alt: float = [0.025, 0.07, 0.16, 0.2][fase]
+	var mat: String = "grano" if fase == 3 else "grano_verde"
+	for f in 7:
+		for k in 8:
+			var p := Vector3(-0.39 + k * 0.11 + rng.randf_range(-0.02, 0.02), 0, -0.39 + f * 0.13 + rng.randf_range(-0.015, 0.015))
+			var h := alt * rng.randf_range(0.8, 1.15)
+			if fase == 0:
+				r.add_child(sfera(0.012, p + Vector3(0, 0.03, 0), "orto", Vector3(1, 1.5, 1)))
+			else:
+				r.add_child(sfera(0.05, p + Vector3(0, h * 0.5 + 0.02, 0), mat, Vector3(1, h / 0.1, 1)))
+				if fase == 3:
+					r.add_child(sfera(0.02, p + Vector3(rng.randf_range(-0.01, 0.01), h + 0.03, 0), "grano", Vector3(0.8, 1.6, 0.8)))
+	return r
+
+
+static func stoppie() -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(80)
+	r.add_child(scatola(Vector3(0.92, 0.02, 0.92), Vector3(0, 0.01, 0), "terra"))
+	for k in 40:
+		var p := Vector3(rng.randf_range(-0.42, 0.42), 0.03, rng.randf_range(-0.42, 0.42))
+		r.add_child(cilindro(0.01, 0.008, 0.035, p, "paglia", Vector3.ZERO, 4))
+	for p in [Vector3(-0.15, 0, 0.1), Vector3(0.18, 0, -0.12)]:
+		var cv := covone(1.0)
+		cv.position = p
+		r.add_child(cv)
+	return r
+
+
+## Asino stilizzato (per la mola del mulino).
+static func asino(pos: Vector3, rot := 0.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot
+	n.add_child(sfera(0.07, Vector3(0, 0.15, 0), "asino", Vector3(1.6, 0.9, 0.9)))
+	for x in [-0.07, 0.07]:
+		for z in [-0.035, 0.035]:
+			n.add_child(cilindro(0.013, 0.011, 0.11, Vector3(x, 0.055, z), "asino", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.025, 0.03, 0.09, Vector3(0.12, 0.2, 0), "asino", Vector3(0, 0, -50), 8))
+	n.add_child(sfera(0.035, Vector3(0.17, 0.22, 0), "asino", Vector3(1.4, 0.9, 0.9)))
+	for z in [-0.015, 0.015]:
+		n.add_child(cilindro(0.008, 0.004, 0.07, Vector3(0.15, 0.28, z), "asino", Vector3(z * 600, 0, 15), 5))
+	n.add_child(cilindro(0.006, 0.003, 0.08, Vector3(-0.12, 0.12, 0), "capelli", Vector3(0, 0, 30), 4))
+	return n
+
+
+static func fattoria() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.18, 0, -0.22)
+	r.add_child(c)
+	var lx := 0.78
+	var lz := 0.58
+	var h := 0.38
+	casa_muri(c, lx, lz, h, 41)
+	porta_z(c, -0.12, lz * 0.5, 0.13, 0.23)
+	finestra_z(c, 0.2, 0.34, lz * 0.5, 0.1, 0.1, true)
+	finestra_x(c, 0.0, 0.34, lx * 0.5)
+	sottotetto(c, lx, lz, 0.07 + h, 24.0)
+	tetto(c, lx + 0.06, lz, 0.07 + h, 24.0, 41)
+	comignolo(c, Vector3(0.22, 0.07 + h + 0.06, -0.08))
+	# fienile aperto con tetto di paglia sul lato destro
+	for p in [Vector3(0.62, 0, -0.45), Vector3(0.62, 0, 0.05), Vector3(0.95, 0, -0.45), Vector3(0.95, 0, 0.05)]:
+		r.add_child(cilindro(0.016, 0.016, 0.34, p + Vector3(0, 0.17, 0), "legno_vecchio", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.42, 0.05, 0.6), Vector3(0.785, 0.36, -0.2), "paglia", Vector3(0, 0, -10)))
+	for i in 5:
+		var cv := covone(1.1)
+		cv.position = Vector3(0.68 + (i % 3) * 0.1, 0.0, -0.35 + (i / 3) * 0.14)
+		r.add_child(cv)
+	# aia con covoni, carretto di sacchi, orto e galline
+	for i in 4:
+		var cv := covone(1.2)
+		cv.position = Vector3(-0.55 + i * 0.13, 0.0, 0.55 + (i % 2) * 0.08)
+		cv.rotation_degrees.z = 8 * (i % 2 * 2 - 1)
+		r.add_child(cv)
+	carretto(r, Vector3(0.4, 0, 0.55), -20, "sacchi")
+	orto(r, Vector3(-0.72, 0, -0.05), 0.24, 0.5, 42)
+	for i in 3:
+		r.add_child(sfera(0.025, Vector3(0.05 + i * 0.07, 0.03, 0.42 - i * 0.03), "intonaco", Vector3(1.3, 1, 1)))
+		r.add_child(sfera(0.008, Vector3(0.08 + i * 0.07, 0.05, 0.42 - i * 0.03), "geranio"))
+	return r
+
+
+static func mulino() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.56
+	var h := 0.46
+	casa_muri(c, lx, lz, h, 51, "intonaco_sporco")
+	porta_z(c, 0.15, lz * 0.5, 0.14, 0.25)
+	finestra_z(c, -0.17, 0.4, lz * 0.5, 0.09, 0.1)
+	finestra_x(c, 0.0, 0.4, lx * 0.5)
+	sottotetto(c, lx, lz, 0.07 + h, 22.0)
+	tetto(c, lx + 0.06, lz, 0.07 + h, 22.0, 51)
+	# mola a clessidra sotto una tettoia, girata dall'asino
+	var m := Vector3(-0.3, 0, 0.5)
+	r.add_child(cilindro(0.2, 0.22, 0.06, m + Vector3(0, 0.03, 0), "pietra", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.06, 0.14, 0.16, m + Vector3(0, 0.14, 0), "blocco", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.14, 0.06, 0.16, m + Vector3(0, 0.3, 0), "blocco", Vector3.ZERO, 16))
+	r.add_child(scatola(Vector3(0.5, 0.025, 0.025), m + Vector3(0.16, 0.25, 0), "legno_vecchio"))
+	r.add_child(sfera(0.12, m + Vector3(0, 0.07, 0), "lino", Vector3(1.6, 0.2, 1.6)))
+	r.add_child(asino(m + Vector3(0.38, 0, 0.0), 90))
+	for p in [m + Vector3(-0.25, 0, -0.22), m + Vector3(-0.25, 0, 0.25), m + Vector3(0.25, 0, 0.25)]:
+		r.add_child(cilindro(0.015, 0.015, 0.42, p + Vector3(0, 0.21, 0), "legno_vecchio", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.56, 0.03, 0.52), m + Vector3(0, 0.43, 0), "tegola_scura", Vector3(0, 0, 8)))
+	# sacchi di farina e di grano
+	for i in 5:
+		r.add_child(sacco(Vector3(0.45 + (i % 3) * 0.12, 0.0, -0.1 + (i / 3) * 0.13), i * 0.7))
+	var cv := covone(1.1)
+	cv.position = Vector3(0.55, 0, 0.45)
+	r.add_child(cv)
+	r.add_child(cassa(Vector3(0.3, 0, 0.6), 15))
+	return r
+
+
+static func forno() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.56
+	var h := 0.4
+	casa_muri(c, lx, lz, h, 61)
+	porta_z(c, -0.15, lz * 0.5, 0.13, 0.24)
+	finestra_z(c, 0.18, 0.36, lz * 0.5, 0.11, 0.1, true)
+	finestra_x(c, 0.0, 0.36, lx * 0.5)
+	sottotetto(c, lx, lz, 0.07 + h, 22.0)
+	tetto(c, lx + 0.06, lz, 0.07 + h, 22.0, 61)
+	comignolo(c, Vector3(-0.2, 0.07 + h + 0.05, -0.08))
+	# grande forno a cupola davanti, con bocca annerita e canna fumaria
+	var f := Vector3(0.45, 0, 0.42)
+	r.add_child(cilindro(0.26, 0.27, 0.12, f + Vector3(0, 0.06, 0), "pietra", Vector3.ZERO, 22))
+	r.add_child(sfera(0.24, f + Vector3(0, 0.12, 0), "intonaco_sporco", Vector3(1, 0.85, 1)))
+	r.add_child(scatola(Vector3(0.1, 0.09, 0.06), f + Vector3(-0.06, 0.18, 0.21), "fuliggine", Vector3(0, 30, 0)))
+	r.add_child(scatola(Vector3(0.11, 0.1, 0.03), f + Vector3(-0.065, 0.18, 0.235), "buio", Vector3(0, 30, 0)))
+	r.add_child(cilindro(0.035, 0.035, 0.14, f + Vector3(0.08, 0.36, -0.08), "terracotta", Vector3.ZERO, 8))
+	legnaia(r, Vector3(0.62, 0, -0.1), 0.25, 3)
+	# tavolo con pani, ceste, sacchi di farina, anfore d'acqua
+	r.add_child(scatola(Vector3(0.3, 0.02, 0.14), Vector3(-0.3, 0.12, 0.55), "legno"))
+	for lato in [-1, 1]:
+		r.add_child(scatola(Vector3(0.02, 0.11, 0.1), Vector3(-0.3 + lato * 0.12, 0.055, 0.55), "legno_vecchio"))
+	for i in 5:
+		r.add_child(sfera(0.03, Vector3(-0.42 + i * 0.06, 0.145, 0.55 + (i % 2) * 0.03), "pane", Vector3(1, 0.6, 1)))
+	r.add_child(cesta(Vector3(-0.62, 0, 0.45), "pane"))
+	r.add_child(cesta(Vector3(0.05, 0, 0.62), "pane"))
+	r.add_child(sacco(Vector3(-0.68, 0, 0.15), 0.4))
+	r.add_child(anfora(Vector3(0.18, 0, 0.42), 1.1))
+	r.add_child(anfora(Vector3(0.25, 0, 0.5), 1.0))
+	return r
+
+
+static func capanna_pescatore() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.22, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.66
+	var lz := 0.5
+	var h := 0.32
+	c.add_child(scatola(Vector3(lx + 0.06, 0.06, lz + 0.06), Vector3(0, 0.03, 0), "pietra"))
+	c.add_child(scatola(Vector3(lx, h, lz), Vector3(0, 0.06 + h * 0.5, 0), "legno_vecchio"))
+	for k in 7:
+		c.add_child(scatola(Vector3(lx + 0.01, 0.008, 0.01), Vector3(0, 0.1 + k * 0.04, lz * 0.5 + 0.004), "legno_scuro"))
+	porta_z(c, 0.12, lz * 0.5 + 0.01, 0.12, 0.21)
+	finestra_z(c, -0.16, 0.28, lz * 0.5 + 0.01, 0.08, 0.08)
+	sottotetto(c, lx, lz, 0.06 + h, 30.0, "legno")
+	tetto_scandole(c, lx + 0.08, lz, 0.06 + h, 30.0)
+	# reti stese ad asciugare su pali
+	for x in [0.35, 0.75]:
+		r.add_child(cilindro(0.012, 0.012, 0.36, Vector3(x, 0.18, -0.35), "legno_vecchio", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.4, 0.26, 0.006), Vector3(0.55, 0.2, -0.35), "rete"))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.004, 0.26, 0.008), Vector3(0.37 + k * 0.07, 0.2, -0.345), "corda"))
+	for k in 4:
+		r.add_child(scatola(Vector3(0.4, 0.004, 0.008), Vector3(0.55, 0.1 + k * 0.065, -0.345), "corda"))
+	# barca tirata a secco, remi, ceste di pesce, galleggianti
+	var b := Node3D.new()
+	b.position = Vector3(0.35, 0, 0.45)
+	b.rotation_degrees.y = -25
+	r.add_child(b)
+	b.add_child(sfera(0.13, Vector3(0, 0.07, 0), "legno", Vector3(2.6, 0.7, 1.0)))
+	b.add_child(sfera(0.115, Vector3(0, 0.1, 0), "legno_scuro", Vector3(2.5, 0.35, 0.9)))
+	b.add_child(scatola(Vector3(0.66, 0.02, 0.03), Vector3(0, 0.13, 0.12), "persiana"))
+	b.add_child(scatola(Vector3(0.66, 0.02, 0.03), Vector3(0, 0.13, -0.12), "persiana"))
+	for z in [-0.05, 0.06]:
+		b.add_child(scatola(Vector3(0.5, 0.01, 0.025), Vector3(0.05, 0.16, z), "legno_chiaro", Vector3(0, 8, 4)))
+	r.add_child(cesta(Vector3(-0.45, 0, 0.45), "pesce"))
+	r.add_child(cesta(Vector3(-0.3, 0, 0.58), "pesce"))
+	r.add_child(barile(Vector3(-0.62, 0, 0.25)))
+	for i in 3:
+		r.add_child(sfera(0.02, Vector3(0.62 + i * 0.05, 0.02, 0.1 + i * 0.03), "bandiera_rossa"))
+	return r
+
+
+## Gesto del pescatore: canna tesa in avanti che oscilla piano.
+static func posa_pesca(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale * TAU
+	var corpo: Node3D = modello.get_node("corpo")
+	var bd: Node3D = corpo.get_node("braccio_d")
+	var bs: Node3D = corpo.get_node("braccio_s")
+	bd.rotation = Vector3(-1.1 - 0.12 * sin(t), 0, 0.1)
+	bs.rotation = Vector3(-0.9 - 0.08 * sin(t), 0, -0.3)
+	corpo.rotation.x = 0.05
+	corpo.position.y = 0.0
+	(corpo.get_node("gamba_s") as Node3D).rotation.x = 0.15
+	(corpo.get_node("gamba_d") as Node3D).rotation.x = -0.15

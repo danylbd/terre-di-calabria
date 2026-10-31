@@ -1,8 +1,9 @@
 class_name Lavoratore
 extends Colono
 ## Il lavoratore di un edificio di produzione. Arriva dal magazzino lungo le strade, entra
-## nell'edificio e poi lavora: esce a piedi verso alberi o rocce, torna con la merce e la posa
-## alla bandierina; oppure (segheria) trasforma le merci che gli arrivano.
+## nell'edificio e poi lavora: esce a piedi verso alberi, rocce, campi o riva, torna con la merce
+## e la posa alla bandierina; oppure (segheria, mulino, forno, pozzo) la fa dentro l'edificio,
+## consumando le merci che gli arrivano, ed esce a posare il prodotto.
 
 enum Stato { ARRIVO, DENTRO, ANDATA, LAVORO, RITORNO, ESCE_CON_MERCE }
 
@@ -10,7 +11,13 @@ const RAGGIO := 7
 const PAUSA := 3.5
 ## suono di lavoro di ogni mestiere e secondi tra un colpo e l'altro
 const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardaboschi": ["vanga", 1.3],
-	"segheria": ["sega", 1.45]}
+	"segheria": ["sega", 1.45], "fattoria": ["falce", 1.1], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4]}
+## secondi di lavoro sul posto (o dentro l'edificio)
+const DURATA := {"boscaiolo": 4.0, "cava": 4.0, "guardaboschi": 3.0, "fattoria": 3.5, "pescatore": 6.0}
+const DURATA_DENTRO := 5.0
+const MESTIERI_FUORI := ["boscaiolo", "cava", "guardaboschi", "fattoria", "pescatore"]
+const RAGGIO_CAMPI := 4
+const MAX_CAMPI := 8
 
 var edificio: Edificio
 var risorse: RisorseNaturali
@@ -19,6 +26,8 @@ var rete: ReteStrade
 var stato := Stato.ARRIVO
 var mestiere := ""
 var _bersaglio := Vector2i(-1, -1)
+var _acqua := Vector2i(-1, -1)       # casella di mare dove pesca il pescatore
+var _semina := false                 # il contadino sta seminando (non mietendo)
 var _attesa := 0.0
 var _foglio_cammino := ""
 var _foglio_lavoro := ""
@@ -69,7 +78,7 @@ func _on_arrivato(_c: Colono) -> void:
 		Stato.ANDATA:
 			stato = Stato.LAVORO
 			_colpo = 0.3
-			_attesa = 4.0 if mestiere != "guardaboschi" else 3.0
+			_attesa = DURATA.get(mestiere, 4.0)
 			if _foglio_lavoro != "":
 				imposta_foglio(_foglio_lavoro)
 				_anim.play()
@@ -107,14 +116,28 @@ func _cerca_lavoro() -> void:
 			_bersaglio = risorse.posto_per_albero(da, RAGGIO - 1, rete)
 			if _bersaglio.x < 0:
 				return
-		"segheria":
-			if edificio.ingresso.get("tronchi", 0) <= 0:
+		"fattoria":
+			_semina = false
+			_bersaglio = risorse.campo_maturo(da, RAGGIO_CAMPI + 1)
+			if _bersaglio.x < 0 or not risorse.prenota_campo(_bersaglio):
+				_semina = true
+				if risorse.campi_vicini(da, RAGGIO_CAMPI + 1) >= MAX_CAMPI:
+					return
+				_bersaglio = risorse.posto_per_campo(da, RAGGIO_CAMPI, rete)
+				if _bersaglio.x < 0:
+					_segnala("La fattoria non ha spazio per i campi")
+					return
+		"pescatore":
+			var posto := risorse.posto_di_pesca(da, RAGGIO)
+			if posto.is_empty():
+				_segnala("Il pescatore non trova pesce vicino alla riva")
 				return
-			edificio.ingresso["tronchi"] -= 1
-			stato = Stato.LAVORO
-			_attesa = 5.0
-			return
+			_bersaglio = posto[0]
+			_acqua = posto[1]
 		_:
+			if mestiere in MESTIERI_FUORI:
+				return
+			_lavora_dentro()
 			return
 	_avvisato = false
 	visible = true
@@ -129,25 +152,57 @@ func _fine_lavoro() -> void:
 		"boscaiolo":
 			risorse.abbatti(_bersaglio)
 			Suono.suona_in("albero_cade", global_position)
-			_torna("portatore_tronco")
+			_torna(Merce.FOGLI["tronchi"])
 		"cava":
 			risorse.estrai(_bersaglio)
-			_torna("portatore_pietra")
+			_torna(Merce.FOGLI["pietra"])
 		"guardaboschi":
 			if dati.occupante(_bersaglio.x, _bersaglio.y) == 0:
 				risorse.pianta(_bersaglio)
-			imposta_foglio(_foglio_cammino)
-			stato = Stato.ARRIVO
-			var punti: Array[Vector2] = [_porta(), edificio.centro()]
-			percorri(punti)
-		"segheria":
-			# esce dalla porta con le assi e le posa alla bandierina
+			_rientra_vuoto()
+		"fattoria":
+			if _semina:
+				if dati.occupante(_bersaglio.x, _bersaglio.y) == 0:
+					risorse.semina(_bersaglio)
+				_rientra_vuoto()
+			else:
+				risorse.mieti(_bersaglio)
+				_torna(Merce.FOGLI["grano"])
+		"pescatore":
+			if risorse.pesca(_acqua):
+				Suono.suona_in("tuffo", global_position, -4.0)
+				_torna(Merce.FOGLI["pesce"])
+			else:
+				_rientra_vuoto()
+		_:
+			# esce dalla porta con il prodotto e lo posa alla bandierina
 			visible = true
 			pos = edificio.centro()
-			imposta_foglio("portatore_asse")
+			imposta_foglio(Merce.FOGLI.get(_merce_prodotta(), "portatore_nessuno"))
 			stato = Stato.ESCE_CON_MERCE
 			var punti: Array[Vector2] = [_porta()]
 			percorri(punti)
+
+
+## Dentro l'edificio: se ci sono tutte le merci in ingresso, ne consuma una per tipo e lavora.
+func _lavora_dentro() -> void:
+	var ingressi: Dictionary = CatalogoEdifici.dati(mestiere).get("ingressi", {})
+	if ingressi.is_empty() and not logistica.serve(_merce_prodotta()):
+		return
+	for tipo in ingressi:
+		if edificio.ingresso.get(tipo, 0) <= 0:
+			return
+	for tipo in ingressi:
+		edificio.ingresso[tipo] -= 1
+	stato = Stato.LAVORO
+	_attesa = DURATA_DENTRO
+
+
+func _rientra_vuoto() -> void:
+	imposta_foglio(_foglio_cammino)
+	stato = Stato.ARRIVO
+	var punti: Array[Vector2] = [_porta(), edificio.centro()]
+	percorri(punti)
 
 
 func _suona_lavoro(delta: float) -> void:

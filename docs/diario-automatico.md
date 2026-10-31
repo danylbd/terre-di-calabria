@@ -19,3 +19,10 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Adottato il lavoro della sessione oraria (audio.gd, suoni.py, suoni di lavoro e interfaccia); aggiunta la classe `Suono` perché l'identificatore `Audio` rompeva i test con `--script`.
 - Musica segnaposto (3 brani, `tools/suoni/musica.py`), scaletta, tasto M, cicale. test_audio e test_catena OK; il gioco parte senza errori audio.
 - Versione 0.7.0, merge in main. Prossimo: step 06 cibo.
+
+## 2026-10-31 21:15 — step 06 cibo, pezzo 1 (pane e pesce)
+- Fattoria (contadino semina fino a 8 campi, crescono in 4 fasi, miete → grano), mulino (farina), forno (farina + acqua → pane), pozzo (acqua solo se serve: `Logistica.serve()`), pescatore (pesce dalla riva, si esaurisce e torna). Lavoratore generalizzato: `_lavora_dentro()` vale per segheria, mulino, forno, pozzo.
+- Sprite nuovi (studio opengl3): 4 edifici, campo_1..4, stoppie, 5 merci, 4 carichi del portatore, contadino e pescatore. Suoni falce, tuffo, macina.
+- Corretto bug in `rete_strade.gd` (_percorso_tra_uscite: array senza tipo).
+- test_cibo OK (pane 10, pesce 19 in 10 minuti di gioco), test_catena OK. Screenshot `docs/immagini/step06-cibo*.png`.
+- Resta per lo step 06: allevamenti (maiali, pecore, capre, api) con macelleria e caseificio; vite, orto/cipolla, agrumi; barca per il pesce spada; olive per il frantoio.

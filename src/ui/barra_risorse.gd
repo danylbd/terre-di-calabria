@@ -2,7 +2,9 @@ class_name BarraRisorse
 extends PanelContainer
 ## Barra in alto con le scorte del magazzino.
 
-const COLORI := {"tronchi": Color("8a5a32"), "assi": Color("d8b07a"), "pietra": Color("b9ab90")}
+const COLORI := {"tronchi": Color("8a5a32"), "assi": Color("d8b07a"), "pietra": Color("b9ab90"),
+	"grano": Color("e0b84a"), "farina": Color("f2ead8"), "acqua": Color("4f8fc0"), "pane": Color("c07a3a"),
+	"pesce": Color("8fb3c4")}
 
 var _etichette := {}
 
@@ -10,7 +12,7 @@ var _etichette := {}
 func _ready() -> void:
 	theme = TemaGioco.crea(20)
 	var riga := HBoxContainer.new()
-	riga.add_theme_constant_override("separation", 22)
+	riga.add_theme_constant_override("separation", 18)
 	add_child(riga)
 	for r in CatalogoEdifici.NOMI_RISORSE:
 		var box := HBoxContainer.new()
