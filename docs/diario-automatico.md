@@ -187,3 +187,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step G6c: tutti gli edifici dei Saraceni
 - 24 modelli nuovi `<tipo>_saraceni` (subagente) per gli edifici che avevano ancora l'aspetto greco; popolo aggiunto a `COMPLETI` in `test_aspetto`.
 - Test toccati OK; il codice del gioco non è cambiato. Versione 0.37.0. Prossimo: G6d Normanni.
+
+## 2026-11-02 — step G6d: tutti gli edifici dei Normanni
+- 24 modelli nuovi `<tipo>_normanni` (subagente) per gli edifici che avevano ancora l'aspetto greco; popolo aggiunto a `COMPLETI` in `test_aspetto`.
+- Test toccati OK; il codice del gioco non è cambiato. Versione 0.38.0. Prossimo: G6e Siculi.
