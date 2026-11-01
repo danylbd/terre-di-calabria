@@ -33,3 +33,19 @@ Per esportare il gioco per iPhone, Godot ha bisogno di un **Mac con Xcode** e di
 Nel frattempo, senza aspettare la risposta, comincio dalla parte che non dipende dal Mac: comandi touch e interfaccia adatta agli schermi piccoli.
 
 Risposta:
+
+## 2026-11-02 — Fase 5 (idee da Coral Island): che cosa vuoi prendere?
+
+Le fasi 1–4 e 6 sono fatte. Prima di progettare la Fase 5 ho bisogno di capire che cosa ti piace di Coral Island. Rispondi anche solo con i numeri e un sì/no:
+
+1. **Personaggi del villaggio** con nome, carattere e amicizia (regali, dialoghi, piccole richieste): sì o no? Se sì, quanti (pochi personaggi importanti, per esempio 8–10, o uno per mestiere)?
+2. **Feste stagionali** (la festa del grano d'estate, la vendemmia d'autunno, il presepe d'inverno, la festa del mare): solo da guardare, o con piccoli giochi e premi?
+3. **Cura del mare e della costa** (pulire le spiagge, proteggere i pesci, il mare che torna più ricco): ti piace come obiettivo del gioco?
+4. **Collezioni** (conchiglie, monete antiche, frammenti di vasi, piante rare da trovare e mettere in un museo): sì o no?
+5. **Un personaggio del giocatore** che cammina sulla mappa (come in Coral Island) oppure resta tutto «dall'alto» come in Settlers? (Consiglio: restare dall'alto, con i personaggi del villaggio da visitare cliccando.)
+6. Queste cose devono stare **in tutte le partite** o in una **modalità a parte** («vita del villaggio», più tranquilla)?
+7. C'è qualcos'altro di Coral Island che ti è piaciuto e che qui non ho scritto?
+
+Nel frattempo, senza aspettare, lavoro alla rifinitura grafica (edifici dei popoli che hanno ancora l'aspetto greco) e al bilanciamento.
+
+Risposta:
