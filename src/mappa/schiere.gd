@@ -19,6 +19,26 @@ const FAME := 30.0                   # senza razioni, ogni tanto un soldato se n
 const RAGGIO_MAGAZZINO := 6.0        # vicino a un nostro magazzino la schiera si rifornisce e si rinforza
 const ESPERIENZA_LIVELLO := 10       # duelli vinti per ogni livello del condottiero
 const LIVELLO_MAX := 5
+## step 34: due abilità per condottiero, la prima dal livello 2, la seconda dal livello 4.
+## effetto: "duelli" (+probabilità per "durata" secondi), "morale" (subito), "passo" (velocità × per "durata")
+const ABILITA := {
+	"greci": [{"nome": "Falange", "descrizione": "Scudi stretti: duelli più facili per 20 s", "effetto": "duelli", "valore": 0.12, "durata": 20.0},
+		{"nome": "Canto di Eudora", "descrizione": "Il canto delle stelle: morale +25", "effetto": "morale", "valore": 25}],
+	"brettii": [{"nome": "Passo di montagna", "descrizione": "Tauro guida per i sentieri: schiera più veloce per 20 s", "effetto": "passo", "valore": 1.5, "durata": 20.0},
+		{"nome": "Imboscata", "descrizione": "Dal folto del bosco: duelli molto più facili per 12 s", "effetto": "duelli", "valore": 0.2, "durata": 12.0}],
+	"romani": [{"nome": "Disciplina", "descrizione": "Ordine nelle file: morale +20", "effetto": "morale", "valore": 20},
+		{"nome": "Testuggine", "descrizione": "Scudi sopra e davanti: duelli più facili per 20 s", "effetto": "duelli", "valore": 0.14, "durata": 20.0}],
+	"saraceni": [{"nome": "Carica rapida", "descrizione": "I cavalli leggeri volano: schiera più veloce per 15 s", "effetto": "passo", "valore": 1.6, "durata": 15.0},
+		{"nome": "Grido del deserto", "descrizione": "Duelli più facili per 15 s", "effetto": "duelli", "valore": 0.15, "durata": 15.0}],
+	"normanni": [{"nome": "Giuramento", "descrizione": "Osmund giura per tutti: morale +25", "effetto": "morale", "valore": 25},
+		{"nome": "Carica pesante", "descrizione": "Lance in resta: duelli molto più facili per 10 s", "effetto": "duelli", "valore": 0.22, "durata": 10.0}],
+	"siculi": [{"nome": "Grido degli antenati", "descrizione": "Le voci di Pantalica: morale +20", "effetto": "morale", "valore": 20},
+		{"nome": "Lance lunghe", "descrizione": "Duelli più facili per 20 s", "effetto": "duelli", "valore": 0.12, "durata": 20.0}],
+	"sicani": [{"nome": "Rifugio sui monti", "descrizione": "Kokalo conosce ogni passo: schiera più veloce per 20 s", "effetto": "passo", "valore": 1.5, "durata": 20.0},
+		{"nome": "Pioggia di frecce", "descrizione": "Punte d'ossidiana: duelli molto più facili per 10 s", "effetto": "duelli", "valore": 0.2, "durata": 10.0}],
+}
+const LIVELLI_ABILITA := [2, 4]
+const RICARICA := 60.0
 const NOMI := {"greci": "Eudora", "brettii": "Tauro", "romani": "Gaio Settimio", "saraceni": "Zahra",
 	"normanni": "Osmund", "siculi": "Duketio", "sicani": "Kokalo"}
 
@@ -35,6 +55,12 @@ var _difensori_villaggio := -1       # difensori rimasti del villaggio indigeno 
 var esperienza := 0                  # duelli vinti dal condottiero (resta anche quando la schiera si scioglie)
 var _proiettili: Array = []          # [da, a, tempo] in coordinate di mappa: sassi e frecce in volo
 var _polvere: Array = []             # [dove, tempo]: la polvere dei duelli corpo a corpo
+var _ricarica := [0.0, 0.0]          # secondi prima che ogni abilità si possa riusare
+var _bonus_duelli := 0.0
+var _bonus_fino := 0.0
+var _passo := 1.0
+var _passo_fino := 0.0
+var _orologio := 0.0
 var _pasto := CONSUMO
 var _fame := FAME
 
@@ -237,12 +263,59 @@ func livello() -> int:
 	return mini(LIVELLO_MAX, 1 + esperienza / ESPERIENZA_LIVELLO)
 
 
+static func abilita() -> Array:
+	return ABILITA.get(Popoli.giocatore, [])
+
+
+## Perché un'abilità non si può usare adesso («» se si può).
+func motivo_no_abilita(k: int) -> String:
+	if not esiste():
+		return "Nessuna schiera"
+	if livello() < LIVELLI_ABILITA[k]:
+		return "Si impara al livello %d" % LIVELLI_ABILITA[k]
+	if _ricarica[k] > 0.0:
+		return "Pronta tra %d s" % ceili(_ricarica[k])
+	return ""
+
+
+func usa_abilita(k: int) -> bool:
+	if k >= abilita().size() or motivo_no_abilita(k) != "":
+		return false
+	var a: Dictionary = abilita()[k]
+	match a["effetto"]:
+		"duelli":
+			_bonus_duelli = a["valore"]
+			_bonus_fino = _orologio + a["durata"]
+		"morale":
+			_cambia_morale(a["valore"])
+		"passo":
+			_passo = a["valore"]
+			_passo_fino = _orologio + a["durata"]
+			_imposta_velocita()
+	_ricarica[k] = RICARICA
+	villaggio.messaggio.emit("%s: %s!" % [nome_condottiero(), a["nome"]], false)
+	Suono.suona("completato")
+	cambiata.emit()
+	return true
+
+
+func bonus_attivo() -> float:
+	return _bonus_duelli if _orologio < _bonus_fino else 0.0
+
+
+func _imposta_velocita() -> void:
+	var v := _passo if _orologio < _passo_fino else 1.0
+	schiera["condottiero"].velocita = v
+	for s in schiera["soldati"]:
+		s.velocita = v
+
+
 ## Probabilità che un nostro soldato vinca un duello: base, vantaggi dei monumenti, morale, livello e il
 ## tipo dei soldati contro quello dei difensori (di serie fanteria, come i villaggi indigeni).
 func probabilita_vittoria(tipo_difensore := "fanteria") -> float:
 	var morale: float = schiera.get("morale", 70) if esiste() else 70.0
 	return clampf(0.55 + villaggio.vantaggi.get("duelli", 0.0) + (morale - 50.0) / 500.0 + 0.02 * (livello() - 1)
-		+ Popoli.vantaggio_tipo(tipo(), tipo_difensore), 0.1, 0.9)
+		+ Popoli.vantaggio_tipo(tipo(), tipo_difensore) + bonus_attivo(), 0.1, 0.95)
 
 
 func _cambia_morale(d: int) -> void:
@@ -294,8 +367,14 @@ func _mangia(delta: float) -> void:
 
 
 func _process(delta: float) -> void:
+	_orologio += delta
+	for k in 2:
+		_ricarica[k] = maxf(0.0, _ricarica[k] - delta)
 	if not esiste():
 		return
+	if _passo != 1.0 and _orologio >= _passo_fino:
+		_passo = 1.0
+		_imposta_velocita()
 	queue_redraw()
 	_avanza_effetti(delta)
 	_rifornisci()
