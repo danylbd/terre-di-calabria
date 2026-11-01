@@ -49,3 +49,15 @@ Le fasi 1–4 e 6 sono fatte. Prima di progettare la Fase 5 ho bisogno di capire
 Nel frattempo, senza aspettare, lavoro alla rifinitura grafica (edifici dei popoli che hanno ancora l'aspetto greco) e al bilanciamento.
 
 Risposta:
+
+## 2026-11-02 — Update «Le guerre di Annibale» (idee da Imperivm)
+
+Il piano è in `docs/piano-imperivm.md`. Quattro domande:
+1. Per le schiere va bene il **controllo diretto** (clic sul condottiero, poi dove andare o chi attaccare), mentre l'economia resta alla Settlers? (Consiglio: sì.)
+2. I **Cartaginesi** come ottavo popolo giocabile: sì? E gli **elefanti**?
+3. La campagna di Annibale **prima o dopo** la Fase 5 (Coral Island)?
+4. C'è qualcosa di Imperivm che ti piaceva in modo particolare e che nel piano manca?
+
+Intanto comincio dallo step 30 (villaggi indigeni), che non dipende da queste risposte.
+
+Risposta:

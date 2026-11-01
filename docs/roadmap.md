@@ -73,6 +73,24 @@ Piano: vedi [`storia.md`](storia.md), «Il seguito in Sicilia».
 |---|---|---|
 | Sfide | Tre sfide senza sconfitta, con il record del tempo (vedi [`sfide.md`](sfide.md)) | fatto (v0.41.0) |
 
+## Fase 7 — «Le guerre di Annibale» (idee da Imperivm, piano del 2026-11-02)
+
+Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'economia di oggi senza toglierla.
+
+| Step | Nome | Stato |
+|---|---|---|
+| 30 | Villaggi indigeni da unire o conquistare | |
+| 31 | Condottieri e schiere (controllo diretto) | |
+| 32 | Cibo, morale ed esperienza | |
+| 33 | Tipi di unità (fanteria, tiratori, cavalleria) | |
+| 34 | Abilità dei condottieri | |
+| 35 | Navi da guerra e traversate delle schiere | |
+| 36 | Assedi (ariete, onagro) | |
+| 37 | I Cartaginesi (ottavo popolo, elefanti) | |
+| 38 | Mappa «Il Bruzio di Annibale» | |
+| 39 | Campagna «Annibale nel Bruzio» (dai due lati) | |
+| 40 | Rifinitura grafica di guerra | |
+
 ## Fase 5 — Idee per le versioni future
 
 | Idea | Note |

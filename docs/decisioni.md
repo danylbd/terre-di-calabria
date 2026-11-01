@@ -38,3 +38,9 @@
 | Argomento | Scelta provvisoria |
 |---|---|
 | Chi è Rocco della Lira | **È re Italo**, che ha aspettato secoli di vedere i popoli scegliere (l'idea scritta in `storia.md`). Si svela nell'epilogo «L'ultimo canto» (step 29). Domanda aperta in `domande-per-il-proprietario.md`: se il proprietario sceglie altro, si cambiano solo i testi di `ultimo_canto` e di `soglia_sigillo` in `src/storia/missione.gd`. |
+
+## Decisioni del 2026-11-02 (dal proprietario)
+
+| Argomento | Decisione |
+|---|---|
+| Update «Imperivm» | Unire al gioco le idee e la dinamica di *Imperivm: le guerre puniche* (villaggi da conquistare, condottieri con schiere, cibo dell'esercito, morale, navi, assedi) e una grafica di guerra più ricca, **senza annullare o rovinare il lavoro fatto**: piano in `piano-imperivm.md` (Fase 7) |

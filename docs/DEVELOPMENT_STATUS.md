@@ -39,5 +39,5 @@ Ultime modifiche significative (v0.44.0): i Brettii del giocatore hanno i colori
 
 ## Prossima attività consigliata
 
-Tutto il piano possibile senza il proprietario è fatto (rifinitura G6 compresa). Lavori utili che non dipendono da nessuno:
-In attesa del proprietario: Fase 5, musica vera, iPhone, chi è Rocco.
+**Fase 7 — «Le guerre di Annibale»** (idee da Imperivm, richiesta del proprietario del 2026-11-02): piano in `docs/piano-imperivm.md`. Cominciare dallo **step 30 (villaggi indigeni)**, che non dipende dalle domande aperte; poi condottieri e schiere (step 31) quando il proprietario conferma il controllo diretto (o, se non risponde, con il controllo diretto come scelta provvisoria).
+In attesa del proprietario: Fase 5, musica, iPhone, Rocco, domande della Fase 7.
