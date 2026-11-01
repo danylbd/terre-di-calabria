@@ -1,7 +1,10 @@
 class_name CameraMappa
 extends Camera2D
 ## Camera della partita: WASD/frecce, mouse ai bordi, trascinamento con tasto destro o centrale,
-## rotella per lo zoom (verso il punto indicato dal mouse).
+## rotella per lo zoom (verso il punto indicato dal mouse). Sugli schermi touch: un dito trascina la
+## mappa, due dita pizzicano per lo zoom, un tocco lungo fermo vale come il tasto destro (annulla).
+
+signal tocco_lungo
 
 const VELOCITA := 1100.0
 const MARGINE_BORDO := 10.0
@@ -14,12 +17,25 @@ var scorrimento_bordi := true
 var _trascino := false
 var _zoom_obiettivo := 1.0
 
+const SOGLIA_TRASCINO := 14.0      # pixel: sotto questa distanza un tocco è un clic
+const TEMPO_TOCCO_LUNGO := 0.6
+var _tocchi := {}                  # dito -> posizione sullo schermo
+var _inizio_tocco := Vector2.ZERO
+var _tempo_tocco := 0.0
+var tocco_mosso := false           # il dito si è spostato (o ci sono due dita): non è un clic
+var tocco_lungo_fatto := false     # il tocco è diventato un tocco lungo: non è un clic
+
 
 func _ready() -> void:
 	_zoom_obiettivo = zoom.x
 
 
 func _process(delta: float) -> void:
+	if _tocchi.size() == 1 and not tocco_mosso and not tocco_lungo_fatto:
+		_tempo_tocco += delta
+		if _tempo_tocco >= TEMPO_TOCCO_LUNGO:
+			tocco_lungo_fatto = true
+			tocco_lungo.emit()
 	var dir := Vector2.ZERO
 	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
 		dir.x -= 1
@@ -48,6 +64,9 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch or event is InputEventScreenDrag:
+		_tocco(event)
+		return
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP and mb.pressed:
@@ -73,3 +92,34 @@ func _limita() -> void:
 	var minimo := area.position + meta_vista * 0.3
 	var massimo := area.end - meta_vista * 0.3
 	position = position.clamp(minimo, massimo)
+
+
+## Le dita sullo schermo: trascinare, pizzicare, tocco lungo.
+func _tocco(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		var t := event as InputEventScreenTouch
+		if t.pressed:
+			_tocchi[t.index] = t.position
+			if _tocchi.size() == 1:
+				_inizio_tocco = t.position
+				_tempo_tocco = 0.0
+				tocco_mosso = false
+				tocco_lungo_fatto = false
+			else:
+				tocco_mosso = true
+		else:
+			_tocchi.erase(t.index)
+	elif event is InputEventScreenDrag:
+		var d := event as InputEventScreenDrag
+		if _tocchi.size() >= 2 and _tocchi.has(d.index):
+			var altro: Vector2 = _tocchi[_tocchi.keys().filter(func(k): return k != d.index)[0]]
+			var prima: float = (_tocchi[d.index] as Vector2).distance_to(altro)
+			var dopo := d.position.distance_to(altro)
+			if prima > 1.0:
+				_zoom_obiettivo = clampf(_zoom_obiettivo * dopo / prima, ZOOM_MIN, ZOOM_MAX)
+		elif _tocchi.size() == 1:
+			if d.position.distance_to(_inizio_tocco) > SOGLIA_TRASCINO:
+				tocco_mosso = true
+			if tocco_mosso:
+				position -= d.relative / zoom.x
+		_tocchi[d.index] = d.position

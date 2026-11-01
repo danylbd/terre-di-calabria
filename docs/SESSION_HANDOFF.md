@@ -2,27 +2,28 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 23 chiuso (release v0.28.0 in `main`).
+**Aggiornato:** 2026-11-02, step 24 (prima parte: comandi touch) unito a `main`, release v0.29.0.
 
 ## Ultimo obiettivo affrontato
 
-**Step 23 — campagna finale «La Soglia»**, fatto e unito a `main`. Piano in `docs/soglia.md`.
-- `src/storia/missione.gd`: `CAMPAGNA_SOGLIA` (soglia_velo, soglia_frammenti, soglia_scelta, soglia_sigillo), prove `lusso`, `conquiste`, `forti`, `una_tra`; progressi `popolo_soglia` e `finale`; `prossima_soglia()`, `racconto_finale()`.
-- `partita._popolo_da_usare()`: missioni con `"popolo": "scelto"`. `mappa_calabria.gd`: pulsante «La Soglia» e pannello di scelta del popolo.
-- Test `tools/test/test_soglia.gd`; `test_campagna` (bot) ora costruisce tutte le case che servono. Tutti i 24 test OK.
+**Step 24 — iPhone, prima parte**: comandi touch.
+- `src/mappa/camera_mappa.gd`: `_tocco()` (un dito trascina, due dita zoom), `tocco_mosso`, `tocco_lungo_fatto`, segnale `tocco_lungo`.
+- `src/mappa/partita.gd`: clic da dito (`InputEvent.DEVICE_ID_EMULATION`) al rilascio; `_annulla()`; i clic usano `mb.position`.
+- Test `tools/test/test_touch.gd`. Tutti i 25 test OK.
+- L'esportazione iOS aspetta la risposta del proprietario (serve un Mac): domanda del 2026-11-02.
 
-## Prossimo: step 24 — iPhone (prima parte, senza Mac)
+## Prossimo: Fase 6 — la Sicilia (step 25)
 
-Comandi touch e interfaccia per schermi piccoli; l'esportazione iOS aspetta la risposta del proprietario (domanda del 2026-11-02). Se lo step si blocca, Fase 6 (Sicilia).
+Leggere le righe della Fase 6 in `docs/roadmap.md` e il seguito «Il fuoco sotto la montagna» in `docs/storia.md`; scrivere il piano dello step 25.
 
 ## Problemi irrisolti
 
-- Musica ancora segnaposto (domanda aperta al proprietario).
-- Chi è Rocco della Lira (domanda aperta; nel finale ora è solo suggerito che sia Italo).
-- Versione iPhone: serve un Mac (domanda aperta).
+- Musica ancora segnaposto (domanda aperta).
+- Chi è Rocco della Lira (domanda aperta).
+- iPhone: serve un Mac (domanda aperta).
 - Esito delle GitHub Actions non verificabile da qui (`gh` assente).
 - Frombolieri dei Brettii giocabili ancora con i colori rossi da nemici.
 
 ## Da dove riprendere
 
-Aprire il ramo `step-24-touch` e leggere `src/mappa/camera_mappa.gd` e `_unhandled_input` di `partita.gd` per i comandi touch.
+Aprire il ramo dello step 25 e scrivere il piano della Sicilia.
