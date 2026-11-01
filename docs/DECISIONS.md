@@ -23,3 +23,4 @@
 | 2026-11-01 | Un solo agente in continuo; turno orario disattivato | un turno orario aveva avviato una seconda sessione sullo stesso worktree | turni orari automatici |
 | 2026-11-01 | Test lunghi in primo piano, a gruppi sotto i 10 minuti | i comandi in background lasciavano il lavoro fermo | test in background |
 | 2026-11-01 | Memoria del progetto in documenti (`PROJECT_MEMORY`, `DEVELOPMENT_STATUS`, `DECISIONS`, `SESSION_HANDOFF`) + CLAUDE.md corto | riprendere dopo chiusure e compattazioni senza rispiegare | tutto in CLAUDE.md (diventava lungo) |
+| 2026-11-01 | Romani: edificio unico = fornace dei laterizi (non il cantiere stradale); strade lastricate = abilità sempre attiva (+15% ai portatori) | più semplice e leggibile; il cantiere stradale potrà arrivare con la campagna dei Romani (provvisoria) | cantiere stradale che lastrica le strade a mano (rimandato) |

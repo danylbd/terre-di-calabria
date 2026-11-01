@@ -47,7 +47,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | Step | Nome | Stato |
 |---|---|---|
 | 19 | Brettii giocabili nella partita libera: aspetto proprio, pecificio e pece, frombolieri, passo svelto nei boschi, nemici greci (vedi [`brettii.md`](brettii.md)) | fatto (v0.24.0) |
-| 20 | Romani | |
+| 20 | Romani giocabili: aspetto proprio, fornace dei laterizi e tegole, legionari, strade lastricate, nemici brettii (vedi [`romani.md`](romani.md)) | fatto (v0.25.0) |
 | 21 | Saraceni | |
 | 22 | Normanni | |
 | 23 | Campagna finale «La Soglia» | |
