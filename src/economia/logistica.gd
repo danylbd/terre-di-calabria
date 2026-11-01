@@ -9,8 +9,8 @@ const INTERVALLO_USCITA := 0.7      # secondi tra un'uscita e l'altra da un maga
 const MAX_PER_BANDIERA := 8
 const SCORTA_MINIMA := 6            # chi produce senza materie prime (il pozzo) si ferma oltre questa scorta
 const SCORTA_MASSIMA := 12          # chi trasforma (carbonaia, mulino...) si ferma oltre questa, se nessuno ne chiede
-## merci che servono sempre: le monete (all'agorà si compra con quelle) e le assi (per costruire)
-const SEMPRE_UTILI := ["monete", "assi"]
+## merci che servono sempre: i ducati (all'agorà si compra con quelli) e le assi (per costruire)
+const SEMPRE_UTILI := ["ducati", "assi"]
 
 var dati: DatiMappa
 var villaggio: Villaggio

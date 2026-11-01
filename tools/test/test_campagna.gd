@@ -27,12 +27,20 @@ func _prova() -> void:
 		_controlla(Missione.sbloccata("pane_straniero") and not Missione.sbloccata("uliveto"), "finito il naufragio si sblocca la seconda")
 		for m in Missione.CAMPAGNA_GRECI:
 			_controlla(Missione.MISSIONI[m]["obiettivi"].size() >= 2 and not Missione.MISSIONI[m]["fine"].is_empty(), "%s ha obiettivi e finale" % m)
-		var t = load("res://src/main/title_screen.tscn").instantiate()
-		root.add_child(t)
+		# la mappa della Calabria: sei segnaposti, quelli futuri bloccati
+		var mappa = load("res://src/main/mappa_calabria.tscn").instantiate()
+		root.add_child(mappa)
 		await process_frame
-		var testi := []
-		_bottoni(t._strato_campagna, testi)
-		_controlla(testi.size() >= 7 and testi[1].contains("bloccata") == false and testi[2].contains("bloccata"), "il menu mostra le missioni, bloccate quelle future %s" % [testi])
+		var s: Dictionary = mappa._segnaposti
+		_controlla(s.size() == 6, "sulla mappa ci sono le 6 missioni dei Greci")
+		_controlla(s["naufragio"].text == "✔" and not s["pane_straniero"].disabled and s["uliveto"].disabled,
+			"compiute con la spunta, la prossima aperta, le altre bloccate")
+		var dentro := true
+		for m in s:
+			var b: Button = s[m]
+			if not Rect2(Vector2.ZERO, mappa.size).encloses(Rect2(b.position, b.size)):
+				dentro = false
+		_controlla(dentro, "i segnaposti stanno dentro lo schermo")
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(PROGRESSI))
 		_fine()
 		return
@@ -106,7 +114,7 @@ func _gioca(ob: Dictionary) -> void:
 			if ob["merce"] == "pietra":
 				_una_volta("cava", func(f): return _conta(p.risorse.rocce, f, 7))
 				_una_volta("cava2", func(f): return _conta(p.risorse.rocce, f, 7))
-			elif ob["merce"] == "monete":
+			elif ob["merce"] == "ducati":
 				_una_volta("agora", vicino)
 		"popolazione":
 			_una_volta("casa_greca", vicino)

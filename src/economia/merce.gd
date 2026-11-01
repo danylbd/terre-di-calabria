@@ -12,7 +12,7 @@ const FOGLI := {"tronchi": "portatore_tronco", "assi": "portatore_asse", "pietra
 	"lingotti": "portatore_lingotti", "ascia": "portatore_attrezzi", "piccone": "portatore_attrezzi",
 	"pala": "portatore_attrezzi", "falce": "portatore_attrezzi", "canna": "portatore_attrezzi",
 	"sega": "portatore_attrezzi", "martello": "portatore_attrezzi", "argilla": "portatore_sacco",
-	"anfore": "portatore_anfora", "sale": "portatore_sacco", "argento": "portatore_pietra", "monete": "portatore_sacco",
+	"anfore": "portatore_anfora", "sale": "portatore_sacco", "argento": "portatore_pietra", "ducati": "portatore_sacco",
 	"stoffa": "portatore_lana", "armi": "portatore_armi"}
 
 var tipo := ""

@@ -14,7 +14,7 @@
 | Guerra | Si sceglie all'inizio della partita/campagna: **solo pace**, **solo guerra**, oppure **pace e poi guerra** dopo l'economia |
 | Avversari | Computer (IA). Niente multigiocatore per ora |
 | Primo popolo | **Greci**, completi in tutto prima di passare agli altri |
-| Mappa campagna | Calabria vera stilizzata (Pollino, Sila, Serre, Aspromonte, Stretto) |
+| Mappa campagna | Calabria con la **forma reale** della regione (costa dalle coordinate vere), con Pollino, Sila, Serre, Aspromonte, Stretto *(deciso dal proprietario il 2026-11-01)* |
 | Tempo | Stagioni sì (neve, raccolti); luce sempre di giorno |
 | Durata | Missioni lunghe (1–3 ore) con salvataggi |
 | Comandi | Mouse e tastiera |
@@ -22,3 +22,14 @@
 | Hardware di riferimento | Samsung Galaxy Book5/Book6 Edge (Snapdragon X), Windows 11 ARM64 nativo |
 | Consegna | `Setup.exe` compilato da GitHub a ogni step |
 | Repository | GitHub privato `danylbd/terre-di-calabria`; un ramo per step, `main` = versioni approvate |
+
+## Decisioni del 2026-11-01 (dal proprietario)
+
+| Tema | Scelta |
+|---|---|
+| Moneta | Le monete del gioco si chiamano **ducati** |
+| Durata | Campagne e missioni **senza limite di tempo**: finita una missione si continua a giocare liberamente, anche per ore |
+| Mappa di Monteleone | Una mappa di gioco ambientata a **Monteleone (Vibo Valentia)** con il circondario: Vibo Marina, Pizzo, Tropea, Capo Vaticano, il Monte Poro, le Serre; la costa rifatta simile a quella vera |
+| Monumenti | Man mano che il giocatore avanza ottiene i **monumenti tipici di Monteleone**, che compaiono sulla mappa al loro posto, uno dopo l'altro |
+| Sicilia | Pianificare un **prolungamento della storia in Sicilia** |
+

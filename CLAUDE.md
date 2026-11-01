@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1), Fase 2 (12–15) e gli step 16–17 (in `main`, release v0.19.0).
+Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1), Fase 2 (12–15) e Fase 3 (16–18) (in `main`, release v0.20.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -78,7 +78,9 @@ Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1), Fase 2 (12–15
 
 - Step 17 (campagna dei Greci): 6 missioni in `Missione.MISSIONI` (obiettivi generici: `edificio`, `prodotti`, `scorta`, `popolazione`, `campi`, `presidiata`, `guadagno`; eventi come `alluvione`; battute `dopo`), partenza «relitto» o «pieno», Brettii pacifici, torri verso la costa. Sblocco una dopo l'altra (`user://campagna.json`, `Missione.progressi`). Pannello «Le Colonne dell'Alba» nel menu. Test: `tools/test/test_campagna.gd` con un giocatore automatico (`MISSIONE=id`).
 
-**In corso: step 18 – mappa della Calabria stilizzata** (ramo `step-18-mappa`): una mappa grande della regione (Pollino, Sila, Serre, Aspromonte, Stretto, i due mari) da cui scegliere le terre; per ora le missioni greche sulla costa ionica.
+- Step 18 (mappa della Calabria): `src/main/mappa_calabria.gd/.tscn`, costa dalle coordinate reali, missioni come segnaposti; «Campagna dei Greci» nel menu porta qui. Le monete si chiamano **ducati** (chiave `ducati`).
+
+**In corso: step V1 – mappa di Monteleone** (ramo `step-v1-monteleone`): vedi `docs/monteleone.md`. Poi V2 monumenti, V3 partite senza fine, poi Fase 4 (Brettii giocabili) e Fase 6 (Sicilia, piano in `docs/storia.md`).
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 

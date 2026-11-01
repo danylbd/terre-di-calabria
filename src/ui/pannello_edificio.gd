@@ -58,7 +58,7 @@ func _ready() -> void:
 	_riga_compra.add_theme_constant_override("separation", 8)
 	colonna.add_child(_riga_compra)
 	var et := Label.new()
-	et.text = "Compra con le monete:"
+	et.text = "Compra con i ducati:"
 	et.add_theme_color_override("font_color", Palette.INCHIOSTRO)
 	_riga_compra.add_child(et)
 	_compra = OptionButton.new()
@@ -155,11 +155,11 @@ func _riempi() -> void:
 				parti.append("merci da vendere fino a %d" % info["vende"])
 			righe.append("Riceve: " + ", ".join(parti))
 		if e.tipo == "agora":
-			righe.append("Monete in cassa: %d  —  guadagnate qui: %d" % [villaggio.scorte.get("monete", 0), e.guadagno])
+			righe.append("Ducati in cassa: %d  —  guadagnati qui: %d" % [villaggio.scorte.get("ducati", 0), e.guadagno])
 			var listino := []
 			for m in CatalogoEdifici.VENDITA:
 				listino.append("%s %d" % [CatalogoEdifici.NOMI_RISORSE[m].to_lower(), CatalogoEdifici.VENDITA[m]])
-			righe.append("[font_size=14]Vende (monete): %s[/font_size]" % ", ".join(listino))
+			righe.append("[font_size=14]Vende (ducati): %s[/font_size]" % ", ".join(listino))
 		var prodotti := CatalogoEdifici.prodotti(e.tipo).filter(func(p): return p != "")
 		if not prodotti.is_empty():
 			var nomi := prodotti.map(func(p): return "attrezzi" if p == "attrezzi" else CatalogoEdifici.NOMI_RISORSE[p].to_lower())

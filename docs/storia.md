@@ -146,3 +146,26 @@ Sotto il velo, il Mercante è **un figlio di Italo**: quello che il re aveva giu
 - **Partita libera:** mappa a scelta, popoli a scelta, senza storia.
 - **Modalità tranquilla:** nessun nemico, nessun evento distruttivo; solo costruire.
 - **Sfide:** "nutri 200 abitanti in un'ora", "porta la seta da un mare all'altro", "sopravvivi all'alluvione".
+
+---
+
+## Il seguito in Sicilia — «Il fuoco sotto la montagna»
+
+*Piano del 2026-11-01, su richiesta del proprietario. Da rifinire insieme.*
+
+Quando i cinque frammenti sono riuniti sulla Soglia, il Sigillo di Italo non si ricompone del tutto: al centro manca un pezzo. Rocco della Lira ricorda l'ultimo verso del canto, che nessuno ascoltava più: *«...e il cuore del Sigillo lo tenne il fuoco, oltre lo Stretto.»* Il **Mercante senza Volto**, sconfitto in Calabria, fugge per mare verso la Sicilia: sa dov'è il cuore.
+
+**Dove:** la Sicilia nord-orientale, con la sua forma vera: Messina (Zancle) e lo Stretto, i monti Peloritani, l'Etna, la costa ionica fino a Siracusa, le isole Eolie.
+
+**Chi:** i coloni che hanno riunito il Sigillo (il popolo che il giocatore ha portato al finale) attraversano lo Stretto. Sull'isola trovano popoli nuovi: i **Siculi** (pastori e vasai dell'interno) e i **Sicani** (gente delle montagne a ovest), e le città greche di Sicilia.
+
+**Le missioni (prima proposta):**
+1. **La traversata** — Navi e porti sui due lati dello Stretto: portare coloni e merci a Messina tra le correnti di Scilla e Cariddi.
+2. **Zancle** — Fondare il primo villaggio sulla falce del porto di Messina.
+3. **I vasai di Pantalica** — Primo incontro con i Siculi: commercio di anfore e grano.
+4. **La neve dell'Etna** — Sui fianchi del vulcano la terra è nera e ricchissima: vigne e agrumi, ma la montagna brontola. *(Evento: colate di lava.)*
+5. **Il vento delle Eolie** — Le isole dei venti: pomice, ossidiana, sale. Il Mercante ha una flotta nascosta.
+6. **Il cuore del fuoco** — Sull'Etna, il cuore del Sigillo. L'ultimo confronto con il Mercante senza Volto, e chi è davvero.
+
+**Cosa porta di nuovo nel gioco:** navi vere tra i porti, la lava che cambia la mappa, l'ossidiana e la pomice, una mappa grande della Sicilia con la forma reale, il ritorno dei personaggi delle campagne calabresi.
+

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqnj8vupnd6n4"
-path="res://.godot/imported/merce_monete.png-c3a54f3390904fc0d429313e3a03f07c.ctex"
+uid="uid://55nlorhdr84l"
+path="res://.godot/imported/step18-mappa-calabria.png-c4a11ff81c7091dba0fd0b3372319235.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/grafica/merce_monete.png"
-dest_files=["res://.godot/imported/merce_monete.png-c3a54f3390904fc0d429313e3a03f07c.ctex"]
+source_file="res://docs/immagini/step18-mappa-calabria.png"
+dest_files=["res://.godot/imported/step18-mappa-calabria.png-c4a11ff81c7091dba0fd0b3372319235.ctex"]
 
 [params]
 

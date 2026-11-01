@@ -36,15 +36,15 @@ const MISSIONI := {
 	"pane_straniero": {
 		"titolo": "Pane straniero",
 		"villaggio": "pieno", "brettii": true, "coloni": 40,
-		"scorte": {"tronchi": 20, "assi": 40, "pietra": 40, "olio": 8, "monete": 4},
+		"scorte": {"tronchi": 20, "assi": 40, "pietra": 40, "olio": 8, "ducati": 4},
 		"inizio": [
 			["Rocco della Lira", "La terra nuova è generosa, ma non ha fretta: il grano seminato oggi si raccoglie domani, e la fame non sa aspettare."],
-			["Eudora", "Lassù, tra i pini, vivono pastori che chiamano se stessi Brettii. Hanno grano e formaggio. Noi abbiamo l'olio della nave e qualche moneta."],
+			["Eudora", "Lassù, tra i pini, vivono pastori che chiamano se stessi Brettii. Hanno grano e formaggio. Noi abbiamo l'olio della nave e qualche ducato."],
 			["Eudora", "Alziamo una piazza del mercato: lì si incontrano i popoli, prima che le loro spade."],
 		],
 		"obiettivi": [
 			{"testo": "Costruisci l'agorà", "aiuto": "Nel menu «Base»: è grande (3×3). Collegala al magazzino.", "prova": "edificio", "tipo": "agora"},
-			{"testo": "Vendi l'olio e compra 4 grano dai pastori", "aiuto": "Clicca l'agorà e scegli «Grano» in «Compra con le monete». L'olio in magazzino arriva da solo e si vende.", "prova": "prodotti", "tipo": "agora", "n": 4},
+			{"testo": "Vendi l'olio e compra 4 grano dai pastori", "aiuto": "Clicca l'agorà e scegli «Grano» in «Compra con i ducati». L'olio in magazzino arriva da solo e si vende.", "prova": "prodotti", "tipo": "agora", "n": 4},
 			{"testo": "Costruisci un mulino e un forno", "aiuto": "Il mulino macina il grano; il forno impasta farina e acqua (serve anche un pozzo).", "prova": "edificio", "tipo": "forno",
 				"dopo": [["Eudora", "Il mugnaio dice che la farina dei Brettii è più scura della nostra. Sarà buona lo stesso."]]},
 			{"testo": "Cuoci 6 pani", "aiuto": "Mulino, pozzo e forno collegati: il pane arriva in magazzino.", "prova": "prodotti", "tipo": "forno", "n": 6},
@@ -65,7 +65,7 @@ const MISSIONI := {
 			{"testo": "Costruisci un raccoglitore di olive vicino agli ulivi", "aiuto": "Nel menu «Cibo». Gli ulivi stanno nella pianura secca, a qualche passo dal villaggio.", "prova": "edificio", "tipo": "uliveto"},
 			{"testo": "Costruisci un frantoio", "aiuto": "Il frantoio spreme le olive che i portatori gli consegnano.", "prova": "edificio", "tipo": "frantoio"},
 			{"testo": "Spremi 8 anfore d'olio", "aiuto": "Le olive maturano soprattutto d'autunno e d'inverno.", "prova": "prodotti", "tipo": "frantoio", "n": 8},
-			{"testo": "Costruisci l'agorà e guadagna 9 monete con l'olio", "aiuto": "L'olio si vende bene: 3 monete ad anfora.", "prova": "guadagno", "n": 9},
+			{"testo": "Costruisci l'agorà e guadagna 9 ducati con l'olio", "aiuto": "L'olio si vende bene: 3 ducati ad anfora.", "prova": "guadagno", "n": 9},
 		],
 		"fine": [
 			["Eudora", "Le navi che passano al largo ora si fermano: l'odore dell'olio nuovo arriva fino al mare."],
@@ -82,7 +82,7 @@ const MISSIONI := {
 		],
 		"obiettivi": [
 			{"testo": "Fai crescere il villaggio fino a 52 coloni", "aiuto": "Costruisci abitazioni: ogni casa ospita 8 coloni. Vino, agrumi e miele li fanno nascere prima.", "prova": "popolazione", "n": 52},
-			{"testo": "Metti da parte 20 monete", "aiuto": "Vendi all'agorà olio, vino, stoffa, anfore... oppure apri una zecca.", "prova": "scorta", "merce": "monete", "n": 20},
+			{"testo": "Metti da parte 20 ducati", "aiuto": "Vendi all'agorà olio, vino, stoffa, anfore... oppure apri una zecca.", "prova": "scorta", "merce": "ducati", "n": 20},
 			{"testo": "Presidia una torre di guardia", "aiuto": "Nel menu «Difesa»: quando la guardia entra, i confini si allargano.", "prova": "presidiata"},
 		],
 		"fine": [
