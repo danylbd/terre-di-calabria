@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step G6b chiuso (release v0.36.0 in `main`): Romani con tutti gli edifici nel loro stile. Prossimo: G6c Saraceni.
+**Aggiornato:** 2026-11-02, step G6c chiuso (release v0.37.0 in `main`): Saraceni con tutti gli edifici nel loro stile. Prossimo: G6d Normanni.
 
 ## Ultimo obiettivo affrontato
 

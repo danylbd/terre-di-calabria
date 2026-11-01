@@ -203,6 +203,30 @@ static func catalogo() -> Dictionary:
 		"filanda": {"crea": filanda},
 		"merce_bozzoli": {"crea": merce.bind("bozzoli")},
 		"merce_seta": {"crea": merce.bind("seta")},
+		"porcile_saraceni": {"crea": porcile_saraceni},
+		"macelleria_saraceni": {"crea": macelleria_saraceni},
+		"apiario_saraceni": {"crea": apiario_saraceni},
+		"caseificio_saraceni": {"crea": caseificio_saraceni},
+		"argillaio_saraceni": {"crea": argillaio_saraceni},
+		"fornace_saraceni": {"crea": fornace_saraceni},
+		"saline_saraceni": {"crea": saline_saraceni},
+		"tessitura_saraceni": {"crea": tessitura_saraceni},
+		"pescatore_saraceni": {"crea": capanna_pescatore_saraceni},
+		"frantoio_saraceni": {"crea": frantoio_saraceni},
+		"uliveto_saraceni": {"crea": uliveto_saraceni},
+		"vigneto_saraceni": {"crea": vigneto_saraceni},
+		"cantina_saraceni": {"crea": cantina_saraceni},
+		"ortolano_saraceni": {"crea": ortolano_saraceni},
+		"agrumeto_saraceni": {"crea": agrumeto_saraceni},
+		"pesca_spada_saraceni": {"crea": pesca_spada_saraceni},
+		"miniera_ferro_saraceni": {"crea": miniera_ferro_saraceni},
+		"miniera_argento_saraceni": {"crea": miniera_ferro_saraceni.bind("argento_grezzo")},
+		"zecca_saraceni": {"crea": zecca_saraceni},
+		"armaiolo_saraceni": {"crea": armaiolo_saraceni},
+		"porto_saraceni": {"crea": porto_saraceni},
+		"carbonaia_saraceni": {"crea": carbonaia_saraceni},
+		"fonderia_saraceni": {"crea": fonderia_saraceni},
+		"fabbro_saraceni": {"crea": fabbro_saraceni},
 		"casa_greca_normanni": {"crea": casa_greca_normanni.bind(1)},
 		"magazzino_normanni": {"crea": magazzino_normanni},
 		"boscaiolo_normanni": {"crea": boscaiolo_normanni},
@@ -10263,6 +10287,900 @@ static func posa_carica(modello: Node3D, fotogramma: int, totale: int) -> void:
 	bd.position = Vector3(0.07, 0.355, affondo * 0.05)
 	bd.rotation = Vector3(-0.85 + affondo * 0.75, 0, 0.12)
 	(cc.get_node("braccio_s") as Node3D).rotation = Vector3(-0.95 + 0.15 * sin(t * 2.0), 0, -0.35)
+
+
+# ------------------------------------------------------------------ altri edifici dei Saraceni (step G6c)
+# Stesso ingombro e stessa disposizione del corrispondente greco (stesso nome senza "_saraceni").
+
+## Comignolo di terra cruda con la bocca annerita e il fumo, sulla terrazza (pos = piede sulla terrazza).
+static func _camino_s(c: Node3D, pos: Vector3, h := 0.14) -> void:
+	c.add_child(scatola(Vector3(0.06, h, 0.06), pos + Vector3(0, h * 0.5, 0), "terra_cruda"))
+	c.add_child(scatola(Vector3(0.075, 0.025, 0.075), pos + Vector3(0, h, 0), "calce"))
+	c.add_child(scatola(Vector3(0.04, 0.006, 0.04), pos + Vector3(0, h + 0.014, 0), "fuliggine"))
+	_fumo(c, pos + Vector3(0, h + 0.05, 0), 3, 0.8)
+
+
+## Muretto di terra cruda con la cima tonda di calce fra due punti a terra (come i recinti dei Saraceni).
+static func _muretto_s(r: Node3D, da: Vector3, a: Vector3, h := 0.08) -> void:
+	_muro(r, da, a, h, 0.04, "terra_cruda", false, "terra_cruda")
+	var nn := maxi(1, int(da.distance_to(a) / 0.1))
+	for k in nn + 1:
+		r.add_child(cilindro(0.022, 0.022, 0.012, da.lerp(a, float(k) / nn) + Vector3(0, h + 0.005, 0), "calce", Vector3.ZERO, 8))
+
+
+## Cancelletto di legno verde fra due punti a terra.
+static func _cancello_s(r: Node3D, da: Vector3, a: Vector3, h := 0.08) -> void:
+	var n := 3
+	for k in n:
+		r.add_child(scatola(Vector3(0.012, h, 0.012), da.lerp(a, (k + 0.5) / n) + Vector3(0, h * 0.5, 0), "legno_verde"))
+	var d := a - da
+	r.add_child(scatola(Vector3(Vector2(d.x, d.z).length(), 0.014, 0.012), (da + a) * 0.5 + Vector3(0, h * 0.75, 0), "legno_verde", Vector3(0, rad_to_deg(atan2(-d.z, d.x)), 0)))
+
+
+## Pergola di pali coperta da una stuoia di canne (gronda verso +Z locale), con i correnti in vista.
+static func _pergola_s(r: Node3D, pos: Vector3, larg: float, prof: float, h: float, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	for lato: int in [-1, 1]:
+		for z: float in [-prof * 0.5, prof * 0.5]:
+			var hp := h + (0.03 if z < 0 else 0.0)
+			n.add_child(cilindro(0.013, 0.013, hp, Vector3(lato * (larg * 0.5 - 0.02), hp * 0.5, z), "legno_vecchio", Vector3.ZERO, 6))
+	n.add_child(scatola(Vector3(larg + 0.04, 0.014, prof + 0.06), Vector3(0, h + 0.022, 0), "canne", Vector3(-5, 0, 0)))
+	var nc := maxi(2, int(larg / 0.12))
+	for k in nc + 1:
+		n.add_child(cilindro(0.007, 0.007, prof + 0.08, Vector3(-larg * 0.5 + k * larg / nc, h + 0.032, 0), "legno", Vector3(90 - 5, 0, 0), 5))
+
+
+## Guardia dei Saraceni: veste bianca, turbante bianco con il giro verde, lancia con il pennoncello.
+static func _guardia_s(pos: Vector3, s := 0.9) -> Node3D:
+	var g := portatore("", "giocatore", "lino_bianco")
+	g.position = pos
+	g.scale = Vector3.ONE * s
+	g.add_child(sfera(0.088, Vector3(0, 0.5, -0.005), "lino_bianco", Vector3(1.05, 0.72, 1.05)))
+	g.add_child(_toro(0.07, 0.092, Vector3(0, 0.485, -0.005), "stoffa_smeraldo", Vector3.ZERO, Vector3(1, 0.8, 1)))
+	g.add_child(sfera(0.014, Vector3(0, 0.49, 0.085), "moneta"))
+	g.add_child(cilindro(0.006, 0.006, 0.5, Vector3(0.09, 0.25, 0.0), "legno", Vector3.ZERO, 5))
+	g.add_child(scatola(Vector3(0.012, 0.06, 0.03), Vector3(0.09, 0.51, 0.0), "ferro"))
+	g.add_child(scatola(Vector3(0.004, 0.03, 0.05), Vector3(0.09, 0.45, 0.025), "stoffa_smeraldo"))
+	return g
+
+
+## Porcile dei Saraceni: stalla di terra cruda col fieno sul tetto piatto, recinto di muretti tondi
+## con il cancelletto verde, truogolo riempito dalla canaletta, maiali nel fango, giara e palma.
+static func porcile_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.6
+	var lz := 0.46
+	var top := _muri_s(c, lx, lz, 0.28, 1101, "mattoni_crudi", false, false)
+	_porta_s(c, Vector3(-0.1, 0.07, lz * 0.5), 0.0, 0.12, 0.13, true)
+	_finestra_s(c, Vector3(lx * 0.5, 0.24, 0.0), 90.0, 0.05, 0.05)
+	for k in 2:
+		c.add_child(sfera(0.1, Vector3(-0.12 + k * 0.16, top + 0.02, -0.04 + k * 0.05), "paglia_tetto", Vector3(1.0, 0.55, 0.9)))
+	c.add_child(scatola(Vector3(0.12, 0.06, 0.08), Vector3(0.18, top + 0.03, 0.12), "paglia"))
+	var a := Vector3(0.05, 0, 0.0)
+	r.add_child(scatola(Vector3(0.8, 0.012, 0.75), a + Vector3(0.12, 0.006, 0.12), "terra"))
+	_muretto_s(r, a + Vector3(-0.28, 0, 0.5), a + Vector3(0.28, 0, 0.5))
+	_cancello_s(r, a + Vector3(0.3, 0, 0.5), a + Vector3(0.5, 0, 0.5))
+	_muretto_s(r, a + Vector3(0.52, 0, -0.26), a + Vector3(0.52, 0, 0.5))
+	_muretto_s(r, a + Vector3(0.15, 0, -0.26), a + Vector3(0.52, 0, -0.26))
+	r.add_child(sfera(0.14, a + Vector3(0.28, 0.0, 0.05), "fuliggine", Vector3(1.4, 0.1, 1.0)))
+	r.add_child(scatola(Vector3(0.24, 0.05, 0.07), a + Vector3(0.0, 0.025, 0.4), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.2, 0.012, 0.05), a + Vector3(0.0, 0.05, 0.4), "grano"))
+	for p in [[Vector3(0.25, 0, 0.3), 20], [Vector3(0.38, 0, -0.05), 130], [Vector3(0.05, 0, 0.18), -60], [Vector3(0.4, 0, 0.32), 200]]:
+		r.add_child(maiale(a + (p[0] as Vector3), p[1]))
+	r.add_child(scatola(Vector3(0.16, 0.04, 0.06), a + Vector3(-0.15, 0.02, 0.1), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.13, 0.004, 0.04), a + Vector3(-0.15, 0.041, 0.1), "acqua_chiara"))
+	_canaletta(r, Vector3(-0.62, 0, 0.1), a + Vector3(-0.23, 0, 0.1), 0.025)
+	r.add_child(sacco(Vector3(-0.62, 0, 0.3), 0.3))
+	r.add_child(anfora(Vector3(-0.5, 0, 0.38), 1.1))
+	_palma(r, Vector3(-0.7, 0, -0.18), 0.65, 1102)
+	return r
+
+
+## Macelleria dei Saraceni: bottega di calce con la fascia di maiolica, tenda rossa a strisce con la carne appesa,
+## bancone di terra cruda col piano di maiolica, ceppo, giara.
+static func macelleria_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.56
+	var top := _muri_s(c, lx, lz, 0.38, 1111)
+	_porta_s(c, Vector3(0.16, 0.07, lz * 0.5), 0.0, 0.13, 0.16)
+	_finestra_s(c, Vector3(-0.17, 0.28, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.28, 0.0), 90.0)
+	_camino_s(c, Vector3(0.2, top, -0.1))
+	c.add_child(scatola(Vector3(0.24, 0.1, 0.24), Vector3(-0.18, top + 0.05, -0.1), "calce"))
+	_cupola(c, Vector3(-0.18, top + 0.1, -0.1), 0.1, "maiolica_verde", false)
+	_tenda(r, Vector3(0.45, 0, 0.42), 0.6, 0.26, 0.4, 0.34, 0.0, "tenda_rossa", true)
+	r.add_child(scatola(Vector3(0.56, 0.018, 0.018), Vector3(0.45, 0.3, 0.52), "legno"))
+	for k in 5:
+		var x := 0.25 + k * 0.1
+		r.add_child(cilindro(0.003, 0.003, 0.05, Vector3(x, 0.275, 0.52), "corda", Vector3.ZERO, 3))
+		if k % 2 == 0:
+			r.add_child(sfera(0.035, Vector3(x, 0.215, 0.52), "carne", Vector3(0.9, 1.4, 0.8)))
+		else:
+			r.add_child(cilindro(0.016, 0.016, 0.1, Vector3(x, 0.205, 0.52), "carne", Vector3.ZERO, 8))
+	var b := Vector3(-0.35, 0, 0.55)
+	r.add_child(scatola(Vector3(0.3, 0.1, 0.13), b + Vector3(0, 0.05, 0), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.32, 0.018, 0.15), b + Vector3(0, 0.109, 0), "zellige"))
+	r.add_child(sfera(0.04, b + Vector3(-0.05, 0.135, 0), "carne", Vector3(1.2, 0.5, 0.9)))
+	r.add_child(scatola(Vector3(0.07, 0.004, 0.02), b + Vector3(0.08, 0.122, 0.02), "ferro", Vector3(0, 30, 0)))
+	r.add_child(cilindro(0.07, 0.075, 0.1, Vector3(-0.65, 0.05, 0.4), "corteccia", Vector3.ZERO, 12))
+	r.add_child(anfora(Vector3(0.65, 0, 0.0), 1.4))
+	r.add_child(anfora(Vector3(0.68, 0, 0.14), 1.1))
+	r.add_child(maiale(Vector3(-0.6, 0, 0.0), 60))
+	return r
+
+
+## Apiario dei Saraceni: casetta di calce con la cupoletta bianca, arnie a tubo di canne intonacate di terra
+## coricate su due muretti, aranci in fiore e fiori tutto intorno, giare di miele.
+static func apiario_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.35, 0, -0.35)
+	r.add_child(c)
+	var lx := 0.5
+	var lz := 0.4
+	var top := _muri_s(c, lx, lz, 0.26, 1121, "calce", false, false)
+	_porta_s(c, Vector3(0.06, 0.07, lz * 0.5), 0.0, 0.11, 0.13)
+	_finestra_s(c, Vector3(lx * 0.5, 0.22, 0.0), 90.0, 0.05, 0.05)
+	_cupola(c, Vector3(-0.08, top, -0.04), 0.13, "calce", false)
+	for f in 2:
+		var z := 0.15 + f * 0.25
+		r.add_child(scatola(Vector3(0.75, 0.06, 0.1), Vector3(0.15, 0.03, z), "terra_cruda"))
+		r.add_child(scatola(Vector3(0.77, 0.012, 0.11), Vector3(0.15, 0.066, z), "calce"))
+		for k in 5:
+			var p := Vector3(-0.15 + k * 0.15, 0.072, z)
+			r.add_child(cilindro(0.04, 0.04, 0.1, p + Vector3(0, 0.04, 0), "canne" if k % 2 == 0 else "terra_cruda", Vector3(90, 0, 0), 12))
+			r.add_child(cilindro(0.036, 0.036, 0.004, p + Vector3(0, 0.04, 0.051), "terra_cruda", Vector3(90, 0, 0), 12))
+			r.add_child(cilindro(0.008, 0.008, 0.004, p + Vector3(0, 0.03, 0.054), "buio", Vector3(90, 0, 0), 6))
+	var rng := _rng(1122)
+	for k in 30:
+		var p := Vector3(rng.randf_range(-0.7, 0.7), 0.0, rng.randf_range(0.55, 0.75))
+		if k % 2 == 0:
+			p = Vector3(rng.randf_range(0.5, 0.75), 0.0, rng.randf_range(-0.3, 0.6))
+		r.add_child(sfera(0.018, p + Vector3(0, 0.02, 0), "orto"))
+		r.add_child(sfera(0.012, p + Vector3(0, 0.04, 0), ["geranio", "fiore", "miele"][k % 3]))
+	_arancio(r, Vector3(0.55, 0, -0.42), 0.75, 1123)
+	r.add_child(anfora(Vector3(-0.62, 0, 0.2), 0.9))
+	r.add_child(anfora(Vector3(-0.55, 0, 0.3), 0.8))
+	return r
+
+
+## Caseificio dei Saraceni: bottega di calce con la cupola, paiolo di rame sul fuoco, scaffali di formaggi
+## sotto la tenda a strisce, giare di latte.
+static func caseificio_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.56
+	var top := _muri_s(c, lx, lz, 0.38, 1131)
+	_porta_s(c, Vector3(-0.15, 0.07, lz * 0.5), 0.0, 0.13, 0.16)
+	_finestra_s(c, Vector3(0.18, 0.28, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.28, 0.0), 90.0)
+	_camino_s(c, Vector3(-0.2, top, -0.1))
+	c.add_child(scatola(Vector3(0.26, 0.1, 0.26), Vector3(0.14, top + 0.05, -0.08), "calce"))
+	_cupola(c, Vector3(0.14, top + 0.1, -0.08), 0.11, "maiolica_verde", false)
+	var f := Vector3(0.45, 0, 0.45)
+	for k in 6:
+		r.add_child(scatola(Vector3(0.07, 0.05, 0.05), f + Vector3(0.12 * cos(k), 0.025, 0.12 * sin(k)), "terra_cruda", Vector3(0, k * 50, 0)))
+	r.add_child(sfera(0.1, f + Vector3(0, 0.12, 0), "bronzo", Vector3(1, 0.8, 1)))
+	r.add_child(cilindro(0.085, 0.085, 0.01, f + Vector3(0, 0.17, 0), "latte", Vector3.ZERO, 14))
+	for lato: int in [-1, 1]:
+		r.add_child(cilindro(0.01, 0.01, 0.3, f + Vector3(lato * 0.15, 0.15, 0), "legno_vecchio", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.008, 0.008, 0.32, f + Vector3(0, 0.3, 0), "legno_vecchio", Vector3(0, 0, 90), 5))
+	_fumo(r, f + Vector3(0, 0.24, 0), 2, 0.6)
+	for p: Vector3 in [Vector3(-0.3, 0, 0.5), Vector3(0.7, 0, -0.05)]:
+		for liv in 3:
+			r.add_child(scatola(Vector3(0.28 if p.x < 0 else 0.08, 0.012, 0.08 if p.x < 0 else 0.28), p + Vector3(0, 0.05 + liv * 0.08, 0), "legno_verde"))
+			for k in 3:
+				var o := Vector3((k - 1) * 0.085, 0, 0) if p.x < 0 else Vector3(0, 0, (k - 1) * 0.085)
+				r.add_child(cilindro(0.035, 0.035, 0.04, p + o + Vector3(0, 0.078 + liv * 0.08, 0), "formaggio", Vector3.ZERO, 12))
+	_tenda(r, Vector3(-0.3, 0, 0.47), 0.38, 0.2, 0.36, 0.31, 0.0, "tenda_verde", true)
+	r.add_child(anfora(Vector3(0.1, 0, 0.62), 1.0))
+	r.add_child(anfora(Vector3(0.2, 0, 0.6), 1.1))
+	return r
+
+
+## Argillaio dei Saraceni: casotto di mattoni crudi con la pergola di canne, fossa d'argilla, mattoni crudi
+## che seccano, stampo di legno, pala, giara d'acqua.
+static func argillaio_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.32, 0, -0.32)
+	r.add_child(c)
+	var top := _muri_s(c, 0.46, 0.36, 0.24, 1141, "mattoni_crudi", false, false)
+	_porta_s(c, Vector3(0.06, 0.07, 0.18), 0.0, 0.11, 0.12, true)
+	for k in 3:
+		c.add_child(scatola(Vector3(0.07, 0.03, 0.04), Vector3(-0.12 + k * 0.09, top + 0.015, -0.06), "argilla"))
+	_pergola_s(r, Vector3(-0.32, 0, 0.42), 0.42, 0.22, 0.26)
+	r.add_child(sfera(0.3, Vector3(0.3, -0.02, 0.25), "argilla", Vector3(1.3, 0.12, 1.0)))
+	r.add_child(sfera(0.22, Vector3(0.3, 0.0, 0.25), "argilla_cruda", Vector3(1.3, 0.08, 1.0)))
+	for k in 12:
+		r.add_child(scatola(Vector3(0.07, 0.03, 0.04), Vector3(-0.55 + (k % 4) * 0.09, 0.015 + (k / 4) * 0.032, 0.45), "argilla" if k % 3 else "terra_cruda", Vector3(0, (k % 2) * 5, 0)))
+	r.add_child(scatola(Vector3(0.1, 0.02, 0.06), Vector3(-0.12, 0.01, 0.6), "legno"))
+	r.add_child(scatola(Vector3(0.07, 0.006, 0.04), Vector3(-0.12, 0.023, 0.6), "buio"))
+	var a := attrezzo("pala")
+	a.position = Vector3(0.62, 0.02, 0.05)
+	a.rotation_degrees = Vector3(0, 40, 10)
+	r.add_child(a)
+	r.add_child(anfora(Vector3(0.02, 0, 0.62), 1.3))
+	return r
+
+
+## Fornace dei Saraceni: bottega di calce, fornace a cupola di terra cruda imbiancata con la bocca accesa,
+## vasi e ciotole smaltate di verde e bianco in fila, argilla e legna.
+static func fornace_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.25, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.6
+	var lz := 0.46
+	var top := _muri_s(c, lx, lz, 0.3, 1151)
+	_porta_s(c, Vector3(0.12, 0.07, lz * 0.5), 0.0, 0.12, 0.14)
+	_finestra_s(c, Vector3(-0.14, 0.23, lz * 0.5), 0.0, 0.055, 0.055)
+	_finestra_s(c, Vector3(lx * 0.5, 0.23, 0.0), 90.0, 0.055, 0.055)
+	for k in 4:
+		c.add_child(sfera(0.03, Vector3(-0.18 + k * 0.08, top + 0.02, -0.08), "maiolica_verde" if k % 2 == 0 else "calce", Vector3(1, 0.7, 1)))
+	var f := Vector3(0.42, 0, 0.35)
+	r.add_child(cilindro(0.2, 0.22, 0.14, f + Vector3(0, 0.07, 0), "terra_cruda", Vector3.ZERO, 18))
+	r.add_child(sfera(0.2, f + Vector3(0, 0.14, 0), "terra_cruda", Vector3(1, 1.0, 1)))
+	r.add_child(cilindro(0.205, 0.205, 0.02, f + Vector3(0, 0.15, 0), "calce", Vector3.ZERO, 18))
+	r.add_child(cilindro(0.04, 0.05, 0.06, f + Vector3(0, 0.35, 0), "terra_cruda", Vector3.ZERO, 10))
+	r.add_child(scatola(Vector3(0.08, 0.07, 0.05), f + Vector3(-0.05, 0.1, 0.19), "brace", Vector3(0, 25, 0)))
+	_fumo(r, f + Vector3(0, 0.4, 0), 3, 1.0)
+	for k in 7:
+		var p := Vector3(-0.6 + (k % 4) * 0.1, 0, 0.42 + (k / 4) * 0.12)
+		if k % 3 == 1:
+			r.add_child(cilindro(0.03, 0.045, 0.04, p + Vector3(0, 0.02, 0), "maiolica_verde", Vector3.ZERO, 12))
+			r.add_child(cilindro(0.036, 0.036, 0.004, p + Vector3(0, 0.041, 0), "calce", Vector3.ZERO, 12))
+		else:
+			r.add_child(anfora(p, 1.2))
+			r.add_child(cilindro(0.047, 0.047, 0.015, p + Vector3(0, 0.075 * 1.2, 0), "maiolica_verde" if k % 2 == 0 else "calce", Vector3.ZERO, 10))
+	r.add_child(mucchio(Vector3(0.68, 0, -0.15), "argilla", 8, 9))
+	legnaia(r, Vector3(0.65, 0, 0.12), 0.2, 3)
+	return r
+
+
+## Saline dei Saraceni: vasche di evaporazione bordate di terra cruda e riempite dalla canaletta, cumuli di sale,
+## casotto bianco con la cupoletta, pala, sacco e palma.
+static func saline_saraceni() -> Node3D:
+	var r := Node3D.new()
+	for i in 3:
+		for j in 2:
+			var p := Vector3(-0.45 + i * 0.42, 0, -0.25 + j * 0.5)
+			r.add_child(scatola(Vector3(0.4, 0.04, 0.46), p + Vector3(0, 0.02, 0), "terra_cruda"))
+			var mat := "acqua_chiara" if (i + j) % 3 != 0 else "sale"
+			r.add_child(scatola(Vector3(0.34, 0.005, 0.4), p + Vector3(0, 0.042, 0), mat))
+			r.add_child(scatola(Vector3(0.05, 0.008, 0.04), p + Vector3(0, 0.04, -0.21), "acqua_chiara"))
+	_canaletta(r, Vector3(-0.68, 0, -0.53), Vector3(0.42, 0, -0.53), 0.03)
+	for p: Vector3 in [Vector3(0.62, 0, 0.55), Vector3(0.42, 0, 0.62), Vector3(-0.6, 0, 0.6)]:
+		r.add_child(sfera(0.1, p, "sale", Vector3(1, 0.9, 1)))
+	var c := Node3D.new()
+	c.position = Vector3(0.6, 0, -0.55)
+	r.add_child(c)
+	var top := _muri_s(c, 0.28, 0.24, 0.13, 1161, "calce", false, false)
+	_porta_s(c, Vector3(-0.04, 0.07, 0.12), 0.0, 0.08, 0.06)
+	_cupola(c, Vector3(0, top, 0), 0.1, "calce", false)
+	var a := attrezzo("pala")
+	a.position = Vector3(0.25, 0.02, 0.45)
+	a.rotation_degrees = Vector3(0, -30, 5)
+	r.add_child(a)
+	r.add_child(sacco(Vector3(0.0, 0, 0.62), 0.3))
+	_palma(r, Vector3(0.3, 0, -0.74), 0.6, 1162)
+	return r
+
+
+## Tessitura dei Saraceni: bottega di calce con la cupola, telaio con la tela a strisce verdi, rosse e d'oro,
+## matasse di lana colorata, tappeti stesi su una pertica.
+static func tessitura_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.28)
+	r.add_child(c)
+	var lx := 0.72
+	var lz := 0.52
+	var top := _muri_s(c, lx, lz, 0.36, 1171)
+	_porta_s(c, Vector3(-0.16, 0.07, lz * 0.5), 0.0, 0.13, 0.15)
+	_finestra_s(c, Vector3(0.18, 0.27, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.27, 0.0), 90.0)
+	c.add_child(scatola(Vector3(0.26, 0.1, 0.26), Vector3(-0.16, top + 0.05, -0.08), "calce"))
+	_cupola(c, Vector3(-0.16, top + 0.1, -0.08), 0.11, "maiolica_verde", false)
+	_tappeto(c, Vector3(0.2, top + 0.05, lz * 0.5 + 0.03), 0.0, 0.13, 0.15)
+	var t := Vector3(0.0, 0, 0.5)
+	for x: float in [-0.18, 0.18]:
+		r.add_child(cilindro(0.012, 0.012, 0.4, t + Vector3(x, 0.2, 0), "legno_verde", Vector3.ZERO, 6))
+	r.add_child(cilindro(0.012, 0.012, 0.4, t + Vector3(0, 0.39, 0), "legno_verde", Vector3(0, 0, 90), 6))
+	var fili := ["stoffa_smeraldo", "seta_oro", "stoffa_rossa", "lino_bianco", "stoffa_smeraldo", "stoffa_rossa"]
+	for k in 6:
+		r.add_child(scatola(Vector3(0.34, 0.04, 0.006), t + Vector3(0, 0.34 - k * 0.04, 0), fili[k]))
+	for k in 5:
+		r.add_child(sfera(0.014, t + Vector3(-0.14 + k * 0.07, 0.08, 0), "argilla"))
+	var colori := ["lana", "seta_zafferano", "stoffa_smeraldo"]
+	for i in 3:
+		var p := Vector3(0.55 + (i % 2) * 0.06, 0, 0.0 + i * 0.1)
+		r.add_child(sfera(0.045, p + Vector3(0, 0.035, 0), colori[i], Vector3(1.2, 0.8, 1)))
+	for x: float in [0.36, 0.86]:
+		r.add_child(cilindro(0.009, 0.009, 0.36, Vector3(x, 0.18, -0.35), "legno_vecchio", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.008, 0.008, 0.54, Vector3(0.61, 0.36, -0.35), "legno_vecchio", Vector3(0, 0, 90), 5))
+	_tappeto(r, Vector3(0.49, 0.36, -0.345), 0.0, 0.2, 0.24)
+	_tappeto(r, Vector3(0.73, 0.36, -0.345), 0.0, 0.2, 0.22)
+	return r
+
+
+## Pescatore dei Saraceni: casetta di calce bassa con la terrazza, reti stese su pali, barca dipinta di verde
+## tirata a secco, ceste di pesce, giara e palma.
+static func capanna_pescatore_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.22, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.66
+	var lz := 0.5
+	var top := _muri_s(c, lx, lz, 0.3, 1181, "calce", false, true)
+	_porta_s(c, Vector3(0.12, 0.07, lz * 0.5), 0.0, 0.12, 0.14)
+	_finestra_s(c, Vector3(-0.16, 0.24, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.24, 0.0), 90.0)
+	_tenda(c, Vector3(-0.12, top, 0.0), 0.32, 0.26, 0.18, 0.14, 0.0, "tenda_verde", true)
+	c.add_child(scatola(Vector3(0.18, 0.04, 0.12), Vector3(0.2, top + 0.02, -0.08), "rete"))
+	for x: float in [0.35, 0.75]:
+		r.add_child(cilindro(0.012, 0.012, 0.36, Vector3(x, 0.18, -0.35), "legno_vecchio", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.4, 0.26, 0.006), Vector3(0.55, 0.2, -0.35), "rete"))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.004, 0.26, 0.008), Vector3(0.37 + k * 0.07, 0.2, -0.345), "corda"))
+	for k in 4:
+		r.add_child(scatola(Vector3(0.4, 0.004, 0.008), Vector3(0.55, 0.1 + k * 0.065, -0.345), "corda"))
+	var b := Node3D.new()
+	b.position = Vector3(0.35, 0, 0.45)
+	b.rotation_degrees.y = -25
+	r.add_child(b)
+	b.add_child(sfera(0.13, Vector3(0, 0.07, 0), "legno_verde", Vector3(2.6, 0.7, 1.0)))
+	b.add_child(sfera(0.115, Vector3(0, 0.1, 0), "legno_scuro", Vector3(2.5, 0.35, 0.9)))
+	b.add_child(scatola(Vector3(0.66, 0.02, 0.03), Vector3(0, 0.13, 0.12), "calce"))
+	b.add_child(scatola(Vector3(0.66, 0.02, 0.03), Vector3(0, 0.13, -0.12), "calce"))
+	for s: int in [-1, 1]:
+		b.add_child(sfera(0.012, Vector3(0.3, 0.11, s * 0.1), "seta_oro"))
+	for z: float in [-0.05, 0.06]:
+		b.add_child(scatola(Vector3(0.5, 0.01, 0.025), Vector3(0.05, 0.16, z), "legno_chiaro", Vector3(0, 8, 4)))
+	r.add_child(cesta(Vector3(-0.45, 0, 0.45), "pesce"))
+	r.add_child(cesta(Vector3(-0.3, 0, 0.58), "pesce"))
+	r.add_child(anfora(Vector3(-0.62, 0, 0.25), 1.2))
+	for i in 3:
+		r.add_child(sfera(0.02, Vector3(0.62 + i * 0.05, 0.02, 0.1 + i * 0.03), "stoffa_smeraldo"))
+	_palma(r, Vector3(-0.66, 0, 0.0), 0.7, 1182)
+	return r
+
+
+## Frantoio dei Saraceni: grande bottega di calce con la cupola, macina di pietra all'aperto con la vasca bordata
+## di terra cruda, giare d'olio, fiscoli, ulivo.
+static func frantoio_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.22)
+	r.add_child(c)
+	var lx := 0.82
+	var lz := 0.62
+	var top := _muri_s(c, lx, lz, 0.4, 1191)
+	_porta_s(c, Vector3(0.18, 0.07, lz * 0.5), 0.0, 0.15, 0.17)
+	_finestra_s(c, Vector3(-0.18, 0.3, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.3, 0.12), 90.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.3, -0.14), 90.0)
+	_camino_s(c, Vector3(-0.24, top, -0.14))
+	c.add_child(scatola(Vector3(0.32, 0.12, 0.32), Vector3(0.12, top + 0.06, -0.06), "calce"))
+	c.add_child(scatola(Vector3(0.34, 0.02, 0.34), Vector3(0.12, top + 0.12, -0.06), "terra_cruda"))
+	_cupola(c, Vector3(0.12, top + 0.13, -0.06), 0.13)
+	var m := Vector3(-0.35, 0, 0.55)
+	r.add_child(cilindro(0.26, 0.28, 0.1, m + Vector3(0, 0.05, 0), "terra_cruda", Vector3.ZERO, 24))
+	r.add_child(cilindro(0.27, 0.27, 0.012, m + Vector3(0, 0.104, 0), "calce", Vector3.ZERO, 24))
+	r.add_child(cilindro(0.21, 0.21, 0.01, m + Vector3(0, 0.106, 0), "foglie_ulivo", Vector3.ZERO, 24))
+	r.add_child(cilindro(0.03, 0.03, 0.22, m + Vector3(0, 0.2, 0), "legno", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.12, 0.12, 0.08, m + Vector3(0.1, 0.22, 0), "blocco", Vector3(0, 0, 90), 18))
+	r.add_child(scatola(Vector3(0.6, 0.03, 0.03), m + Vector3(0.2, 0.26, 0), "legno_verde"))
+	for i in 6:
+		r.add_child(anfora(Vector3(0.25 + (i % 3) * 0.1, 0.0, 0.42 + (i / 3) * 0.11), 1.15))
+	for i in 3:
+		r.add_child(cilindro(0.06, 0.05, 0.06, Vector3(0.62, 0.03, -0.3 + i * 0.16), "canne", Vector3.ZERO, 12))
+		r.add_child(sfera(0.05, Vector3(0.62, 0.06, -0.3 + i * 0.16), "foglie_ulivo", Vector3(1, 0.4, 1)))
+	r.add_child(anfora(Vector3(0.62, 0.0, 0.25), 1.6))
+	var u := ulivo(1192)
+	u.position = Vector3(-0.7, 0, -0.45)
+	u.scale = Vector3.ONE * 0.8
+	r.add_child(u)
+	return r
+
+
+## Uliveto dei Saraceni: casetta di calce con la cupoletta, teli stesi sotto l'ulivo bagnato dalla canaletta,
+## ceste di olive, scala a pioli.
+static func uliveto_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.58
+	var lz := 0.46
+	var top := _muri_s(c, lx, lz, 0.28, 1201, "calce", true, false)
+	_porta_s(c, Vector3(-0.08, 0.07, lz * 0.5), 0.0, 0.12, 0.14)
+	_finestra_s(c, Vector3(lx * 0.5, 0.23, 0.0), 90.0, 0.055, 0.055)
+	_cupola(c, Vector3(0.08, top, -0.05), 0.12, "calce", false)
+	var u := ulivo(1202)
+	u.position = Vector3(0.35, 0, 0.3)
+	u.scale = Vector3.ONE * 0.8
+	r.add_child(u)
+	r.add_child(scatola(Vector3(0.5, 0.004, 0.45), Vector3(0.35, 0.004, 0.3), "lino", Vector3(0, 12, 0)))
+	for k in 12:
+		r.add_child(sfera(0.012, Vector3(0.2 + (k % 4) * 0.08, 0.012, 0.18 + (k / 4) * 0.1), "oliva"))
+	_canaletta(r, Vector3(0.62, 0, 0.12), Vector3(0.48, 0, 0.26), 0.025)
+	_vasca(r, Vector3(0.66, 0, 0.06), 0.06)
+	for p: Vector3 in [Vector3(-0.45, 0, 0.45), Vector3(-0.25, 0, 0.55), Vector3(0.58, 0, -0.2)]:
+		r.add_child(cesta(p, "olive"))
+	r.add_child(scatola(Vector3(0.03, 0.45, 0.012), Vector3(0.12, 0.22, 0.12), "legno_vecchio", Vector3(0, 0, -18)))
+	r.add_child(scatola(Vector3(0.03, 0.45, 0.012), Vector3(0.12, 0.22, 0.2), "legno_vecchio", Vector3(0, 0, -18)))
+	return r
+
+
+## Vigneto dei Saraceni: casetta di calce, pergolato d'uva su pilastrini intonacati, vasca di terra cruda
+## bordata di maiolica per pigiare, ceste di grappoli.
+static func vigneto_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.25, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.66
+	var lz := 0.5
+	var top := _muri_s(c, lx, lz, 0.32, 1211)
+	_porta_s(c, Vector3(0.1, 0.07, lz * 0.5), 0.0, 0.13, 0.15)
+	_finestra_s(c, Vector3(-0.18, 0.25, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.25, 0.0), 90.0)
+	_tenda(c, Vector3(0.12, top, -0.02), 0.34, 0.26, 0.18, 0.14, 0.0, "tenda_rossa", true)
+	for p: Vector3 in [Vector3(-0.35, 0, 0.15), Vector3(0.25, 0, 0.15), Vector3(-0.35, 0, 0.55), Vector3(0.25, 0, 0.55)]:
+		r.add_child(scatola(Vector3(0.035, 0.36, 0.035), p + Vector3(0, 0.18, 0), "calce"))
+		r.add_child(scatola(Vector3(0.05, 0.03, 0.05), p + Vector3(0, 0.015, 0), "terra_cruda"))
+	for z: float in [0.15, 0.55]:
+		r.add_child(scatola(Vector3(0.66, 0.018, 0.018), Vector3(-0.05, 0.355, z), "legno"))
+	var rng := _rng(1212)
+	for k in 26:
+		r.add_child(sfera(0.045, Vector3(rng.randf_range(-0.38, 0.28), 0.37, rng.randf_range(0.12, 0.58)), "foglie" if k % 3 else "foglie_chiare", Vector3(1, 0.5, 1)))
+	for k in 6:
+		r.add_child(sfera(0.022, Vector3(-0.3 + k * 0.1, 0.32, 0.35 + (k % 2) * 0.1), "uva", Vector3(1, 1.5, 1)))
+	var v := Vector3(0.55, 0, 0.4)
+	r.add_child(cilindro(0.11, 0.11, 0.1, v + Vector3(0, 0.05, 0), "terra_cruda", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.115, 0.115, 0.016, v + Vector3(0, 0.1, 0), "zellige", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.095, 0.095, 0.005, v + Vector3(0, 0.106, 0), "uva", Vector3.ZERO, 8))
+	r.add_child(cesta(Vector3(0.6, 0, 0.0), "uva"))
+	r.add_child(cesta(Vector3(0.45, 0, -0.2), "uva"))
+	return r
+
+
+## Cantina dei Saraceni: bottega di calce con la cupola verde, grandi giare interrate per il vino, anfore in fila,
+## palmento di terra cruda con la maiolica, cesta d'uva.
+static func cantina_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.76
+	var lz := 0.56
+	var top := _muri_s(c, lx, lz, 0.36, 1221, "mattoni_crudi", true, true)
+	_porta_s(c, Vector3(0.15, 0.07, lz * 0.5), 0.0, 0.16, 0.16)
+	_finestra_s(c, Vector3(-0.2, 0.27, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.27, 0.0), 90.0)
+	c.add_child(scatola(Vector3(0.28, 0.1, 0.28), Vector3(-0.14, top + 0.05, -0.08), "calce"))
+	_cupola(c, Vector3(-0.14, top + 0.1, -0.08), 0.12, "maiolica_verde", false)
+	for k in 3:
+		var p := Vector3(0.62, 0, -0.3 + k * 0.2)
+		r.add_child(cilindro(0.09, 0.09, 0.05, p + Vector3(0, 0.025, 0), "terra_cruda", Vector3.ZERO, 14))
+		var g := anfora(p + Vector3(0, -0.02, 0), 1.9)
+		r.add_child(g)
+		r.add_child(cilindro(0.045, 0.045, 0.012, p + Vector3(0, 0.15, 0), "calce", Vector3.ZERO, 10))
+	for k in 5:
+		r.add_child(anfora(Vector3(-0.6 + (k % 3) * 0.1, 0, 0.42 + (k / 3) * 0.12), 1.15))
+	r.add_child(scatola(Vector3(0.36, 0.1, 0.28), Vector3(0.2, 0.05, 0.55), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.38, 0.016, 0.3), Vector3(0.2, 0.1, 0.55), "zellige"))
+	r.add_child(scatola(Vector3(0.3, 0.01, 0.22), Vector3(0.2, 0.105, 0.55), "vino"))
+	r.add_child(cesta(Vector3(-0.15, 0, 0.6), "uva"))
+	return r
+
+
+## Ortolano dei Saraceni: casetta di calce, orto a quadri attraversato dalla canaletta, trecce di cipolle
+## appese a una pertica, ceste di verdura.
+static func ortolano_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.58
+	var lz := 0.46
+	var top := _muri_s(c, lx, lz, 0.28, 1231, "calce", true, false)
+	_porta_s(c, Vector3(0.08, 0.07, lz * 0.5), 0.0, 0.12, 0.14)
+	_finestra_s(c, Vector3(-0.16, 0.23, lz * 0.5), 0.0, 0.055, 0.055)
+	_tenda(c, Vector3(0.0, top, -0.02), 0.3, 0.24, 0.17, 0.13, 0.0, "tenda_verde", true)
+	orto(r, Vector3(0.45, 0, 0.0), 0.36, 0.6, 1232)
+	_canaletta(r, Vector3(0.45, 0, -0.32), Vector3(0.45, 0, 0.32), 0.025)
+	for x: float in [-0.56, -0.2]:
+		r.add_child(cilindro(0.01, 0.01, 0.34, Vector3(x, 0.17, 0.0), "legno_vecchio", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.008, 0.008, 0.38, Vector3(-0.38, 0.33, 0.0), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for k in 4:
+		for i in 4:
+			r.add_child(sfera(0.02, Vector3(-0.5 + k * 0.08, 0.3 - i * 0.04, 0.0), "cipolla"))
+	for p: Vector3 in [Vector3(-0.4, 0, 0.45), Vector3(-0.2, 0, 0.55)]:
+		r.add_child(cesta(p, "ortaggi"))
+	r.add_child(cesta(Vector3(0.05, 0, 0.6), "cipolle"))
+	return r
+
+
+## Agrumeto dei Saraceni: casetta di calce con la cupoletta verde, grande albero di agrumi in un'aiuola tonda
+## bagnata dalla canaletta che scende da una vasca, ceste di arance e limoni.
+static func agrumeto_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.6
+	var lz := 0.46
+	var top := _muri_s(c, lx, lz, 0.3, 1241)
+	_porta_s(c, Vector3(-0.1, 0.07, lz * 0.5), 0.0, 0.12, 0.14)
+	_finestra_s(c, Vector3(0.15, 0.24, lz * 0.5), 0.0, 0.06, 0.06)
+	c.add_child(scatola(Vector3(0.22, 0.09, 0.22), Vector3(0.1, top + 0.045, -0.06), "calce"))
+	_cupola(c, Vector3(0.1, top + 0.09, -0.06), 0.09, "maiolica_verde", false)
+	var a := agrumi(3)
+	var terra := a.get_child(0)
+	a.remove_child(terra)
+	terra.free()
+	a.position = Vector3(0.3, 0, 0.25)
+	a.scale = Vector3.ONE * 1.1
+	r.add_child(a)
+	r.add_child(cilindro(0.2, 0.2, 0.03, Vector3(0.3, 0.015, 0.25), "terra_cruda", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.18, 0.18, 0.004, Vector3(0.3, 0.031, 0.25), "terra", Vector3.ZERO, 16))
+	_vasca(r, Vector3(-0.02, 0, 0.6), 0.07)
+	_canaletta(r, Vector3(0.05, 0, 0.6), Vector3(0.22, 0, 0.42), 0.025)
+	for p: Vector3 in [Vector3(-0.45, 0, 0.45), Vector3(-0.28, 0, 0.6), Vector3(0.7, 0, -0.25)]:
+		r.add_child(cesta(p, "agrumi"))
+	r.add_child(cassa(Vector3(0.65, 0, 0.1), 20))
+	return r
+
+
+## Pesca del pesce spada dei Saraceni: casetta di calce, feluca dipinta di verde con l'albero di vedetta
+## e il pennoncello, passerella dell'arpioniere, arpione e pesce spada.
+static func pesca_spada_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.6
+	var lz := 0.46
+	var top := _muri_s(c, lx, lz, 0.3, 1251, "calce", true, true)
+	_porta_s(c, Vector3(0.1, 0.07, lz * 0.5), 0.0, 0.12, 0.14)
+	_finestra_s(c, Vector3(lx * 0.5, 0.24, 0.0), 90.0)
+	_finestra_s(c, Vector3(-0.15, 0.24, lz * 0.5), 0.0, 0.055, 0.055)
+	c.add_child(scatola(Vector3(0.2, 0.04, 0.12), Vector3(-0.1, top + 0.02, -0.06), "rete"))
+	var b := Node3D.new()
+	b.position = Vector3(0.3, 0, 0.35)
+	b.rotation_degrees.y = -30
+	r.add_child(b)
+	b.add_child(sfera(0.15, Vector3(0, 0.07, 0), "legno_verde", Vector3(2.8, 0.7, 1.0)))
+	b.add_child(sfera(0.13, Vector3(0, 0.1, 0), "legno_scuro", Vector3(2.7, 0.35, 0.9)))
+	b.add_child(scatola(Vector3(0.8, 0.02, 0.03), Vector3(0, 0.14, 0.13), "calce"))
+	b.add_child(scatola(Vector3(0.8, 0.02, 0.03), Vector3(0, 0.14, -0.13), "calce"))
+	for s: int in [-1, 1]:
+		b.add_child(sfera(0.013, Vector3(0.36, 0.12, s * 0.11), "seta_oro"))
+	b.add_child(cilindro(0.01, 0.008, 0.6, Vector3(0.0, 0.42, 0), "legno_vecchio", Vector3.ZERO, 6))
+	for k in 5:
+		b.add_child(scatola(Vector3(0.08, 0.006, 0.01), Vector3(0.0, 0.2 + k * 0.08, 0.0), "legno_vecchio"))
+	b.add_child(scatola(Vector3(0.006, 0.04, 0.07), Vector3(0.0, 0.69, 0.035), "stoffa_smeraldo"))
+	b.add_child(sfera(0.012, Vector3(0.0, 0.73, 0), "moneta"))
+	b.add_child(scatola(Vector3(0.45, 0.012, 0.02), Vector3(0.55, 0.13, 0), "legno_chiaro"))
+	r.add_child(scatola(Vector3(0.02, 0.012, 0.5), Vector3(-0.6, 0.15, 0.4), "ferro", Vector3(0, 0, 4)))
+	var sp := pesce_spada_modello()
+	sp.position = Vector3(-0.35, 0.02, 0.55)
+	r.add_child(sp)
+	return r
+
+
+## Miniera dei Saraceni: fianco della montagna con l'imbocco ad arco a ferro di cavallo in una facciata di terra cruda,
+## binari, carrello, mucchio di minerale, lanterna di rame traforata, puntelli e insegna verde.
+static func miniera_ferro_saraceni(minerale := "minerale") -> Node3D:
+	var r := Node3D.new()
+	r.add_child(sfera(0.6, Vector3(-0.25, 0.0, -0.3), "roccia_massi", Vector3(1.2, 0.75, 1.0)))
+	r.add_child(sfera(0.35, Vector3(0.35, 0.0, -0.45), "roccia_massi", Vector3(1.1, 0.8, 1.0)))
+	r.add_child(sfera(0.3, Vector3(-0.65, 0.0, 0.15), "roccia_massi", Vector3(1.0, 0.7, 1.0)))
+	var imb := Vector3(-0.05, 0, 0.18)
+	r.add_child(scatola(Vector3(0.4, 0.4, 0.14), imb + Vector3(0, 0.2, -0.02), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.42, 0.02, 0.16), imb + Vector3(0, 0.41, -0.02), "calce"))
+	_fila_merli(r, imb + Vector3(-0.19, 0.42, 0.03), imb + Vector3(0.19, 0.42, 0.03), "calce", 0.8)
+	_porta_s(r, imb + Vector3(0, 0, 0.05), 0.0, 0.18, 0.15, true)
+	for k in 6:
+		r.add_child(scatola(Vector3(0.14, 0.008, 0.02), imb + Vector3(0, 0.004, 0.12 + k * 0.08), "legno_scuro"))
+	for lato: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.012, 0.01, 0.5), imb + Vector3(lato * 0.05, 0.012, 0.33), "ferro"))
+	var carr := Vector3(-0.05, 0, 0.5)
+	r.add_child(scatola(Vector3(0.14, 0.08, 0.18), carr + Vector3(0, 0.07, 0), "legno_verde"))
+	r.add_child(mucchio(carr + Vector3(0, 0.1, 0), minerale, 6, 3, 0.03))
+	for x: float in [-0.075, 0.075]:
+		for z: float in [-0.06, 0.06]:
+			r.add_child(cilindro(0.022, 0.022, 0.012, carr + Vector3(x, 0.025, z), "ferro", Vector3(0, 0, 90), 8))
+	r.add_child(mucchio(Vector3(0.45, 0, 0.35), minerale, 14, 4))
+	r.add_child(cilindro(0.01, 0.01, 0.3, Vector3(0.22, 0.15, 0.3), "legno_vecchio", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.018, 0.022, 0.04, Vector3(0.22, 0.28, 0.3), "bronzo", Vector3.ZERO, 8))
+	r.add_child(sfera(0.016, Vector3(0.22, 0.28, 0.3), "miele"))
+	r.add_child(cilindro(0.0, 0.024, 0.03, Vector3(0.22, 0.315, 0.3), "bronzo", Vector3.ZERO, 8))
+	for k in 4:
+		r.add_child(cilindro(0.018, 0.018, 0.4, Vector3(-0.55 + k * 0.045, 0.02 + (k % 2) * 0.03, 0.55), "legno_vecchio", Vector3(0, 70, 90), 6))
+	r.add_child(anfora(Vector3(0.3, 0, 0.55), 1.1))
+	_stendardo_s(r, Vector3(0.62, 0, 0.08), 0.42)
+	return r
+
+
+## Carbonaia dei Saraceni: casotto di mattoni crudi con le fascine sulla terrazza, cupola di legna coperta
+## di terra che fuma, legna, carbone pronto, sacchi sotto la tenda.
+static func carbonaia_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.38, 0, -0.35)
+	r.add_child(c)
+	var top := _muri_s(c, 0.4, 0.32, 0.2, 1261, "mattoni_crudi", false, false)
+	_porta_s(c, Vector3(0.05, 0.07, 0.16), 0.0, 0.1, 0.1, true)
+	for k in 3:
+		c.add_child(cilindro(0.025, 0.025, 0.24, Vector3(-0.1 + k * 0.07, top + 0.025, -0.02), "paglia_scura", Vector3(90, 0, 0), 8))
+	var m := Vector3(0.22, 0, 0.2)
+	r.add_child(sfera(0.36, m, "terra", Vector3(1, 0.7, 1)))
+	r.add_child(sfera(0.3, m + Vector3(0, 0.03, 0), "fuliggine", Vector3(1, 0.7, 1)))
+	r.add_child(sfera(0.37, m + Vector3(0, -0.01, 0), "terra", Vector3(1, 0.68, 1)))
+	for k in 5:
+		r.add_child(sfera(0.05 + k * 0.012, m + Vector3(0.02 * k, 0.28 + k * 0.07, -0.01 * k), "fumo", Vector3(1, 0.8, 1)))
+	r.add_child(scatola(Vector3(0.06, 0.04, 0.04), m + Vector3(0.0, 0.12, 0.33), "buio"))
+	legnaia(r, Vector3(-0.55, 0, 0.35), 0.35, 4)
+	r.add_child(mucchio(Vector3(0.62, 0, -0.25), "carbone", 12, 5))
+	r.add_child(sacco(Vector3(0.6, 0, 0.55), 0.4))
+	r.add_child(anfora(Vector3(-0.1, 0, 0.0), 1.1))
+	return r
+
+
+## Fonderia dei Saraceni: bottega di calce con la cupoletta, forno a torre di terra cruda cerchiato di calce
+## con la bocca accesa, mantice di pelle, lingotti, carbone e minerale.
+static func fonderia_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.25, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.66
+	var lz := 0.52
+	var top := _muri_s(c, lx, lz, 0.34, 1271, "mattoni_crudi", true, true)
+	_porta_s(c, Vector3(-0.12, 0.07, lz * 0.5), 0.0, 0.14, 0.16, true)
+	_finestra_s(c, Vector3(0.16, 0.26, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.26, 0.0), 90.0)
+	c.add_child(scatola(Vector3(0.24, 0.1, 0.24), Vector3(-0.12, top + 0.05, -0.08), "calce"))
+	_cupola(c, Vector3(-0.12, top + 0.1, -0.08), 0.1, "maiolica_verde", false)
+	var f := Vector3(0.42, 0, 0.38)
+	r.add_child(cilindro(0.17, 0.2, 0.5, f + Vector3(0, 0.25, 0), "terra_cruda", Vector3.ZERO, 16))
+	for k in 2:
+		r.add_child(cilindro(0.19 - k * 0.02, 0.19 - k * 0.02, 0.025, f + Vector3(0, 0.14 + k * 0.2, 0), "calce", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.13, 0.15, 0.08, f + Vector3(0, 0.54, 0), "fuliggine", Vector3.ZERO, 16))
+	r.add_child(scatola(Vector3(0.1, 0.1, 0.05), f + Vector3(-0.05, 0.12, 0.17), "brace", Vector3(0, 25, 0)))
+	for k in 4:
+		r.add_child(sfera(0.05 + k * 0.012, f + Vector3(0.0, 0.66 + k * 0.08, -0.01 * k), "fumo"))
+	r.add_child(sfera(0.07, f + Vector3(-0.28, 0.1, 0.05), "pelle_scura", Vector3(1.4, 0.5, 1.0)))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(-0.45 + (k % 3) * 0.1, 0.013 + (k / 3) * 0.026, 0.55), "lingotto"))
+	r.add_child(mucchio(Vector3(-0.62, 0, 0.25), "carbone", 9, 6))
+	r.add_child(mucchio(Vector3(0.68, 0, -0.1), "minerale", 9, 7))
+	return r
+
+
+## Fabbro dei Saraceni: bottega di calce col comignolo di terra cruda, fucina all'aperto sotto la pergola di canne,
+## focolare di terra cruda, incudine, attrezzi appesi, vasca dell'acqua di maiolica, lingotti.
+static func fabbro_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.28)
+	r.add_child(c)
+	var lx := 0.72
+	var lz := 0.5
+	var top := _muri_s(c, lx, lz, 0.36, 1281)
+	_porta_s(c, Vector3(0.16, 0.07, lz * 0.5), 0.0, 0.13, 0.16)
+	_finestra_s(c, Vector3(-0.18, 0.27, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.27, 0.0), 90.0)
+	_camino_s(c, Vector3(-0.22, top, -0.05), 0.2)
+	_pergola_s(r, Vector3(-0.2, 0, 0.43), 0.66, 0.32, 0.32)
+	r.add_child(scatola(Vector3(0.2, 0.12, 0.16), Vector3(-0.38, 0.06, 0.42), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.22, 0.016, 0.18), Vector3(-0.38, 0.128, 0.42), "calce"))
+	r.add_child(scatola(Vector3(0.14, 0.01, 0.1), Vector3(-0.38, 0.14, 0.42), "brace"))
+	r.add_child(scatola(Vector3(0.06, 0.05, 0.012), Vector3(-0.38, 0.05, 0.505), "brace"))
+	r.add_child(cilindro(0.04, 0.05, 0.08, Vector3(-0.05, 0.04, 0.45), "corteccia", Vector3.ZERO, 10))
+	r.add_child(scatola(Vector3(0.12, 0.04, 0.05), Vector3(-0.05, 0.1, 0.45), "ferro"))
+	r.add_child(scatola(Vector3(0.04, 0.025, 0.035), Vector3(0.03, 0.1, 0.45), "ferro"))
+	r.add_child(scatola(Vector3(0.6, 0.018, 0.018), Vector3(-0.2, 0.3, 0.3), "legno"))
+	for k in 4:
+		var a := attrezzo(ATTREZZI_FABBRO[k])
+		a.position = Vector3(-0.42 + k * 0.1, 0.22, 0.31)
+		a.rotation_degrees = Vector3(90, 0, 90)
+		r.add_child(a)
+	r.add_child(scatola(Vector3(0.15, 0.08, 0.15), Vector3(0.62, 0.04, 0.1), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.16, 0.014, 0.16), Vector3(0.62, 0.083, 0.1), "zellige"))
+	r.add_child(scatola(Vector3(0.12, 0.005, 0.12), Vector3(0.62, 0.088, 0.1), "acqua_chiara"))
+	for k in 3:
+		r.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(0.45, 0.013 + k * 0.026, 0.45), "lingotto"))
+	return r
+
+
+## Armaiolo dei Saraceni: la bottega del fabbro con la rastrelliera di lance dai pennoncelli verdi,
+## scudi tondi verdi con l'umbone d'oro e una scimitarra sul ceppo.
+static func armaiolo_saraceni() -> Node3D:
+	var r := fabbro_saraceni()
+	r.add_child(scatola(Vector3(0.28, 0.03, 0.05), Vector3(0.48, 0.015, 0.36), "legno_verde"))
+	r.add_child(scatola(Vector3(0.28, 0.02, 0.03), Vector3(0.48, 0.34, 0.35), "legno_verde"))
+	for k in 5:
+		var x := 0.38 + k * 0.05
+		r.add_child(cilindro(0.006, 0.006, 0.44, Vector3(x, 0.22, 0.36), "legno", Vector3.ZERO, 5))
+		r.add_child(cilindro(0.009, 0.0, 0.04, Vector3(x, 0.46, 0.36), "ferro", Vector3.ZERO, 5))
+		r.add_child(scatola(Vector3(0.004, 0.03, 0.04), Vector3(x, 0.41, 0.38), "stoffa_smeraldo"))
+	for k in 2:
+		var sc := Vector3(0.66 + k * 0.04, 0.09, 0.24 + k * 0.17)
+		r.add_child(cilindro(0.08, 0.08, 0.014, sc, "smeraldo", Vector3(0, 0, 80), 16))
+		r.add_child(cilindro(0.083, 0.083, 0.008, sc + Vector3(-0.002, 0, 0), "moneta", Vector3(0, 0, 80), 16))
+		r.add_child(cilindro(0.074, 0.074, 0.016, sc + Vector3(0.001, 0, 0), "smeraldo", Vector3(0, 0, 80), 16))
+		r.add_child(sfera(0.02, sc + Vector3(0.01, 0, 0), "moneta"))
+	var sci := Node3D.new()
+	sci.position = Vector3(0.3, 0.12, 0.6)
+	sci.rotation_degrees.y = 20
+	r.add_child(sci)
+	sci.add_child(scatola(Vector3(0.16, 0.005, 0.022), Vector3(0.04, 0, 0), "ferro", Vector3(0, 12, 0)))
+	sci.add_child(scatola(Vector3(0.008, 0.008, 0.06), Vector3(-0.045, 0, 0), "moneta"))
+	sci.add_child(cilindro(0.008, 0.008, 0.05, Vector3(-0.07, 0, 0), "cuoio", Vector3(0, 0, 90), 6))
+	r.add_child(cilindro(0.06, 0.065, 0.11, Vector3(0.3, 0.055, 0.6), "corteccia", Vector3.ZERO, 12))
+	return r
+
+
+## Zecca dei Saraceni: palazzetto di calce con la grande cupola verde, portico di due colonne sotto la fascia
+## di maiolica, casse di monete d'oro, incudine per coniare, argento grezzo, guardia col turbante, insegna verde.
+static func zecca_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.56
+	var top := _muri_s(c, lx, lz, 0.42, 1291)
+	_porta_s(c, Vector3(0.0, 0.07, lz * 0.5), 0.0, 0.15, 0.17)
+	_finestra_s(c, Vector3(lx * 0.5, 0.31, 0.12), 90.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.31, -0.14), 90.0)
+	for x: float in [-0.25, 0.25]:
+		c.add_child(scatola(Vector3(0.07, 0.03, 0.07), Vector3(x, 0.085, lz * 0.5 + 0.07), "blocco"))
+		c.add_child(cilindro(0.024, 0.024, top - 0.17, Vector3(x, 0.1 + (top - 0.17) * 0.5, lz * 0.5 + 0.07), "marmo", Vector3.ZERO, 12))
+		c.add_child(scatola(Vector3(0.06, 0.03, 0.06), Vector3(x, top - 0.055, lz * 0.5 + 0.07), "calce"))
+	c.add_child(scatola(Vector3(lx - 0.04, 0.05, 0.12), Vector3(0, top - 0.015, lz * 0.5 + 0.05), "calce"))
+	c.add_child(scatola(Vector3(lx - 0.06, 0.024, 0.006), Vector3(0, top - 0.015, lz * 0.5 + 0.112), "zellige"))
+	_fila_merli(c, Vector3(-lx * 0.5 + 0.03, top + 0.01, lz * 0.5 + 0.08), Vector3(lx * 0.5 - 0.03, top + 0.01, lz * 0.5 + 0.08), "calce", 0.72)
+	c.add_child(scatola(Vector3(0.4, 0.12, 0.4), Vector3(0, top + 0.06, -0.06), "calce"))
+	c.add_child(scatola(Vector3(0.42, 0.02, 0.42), Vector3(0, top + 0.12, -0.06), "terra_cruda"))
+	_cupola(c, Vector3(0, top + 0.13, -0.06), 0.17)
+	for k in 3:
+		r.add_child(cassa(Vector3(0.45 + k * 0.12, 0, 0.4), k * 15, 0.1))
+		r.add_child(cilindro(0.035, 0.035, 0.01, Vector3(0.45 + k * 0.12, 0.085, 0.4), "moneta", Vector3.ZERO, 10))
+	r.add_child(cilindro(0.04, 0.05, 0.08, Vector3(-0.35, 0.04, 0.5), "corteccia", Vector3.ZERO, 10))
+	r.add_child(scatola(Vector3(0.1, 0.035, 0.05), Vector3(-0.35, 0.095, 0.5), "ferro"))
+	r.add_child(mucchio(Vector3(-0.62, 0, 0.25), "argento_grezzo", 8, 10))
+	r.add_child(_guardia_s(Vector3(0.15, 0, 0.5)))
+	_stendardo_s(r, Vector3(0.66, 0, 0.12), 0.55)
+	return r
+
+
+## Porto dei Saraceni: banchina di pietra chiara con il bordo di terra cruda, pontile di legno sul mare, bitte,
+## fondaco di calce con la cupola e la tenda a strisce sul davanti, giare, casse, gru di legno, vela verde arrotolata,
+## insegna verde.
+static func porto_saraceni() -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(2921)
+	r.add_child(scatola(Vector3(0.42, 0.1, 1.08), Vector3(0.36, 0.05, 0.02), "blocco"))
+	r.add_child(scatola(Vector3(0.44, 0.02, 1.1), Vector3(0.36, 0.06, 0.02), "terra_cruda"))
+	r.add_child(scatola(Vector3(0.46, 0.025, 1.12), Vector3(0.36, 0.112, 0.02), "battuto"))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.012, 0.004, 1.1), Vector3(0.18 + k * 0.07, 0.126, 0.02), "blocco"))
+	var pz := 0.26
+	for k in 4:
+		var x := 0.66 + k * 0.13
+		for s: int in [-1, 1]:
+			r.add_child(cilindro(0.017, 0.019, 0.26, Vector3(x, -0.01, pz + s * 0.12), "legno_vecchio", Vector3.ZERO, 7))
+			r.add_child(cilindro(0.02, 0.02, 0.012, Vector3(x, 0.01, pz + s * 0.12), "foglie_scure", Vector3.ZERO, 7))
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.5, 0.025, 0.02), Vector3(0.82, 0.095, pz + s * 0.12), "legno_scuro"))
+	for k in 13:
+		var x := 0.59 + k * 0.038
+		r.add_child(scatola(Vector3(0.034, 0.014, 0.28), Vector3(x, 0.112 + rng.randf_range(-0.003, 0.003), pz), "legno" if k % 3 else "legno_chiaro", Vector3(0, rng.randf_range(-2, 2), 0)))
+	for z: float in [-0.42, -0.08, 0.5]:
+		r.add_child(cilindro(0.022, 0.026, 0.07, Vector3(0.54, 0.16, z), "calce", Vector3.ZERO, 10))
+		r.add_child(cilindro(0.03, 0.03, 0.014, Vector3(0.54, 0.198, z), "terra_cruda", Vector3.ZERO, 10))
+	for x: float in [0.72, 1.02]:
+		for s: int in [-1, 1]:
+			r.add_child(cilindro(0.014, 0.016, 0.07, Vector3(x, 0.155, pz + s * 0.125), "legno_scuro", Vector3.ZERO, 7))
+	r.add_child(cilindro(0.03, 0.03, 0.014, Vector3(0.54, 0.177, -0.08), "corda", Vector3.ZERO, 10))
+	ramo(r, Vector3(0.54, 0.175, -0.08), Vector3(0.66, 0.02, -0.02), 0.005, "corda")
+	ramo(r, Vector3(1.02, 0.17, pz + 0.125), Vector3(1.1, 0.03, pz + 0.2), 0.005, "corda")
+	# fondaco del porto con la cupola, e la tenda a strisce sul davanti
+	var c := Node3D.new()
+	c.position = Vector3(-0.28, 0, -0.26)
+	r.add_child(c)
+	var lx := 0.62
+	var lz := 0.4
+	var top := _muri_s(c, lx, lz, 0.34, 2922)
+	_porta_s(c, Vector3(-0.1, 0.07, lz * 0.5), 0.0, 0.14, 0.15, true)
+	_finestra_s(c, Vector3(0.16, 0.27, lz * 0.5), 0.0)
+	_finestra_s(c, Vector3(lx * 0.5, 0.27, 0.0), 90.0)
+	c.add_child(scatola(Vector3(0.26, 0.1, 0.26), Vector3(-0.12, top + 0.05, -0.04), "calce"))
+	_cupola(c, Vector3(-0.12, top + 0.1, -0.04), 0.11)
+	_tappeto(c, Vector3(0.16, top + 0.05, lz * 0.5 + 0.03), 0.0, 0.12, 0.14)
+	var pd := 0.2
+	c.add_child(scatola(Vector3(lx + 0.06, 0.06, pd + 0.02), Vector3(0, 0.03, lz * 0.5 + pd * 0.5), "terra_cruda"))
+	c.add_child(scatola(Vector3(lx + 0.08, 0.016, pd + 0.04), Vector3(0, 0.068, lz * 0.5 + pd * 0.5), "zellige"))
+	_tenda(c, Vector3(0, 0.076, lz * 0.5 + pd * 0.5), lx + 0.04, pd, 0.3, 0.26, 0.0, "tenda_verde", false)
+	for i in 4:
+		c.add_child(anfora(Vector3(0.06 + i * 0.06, 0.076, lz * 0.5 + 0.07), 0.85))
+	c.add_child(sacco(Vector3(-0.22, 0.076, lz * 0.5 + 0.08), 0.3))
+	r.add_child(scatola(Vector3(0.62, 0.012, 0.5), Vector3(-0.12, 0.006, 0.32), "battuto"))
+	var ra := Node3D.new()
+	ra.position = Vector3(-0.42, 0, 0.34)
+	r.add_child(ra)
+	ra.add_child(scatola(Vector3(0.3, 0.02, 0.2), Vector3(0, 0.02, 0), "legno_verde"))
+	for f in 3:
+		for k in 3 - f:
+			var a := anfora(Vector3((k - (2 - f) * 0.5) * 0.085, 0.07 + f * 0.072, -0.07), 0.8)
+			a.rotation_degrees.x = 90
+			ra.add_child(a)
+	for k in 3:
+		ra.add_child(anfora(Vector3(-0.1 + k * 0.1, 0.03, 0.12), 0.9))
+	r.add_child(cassa(Vector3(0.06, 0.012, 0.42), 10))
+	r.add_child(cassa(Vector3(0.18, 0.012, 0.44), -15))
+	r.add_child(cassa(Vector3(0.11, 0.1, 0.43), 30, 0.1))
+	r.add_child(scatola(Vector3(0.1, 0.004, 0.1), Vector3(0.11, 0.182, 0.43), "corda", Vector3(0, 30, 0)))
+	r.add_child(cilindro(0.028, 0.028, 0.16, Vector3(-0.06, 0.04, 0.54), "seta_cremisi", Vector3(0, 70, 90), 10))
+	r.add_child(cilindro(0.028, 0.028, 0.16, Vector3(-0.04, 0.09, 0.55), "seta_azzurra", Vector3(0, 80, 90), 10))
+	r.add_child(cesta(Vector3(0.28, 0.125, 0.4), "agrumi", 0.8))
+	var g := Node3D.new()
+	g.position = Vector3(0.42, 0.125, -0.28)
+	r.add_child(g)
+	var cima := Vector3(0.36, 0.62, 0.0)
+	for s: int in [-1, 1]:
+		ramo(g, Vector3(-0.04, 0, s * 0.12), cima, 0.016, "legno")
+	ramo(g, Vector3(-0.22, 0, 0), cima + Vector3(-0.02, -0.02, 0), 0.012, "legno_vecchio")
+	g.add_child(scatola(Vector3(0.02, 0.02, 0.26), Vector3(0.06, 0.18, 0), "legno_scuro"))
+	g.add_child(cilindro(0.03, 0.03, 0.2, Vector3(0.0, 0.1, 0), "legno_scuro", Vector3(90, 0, 0), 10))
+	g.add_child(cilindro(0.032, 0.032, 0.06, Vector3(0.0, 0.1, 0), "corda", Vector3(90, 0, 0), 10))
+	g.add_child(cilindro(0.025, 0.025, 0.04, cima, "legno_chiaro", Vector3(90, 0, 0), 10))
+	ramo(g, Vector3(0.0, 0.12, 0), cima, 0.004, "corda")
+	ramo(g, cima, cima + Vector3(0, -0.34, 0), 0.004, "corda")
+	var rete := Node3D.new()
+	rete.position = cima + Vector3(0, -0.42, 0)
+	g.add_child(rete)
+	rete.add_child(scatola(Vector3(0.09, 0.006, 0.09), Vector3.ZERO, "legno_chiaro"))
+	for k in 2:
+		rete.add_child(anfora(Vector3(-0.022 + k * 0.044, 0.003, 0), 0.6))
+	for s: int in [-1, 1]:
+		ramo(rete, Vector3(s * 0.045, 0, 0), Vector3(0, 0.08, 0), 0.003, "corda")
+	var v := Node3D.new()
+	v.position = Vector3(0.3, 0.125, 0.1)
+	v.rotation_degrees.y = 8
+	r.add_child(v)
+	v.add_child(cilindro(0.008, 0.008, 0.5, Vector3(0, 0.02, 0), "legno_chiaro", Vector3(90, 0, 0), 6))
+	for k in 7:
+		v.add_child(cilindro(0.032, 0.032, 0.06, Vector3(0, 0.034, -0.18 + k * 0.06), "lino" if k % 2 == 0 else "stoffa_smeraldo", Vector3(90, 0, 0), 10))
+	for k in 4:
+		v.add_child(cilindro(0.035, 0.035, 0.008, Vector3(0, 0.034, -0.15 + k * 0.1), "corda", Vector3(90, 0, 0), 10))
+	r.add_child(cilindro(0.04, 0.04, 0.02, Vector3(0.2, 0.135, -0.48), "corda", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.02, 0.02, 0.022, Vector3(0.2, 0.136, -0.48), "legno_scuro", Vector3.ZERO, 8))
+	var an := _ancora_nave(Vector3(0.88, 0.12, pz), 90)
+	an.scale = Vector3.ONE * 0.6
+	r.add_child(an)
+	_stendardo_s(r, Vector3(0.52, 0.125, 0.42), 0.46)
+	return r
 
 
 # =================================================================== NORMANNI (step 22)
