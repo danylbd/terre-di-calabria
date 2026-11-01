@@ -21,6 +21,13 @@ const DATI := {
 		"nemici": "siculi", "soldati": ["arciere_sicano", "arciere_sicano_lotta"], "torre": "torre",
 		"svelti": ["cava", "miniera_ferro", "miniera_argento"]},
 }
+## step 33: il tipo dei soldati di ogni popolo e chi batte chi (la cavalleria i tiratori, i tiratori la
+## fanteria, la fanteria la cavalleria)
+const TIPI_SOLDATO := {"greci": "fanteria", "brettii": "tiratori", "romani": "fanteria", "saraceni": "cavalleria",
+	"normanni": "cavalleria", "siculi": "fanteria", "sicani": "tiratori"}
+const BATTE := {"cavalleria": "tiratori", "tiratori": "fanteria", "fanteria": "cavalleria"}
+const VANTAGGIO_TIPO := 0.15
+const NOMI_TIPO := {"fanteria": "fanteria", "tiratori": "tiratori", "cavalleria": "cavalleria"}
 const AGILITA := 1.25               # Brettii: portatori più veloci nei boschi e in montagna
 const QUOTA_MONTAGNA := 60.0
 const IRRIGAZIONE := 1.5            # Saraceni: i campi vicino all'acqua crescono così più in fretta
@@ -67,6 +74,19 @@ static func durata(mestiere: String) -> float:
 ## Il giocatore irriga i campi vicino all'acqua (Saraceni).
 static func irriga() -> bool:
 	return DATI[giocatore].get("irriga", false)
+
+
+static func tipo_soldato(popolo: String) -> String:
+	return TIPI_SOLDATO.get(popolo, "fanteria")
+
+
+## Quanto cambia la probabilità che vinca l'attaccante, secondo i tipi dei due soldati (+/− 0,15 o 0).
+static func vantaggio_tipo(tipo_attaccante: String, tipo_difensore: String) -> float:
+	if BATTE.get(tipo_attaccante, "") == tipo_difensore:
+		return VANTAGGIO_TIPO
+	if BATTE.get(tipo_difensore, "") == tipo_attaccante:
+		return -VANTAGGIO_TIPO
+	return 0.0
 
 
 ## Il tipo di torre che alzano i nemici.

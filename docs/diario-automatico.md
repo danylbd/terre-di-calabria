@@ -230,3 +230,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step 32 cibo, morale ed esperienza (Fase 7)
 - Le schiere prendono 20 razioni dal magazzino e le consumano; senza cibo perdono soldati e morale; vicino al magazzino si riforniscono e si rinforzano. Morale e livello del condottiero (1–5) cambiano i duelli; barre e livello disegnati sopra il condottiero; esperienza nel salvataggio.
 - Nuovo test `test_morale`; `test_schiere` ora dà il pane alla schiera. Tutti i 35 test OK. Versione 0.47.0. Prossimo: step 33 tipi di unità.
+
+## 2026-11-02 — step 33 tipi di unità (Fase 7)
+- Fanteria, tiratori e cavalleria per popolo con vantaggi incrociati (+/− 0,15) nei duelli della guerra di oggi e delle schiere; i tiratori si fermano a distanza e tirano, con sassi e frecce disegnati in volo; polvere nei corpo a corpo.
+- Nuovo test `test_tipi`; tutti i 36 test OK. Versione 0.48.0. Prossimo: step 34 abilità dei condottieri.

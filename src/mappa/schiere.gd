@@ -10,6 +10,8 @@ signal cambiata
 const MAX_SOLDATI := 12
 const DURATA_DUELLO := 1.5
 const DISTANZA_ASSALTO := 3.5        # caselle dal bersaglio entro cui la schiera combatte
+const DISTANZA_TIRO := 6.0           # i tiratori combattono da più lontano
+const VOLO := 0.45                   # secondi di volo di un proiettile
 ## step 32: cibo, morale ed esperienza
 const RAZIONI_MAX := 20
 const CONSUMO := 20.0                # secondi per ogni razione mangiata dalla schiera
@@ -31,6 +33,8 @@ var _rng := RandomNumberGenerator.new()
 var _duello := 0.0
 var _difensori_villaggio := -1       # difensori rimasti del villaggio indigeno sotto attacco
 var esperienza := 0                  # duelli vinti dal condottiero (resta anche quando la schiera si scioglie)
+var _proiettili: Array = []          # [da, a, tempo] in coordinate di mappa: sassi e frecce in volo
+var _polvere: Array = []             # [dove, tempo]: la polvere dei duelli corpo a corpo
 var _pasto := CONSUMO
 var _fame := FAME
 
@@ -164,6 +168,10 @@ func attacca(bersaglio) -> bool:
 		return false
 	var capo: Colono = schiera["condottiero"]
 	var vicino := _vicino_a_piedi(Vector2i(centro.floor()))
+	if tipo() == "tiratori":
+		# i tiratori si fermano a distanza di tiro, dalla parte da cui arrivano
+		var punto := centro + (capo.pos - centro).normalized() * (DISTANZA_TIRO - 1.0)
+		vicino = _vicino_a_piedi(Vector2i(punto.floor()), 0)
 	var percorso := percorso_a_piedi(Vector2i(capo.pos.floor()), vicino)
 	if percorso.is_empty():
 		return false
@@ -172,8 +180,8 @@ func attacca(bersaglio) -> bool:
 	return true
 
 
-func _vicino_a_piedi(c: Vector2i) -> Vector2i:
-	for r in range(2, 6):
+func _vicino_a_piedi(c: Vector2i, da_raggio := 2) -> Vector2i:
+	for r in range(da_raggio, 6):
 		for y in range(c.y - r, c.y + r + 1):
 			for x in range(c.x - r, c.x + r + 1):
 				if _camminabile(Vector2i(x, y)):
@@ -215,15 +223,26 @@ func percorso_a_piedi(da: Vector2i, a: Vector2i) -> Array[Vector2]:
 	return rotta
 
 
+static func tipo() -> String:
+	return Popoli.tipo_soldato(Popoli.giocatore)
+
+
+## Da quanto lontano combatte la schiera: i tiratori da lontano, gli altri corpo a corpo.
+static func distanza_assalto() -> float:
+	return DISTANZA_TIRO if tipo() == "tiratori" else DISTANZA_ASSALTO
+
+
 ## Il livello del condottiero (1–5): sale con i duelli vinti dalla sua schiera.
 func livello() -> int:
 	return mini(LIVELLO_MAX, 1 + esperienza / ESPERIENZA_LIVELLO)
 
 
-## Probabilità che un nostro soldato vinca un duello: base, vantaggi dei monumenti, morale e livello.
-func probabilita_vittoria() -> float:
+## Probabilità che un nostro soldato vinca un duello: base, vantaggi dei monumenti, morale, livello e il
+## tipo dei soldati contro quello dei difensori (di serie fanteria, come i villaggi indigeni).
+func probabilita_vittoria(tipo_difensore := "fanteria") -> float:
 	var morale: float = schiera.get("morale", 70) if esiste() else 70.0
-	return clampf(0.55 + villaggio.vantaggi.get("duelli", 0.0) + (morale - 50.0) / 500.0 + 0.02 * (livello() - 1), 0.1, 0.9)
+	return clampf(0.55 + villaggio.vantaggi.get("duelli", 0.0) + (morale - 50.0) / 500.0 + 0.02 * (livello() - 1)
+		+ Popoli.vantaggio_tipo(tipo(), tipo_difensore), 0.1, 0.9)
 
 
 func _cambia_morale(d: int) -> void:
@@ -278,6 +297,7 @@ func _process(delta: float) -> void:
 	if not esiste():
 		return
 	queue_redraw()
+	_avanza_effetti(delta)
 	_rifornisci()
 	_mangia(delta)
 	if not esiste():
@@ -294,7 +314,7 @@ func _process(delta: float) -> void:
 		centro = b.centro()
 	else:
 		centro = Vector2(indigeni.elenco[b]["casella"]) + Vector2(2.5, 2.5)
-	if capo.pos.distance_to(centro) > DISTANZA_ASSALTO:
+	if capo.pos.distance_to(centro) > distanza_assalto() + 0.5:
 		return
 	_duello -= delta
 	if _duello > 0.0:
@@ -304,11 +324,35 @@ func _process(delta: float) -> void:
 	for s in schiera["soldati"]:
 		s.imposta_foglio(Popoli.soldati(1)[1])
 	_combatti(b)
+	_effetti(centro)
+
+
+## Sassi e frecce che volano dai tiratori al bersaglio, polvere nei duelli corpo a corpo.
+func _effetti(centro: Vector2) -> void:
+	var truppa: Array = schiera["soldati"]
+	if tipo() == "tiratori":
+		for k in mini(3, truppa.size()):
+			var s: Colono = truppa[_rng.randi_range(0, truppa.size() - 1)]
+			_proiettili.append([s.pos, centro + Vector2(_rng.randf_range(-0.6, 0.6), _rng.randf_range(-0.6, 0.6)), 0.0])
+	else:
+		_polvere.append([centro + Vector2(_rng.randf_range(-1.0, 1.0), _rng.randf_range(-1.0, 1.0)), 0.0])
+
+
+func _avanza_effetti(delta: float) -> void:
+	for pr in _proiettili:
+		pr[2] += delta
+	_proiettili = _proiettili.filter(func(pr): return pr[2] < VOLO)
+	for po in _polvere:
+		po[1] += delta
+	_polvere = _polvere.filter(func(po): return po[1] < 0.8)
 
 
 ## Un duello: vince il nostro (con il vantaggio dei duelli e il condottiero che dà coraggio) o il difensore.
 func _combatti(b) -> void:
-	if _rng.randf() < probabilita_vittoria():
+	var tipo_dif := "fanteria"
+	if b is Edificio:
+		tipo_dif = Popoli.tipo_soldato(Popoli.di(b.proprietario))
+	if _rng.randf() < probabilita_vittoria(tipo_dif):
 		esperienza += 1
 		_cambia_morale(3)
 		if b is Edificio:
@@ -356,6 +400,15 @@ func _fine_assalto(testo: String) -> void:
 
 ## Cerchio sotto il condottiero scelto e barra della forza della schiera.
 func _draw() -> void:
+	for pr in _proiettili:
+		var f: float = pr[2] / VOLO
+		var a := dati.a_schermo(pr[0].x, pr[0].y)
+		var b := dati.a_schermo(pr[1].x, pr[1].y)
+		var q := a.lerp(b, f) + Vector2(0, -40.0 * sin(f * PI) - 20.0)
+		draw_circle(q, 2.5, Color("3a3028"))
+	for po in _polvere:
+		var t: float = po[1] / 0.8
+		draw_circle(dati.a_schermo(po[0].x, po[0].y) + Vector2(0, -10), 8.0 + 14.0 * t, Color(0.82, 0.74, 0.58, 0.45 * (1.0 - t)))
 	if not esiste():
 		return
 	var capo: Colono = schiera["condottiero"]

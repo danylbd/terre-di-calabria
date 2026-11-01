@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 32 chiuso (release v0.47.0 in `main`): cibo, morale ed esperienza delle schiere. Prossimo: step 33, tipi di unità. Dettagli in fondo a `docs/piano-imperivm.md`.
+**Aggiornato:** 2026-11-02, step 33 chiuso (release v0.48.0 in `main`): tipi di unità. Prossimo: step 34, abilità dei condottieri. Dettagli in fondo a `docs/piano-imperivm.md`.
 
 ## Ultimo obiettivo affrontato
 
