@@ -1,6 +1,6 @@
 extends SceneTree
 ## Test automatico dello step 11 (Greci completi): argillaio e fornace (anfore), saline, tessitura,
-## miniera d'argento e zecca (monete), agorà che vende e compra. Il magazzino riceve qualche merce
+## miniera d'argento e zecca (ducati), agorà che vende e compra. Il magazzino riceve qualche merce
 ## di partenza per provare le nuove catene senza aspettare quelle vecchie.
 ## Uso: godot --headless --path . --script tools/test/test_greci.gd
 ## (FOTO=file.png senza --headless per lo screenshot)
@@ -61,7 +61,7 @@ func _prova() -> void:
 	for k in 24:
 		await create_timer(30.0).timeout
 		var s := []
-		for r in ["olio", "vino", "monete", "ferro", "anfore", "argilla", "sale", "stoffa", "lana", "argento"]:
+		for r in ["olio", "vino", "ducati", "ferro", "anfore", "argilla", "sale", "stoffa", "lana", "argento"]:
 			s.append("%s=%d" % [r, v.scorte.get(r, 0)])
 		print("t=%3ds %s | agorà %s guadagno %d | coloni %d/%d" % [(k + 1) * 30, " ".join(s), agora.ingresso, agora.guadagno,
 			v.popolazione(), v.capacita()])
@@ -69,8 +69,8 @@ func _prova() -> void:
 	_controlla(saline.prodotti > 0, "le saline danno il sale (%d)" % saline.prodotti)
 	_controlla(tess.prodotti > 0, "la tessitura fa la stoffa (%d)" % tess.prodotti)
 	_controlla(miniera.prodotti > 0, "la miniera dà l'argento (%d)" % miniera.prodotti)
-	_controlla(zecca.prodotti > 0, "la zecca conia le monete (%d)" % zecca.prodotti)
-	_controlla(agora.guadagno > 0, "l'agorà vende e guadagna (%d monete)" % agora.guadagno)
+	_controlla(zecca.prodotti > 0, "la zecca conia i ducati (%d)" % zecca.prodotti)
+	_controlla(agora.guadagno > 0, "l'agorà vende e guadagna (%d ducati)" % agora.guadagno)
 	_controlla(agora.prodotti > 0 and v.scorte.get("ferro", 0) > 0, "l'agorà compra il ferro (%d)" % agora.prodotti)
 	_controlla(v.scorte.get("olio", 0) < 6, "l'olio è stato venduto")
 	p.pannello.mostra(agora)

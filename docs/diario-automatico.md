@@ -97,3 +97,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Le altre 5 missioni de «Le Colonne dell'Alba» (Pane straniero, L'uliveto del vecchio, Città sorelle, L'ira del fiume con l'alluvione, La voce del mare con il Frammento del Mare). Testi originali. Sblocco progressivo e pannello della campagna nel menu.
 - Un giocatore automatico nei test le completa tutte. Trovati e corretti: torri verso la costa non collegate alla rete; olio insufficiente in «Città sorelle» (le case consumano il vino come lusso).
 - Tutti i 16 test OK. Versione 0.19.0. Prossimo: step 18 mappa della Calabria stilizzata.
+
+## 2026-11-01 08:30 — step 18 mappa della Calabria (Fase 3 finita) + richieste del proprietario
+- Mappa della campagna con la forma reale della Calabria (costa dalle coordinate geografiche), Sicilia nord-orientale, montagne, fiumi, città; missioni come segnaposti sbloccati in ordine; frammenti del Sigillo.
+- Richieste del proprietario applicate: monete → **ducati** (chiave interna inclusa, vecchi salvataggi convertiti); nuove decisioni in decisioni.md; piano della mappa di Monteleone e dei suoi monumenti (docs/monteleone.md), step V1–V3 e Fase 6 (Sicilia) in roadmap, seguito della storia in Sicilia in storia.md. Partite senza limite di tempo.
+- Tutti i 16 test OK. Versione 0.20.0. Prossimo: step V1 mappa di Monteleone.

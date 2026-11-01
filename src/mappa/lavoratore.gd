@@ -304,8 +304,8 @@ func _lavora_dentro() -> void:
 	_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO)
 
 
-## Agorà: vende una merce arrivata (le monete vanno subito in cassa), altrimenti compra quella scelta
-## con le monete del magazzino e il mercante la porta fuori.
+## Agorà: vende una merce arrivata (i ducati vanno subito in cassa), altrimenti compra quella scelta
+## con i ducati del magazzino e il mercante la porta fuori.
 func _lavora_agora() -> void:
 	var v: Villaggio = edificio.villaggio
 	_attrezzo_scelto = ""
@@ -313,15 +313,15 @@ func _lavora_agora() -> void:
 		if edificio.ingresso.get(m, 0) > 0:
 			edificio.ingresso[m] -= 1
 			var ricavo: int = CatalogoEdifici.VENDITA[m]
-			v.scorte["monete"] = v.scorte.get("monete", 0) + ricavo
+			v.scorte["ducati"] = v.scorte.get("ducati", 0) + ricavo
 			edificio.guadagno += ricavo
 			v.scorte_cambiate.emit()
 			Suono.suona_in("completato", edificio.global_position, -10.0)
 			_attesa = 2.0          # il mercante resta al banco: la prossima vendita tra poco
 			return
 	var a := edificio.acquisto
-	if a != "" and v.scorte.get("monete", 0) >= CatalogoEdifici.ACQUISTO[a] and logistica.serve(a, Logistica.SCORTA_MASSIMA):
-		v.scorte["monete"] -= CatalogoEdifici.ACQUISTO[a]
+	if a != "" and v.scorte.get("ducati", 0) >= CatalogoEdifici.ACQUISTO[a] and logistica.serve(a, Logistica.SCORTA_MASSIMA):
+		v.scorte["ducati"] -= CatalogoEdifici.ACQUISTO[a]
 		v.scorte_cambiate.emit()
 		_attrezzo_scelto = a
 		stato = Stato.LAVORO

@@ -66,7 +66,7 @@ const EDIFICI := {
 		"descrizione": "Fila e tesse la lana: la stoffa è un lusso che fa crescere il villaggio."},
 	"agora": {"nome": "Agorà", "taglia": 3, "costo": {"assi": 6, "pietra": 8}, "categoria": "Base",
 		"tempo": 45.0, "lavoratore": "portatore_nessuno", "vende": 8, "produce": "", "durata": 6.0,
-		"descrizione": "La piazza del mercato dei Greci: vende olio, vino, anfore, stoffa e altro in cambio di monete, e con le monete compra quello che scegli."},
+		"descrizione": "La piazza del mercato dei Greci: vende olio, vino, anfore, stoffa e altro in cambio di ducati, e con i ducati compra quello che scegli."},
 	"pescatore": {"nome": "Pescatore", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
 		"tempo": 16.0, "attrezzo": "canna", "lavoratore": "lavoratore_canna", "produce": "pesce", "vicino_mare": 5,
 		"descrizione": "Pesca dalla riva. Il pesce finisce e torna col tempo: costruiscilo vicino al mare."},
@@ -100,8 +100,8 @@ const EDIFICI := {
 		"miniera": "argento", "cibo": 4,
 		"descrizione": "Scava l'argento, più raro del ferro, nella roccia dei monti. I minatori lavorano solo se mangiano."},
 	"zecca": {"nome": "Zecca", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Metallo",
-		"tempo": 28.0, "lavoratore": "portatore_nessuno", "ingressi": {"argento": 4, "carbone": 4}, "produce": "monete",
-		"durata": 7.0, "descrizione": "Fonde l'argento e conia le monete per il commercio."},
+		"tempo": 28.0, "lavoratore": "portatore_nessuno", "ingressi": {"argento": 4, "carbone": 4}, "produce": "ducati",
+		"durata": 7.0, "descrizione": "Fonde l'argento e conia i ducati per il commercio."},
 	"armaiolo": {"nome": "Armaiolo", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Metallo",
 		"tempo": 26.0, "attrezzo": "martello", "lavoratore": "portatore_nessuno", "ingressi": {"lingotti": 4, "assi": 2},
 		"produce": "armi", "durata": 9.0, "descrizione": "Forgia lance, scudi ed elmi per gli opliti."},
@@ -136,11 +136,11 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
 	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
-	"monete": "Monete", "stoffa": "Stoffa", "armi": "Armi"}
-## all'agorà: monete ricavate vendendo una merce (i Greci sono buoni mercanti: prezzi favorevoli)
+	"ducati": "Ducati", "stoffa": "Stoffa", "armi": "Armi"}
+## all'agorà: ducati ricavati vendendo una merce (i Greci sono buoni mercanti: prezzi favorevoli)
 const VENDITA := {"olio": 3, "vino": 3, "stoffa": 3, "anfore": 2, "pesce_spada": 2, "miele": 2, "formaggio": 1, "sale": 1,
 	"agrumi": 1}
-## all'agorà: monete per comprare una merce
+## all'agorà: ducati per comprare una merce
 const ACQUISTO := {"grano": 1, "pesce": 1, "tronchi": 1, "pietra": 1, "assi": 1, "argilla": 1, "ferro": 2, "carbone": 1,
 	"lingotti": 3, "lana": 1}
 ## attrezzi dei mestieri: senza l'attrezzo in magazzino l'artigiano non arriva

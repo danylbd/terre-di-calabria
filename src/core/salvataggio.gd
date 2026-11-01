@@ -196,6 +196,10 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 			tr.portatore = null
 
 	v.scorte = _interi(d["scorte"])
+	if v.scorte.has("monete"):
+		# salvataggi vecchi: le monete ora si chiamano ducati
+		v.scorte["ducati"] = v.scorte.get("ducati", 0) + v.scorte["monete"]
+		v.scorte.erase("monete")
 	v.coloni_liberi = int(d["coloni_liberi"])
 	log.tempo = d["tempo"]
 	p.stagioni.tempo = float(d.get("calendario", 0.0))

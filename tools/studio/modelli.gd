@@ -106,7 +106,7 @@ static func catalogo() -> Dictionary:
 		"merce_anfore": {"crea": merce.bind("anfore")},
 		"merce_sale": {"crea": merce.bind("sale")},
 		"merce_argento": {"crea": merce.bind("argento")},
-		"merce_monete": {"crea": merce.bind("monete")},
+		"merce_ducati": {"crea": merce.bind("ducati")},
 		"merce_stoffa": {"crea": merce.bind("stoffa")},
 		"stoppie": {"crea": stoppie},
 		"cespuglio_1": {"crea": cespuglio.bind(1)},
@@ -838,7 +838,7 @@ static func merce(tipo: String) -> Node3D:
 			r.add_child(sfera(0.03, Vector3(0, 0.1, 0), "sale"))
 		"argento":
 			r.add_child(mucchio(Vector3.ZERO, "argento_grezzo", 5, 12, 0.04))
-		"monete":
+		"ducati":
 			r.add_child(sfera(0.05, Vector3(0, 0.04, 0), "pelle_scura", Vector3(1, 0.9, 1)))
 			for k in 4:
 				r.add_child(cilindro(0.016, 0.016, 0.005, Vector3(0.05 + k * 0.004, 0.003 + k * 0.006, 0.03), "moneta", Vector3.ZERO, 8))
@@ -2601,7 +2601,7 @@ static func zecca() -> Node3D:
 	sottotetto(c, lx, lz, 0.07 + h, 18.0, "marmo")
 	tetto(c, lx + 0.06, lz, 0.07 + h, 18.0, 241)
 	comignolo(c, Vector3(0.24, 0.07 + h + 0.04, -0.12), 0.16)
-	# casse di monete, incudine per coniare, guardia
+	# casse di ducati, incudine per coniare, guardia
 	for k in 3:
 		r.add_child(cassa(Vector3(0.45 + k * 0.12, 0, 0.4), k * 15, 0.1))
 		r.add_child(cilindro(0.035, 0.035, 0.01, Vector3(0.45 + k * 0.12, 0.085, 0.4), "moneta", Vector3.ZERO, 10))
