@@ -38,6 +38,7 @@ var _ascolto_mare := 0.0
 var monumenti: Monumenti
 var indigeni: VillaggiIndigeni
 var schiere: Schiere
+var navi_guerra: NaviGuerra
 var pannello_indigeno: PannelloIndigeno
 var pannello_schiera: PannelloSchiera
 var mappa := "costa_ionica"
@@ -102,6 +103,9 @@ func _ready() -> void:
 	schiere = Schiere.new()
 	add_child(schiere)
 	schiere.prepara(villaggio, guerra, indigeni, dati, oggetti)
+	navi_guerra = NaviGuerra.new()
+	add_child(navi_guerra)
+	navi_guerra.prepara(villaggio, dati, oggetti)
 	avversario.imposta_modalita("pace" if Impostazioni.missione != "" else Impostazioni.modalita)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
@@ -324,8 +328,11 @@ func _clic(c: Vector2i) -> void:
 func _ordine_schiera(c: Vector2i) -> void:
 	var n := villaggio.nemico_in(c)
 	var ind := indigeni.villaggio_in(c)
+	var mio := villaggio.edificio_in(c)
 	var ok := false
-	if n:
+	if mio and mio.tipo == "porto":
+		ok = schiere.imbarca(mio)
+	elif n:
 		ok = schiere.attacca(n)
 	elif ind >= 0 and indigeni.elenco[ind]["stato"] != "nostro":
 		ok = schiere.attacca(ind)
@@ -796,6 +803,8 @@ func _crea_interfaccia() -> void:
 	pannello.villaggio = villaggio
 	strato.add_child(pannello)
 	pannello.schiere = schiere
+	pannello.navi_guerra = navi_guerra
+	pannello.arma_nave.connect(func(e: Edificio): navi_guerra.arma(e))
 	pannello.forma_schiera.connect(func(e: Edificio):
 		if schiere.forma(e):
 			pannello.chiudi_pannello()

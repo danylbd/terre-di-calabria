@@ -123,6 +123,12 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	# i soldati in marcia tornano nella riserva (quelli all'attacco ricominceranno da capo)
 	d["soldati"] = v.soldati + p.guerra.in_marcia() + p.schiere.soldati()      # la schiera torna nella riserva
 	d["indigeni"] = p.indigeni.dati_salvataggio()
+	# le navi da guerra non si salvano: i loro materiali tornano nel magazzino
+	var scorte: Dictionary = v.scorte.duplicate()
+	var mat: Dictionary = p.navi_guerra.materiali()
+	for m in mat:
+		scorte[m] = scorte.get(m, 0) + mat[m]
+	d["scorte"] = scorte
 	d["esperienza_condottiero"] = p.schiere.esperienza
 	var mon: Monumenti = p.monumenti
 	d["monumenti"] = {"ottenuti": mon.ottenuti.map(func(id): return [id, mon.posti[id].x, mon.posti[id].y]),

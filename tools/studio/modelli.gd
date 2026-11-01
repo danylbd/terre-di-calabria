@@ -458,6 +458,8 @@ static func catalogo() -> Dictionary:
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(112, 96), "ancora": Vector2(56, 64)}
 	c["nave"] = {"crea": nave, "posa": posa_vela,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 74)}
+	c["nave_guerra"] = {"crea": nave_guerra, "posa": posa_voga,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(144, 112), "ancora": Vector2(72, 72)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
 	for att in ["ascia", "piccone", "pala", "falce", "canna"]:
 		c["lavoratore_%s" % att] = {"crea": lavoratore.bind(att), "posa": posa_cammino,
@@ -3204,6 +3206,187 @@ static func posa_vela(modello: Node3D, fotogramma: int, totale: int) -> void:
 	corpo.get_node("braccio_d").rotation = Vector3(-0.6 + 0.15 * sin(t), 0, 0.3)
 	corpo.get_node("braccio_s").rotation = Vector3(-0.6 + 0.15 * sin(t), 0, -0.3)
 
+
+## Nave da guerra antica (bireme): scafo lungo, basso e scuro, sperone di bronzo a prua sul pelo dell'acqua,
+## occhi dipinti, due file di remi per lato, vela quadra ammainata a metà, scudi col colore del giocatore
+## lungo le murate, castello di prua con due arcieri e bandiera a poppa. La prua guarda verso +z.
+static func nave_guerra() -> Node3D:
+	var r := Node3D.new()
+	var b := Node3D.new()
+	b.name = "scafo"
+	r.add_child(b)
+	var lz := 3.7  # allungamento dello scafo
+	var lx := 0.72  # strettezza dello scafo
+	# opera viva: una ciotola lunga e stretta, nera di pece
+	var mi := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.15
+	sm.height = 0.15
+	sm.is_hemisphere = true
+	sm.radial_segments = 24
+	sm.rings = 8
+	mi.mesh = sm
+	mi.rotation_degrees.x = 180
+	mi.position = Vector3(0, 0.05, 0)
+	mi.scale = Vector3(lx, 0.5, lz)
+	mi.material_override = materiale("pece")
+	b.add_child(mi)
+	# murate scure, fascia rossa sotto gli scalmi, bordo chiaro e ponte
+	var murata := cilindro(0.15, 0.15, 0.05, Vector3(0, 0.075, 0), "legno_scuro", Vector3.ZERO, 24)
+	murata.scale = Vector3(lx, 1, lz)
+	b.add_child(murata)
+	var fascia := cilindro(0.152, 0.152, 0.01, Vector3(0, 0.058, 0), "bandiera_rossa", Vector3.ZERO, 24)
+	fascia.scale = Vector3(lx, 1, lz)
+	b.add_child(fascia)
+	b.add_child(_toro(0.142, 0.154, Vector3(0, 0.102, 0), "legno_chiaro", Vector3.ZERO, Vector3(lx, 0.5, lz)))
+	var ponte := cilindro(0.138, 0.138, 0.006, Vector3(0, 0.098, 0), "legno_vecchio", Vector3.ZERO, 24)
+	ponte.scale = Vector3(lx, 1, lz)
+	b.add_child(ponte)
+	# passerella centrale tra le file dei rematori
+	b.add_child(scatola(Vector3(0.04, 0.006, 0.7), Vector3(0, 0.104, -0.02), "legno"))
+	for k in 9:
+		b.add_child(scatola(Vector3(0.16, 0.004, 0.012), Vector3(0, 0.103, -0.36 + k * 0.08), "legno_scuro"))
+	# sperone di bronzo a tre lame sul pelo dell'acqua, con la trave che lo regge
+	b.add_child(scatola(Vector3(0.03, 0.03, 0.14), Vector3(0, 0.015, 0.52), "legno_scuro", Vector3(-8, 0, 0)))
+	b.add_child(cilindro(0.032, 0.0, 0.13, Vector3(0, 0.01, 0.62), "bronzo", Vector3(90, 0, 0), 4))
+	for y: float in [0.0, 0.022]:
+		b.add_child(scatola(Vector3(0.07, 0.006, 0.05), Vector3(0, y, 0.585), "bronzo"))
+	b.add_child(scatola(Vector3(0.006, 0.05, 0.05), Vector3(0, 0.012, 0.585), "bronzo"))
+	# dritto di prua che sale e si ripiega all'indietro
+	var prua := [Vector3(0, 0.04, 0.54), Vector3(0, 0.12, 0.575), Vector3(0, 0.19, 0.57), Vector3(0, 0.22, 0.54)]
+	for k in prua.size() - 1:
+		ramo(b, prua[k], prua[k + 1], 0.016 - k * 0.003, "legno_scuro")
+	b.add_child(sfera(0.012, Vector3(0, 0.222, 0.535), "bronzo"))
+	# occhi dipinti sulle guance di prua
+	for s: int in [-1, 1]:
+		b.add_child(sfera(0.02, Vector3(s * 0.05, 0.068, 0.49), "intonaco_bianco", Vector3(0.35, 0.8, 1.5)))
+		b.add_child(sfera(0.01, Vector3(s * 0.056, 0.068, 0.497), "buio", Vector3(0.5, 1, 1)))
+		b.add_child(sfera(0.02, Vector3(s * 0.048, 0.079, 0.49), "bandiera_rossa", Vector3(0.3, 0.25, 1.6)))
+	# castello di prua: piattaforma su travi con parapetto e due arcieri
+	b.add_child(scatola(Vector3(0.15, 0.012, 0.12), Vector3(0, 0.17, 0.4), "legno"))
+	for s: int in [-1, 1]:
+		for zz: float in [0.35, 0.45]:
+			b.add_child(cilindro(0.007, 0.007, 0.07, Vector3(s * 0.06, 0.135, zz), "legno_scuro", Vector3.ZERO, 6))
+		b.add_child(scatola(Vector3(0.008, 0.03, 0.12), Vector3(s * 0.072, 0.19, 0.4), "legno_scuro"))
+	b.add_child(scatola(Vector3(0.15, 0.03, 0.008), Vector3(0, 0.19, 0.458), "legno_scuro"))
+	for k in 2:
+		var arc := portatore("", "giocatore")
+		arc.name = "arciere_%d" % k
+		arc.scale = Vector3.ONE * 0.5
+		arc.position = Vector3(-0.035 + k * 0.07, 0.176, 0.4 + k * 0.01)
+		arc.rotation_degrees.y = -20 + k * 40
+		var corpo: Node3D = arc.get_node("corpo")
+		corpo.add_child(sfera(0.08, Vector3(0, 0.2 + 0.28, -0.008), "bronzo", Vector3(1, 0.75, 1.05)))
+		_arco_sic(corpo.get_node("braccio_s"), Vector3(-0.005, -0.14, 0.02), 0.24, 0.05)
+		corpo.add_child(_faretra(Vector3(0.035, 0.36, -0.09), Vector3(-12, 0, -22), 1.0))
+		b.add_child(arc)
+	# poppa: coda ricurva verso l'alto e in avanti, a ventaglio (aplustre)
+	var poppa := [Vector3(0, 0.07, -0.53), Vector3(0, 0.15, -0.58), Vector3(0, 0.23, -0.57), Vector3(0, 0.28, -0.53)]
+	for k in poppa.size() - 1:
+		ramo(b, poppa[k], poppa[k + 1], 0.018 - k * 0.004, "legno_scuro")
+	for s: int in [-1, 1]:
+		ramo(b, Vector3(0, 0.23, -0.57), Vector3(s * 0.03, 0.3, -0.555), 0.005, "legno_scuro")
+	b.add_child(sfera(0.012, Vector3(0, 0.285, -0.525), "bronzo"))
+	# tolda di poppa e remi-timone
+	b.add_child(scatola(Vector3(0.14, 0.016, 0.1), Vector3(0, 0.11, -0.44), "legno"))
+	for s: int in [-1, 1]:
+		ramo(b, Vector3(s * 0.08, 0.16, -0.42), Vector3(s * 0.12, -0.03, -0.55), 0.007, "legno_chiaro")
+		b.add_child(scatola(Vector3(0.01, 0.07, 0.04), Vector3(s * 0.122, -0.025, -0.555), "legno_chiaro", Vector3(-35, 0, 0)))
+	# timoniere
+	var uomo := portatore("", "giocatore")
+	uomo.scale = Vector3.ONE * 0.5
+	uomo.position = Vector3(0, 0.118, -0.43)
+	b.add_child(uomo)
+	# bandiera del giocatore su un'asta a poppa
+	b.add_child(cilindro(0.005, 0.004, 0.2, Vector3(0, 0.21, -0.47), "legno_scuro", Vector3.ZERO, 6))
+	var bandiera := Node3D.new()
+	bandiera.name = "bandiera"
+	bandiera.position = Vector3(0, 0.29, -0.47)
+	b.add_child(bandiera)
+	for k in 3:
+		var pz := scatola(Vector3(0.004, 0.05, 0.03), Vector3(0, -0.02, -0.015 - k * 0.03), "giocatore")
+		pz.name = "lembo_%d" % k
+		bandiera.add_child(pz)
+	# albero basso, pennone e vela quadra ammainata a metà (raccolta in pieghe sotto il pennone)
+	b.add_child(cilindro(0.011, 0.008, 0.36, Vector3(0, 0.28, 0.06), "legno_scuro", Vector3.ZERO, 8))
+	b.add_child(cilindro(0.007, 0.006, 0.48, Vector3(0, 0.42, 0.07), "legno_chiaro", Vector3(0, 0, 90), 6))
+	ramo(b, Vector3(0, 0.45, 0.06), Vector3(0, 0.2, 0.55), 0.0025, "corda")
+	ramo(b, Vector3(0, 0.45, 0.06), Vector3(0, 0.26, -0.53), 0.0025, "corda")
+	for s: int in [-1, 1]:
+		ramo(b, Vector3(0, 0.42, 0.06), Vector3(s * 0.1, 0.1, 0.0), 0.002, "corda")
+	var vela := Node3D.new()
+	vela.name = "vela"
+	vela.position = Vector3(0, 0.415, 0.08)
+	b.add_child(vela)
+	var colonne := 8
+	var larg := 0.44
+	for j in colonne:
+		var xn := (j + 0.5) / colonne * 2.0 - 1.0
+		var tinta := "lino" if j % 2 == 0 else "bandiera_rossa"
+		# telo che pende per metà altezza, un po' sbuffato
+		vela.add_child(scatola(Vector3(larg / colonne + 0.003, 0.12, 0.005), Vector3(xn * larg * 0.5, -0.07, 0.012 * (1.0 - xn * xn)), tinta))
+		# rotolo raccolto sotto il pennone
+		vela.add_child(cilindro(0.016, 0.016, larg / colonne + 0.002, Vector3(xn * larg * 0.5, -0.012, 0.005), tinta, Vector3(0, 0, 90), 8))
+	# imbrogli: cime che reggono le pieghe
+	for k in 4:
+		var x := -0.15 + k * 0.1
+		vela.add_child(scatola(Vector3(0.003, 0.14, 0.003), Vector3(x, -0.07, 0.02), "corda"))
+	# file di remi (due per lato): ogni remo ruota sul suo scalmo
+	var remi := Node3D.new()
+	remi.name = "remi"
+	b.add_child(remi)
+	for s: int in [-1, 1]:
+		for fila in 2:
+			var n := 8 if fila == 0 else 7
+			for k in n:
+				var z := -0.32 + k * (0.62 / (n - 1))
+				var mezza := sqrt(maxf(0.0, 1.0 - pow(z / (0.15 * lz), 2.0)))
+				var perno := Node3D.new()
+				perno.set_meta("lato", s)
+				perno.set_meta("fila", fila)
+				perno.position = Vector3(s * (0.15 * lx * mezza + 0.002), 0.088 if fila == 0 else 0.062, z + (0.0 if fila == 0 else 0.04))
+				remi.add_child(perno)
+				var lungo := 0.25 if fila == 0 else 0.2
+				var cima := Vector3(s * lungo, -0.1 if fila == 0 else -0.075, 0)
+				ramo(perno, Vector3.ZERO, cima, 0.0045, "legno")
+				perno.add_child(scatola(Vector3(0.055, 0.004, 0.022), cima + Vector3(s * 0.02, -0.008, 0), "legno_chiaro", Vector3(0, 0, s * 20)))
+				# scalmo scuro sulla murata
+				b.add_child(sfera(0.008, perno.position, "buio", Vector3(1, 1, 1.2)))
+	# scudi rotondi appesi lungo le murate, col colore del giocatore e l'umbone di bronzo
+	for s: int in [-1, 1]:
+		for k in 8:
+			var z := -0.3 + k * 0.085
+			var mezza := sqrt(maxf(0.0, 1.0 - pow(z / (0.15 * lz), 2.0)))
+			var x := s * (0.15 * lx * mezza + 0.008)
+			b.add_child(cilindro(0.03, 0.03, 0.006, Vector3(x, 0.112, z), "giocatore", Vector3(0, 0, 90), 12))
+			b.add_child(_toro(0.026, 0.031, Vector3(x + s * 0.001, 0.112, z), "bronzo", Vector3(0, 0, 90)))
+			b.add_child(sfera(0.008, Vector3(x + s * 0.004, 0.112, z), "bronzo", Vector3(0.6, 1, 1)))
+	r.set_meta("carico", "nave")
+	return r
+
+
+## Voga: le due file di remi passano avanti e indietro insieme, entrando e uscendo dall'acqua;
+## lo scafo beccheggia appena e la bandiera sventola.
+static func posa_voga(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale * TAU
+	var b: Node3D = modello.get_node("scafo")
+	b.rotation.x = 0.03 * sin(t)
+	b.rotation.z = 0.012 * sin(t * 2.0)
+	b.position.y = 0.006 * cos(t)
+	for perno: Node3D in b.get_node("remi").get_children():
+		var s: int = perno.get_meta("lato")
+		var fase := t + (0.3 if int(perno.get_meta("fila")) == 1 else 0.0)
+		# avanti-indietro attorno all'asse verticale, e su (ritorno) / giù (in acqua)
+		perno.rotation.y = 0.45 * sin(fase) * -s
+		perno.rotation.z = 0.18 * cos(fase) * s
+	var bandiera: Node3D = b.get_node("bandiera")
+	for k in 3:
+		var pz: Node3D = bandiera.get_node("lembo_%d" % k)
+		pz.rotation.y = 0.3 * sin(t * 2.0 - k * 0.9) * (k + 1) * 0.5
+	for k in 2:
+		var corpo: Node3D = b.get_node("arciere_%d" % k).get_node("corpo")
+		corpo.get_node("braccio_s").rotation = Vector3(-1.3, 0, -0.15)
+		corpo.get_node("braccio_d").rotation = Vector3(-1.2 + 0.25 * sin(t + k * PI), 0, 0.3)
 
 # =================================================================== METALLO (step 07)
 

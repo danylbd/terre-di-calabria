@@ -143,7 +143,7 @@ func _posto(k: int) -> Vector2:
 
 ## Il condottiero è in questa casella (o lì vicino)?
 func in_casella(c: Vector2i) -> bool:
-	return esiste() and Vector2(c) .distance_to(schiera["condottiero"].pos.floor()) <= 1.0
+	return esiste() and not in_viaggio() and Vector2(c) .distance_to(schiera["condottiero"].pos.floor()) <= 1.0
 
 
 func scegli(si: bool) -> void:
@@ -153,8 +153,9 @@ func scegli(si: bool) -> void:
 
 ## Ordine di andare in una casella: il percorso più breve a piedi (niente mare, niente edifici).
 func muovi(c: Vector2i) -> bool:
-	if not esiste():
+	if not esiste() or in_viaggio():
 		return false
+	schiera.erase("imbarco")
 	var capo: Colono = schiera["condottiero"]
 	var percorso := percorso_a_piedi(Vector2i(capo.pos.floor()), c)
 	if percorso.is_empty():
@@ -178,10 +179,81 @@ func _marcia(percorso: Array[Vector2]) -> void:
 		s.percorri(p)
 
 
+## La traversata (step 35): la schiera va al porto, sale sulla nave e sbarca a un altro nostro porto
+## raggiungibile per mare (per esempio dall'altra parte dello Stretto).
+func imbarca(porto: Edificio) -> bool:
+	if not esiste() or porto.tipo != "porto" or not porto.finito:
+		return false
+	var da := Mare.acqua_vicina(dati, Vector2i(porto.centro()), 7)
+	if da.x < 0:
+		return false
+	var meta: Edificio = null
+	var rotta: Array[Vector2] = []
+	for e in villaggio.edifici.values():
+		if e == porto or e.tipo != "porto" or not e.finito:
+			continue
+		var w := Mare.acqua_vicina(dati, Vector2i(e.centro()), 7)
+		if w.x < 0:
+			continue
+		var r := Mare.rotta(dati, da, w)
+		if not r.is_empty() and (meta == null or r.size() < rotta.size()):
+			meta = e
+			rotta = r
+	if meta == null:
+		villaggio.messaggio.emit("Serve un altro nostro porto raggiungibile per mare", true)
+		return false
+	var capo: Colono = schiera["condottiero"]
+	var percorso := percorso_a_piedi(Vector2i(capo.pos.floor()), porto.bandiera)
+	if percorso.is_empty() and Vector2(porto.bandiera).distance_to(capo.pos) > 1.5:
+		return false
+	schiera["bersaglio"] = null
+	schiera["imbarco"] = {"porto": porto, "acqua": da, "meta": meta, "rotta": rotta}
+	if not percorso.is_empty():
+		_marcia(percorso)
+	return true
+
+
+func in_viaggio() -> bool:
+	return esiste() and schiera.has("nave")
+
+
+## Al porto: tutti a bordo, la nave attraversa il mare.
+func _salpa() -> void:
+	var imb: Dictionary = schiera["imbarco"]
+	for m in [schiera["condottiero"]] + schiera["soldati"]:
+		m.visible = false
+		m.percorri([m.pos] as Array[Vector2])
+	var nave := _nuovo(Vector2(imb["acqua"]) + Vector2(0.5, 0.5), "nave")
+	nave.velocita = 2.2
+	nave.arrivato.connect(func(_c): _sbarca())
+	nave.percorri(imb["rotta"].duplicate())
+	schiera["nave"] = nave
+	villaggio.messaggio.emit("La schiera di %s salpa verso l'altro porto" % nome_condottiero(), false)
+
+
+func _sbarca() -> void:
+	if not esiste() or not schiera.has("nave"):
+		return
+	var meta: Edificio = schiera["imbarco"]["meta"]
+	var terra := Vector2(meta.bandiera) + Vector2(0.5, 0.6)
+	schiera["condottiero"].pos = terra
+	schiera["condottiero"].visible = true
+	for k in schiera["soldati"].size():
+		var s: Colono = schiera["soldati"][k]
+		s.pos = terra + _posto(k)
+		s.visible = true
+	schiera["nave"].queue_free()
+	schiera.erase("nave")
+	schiera.erase("imbarco")
+	villaggio.messaggio.emit("La schiera di %s è sbarcata" % nome_condottiero(), false)
+	cambiata.emit()
+
+
 ## Attacca una torre nemica o un villaggio indigeno: la schiera ci va e combatte.
 func attacca(bersaglio) -> bool:
-	if not esiste():
+	if not esiste() or in_viaggio():
 		return false
+	schiera.erase("imbarco")
 	var centro: Vector2
 	if bersaglio is Edificio:
 		centro = (bersaglio as Edificio).centro()
@@ -375,6 +447,15 @@ func _process(delta: float) -> void:
 	if _passo != 1.0 and _orologio >= _passo_fino:
 		_passo = 1.0
 		_imposta_velocita()
+	if schiera.has("imbarco") and not schiera.has("nave"):
+		var porto: Edificio = schiera["imbarco"]["porto"]
+		if not is_instance_valid(porto):
+			schiera.erase("imbarco")
+		elif schiera["condottiero"].pos.distance_to(Vector2(porto.bandiera) + Vector2(0.5, 0.5)) < 1.6:
+			_salpa()
+	if in_viaggio():
+		queue_redraw()
+		return
 	queue_redraw()
 	_avanza_effetti(delta)
 	_rifornisci()
