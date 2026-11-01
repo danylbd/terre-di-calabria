@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.47.0** (step 32). Tutti i test automatici passano (35 script in `tools/test/`).
+Ultima release: **v0.48.0** (step 33). Tutti i test automatici passano (36 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.47.0** (step 32). Tutti i test automatici passano (35 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 32, Fase 7): cibo, morale ed esperienza delle schiere (razioni dal magazzino, fame, rifornimento e rinforzi vicino al magazzino, morale e livelli del condottiero che cambiano i duelli); test `test_morale`. Prima: condottieri e schiere (step 31).
+Ultime modifiche significative (step 33, Fase 7): tipi di unità (fanteria, tiratori, cavalleria) con vantaggi incrociati nei duelli di guerra e schiere; i tiratori tirano da lontano con proiettili disegnati, polvere nei corpo a corpo; test `test_tipi`. Prima: cibo, morale ed esperienza (step 32).
 
 ## In sviluppo
 
@@ -39,4 +39,4 @@ Ultime modifiche significative (step 32, Fase 7): cibo, morale ed esperienza del
 
 ## Prossima attività consigliata
 
-**Step 33 — tipi di unità** (Fase 7, `docs/piano-imperivm.md`): fanteria, tiratori, cavalleria con vantaggi incrociati (la cavalleria batte i tiratori, i tiratori la fanteria, la fanteria la cavalleria); ogni popolo ha già il suo soldato: dargli un tipo (`Popoli.DATI[...]["tipo_soldato"]`: guardia/legionario/guerriero siculo = fanteria, frombolieri/arcieri = tiratori, cavalieri = cavalleria); i tiratori colpiscono da lontano (2–3 caselle, proiettili disegnati); la probabilità del duello tiene conto dei tipi. Proiettili e polvere come effetti.
+**Step 34 — abilità dei condottieri** (Fase 7): 2 abilità per popolo, sbloccate dai livelli (livello 2 e 4), usabili con un pulsante quando la schiera è scelta e con un tempo di ricarica: per esempio Greci «falange» (difesa), Brettii «imboscata nel bosco», Romani «testuggine», Saraceni «carica rapida», Normanni «carica pesante», Siculi «grido degli antenati», Sicani «pioggia di frecce». Effetti come vantaggi temporanei in `Schiere.probabilita_vittoria()` o sulla velocità; icone e pulsanti in un piccolo pannello della schiera.

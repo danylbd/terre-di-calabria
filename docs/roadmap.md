@@ -82,7 +82,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 30 | Villaggi indigeni da unire o conquistare | fatto (v0.45.0) |
 | 31 | Condottieri e schiere (controllo diretto) | fatto (v0.46.0) |
 | 32 | Cibo, morale ed esperienza | fatto (v0.47.0) |
-| 33 | Tipi di unità (fanteria, tiratori, cavalleria) | |
+| 33 | Tipi di unità (fanteria, tiratori, cavalleria) | fatto (v0.48.0) |
 | 34 | Abilità dei condottieri | |
 | 35 | Navi da guerra e traversate delle schiere | |
 | 36 | Assedi (ariete, onagro) | |

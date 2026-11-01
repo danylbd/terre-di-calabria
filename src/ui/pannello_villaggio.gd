@@ -87,8 +87,8 @@ func _riempi() -> void:
 	righe.append("Soldati: %d nei forti, %d di riserva" % [nei_forti, v.soldati])
 	if schiere and schiere.esiste():
 		var sc: Dictionary = schiere.schiera
-		righe.append("Schiera di %s (livello %d): %d soldati, razioni %d, morale %d" % [Schiere.nome_condottiero(), schiere.livello(),
-			schiere.soldati(), sc["razioni"], sc["morale"]])
+		righe.append("Schiera di %s (livello %d, %s): %d soldati, razioni %d, morale %d" % [Schiere.nome_condottiero(), schiere.livello(),
+			Schiere.tipo(), schiere.soldati(), sc["razioni"], sc["morale"]])
 	var senza := rete.tratti_senza_portatore()
 	if senza > 0:
 		righe.append("[color=#a8321e]%d strade aspettano un portatore[/color]" % senza)

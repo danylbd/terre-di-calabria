@@ -201,6 +201,9 @@ func _fine_duello(id: int) -> void:
 		vittoria += villaggio.vantaggi.get("duelli", 0.0)
 	elif is_instance_valid(bersaglio) and bersaglio.proprietario == 1:
 		vittoria -= villaggio.vantaggi.get("duelli", 0.0)
+	if is_instance_valid(bersaglio):
+		# fanteria, tiratori e cavalleria: chi batte chi (step 33)
+		vittoria += Popoli.vantaggio_tipo(Popoli.tipo_soldato(Popoli.di(s["lato"])), Popoli.tipo_soldato(Popoli.di(bersaglio.proprietario)))
 	if _rng.randf() < vittoria:
 		if is_instance_valid(bersaglio):
 			bersaglio.soldati -= 1
