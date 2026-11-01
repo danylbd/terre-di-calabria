@@ -121,6 +121,7 @@ func _ready() -> void:
 	camera.position = dati.a_schermo(dati.villaggio.x + 0.5, dati.villaggio.y + 0.5)
 	add_child(camera)
 	camera.make_current()
+	camera.tocco_lungo.connect(_annulla)
 
 	_crea_interfaccia()
 	stagioni.prepara(terreno, risorse, _crea_luce(), _crea_fiocchi())
@@ -206,18 +207,32 @@ func _unhandled_input(event: InputEvent) -> void:
 				pannello_villaggio.alterna()
 			KEY_M:
 				_mostra_avviso("Musica accesa" if Suono.alterna_musica() else "Musica spenta", false)
-	elif event is InputEventMouseButton and event.pressed:
+	elif event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_LEFT:
-			_clic(dati.casella_da_schermo(get_global_mouse_position()))
-		elif mb.button_index == MOUSE_BUTTON_RIGHT and modalita != "":
-			if modalita == "strada" and _inizio_strada.x >= 0:
-				_inizio_strada = Vector2i(-1, -1)
-				rete.nascondi_anteprima()
-				segni.inizio_strada = _inizio_strada
-				segni.queue_redraw()
-			else:
-				_esci_modalita()
+		var casella := dati.casella_da_schermo(get_canvas_transform().affine_inverse() * mb.position)
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.device == InputEvent.DEVICE_ID_EMULATION:
+			# da un dito: il clic vale quando si alza, se non era un trascinamento né un tocco lungo
+			if not mb.pressed and not camera.tocco_mosso and not camera.tocco_lungo_fatto:
+				_clic(casella)
+		elif not mb.pressed:
+			return
+		elif mb.button_index == MOUSE_BUTTON_LEFT:
+			_clic(casella)
+		elif mb.button_index == MOUSE_BUTTON_RIGHT:
+			_annulla()
+
+
+## Tasto destro o tocco lungo: annulla la strada iniziata o esce dalla modalità.
+func _annulla() -> void:
+	if modalita == "":
+		return
+	if modalita == "strada" and _inizio_strada.x >= 0:
+		_inizio_strada = Vector2i(-1, -1)
+		rete.nascondi_anteprima()
+		segni.inizio_strada = _inizio_strada
+		segni.queue_redraw()
+	else:
+		_esci_modalita()
 
 
 func _clic(c: Vector2i) -> void:

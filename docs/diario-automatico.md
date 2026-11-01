@@ -145,3 +145,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Piano in docs/soglia.md. Quattro missioni sulla mappa di Monteleone con il popolo scelto all'inizio (pulsante «La Soglia» sulla mappa della Calabria, aperto dopo la campagna dei Greci); la terza missione è la scelta «unire» (12 merci di lusso) o «conquistare» (una torre nemica), che decide il finale dell'ultima.
 - Testi originali: il Mercante senza Volto, Rocco della Lira, i due finali. Domande nuove al proprietario: chi è Rocco; il Mac per l'iPhone.
 - Nuovo test `test_soglia`; il bot di test_campagna gioca «Il velo sulla Soglia» fino in fondo. Tutti i 24 test OK. Versione 0.28.0.
+
+## 2026-11-02 — step 24 iPhone, prima parte: comandi touch
+- `CameraMappa`: un dito trascina la mappa, due dita pizzicano per lo zoom, il tocco lungo (0,6 s fermo) annulla come il tasto destro. `partita.gd`: il clic del dito vale quando si alza e solo se non era un trascinamento o un tocco lungo.
+- Nuovo test `test_touch`; tutti i 25 test OK. Versione 0.29.0. L'esportazione iOS aspetta la risposta del proprietario sul Mac; prossimo: Fase 6 (Sicilia).

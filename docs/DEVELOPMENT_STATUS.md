@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.28.0** (step 23). Tutti i test automatici passano (24 script in `tools/test/`).
+Ultima release: **v0.29.0** (step 24, prima parte). Tutti i test automatici passano (25 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,15 +14,15 @@ Ultima release: **v0.28.0** (step 23). Tutti i test automatici passano (24 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 23): campagna finale «La Soglia» in `Missione` (`CAMPAGNA_SOGLIA`, missioni con `"popolo": "scelto"` e `"mappa": "monteleone"`, prove nuove `lusso`, `conquiste`, `forti`, `una_tra` con `scelta`, progressi con `popolo_soglia` e `finale`, `racconto_finale()`), pulsante «La Soglia» e scelta del popolo sulla mappa della Calabria; il bot di `test_campagna` costruisce le case che servono; test `test_soglia`.
+Ultime modifiche significative (step 24, prima parte): comandi touch in `CameraMappa` (un dito trascina, due dita pizzicano per lo zoom, tocco lungo = annulla con il segnale `tocco_lungo`) e in `partita.gd` (il clic che arriva da un dito vale quando si alza, se non era un trascinamento; i clic usano la posizione dell'evento; `_annulla()` comune a tasto destro e tocco lungo); test `test_touch`.
 
 ## In sviluppo
 
-- **Step 24 — versione iPhone** (Fase 4): domanda al proprietario (serve un Mac); intanto comandi touch e interfaccia per schermi piccoli.
+- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Nel frattempo si passa alla **Fase 6 (Sicilia)**.
 
 ## Da fare (in ordine)
 
-1. **Fase 4**: versione iPhone (in attesa della risposta sul Mac: prima la parte touch), campagna finale «La Soglia», versione iPhone.
+1. **Fase 4**: esportazione iPhone (in attesa della risposta sul Mac), campagna finale «La Soglia», versione iPhone.
 2. **Fase 6**: la Sicilia (mappa reale, Siculi e Sicani, campagna «Il fuoco sotto la montagna», navi sullo Stretto).
 3. **Fase 5** (Coral Island): solo dopo le domande al proprietario.
 
@@ -44,4 +44,4 @@ Ultime modifiche significative (step 23): campagna finale «La Soglia» in `Miss
 
 ## Prossima attività consigliata
 
-**Step 24 — iPhone, prima parte senza Mac**: comandi touch (trascinare per muovere la mappa, pizzicare per lo zoom, tocco lungo al posto del tasto destro), interfaccia leggibile su schermi piccoli (pulsanti più grandi, menu di costruzione compatto), impostazione «schermo piccolo» provabile su Windows con una finestra 1170×2532 ridotta. L'esportazione iOS aspetta la risposta in `domande-per-il-proprietario.md`. Se si blocca, passare alla **Fase 6 (Sicilia)**.
+**Fase 6 — la Sicilia** (`docs/roadmap.md`, step 25–29, e il seguito in `docs/storia.md`): cominciare dallo step 25 (mappa della Sicilia con la forma reale, come la mappa della Calabria, e una mappa di gioco siciliana). Prima rileggere le righe della Fase 6 in roadmap.

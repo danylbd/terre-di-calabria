@@ -51,7 +51,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 21 | Saraceni giocabili: aspetto proprio, bachicoltura e filanda (seta), cavalieri leggeri, campi irrigati, nemici romani (vedi [`saraceni.md`](saraceni.md)) | fatto (v0.26.0) |
 | 22 | Normanni giocabili: aspetto proprio, allevamento di cavalli e mastio, cavalieri pesanti, confini più larghi, nemici saraceni (vedi [`normanni.md`](normanni.md)) | fatto (v0.27.0) |
 | 23 | Campagna finale «La Soglia»: 4 missioni a Monteleone con il popolo scelto, scelta «unire o conquistare», due finali (vedi [`soglia.md`](soglia.md)) | fatto (v0.28.0) |
-| 24 | Versione iPhone | |
+| 24 | Versione iPhone | in corso: comandi touch fatti (v0.29.0); esportazione iOS in attesa di un Mac (domanda al proprietario) |
 
 L'ordine può cambiare strada facendo: è un progetto da fare con calma.
 
