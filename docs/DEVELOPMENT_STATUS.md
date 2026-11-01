@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.30.0** (step 25). Tutti i test automatici passano (26 script in `tools/test/`).
+Ultima release: **v0.31.0** (step 26). Tutti i test automatici passano (27 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,11 +14,11 @@ Ultima release: **v0.30.0** (step 25). Tutti i test automatici passano (26 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 25, Fase 6): mappa di gioco «Zancle e l'Etna» (`GeneratoreMappa.genera_zancle()`, 96×96, coste vere di Sicilia e Calabria: Milazzo, Messina, lo Stretto largo 5 caselle, Taormina, l'Etna innevato con la terra nera, Catania; Peloritani e Nebrodi); `_distanza_costa()` ora accetta più coste e terre; pulsante «Gioca a Zancle» sulla mappa della Calabria; test `test_zancle`. Prima: comandi touch (step 24).
+Ultime modifiche significative (step 26, Fase 6): Siculi e Sicani in `Popoli.DATI` (nemici l'uno dell'altro, `"svelti"` = mestieri con tempo ×0,8 tramite `Popoli.durata()` in `Lavoratore`), edifici unici `vasaio` (argilla e tronchi → ceramiche) e `ossidiana` (pietra → lame), merci di lusso nuove, modelli dei due popoli; test `test_sicilia_popoli`. Prima: mappa «Zancle e l'Etna» (step 25).
 
 ## In sviluppo
 
-- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25 fatto, prossimo lo step 26 (Siculi e Sicani).
+- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25–26 fatti (mappa di Zancle, Siculi e Sicani), prossimo lo step 27 (campagna «Il fuoco sotto la montagna»).
 
 ## Da fare (in ordine)
 
@@ -44,4 +44,4 @@ Ultime modifiche significative (step 25, Fase 6): mappa di gioco «Zancle e l'Et
 
 ## Prossima attività consigliata
 
-**Step 26 — Siculi e Sicani** (Fase 6): due popoli nuovi dell'isola, con lo stesso schema dei cinque calabresi (`Popoli.DATI`, edificio unico, merce speciale, soldato, abilità, modelli `<tipo>_siculi` / `<tipo>_sicani` con un subagente). Da `storia.md`: Siculi pastori e vasai dell'interno (Pantalica), Sicani gente delle montagne a ovest. Scrivere prima il piano in `docs/siculi_sicani.md`.
+**Step 27 — campagna «Il fuoco sotto la montagna»** (6 missioni, `docs/storia.md`): piano in `docs/fuoco.md`; missioni sulla mappa di Zancle con il popolo della Soglia (`Missione.popolo_soglia()`), Siculi e Sicani come vicini; evento nuovo «colata di lava» sull'Etna (come l'alluvione in `Missione._evento`); pulsante sulla mappa della Calabria vicino a Messina, aperto dopo la Soglia.

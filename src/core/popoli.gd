@@ -1,6 +1,6 @@
 class_name Popoli
 ## I popoli giocabili (Fase 4): nome, nemici, soldati, passo dei portatori e aspetto degli edifici.
-## Vedi docs/brettii.md, docs/romani.md, docs/saraceni.md e docs/normanni.md.
+## Vedi docs/brettii.md, docs/romani.md, docs/saraceni.md, docs/normanni.md e docs/siculi_sicani.md.
 
 const DATI := {
 	"greci": {"nome": "Greci", "descrizione": "Città sulla costa: olio, vino e commercio all'agorà.",
@@ -13,11 +13,18 @@ const DATI := {
 		"nemici": "romani", "soldati": ["cavaliere_leggero", "cavaliere_leggero_lotta"], "torre": "torre", "irriga": true},
 	"normanni": {"nome": "Normanni", "descrizione": "Cavalieri del nord: cavalli, castelli e un mastio che domina la valle.",
 		"nemici": "saraceni", "soldati": ["cavaliere_pesante", "cavaliere_pesante_lotta"], "torre": "torre", "confini": 2},
+	"siculi": {"nome": "Siculi", "descrizione": "Pastori e vasai della Sicilia: ceramiche dipinte e greggi che rendono di più.",
+		"nemici": "sicani", "soldati": ["guerriero_siculo", "guerriero_siculo_lotta"], "torre": "torre",
+		"svelti": ["ovile", "capraio", "porcile", "caseificio"]},
+	"sicani": {"nome": "Sicani", "descrizione": "Montanari della Sicilia: lame di ossidiana, cave e miniere più rapide.",
+		"nemici": "siculi", "soldati": ["arciere_sicano", "arciere_sicano_lotta"], "torre": "torre",
+		"svelti": ["cava", "miniera_ferro", "miniera_argento"]},
 }
 const AGILITA := 1.25               # Brettii: portatori più veloci nei boschi e in montagna
 const QUOTA_MONTAGNA := 60.0
 const IRRIGAZIONE := 1.5            # Saraceni: i campi vicino all'acqua crescono così più in fretta
 const RAGGIO_IRRIGAZIONE := 4
+const SVELTEZZA := 0.8              # Siculi e Sicani: i loro mestieri tipici lavorano in meno tempo
 
 ## popolo del giocatore nella partita in corso (lo fissa la partita all'avvio)
 static var giocatore := "greci"
@@ -48,6 +55,11 @@ static func passo() -> float:
 ## Caselle in più di confine per torri e castelli del giocatore (Normanni).
 static func confini() -> int:
 	return DATI[giocatore].get("confini", 0)
+
+
+## Quanto dura il lavoro di un mestiere per il popolo del giocatore (1 = come tutti).
+static func durata(mestiere: String) -> float:
+	return SVELTEZZA if mestiere in DATI[giocatore].get("svelti", []) else 1.0
 
 
 ## Il giocatore irriga i campi vicino all'acqua (Saraceni).

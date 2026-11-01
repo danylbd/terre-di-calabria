@@ -154,3 +154,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Nuovo generatore `genera_zancle` con le coste vere (Patti, Tindari, Milazzo, Capo Peloro, Messina, Taormina, Acireale, Catania) e la punta della Calabria oltre lo Stretto; Peloritani, Nebrodi, Etna con neve, terra nera e cratere.
 - Il villaggio è stato spostato due volte: prima la dorsale dei Peloritani ci passava sopra, poi Zancle era sulla riva con il magazzino in acqua. Ora sta tra i due mari, come la Messina vera.
 - Nuovo test `test_zancle`; tutti i 26 test OK. Versione 0.30.0. Prossimo: step 26 Siculi e Sicani.
+
+## 2026-11-02 — step 26 Siculi e Sicani (Fase 6)
+- Piano in docs/siculi_sicani.md. Due popoli nuovi giocabili: Siculi (bottega del vasaio → ceramiche, pastori più svelti, guerrieri con lancia) e Sicani (laboratorio dell'ossidiana → lame, cave e miniere più svelte, arcieri), nemici l'uno dell'altro.
+- `Popoli.durata(mestiere)` usata dal lavoratore. Modelli dei due popoli fatti da due subagenti uno dopo l'altro.
+- Nuovo test `test_sicilia_popoli`; tutti i 27 test OK. Versione 0.31.0. Prossimo: step 27, campagna siciliana.

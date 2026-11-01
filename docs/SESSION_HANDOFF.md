@@ -2,18 +2,19 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 25 chiuso (release v0.30.0 in `main`).
+**Aggiornato:** 2026-11-02, step 26 chiuso (release v0.31.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-**Step 25 — mappa «Zancle e l'Etna»** (Fase 6), fatto e unito a `main`.
-- `src/mappa/generatore_mappa.gd`: `COSTA_SICILIA`, `COSTA_CALABRIA`, `LUOGHI_ZANCLE`, `ETNA`, `genera_zancle()`, `_distanza_segmento()`; `_distanza_costa(p, coste, terre)` generale; `crea()` con `match`.
-- `partita.gd`: direzioni dei nemici per la mappa `zancle`. `mappa_calabria.gd`: pulsante «Gioca a Zancle».
-- Test `tools/test/test_zancle.gd`. Tutti i 26 test OK.
+**Step 26 — Siculi e Sicani** (Fase 6), fatto e unito a `main`. Piano in `docs/siculi_sicani.md`.
+- `Popoli.DATI["siculi"]` e `["sicani"]` (nemici l'uno dell'altro, `"svelti"`), `Popoli.durata()`, `SVELTEZZA`.
+- Catalogo: `vasaio` (→ ceramiche) e `ossidiana` (→ lame), merci di lusso.
+- Modelli nelle sezioni SICULI e SICANI di `tools/studio/modelli.gd`. Test `tools/test/test_sicilia_popoli.gd`. Tutti i 27 test OK.
+- Sette popoli giocabili nella partita libera.
 
-## Prossimo: step 26 — Siculi e Sicani
+## Prossimo: step 27 — campagna «Il fuoco sotto la montagna»
 
-Due popoli nuovi (piano da scrivere in `docs/siculi_sicani.md`), stesso schema dei popoli calabresi. Idee: Siculi vasai e pastori (edificio unico: la bottega del vasaio di Pantalica; merce: ceramiche), Sicani della montagna (edificio unico: la cava di ossidiana/pomice? oppure sale di roccia); soldati e modelli con un subagente.
+Sei missioni da `docs/storia.md` sulla mappa di Zancle, con il popolo della Soglia; evento «colata di lava»; si apre dopo la Soglia. Piano da scrivere in `docs/fuoco.md`.
 
 ## Problemi irrisolti
 
@@ -25,4 +26,4 @@ Due popoli nuovi (piano da scrivere in `docs/siculi_sicani.md`), stesso schema d
 
 ## Da dove riprendere
 
-Aprire il ramo `step-26-siculi-sicani` e scrivere il piano.
+Aprire il ramo `step-27-fuoco` e scrivere il piano della campagna.

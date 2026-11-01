@@ -120,6 +120,12 @@ const EDIFICI := {
 	"allevamento_cavalli": {"nome": "Allevamento di cavalli", "popolo": "normanni", "taglia": 2, "costo": {"assi": 3, "pietra": 2}, "categoria": "Cibo",
 		"tempo": 20.0, "lavoratore": "portatore_nessuno", "ingressi": {"grano": 2, "acqua": 1}, "produce": "cavalli", "durata": 10.0,
 		"descrizione": "Cresce i cavalli dei cavalieri con grano e acqua: servono per alzare il mastio."},
+	"vasaio": {"nome": "Bottega del vasaio", "popolo": "siculi", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Base",
+		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"argilla": 2, "tronchi": 1}, "produce": "ceramiche", "durata": 8.0,
+		"descrizione": "Al tornio e al forno nascono vasi e giare dipinte: un lusso che fa crescere le case dei Siculi."},
+	"ossidiana": {"nome": "Laboratorio dell'ossidiana", "popolo": "sicani", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Base",
+		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"pietra": 2}, "produce": "lame", "durata": 8.0,
+		"descrizione": "Scheggia il vetro nero dei vulcani in lame taglienti e specchi: il lusso dei Sicani."},
 	"carbonaia": {"nome": "Carbonaia", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Metallo",
 		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "carbone", "durata": 9.0,
 		"descrizione": "Cuoce lentamente i tronchi sotto la terra e ne ricava carbone."},
@@ -151,7 +157,7 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"farina": "Farina", "acqua": "Acqua", "pane": "Pane", "pesce": "Pesce", "maiale": "Maiali", "carne": "Carne",
 	"latte": "Latte", "lana": "Lana", "formaggio": "Formaggio", "miele": "Miele", "olive": "Olive", "olio": "Olio",
 	"uva": "Uva", "vino": "Vino", "ortaggi": "Ortaggi", "cipolle": "Cipolle", "agrumi": "Agrumi",
-	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "tegole": "Tegole", "bozzoli": "Bozzoli", "seta": "Seta", "cavalli": "Cavalli", "lingotti": "Lingotti",
+	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "tegole": "Tegole", "bozzoli": "Bozzoli", "seta": "Seta", "cavalli": "Cavalli", "ceramiche": "Ceramiche", "lame": "Lame di ossidiana", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
 	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
 	"ducati": "Ducati", "stoffa": "Stoffa", "armi": "Armi"}
@@ -168,7 +174,7 @@ const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "un
 ## cibo che i minatori accettano (uno qualsiasi per ogni turno di lavoro)
 const CIBI := ["pane", "pesce", "carne", "formaggio", "ortaggi", "cipolle"]
 ## merci di lusso: fanno nascere i coloni più in fretta
-const LUSSO := ["vino", "agrumi", "miele", "stoffa", "pece", "tegole", "seta"]
+const LUSSO := ["vino", "agrumi", "miele", "stoffa", "pece", "tegole", "seta", "ceramiche", "lame"]
 ## merci sempre visibili nella barra delle scorte (le altre compaiono quando ce ne sono)
 const RISORSE_BASE := ["tronchi", "assi", "pietra"]
 

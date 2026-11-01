@@ -8,7 +8,7 @@ static var _rumore_rgb: ImageTexture
 const SHADER_VISSUTO := preload("res://tools/studio/vissuto.gdshader")
 
 # materiali che restano "semplici" (metallo, stoffa sottile, acqua)
-const MATERIALI_SEMPLICI := ["ferro", "stoffa", "acqua_pozzo", "buio", "mare", "pece", "acqua_chiara", "vapore", "maglia"]
+const MATERIALI_SEMPLICI := ["ferro", "stoffa", "acqua_pozzo", "buio", "mare", "pece", "acqua_chiara", "vapore", "maglia", "ossidiana", "riflesso_oss"]
 # regolazioni per materiale: [sporco, macchie, saturazione]
 const REGOLAZIONI := {
 	"aghi": [0.0, 0.0, 1.3], "foglie_ulivo": [0.0, 0.0, 1.2], "foglie": [0.0, 0.0, 1.15], "foglie_scure": [0.0, 0.0, 1.1],
@@ -41,6 +41,11 @@ const REGOLAZIONI := {
 	"pietra_normanna": [0.4, 0.35, 1.0], "pietra_n_scura": [0.35, 0.3, 1.0], "pietra_n_chiara": [0.3, 0.3, 1.0],
 	"ardesia": [0.1, 0.3, 1.0], "ardesia_b": [0.1, 0.3, 1.0], "graticcio_n": [0.4, 0.4, 1.05], "stoffa_oro": [0.0, 0.0, 1.2],
 	"oro_n": [0.0, 0.0, 1.15], "cavallo_baio": [0.0, 0.05, 1.05], "prato": [0.1, 0.2, 1.0],
+	"argilla_sic": [0.35, 0.35, 1.1], "pietra_secca": [0.35, 0.35, 1.0], "canne_sic": [0.25, 0.3, 1.0], "frasche": [0.1, 0.2, 1.1],
+	"ocra_rossa": [0.0, 0.0, 1.15], "ceramica": [0.15, 0.2, 1.05], "vernice_rossa": [0.05, 0.1, 1.15], "vernice_nera": [0.0, 0.0, 1.0],
+	"cuoio": [0.05, 0.1, 1.05], "tunica_ocra": [0.0, 0.0, 1.1],
+	"pietra_sicana": [0.4, 0.35, 1.0], "sasso_sic": [0.3, 0.3, 1.0], "lastra_sic": [0.3, 0.35, 1.0], "erba_tetto": [0.05, 0.15, 1.15],
+	"lapislazzuli": [0.0, 0.0, 1.2], "tunica_lapis": [0.0, 0.0, 1.1],
 }
 
 
@@ -166,7 +171,41 @@ static func catalogo() -> Dictionary:
 		"torre_normanni": {"crea": torre_normanni},
 		"allevamento_cavalli": {"crea": allevamento_cavalli},
 		"mastio": {"crea": mastio},
+		"casa_greca_siculi": {"crea": casa_greca_siculi.bind(1)},
+		"magazzino_siculi": {"crea": magazzino_siculi},
+		"boscaiolo_siculi": {"crea": boscaiolo_siculi},
+		"segheria_siculi": {"crea": segheria_siculi},
+		"cava_siculi": {"crea": cava_siculi},
+		"guardaboschi_siculi": {"crea": guardaboschi_siculi},
+		"pozzo_siculi": {"crea": pozzo_siculi},
+		"fattoria_siculi": {"crea": fattoria_siculi},
+		"mulino_siculi": {"crea": mulino_siculi},
+		"forno_siculi": {"crea": forno_siculi},
+		"ovile_siculi": {"crea": ovile_siculi},
+		"capraio_siculi": {"crea": capraio_siculi},
+		"caserma_siculi": {"crea": caserma_siculi},
+		"castello_siculi": {"crea": castello_siculi},
+		"torre_siculi": {"crea": torre_siculi},
+		"vasaio": {"crea": vasaio},
+		"casa_greca_sicani": {"crea": casa_greca_sicani.bind(1)},
+		"magazzino_sicani": {"crea": magazzino_sicani},
+		"boscaiolo_sicani": {"crea": boscaiolo_sicani},
+		"segheria_sicani": {"crea": segheria_sicani},
+		"cava_sicani": {"crea": cava_sicani},
+		"guardaboschi_sicani": {"crea": guardaboschi_sicani},
+		"pozzo_sicani": {"crea": pozzo_sicani},
+		"fattoria_sicani": {"crea": fattoria_sicani},
+		"mulino_sicani": {"crea": mulino_sicani},
+		"forno_sicani": {"crea": forno_sicani},
+		"ovile_sicani": {"crea": ovile_sicani},
+		"capraio_sicani": {"crea": capraio_sicani},
+		"caserma_sicani": {"crea": caserma_sicani},
+		"castello_sicani": {"crea": castello_sicani},
+		"torre_sicani": {"crea": torre_sicani},
+		"ossidiana": {"crea": ossidiana},
+		"merce_lame": {"crea": merce.bind("lame")},
 		"merce_cavalli": {"crea": merce.bind("cavalli")},
+		"merce_ceramiche": {"crea": merce.bind("ceramiche")},
 		"merce_armi": {"crea": merce.bind("armi")},
 		"cantiere_0": {"crea": cantiere.bind(0)},
 		"cantiere_1": {"crea": cantiere.bind(1)},
@@ -242,6 +281,14 @@ static func catalogo() -> Dictionary:
 	c["legionario"] = {"crea": legionario, "posa": posa_cammino,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["legionario_lotta"] = {"crea": legionario, "posa": posa_lotta,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["guerriero_siculo"] = {"crea": guerriero_siculo, "posa": posa_cammino,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["guerriero_siculo_lotta"] = {"crea": guerriero_siculo, "posa": posa_lotta,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["arciere_sicano"] = {"crea": arciere_sicano, "posa": posa_cammino,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["arciere_sicano_lotta"] = {"crea": arciere_sicano, "posa": posa_lotta,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["cavaliere_leggero"] = {"crea": cavaliere_leggero, "posa": posa_galoppo,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
@@ -713,6 +760,57 @@ static func materiale(nome: String) -> Material:
 		"prato":
 			m.albedo_texture = _rumore(118, 0.3, Color("2c4018"), Color("4a6228"))
 			m.uv1_scale = Vector3(3, 3, 3)
+		# materiali dei Siculi
+		"argilla_sic":
+			m.albedo_texture = _rumore(130, 0.14, Color("a86a3e"), Color("d6a26c"))
+			m.uv1_scale = Vector3(2, 2, 2)
+		"pietra_secca":
+			m.albedo_texture = _pietre_murate(131, 128, Color("8e8270"), Color("d2c6aa"), Color("2c261f"))
+			m.uv1_scale = Vector3(2.2, 2.2, 2.2)
+		"canne_sic":
+			m.albedo_texture = _paglia_fili(132, Color("4c4a2a"), Color("958c56"))
+			m.uv1_scale = Vector3(1.2, 1.2, 1.2)
+		"frasche":
+			m.albedo_texture = _rumore(133, 0.45, Color("2c2a14"), Color("5c5226"))
+			m.uv1_scale = Vector3(2, 2, 2)
+		"ocra_rossa":
+			m.albedo_color = Color("b4441c")
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"ceramica":
+			m.albedo_texture = _rumore(134, 0.2, Color("d4ae7a"), Color("eed4a4"))
+			m.roughness = 0.7
+		"vernice_rossa":
+			m.albedo_color = Color("a8321a")
+		"vernice_nera":
+			m.albedo_color = Color("221a14")
+		"cuoio":
+			m.albedo_texture = _rumore(135, 0.3, Color("5e3a1e"), Color("8c5a2e"))
+		"tunica_ocra":
+			m.albedo_texture = _rumore(136, 0.4, Color("bc7a34"), Color("dc9e52"))
+		# materiali dei Sicani
+		"pietra_sicana":
+			m.albedo_texture = _pietre_murate(140, 128, Color("5e605e"), Color("a6a49c"), Color("1a1a1a"))
+			m.uv1_scale = Vector3(2.4, 2.4, 2.4)
+		"sasso_sic":
+			m.albedo_texture = _rumore(141, 0.18, Color("5c5d5a"), Color("9c9a92"))
+		"lastra_sic":
+			m.albedo_texture = _rumore(142, 0.22, Color("55524c"), Color("8c877c"))
+			m.uv1_scale = Vector3(3, 3, 3)
+		"erba_tetto":
+			m.albedo_texture = _rumore(143, 0.4, Color("3a561c"), Color("7c9c38"))
+			m.uv1_scale = Vector3(3, 3, 3)
+		"lapislazzuli":
+			m.albedo_texture = _rumore(144, 0.5, Color("173c94"), Color("2f5fc4"))
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"tunica_lapis":
+			m.albedo_texture = _rumore(145, 0.4, Color("1c3a80"), Color("3560b0"))
+		"ossidiana":
+			m.albedo_color = Color("0e0c12")
+			m.metallic = 0.35
+			m.roughness = 0.1
+		"riflesso_oss":
+			m.albedo_color = Color("6a7488")
+			m.roughness = 0.2
 	var finale: Material = m if nome in MATERIALI_SEMPLICI else _a_vissuto(m, nome)
 	_cache_mat[nome] = finale
 	return finale
@@ -1195,6 +1293,16 @@ static func merce(tipo: String) -> Node3D:
 			cc.add_child(scatola(Vector3(0.095, 0.03, 0.11), Vector3(0, 0.415, -0.015), "pelle_scura"))
 			cc.add_child(scatola(Vector3(0.08, 0.05, 0.018), Vector3(0, 0.44, 0.04), "pelle_scura"))
 			r.add_child(cv)
+		"ceramiche":
+			r.add_child(_vaso_sic(Vector3(-0.04, 0, -0.02), 1.15, 1))
+			r.add_child(_vaso_sic(Vector3(0.045, 0, 0.0), 1.05, 0))
+			r.add_child(_vaso_sic(Vector3(0.0, 0, 0.055), 0.9, 2))
+		"lame":
+			r.add_child(scatola(Vector3(0.14, 0.008, 0.11), Vector3(0, 0.004, 0), "lapislazzuli", Vector3(0, 15, 0)))
+			r.add_child(scatola(Vector3(0.1, 0.009, 0.075), Vector3(0, 0.005, 0), "lino", Vector3(0, 15, 0)))
+			for k in 4:
+				r.add_child(_lama_oss(Vector3(-0.004 + k * 0.003, 0.016 + (k % 2) * 0.008, -0.03 + k * 0.02), Vector3(0, 15 + (k - 2) * 6, (k % 2) * 5), 0.13, k == 1))
+			r.add_child(_toro(0.022, 0.028, Vector3(-0.01, 0.02, 0.0), "corda", Vector3(0, 15, 90), Vector3(1, 0.7, 2.2)))
 	r.scale = Vector3.ONE * 1.25
 	return r
 
@@ -9231,4 +9339,2079 @@ static func cavaliere_pesante() -> Node3D:
 	bd.add_child(scatola(Vector3(0.004, 0.016, 0.04), Vector3(0, -0.106, 0.31), "stoffa_oro"))
 	bd.add_child(scatola(Vector3(0.004, 0.016, 0.04), Vector3(0, -0.13, 0.31), "bandiera_rossa"))
 	r.set_meta("carico", "lancia")
+	return r
+
+
+# =================================================================== SICULI (step 26)
+# Lo stile dei Siculi, pastori e vasai dell'interno della Sicilia orientale: capanne ovali con lo zoccolo di pietra
+# a secco e il muro di argilla color ocra dipinto a fasce, tetti a cupola di canne legate coperti di frasche, con un vaso
+# capovolto sulla cima; recinti di pietra a secco chiara, grandi giare dipinte a fasce rosse e nere, forni da vasaio
+# a cupola. Il colore del popolo è l'ocra rossa (stoffe, insegne, scudi).
+# Ogni modello ha lo stesso ingombro del corrispondente greco (stesso nome senza "_siculi").
+
+## Capanna ovale dei Siculi: zoccolo di pietra a secco, muro di argilla con la fascia dipinta (ocra rossa fra due righe
+## nere, rombi neri), tetto a cupola di canne con le legature di corda, frasche e rami sopra, vaso capovolto in cima.
+## pos = centro a terra; rx, rz = semiassi; la porta guarda verso +Z locale (ruotata di rot_y). Restituisce la quota della cima.
+static func _capanna_sic(r: Node3D, pos: Vector3, rx: float, rz: float, h: float, seme: int, rot_y := 0.0, porta := true, tetto_k := 1.25) -> float:
+	var rng := _rng(seme)
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	# nodo schiacciato: i cerchi di raggio rz diventano ovali rx × rz
+	var s := Node3D.new()
+	s.scale = Vector3(rx / rz, 1, 1)
+	n.add_child(s)
+	var hz := h * 0.34
+	s.add_child(cilindro(rz + 0.035, rz + 0.05, hz, Vector3(0, hz * 0.5, 0), "pietra_secca", Vector3.ZERO, 24))
+	for k in int(rz * 46):
+		var a := deg_to_rad(rng.randf_range(-60.0, 150.0))
+		var d := Vector3(sin(a), 0, cos(a))
+		var p := sfera(rng.randf_range(0.02, 0.03), d * (rz + 0.045) + Vector3(0, rng.randf_range(0.025, hz - 0.012), 0), "roccia_chiara" if k % 3 == 0 else "pietra_secca", Vector3(1.4, 0.7, 0.45))
+		p.rotation.y = a
+		s.add_child(p)
+	var hm := h - hz
+	s.add_child(cilindro(rz, rz * 0.96, hm, Vector3(0, hz + hm * 0.5, 0), "argilla_sic", Vector3.ZERO, 24))
+	# toppe di argilla più fresca sul muro
+	for k in 5:
+		var a := deg_to_rad(rng.randf_range(-40.0, 130.0))
+		var t := sfera(rng.randf_range(0.03, 0.05), Vector3(sin(a), 0, cos(a)) * (rz * 0.975) + Vector3(0, rng.randf_range(hz + 0.03, h - 0.12), 0), "argilla_cruda", Vector3(1.4, 0.8, 0.2))
+		t.rotation.y = a
+		s.add_child(t)
+	# fascia dipinta sotto la gronda
+	var rb := rz * 0.965 + 0.004
+	var yb := hz + (h - hz) * 0.5
+	s.add_child(cilindro(rb, rb, 0.034, Vector3(0, yb, 0), "vernice_rossa", Vector3.ZERO, 24))
+	for y: float in [yb - 0.022, yb + 0.022]:
+		s.add_child(cilindro(rb + 0.001, rb + 0.001, 0.008, Vector3(0, y, 0), "vernice_nera", Vector3.ZERO, 24))
+	for k in 15:
+		var a := deg_to_rad(-70.0 + k * 15.0)
+		s.add_child(scatola(Vector3(0.017, 0.017, 0.006), Vector3(sin(a), 0, cos(a)) * (rb + 0.003) + Vector3(0, yb, 0), "vernice_nera", Vector3(0, rad_to_deg(a), 45)))
+	# tetto a cupola di canne
+	var hc := rz * tetto_k
+	var y0 := h - 0.04
+	var rg := rz + 0.075
+	var hcono := hc * 0.55
+	s.add_child(cilindro(rg, rz * 0.62, hcono, Vector3(0, y0 + hcono * 0.5, 0), "canne_sic", Vector3.ZERO, 24))
+	s.add_child(sfera(rz * 0.66, Vector3(0, y0 + hcono, 0), "canne_sic", Vector3(1, 0.72, 1)))
+	# legature di corda
+	for f: float in [0.18, 0.5, 0.85]:
+		var rr := lerpf(rg, rz * 0.62, f) + 0.004
+		s.add_child(_toro(rr - 0.006, rr + 0.006, Vector3(0, y0 + hcono * f, 0), "corda"))
+	# gronda sfrangiata di canne
+	var nc := int(rg * 52)
+	for k in nc:
+		var a := k * TAU / nc
+		var ci := sfera(0.03, Vector3(sin(a), 0, cos(a)) * (rg - 0.012) + Vector3(0, y0 + 0.004, 0), "frasche" if k % 4 == 0 else "canne_sic", Vector3(1.1, 0.5, 0.8))
+		ci.rotation.y = a
+		s.add_child(ci)
+	# frasche e rami gettati sopra le canne
+	for k in int(rz * 70):
+		var f := rng.randf_range(0.05, 0.95)
+		var a := deg_to_rad(rng.randf_range(-80.0, 170.0))
+		var rr := lerpf(rg, rz * 0.62, f)
+		var fr := sfera(rng.randf_range(0.03, 0.045), Vector3(sin(a), 0, cos(a)) * rr + Vector3(0, y0 + hcono * f + 0.01, 0), "foglie_scure" if k % 4 == 0 else "frasche", Vector3(1.3, 0.45, 1.0))
+		fr.rotation.y = a
+		s.add_child(fr)
+	for k in 5:
+		var a := deg_to_rad(-50.0 + k * 45.0 + rng.randf_range(-10.0, 10.0))
+		var d := Vector3(sin(a), 0, cos(a))
+		ramo(s, d * (rz * 0.6) + Vector3(0, y0 + hcono + 0.03, 0), d * (rg + 0.015) + Vector3(0, y0 + 0.02, 0), 0.008, "legno_vecchio")
+	# cima: ciuffo di canne legato e vaso dipinto capovolto (nel nodo non schiacciato)
+	var ytop := y0 + hcono + rz * 0.66 * 0.72
+	n.add_child(cilindro(0.05, 0.03, 0.06, Vector3(0, ytop + 0.005, 0), "canne_sic", Vector3.ZERO, 10))
+	var v := Node3D.new()
+	v.position = Vector3(0, ytop + 0.03, 0)
+	n.add_child(v)
+	v.add_child(cilindro(0.046, 0.026, 0.065, Vector3(0, 0.032, 0), "ceramica", Vector3.ZERO, 12))
+	v.add_child(cilindro(0.045, 0.04, 0.016, Vector3(0, 0.03, 0), "vernice_rossa", Vector3.ZERO, 12))
+	v.add_child(cilindro(0.033, 0.03, 0.008, Vector3(0, 0.052, 0), "vernice_nera", Vector3.ZERO, 12))
+	v.add_child(cilindro(0.028, 0.028, 0.012, Vector3(0, 0.07, 0), "ceramica", Vector3.ZERO, 10))
+	if porta:
+		_porta_sic(n, Vector3(0, 0, rz + 0.05), 0.0, 0.12, minf(0.21, h - 0.1))
+	return ytop + 0.08
+
+
+## Porta dei Siculi (guarda verso +Z locale): vano buio fra due lastroni di pietra chiara, architrave di pietra
+## con la riga d'ocra, tenda d'ocra rossa con l'orlo nero scostata da un lato, soglia di pietra piatta.
+static func _porta_sic(r: Node3D, pos: Vector3, rot_y := 0.0, w := 0.12, h := 0.2, tenda := true) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(scatola(Vector3(w, h, 0.12), Vector3(0, h * 0.5, -0.05), "buio"))
+	for lato: int in [-1, 1]:
+		n.add_child(scatola(Vector3(0.04, h + 0.02, 0.05), Vector3(lato * (w * 0.5 + 0.02), (h + 0.02) * 0.5, 0.0), "roccia_chiara", Vector3(0, 0, lato * 2)))
+	n.add_child(scatola(Vector3(w + 0.13, 0.045, 0.06), Vector3(0, h + 0.035, 0.0), "roccia_chiara"))
+	n.add_child(scatola(Vector3(w + 0.08, 0.012, 0.004), Vector3(0, h + 0.035, 0.031), "vernice_rossa"))
+	if tenda:
+		n.add_child(scatola(Vector3(w * 0.6, h - 0.02, 0.008), Vector3(-w * 0.2, h * 0.5 + 0.005, 0.012), "ocra_rossa", Vector3(0, 0, 2)))
+		n.add_child(scatola(Vector3(w * 0.6, 0.016, 0.01), Vector3(-w * 0.21, 0.035, 0.014), "vernice_nera", Vector3(0, 0, 2)))
+	n.add_child(sfera(0.07, Vector3(0, 0.0, 0.07), "roccia_chiara", Vector3(1.3, 0.2, 0.7)))
+
+
+## Muretto di pietra a secco da un punto a un altro: corpo di pietre chiare senza malta, sassi sporgenti, copertine in cima.
+static func _muretto_secco(r: Node3D, da: Vector3, a: Vector3, h := 0.1, sp := 0.08) -> void:
+	var d := a - da
+	d.y = 0.0
+	var lung := d.length()
+	var n := Node3D.new()
+	n.position = Vector3((da.x + a.x) * 0.5, da.y, (da.z + a.z) * 0.5)
+	n.rotation.y = atan2(-d.z, d.x)
+	r.add_child(n)
+	n.add_child(scatola(Vector3(lung, h, sp), Vector3(0, h * 0.5, 0), "pietra_secca"))
+	var rng := _rng(int(absf(da.x * 977.0 + da.z * 131.0 + a.x * 53.0)) + 3)
+	var nk := maxi(2, int(lung / 0.06))
+	for k in nk:
+		var x := -lung * 0.5 + (k + 0.5) * lung / nk
+		n.add_child(sfera(rng.randf_range(0.026, 0.034), Vector3(x, h, rng.randf_range(-0.01, 0.01)), "roccia_chiara" if k % 3 == 0 else "pietra_secca", Vector3(1.2, 0.6, sp / 0.06)))
+		for lato: int in [-1, 1]:
+			if rng.randf() < 0.6:
+				n.add_child(sfera(rng.randf_range(0.018, 0.026), Vector3(x + rng.randf_range(-0.02, 0.02), rng.randf_range(0.02, maxf(0.025, h - 0.02)), lato * sp * 0.5), "pietra_secca" if k % 2 == 0 else "roccia_chiara", Vector3(1.3, 0.75, 0.4)))
+
+
+## Grande giara (pithos) di ceramica chiara dipinta: fasce rosse e nere, riga di rombi, due anse, orlo rosso.
+static func _giara(pos: Vector3, scala := 1.0, seme := 0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.scale = Vector3.ONE * scala
+	var c1 := "vernice_rossa" if seme % 2 == 0 else "vernice_nera"
+	var c2 := "vernice_nera" if seme % 2 == 0 else "vernice_rossa"
+	n.add_child(cilindro(0.03, 0.036, 0.02, Vector3(0, 0.01, 0), "ceramica", Vector3.ZERO, 12))
+	n.add_child(sfera(0.06, Vector3(0, 0.077, 0), "ceramica", Vector3(1, 1.22, 1)))
+	n.add_child(cilindro(0.0605, 0.0605, 0.02, Vector3(0, 0.077, 0), c1, Vector3.ZERO, 16))
+	n.add_child(cilindro(0.057, 0.0575, 0.007, Vector3(0, 0.052, 0), c2, Vector3.ZERO, 16))
+	n.add_child(cilindro(0.0555, 0.052, 0.008, Vector3(0, 0.106, 0), c2, Vector3.ZERO, 16))
+	for k in 8:
+		var a := k * TAU / 8 + 0.2
+		n.add_child(scatola(Vector3(0.012, 0.012, 0.004), Vector3(sin(a) * 0.055, 0.094, cos(a) * 0.055), c2, Vector3(0, rad_to_deg(a), 45)))
+	n.add_child(cilindro(0.027, 0.03, 0.035, Vector3(0, 0.155, 0), "ceramica", Vector3.ZERO, 12))
+	n.add_child(cilindro(0.036, 0.034, 0.012, Vector3(0, 0.174, 0), "vernice_rossa", Vector3.ZERO, 12))
+	n.add_child(cilindro(0.026, 0.026, 0.003, Vector3(0, 0.1805, 0), "buio", Vector3.ZERO, 10))
+	for lato: int in [-1, 1]:
+		n.add_child(_toro(0.006, 0.014, Vector3(lato * 0.048, 0.125, 0), "ceramica", Vector3(90, 0, 0)))
+	return n
+
+
+## Vaso piccolo dei Siculi: 0 coppa su alto piede, 1 brocca con il becco e l'ansa, 2 olla panciuta. Dipinti a fasce.
+static func _vaso_sic(pos: Vector3, scala := 1.0, tipo := 0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.scale = Vector3.ONE * scala
+	match tipo:
+		0:
+			n.add_child(cilindro(0.03, 0.03, 0.008, Vector3(0, 0.004, 0), "ceramica", Vector3.ZERO, 12))
+			n.add_child(cilindro(0.012, 0.016, 0.05, Vector3(0, 0.03, 0), "ceramica", Vector3.ZERO, 10))
+			n.add_child(cilindro(0.0165, 0.0165, 0.008, Vector3(0, 0.03, 0), "vernice_nera", Vector3.ZERO, 10))
+			n.add_child(cilindro(0.052, 0.024, 0.035, Vector3(0, 0.07, 0), "ceramica", Vector3.ZERO, 14))
+			n.add_child(cilindro(0.053, 0.05, 0.01, Vector3(0, 0.083, 0), "vernice_rossa", Vector3.ZERO, 14))
+			n.add_child(cilindro(0.044, 0.044, 0.003, Vector3(0, 0.088, 0), "buio", Vector3.ZERO, 12))
+		1:
+			n.add_child(sfera(0.036, Vector3(0, 0.04, 0), "ceramica", Vector3(1, 1.1, 1)))
+			n.add_child(cilindro(0.037, 0.037, 0.012, Vector3(0, 0.042, 0), "vernice_rossa", Vector3.ZERO, 12))
+			n.add_child(cilindro(0.033, 0.032, 0.005, Vector3(0, 0.06, 0), "vernice_nera", Vector3.ZERO, 12))
+			n.add_child(cilindro(0.016, 0.02, 0.04, Vector3(0.004, 0.09, 0), "ceramica", Vector3(0, 0, -12), 10))
+			n.add_child(cilindro(0.008, 0.016, 0.025, Vector3(0.022, 0.108, 0), "ceramica", Vector3(0, 0, -55), 8))
+			n.add_child(_toro(0.004, 0.011, Vector3(-0.03, 0.07, 0), "ceramica", Vector3(90, 0, 0), Vector3(1, 1.6, 1)))
+		_:
+			n.add_child(sfera(0.042, Vector3(0, 0.04, 0), "ceramica", Vector3(1, 0.85, 1)))
+			n.add_child(cilindro(0.0425, 0.0425, 0.014, Vector3(0, 0.04, 0), "vernice_nera", Vector3.ZERO, 14))
+			n.add_child(cilindro(0.04, 0.038, 0.006, Vector3(0, 0.058, 0), "vernice_rossa", Vector3.ZERO, 14))
+			n.add_child(cilindro(0.026, 0.03, 0.016, Vector3(0, 0.075, 0), "ceramica", Vector3.ZERO, 12))
+			n.add_child(cilindro(0.031, 0.031, 0.006, Vector3(0, 0.084, 0), "vernice_rossa", Vector3.ZERO, 12))
+	return n
+
+
+## Forno a cupola d'argilla (da vasaio o da pane): base di pietra a secco, cupola annerita, bocca con le braci verso +Z,
+## sfiatatoi in cima e fumo.
+static func _forno_sic(r: Node3D, pos: Vector3, s := 1.0, fumo := true) -> void:
+	r.add_child(cilindro(0.21 * s, 0.23 * s, 0.1 * s, pos + Vector3(0, 0.05 * s, 0), "pietra_secca", Vector3.ZERO, 20))
+	r.add_child(sfera(0.2 * s, pos + Vector3(0, 0.1 * s, 0), "argilla_sic", Vector3(1, 1.05, 1)))
+	r.add_child(cilindro(0.2 * s, 0.2 * s, 0.025 * s, pos + Vector3(0, 0.13 * s, 0), "vernice_rossa", Vector3.ZERO, 20))
+	for k in 4:
+		var a := deg_to_rad(-30.0 + k * 40.0)
+		var t := sfera(0.05 * s, pos + Vector3(sin(a), 0, cos(a)) * 0.165 * s + Vector3(0, 0.23 * s, 0), "fuliggine" if k % 2 == 0 else "argilla_cruda", Vector3(1.3, 0.8, 0.3))
+		t.rotation.y = a
+		r.add_child(t)
+	var b := pos + Vector3(0, 0, 0.2 * s)
+	r.add_child(scatola(Vector3(0.14 * s, 0.11 * s, 0.08 * s), b + Vector3(0, 0.07 * s, 0), "pietra_secca"))
+	r.add_child(scatola(Vector3(0.09 * s, 0.075 * s, 0.02 * s), b + Vector3(0, 0.06 * s, 0.035 * s), "buio"))
+	r.add_child(sfera(0.032 * s, b + Vector3(0, 0.035 * s, 0.04 * s), "brace", Vector3(1.2, 0.6, 0.8)))
+	r.add_child(scatola(Vector3(0.12 * s, 0.07 * s, 0.012 * s), b + Vector3(0, 0.15 * s, -0.01 * s), "fuliggine", Vector3(-25, 0, 0)))
+	for k in 3:
+		var a := k * TAU / 3 + 0.4
+		r.add_child(cilindro(0.016 * s, 0.018 * s, 0.03 * s, pos + Vector3(cos(a) * 0.07 * s, 0.3 * s, sin(a) * 0.07 * s), "fuliggine", Vector3.ZERO, 8))
+	if fumo:
+		_fumo(r, pos + Vector3(0.02 * s, 0.36 * s, 0), 4, s)
+
+
+## Tornio da vasaio: base di pietra, perno, ruota di legno con un vaso d'argilla fresca, sgabello e ciotola d'acqua.
+static func _tornio_sic(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(cilindro(0.06, 0.07, 0.03, Vector3(0, 0.015, 0), "pietra_secca", Vector3.ZERO, 12))
+	n.add_child(cilindro(0.012, 0.012, 0.07, Vector3(0, 0.065, 0), "legno_scuro", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.08, 0.08, 0.018, Vector3(0, 0.1, 0), "legno", Vector3.ZERO, 16))
+	n.add_child(cilindro(0.081, 0.081, 0.006, Vector3(0, 0.1, 0), "legno_scuro", Vector3.ZERO, 16))
+	n.add_child(cilindro(0.03, 0.038, 0.055, Vector3(0, 0.137, 0), "argilla_cruda", Vector3.ZERO, 12))
+	n.add_child(cilindro(0.032, 0.03, 0.01, Vector3(0, 0.168, 0), "argilla_cruda", Vector3.ZERO, 12))
+	n.add_child(cilindro(0.024, 0.024, 0.003, Vector3(0, 0.174, 0), "buio", Vector3.ZERO, 10))
+	n.add_child(scatola(Vector3(0.09, 0.06, 0.08), Vector3(0, 0.03, -0.14), "legno_vecchio"))
+	n.add_child(cilindro(0.035, 0.028, 0.03, Vector3(0.11, 0.015, -0.04), "terracotta", Vector3.ZERO, 10))
+	n.add_child(cilindro(0.03, 0.03, 0.003, Vector3(0.11, 0.029, -0.04), "acqua_pozzo", Vector3.ZERO, 10))
+
+
+## Insegna dei Siculi: asta di legno con la traversa, drappo d'ocra rossa con le fasce nere e il rombo chiaro,
+## frange, disco di ceramica dipinto in cima.
+static func _insegna_sic(r: Node3D, pos: Vector3, h := 0.6) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = 45
+	r.add_child(n)
+	n.add_child(cilindro(0.012, 0.015, h, Vector3(0, h * 0.5, 0), "corteccia", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.008, 0.008, 0.2, Vector3(0, h - 0.05, 0.01), "legno_vecchio", Vector3(0, 0, 90), 5))
+	n.add_child(scatola(Vector3(0.17, 0.21, 0.006), Vector3(0, h - 0.16, 0.014), "ocra_rossa"))
+	for y: float in [h - 0.075, h - 0.245]:
+		n.add_child(scatola(Vector3(0.172, 0.016, 0.008), Vector3(0, y, 0.016), "vernice_nera"))
+	n.add_child(scatola(Vector3(0.06, 0.06, 0.008), Vector3(0, h - 0.16, 0.017), "ceramica", Vector3(0, 0, 45)))
+	n.add_child(scatola(Vector3(0.025, 0.025, 0.01), Vector3(0, h - 0.16, 0.019), "vernice_nera", Vector3(0, 0, 45)))
+	for k in 5:
+		n.add_child(scatola(Vector3(0.022, 0.04, 0.006), Vector3(-0.068 + k * 0.034, h - 0.285, 0.014), "ocra_rossa" if k % 2 == 0 else "vernice_nera"))
+	n.add_child(cilindro(0.045, 0.045, 0.012, Vector3(0, h + 0.04, 0.0), "ceramica", Vector3(90, 0, 0), 16))
+	n.add_child(cilindro(0.034, 0.034, 0.014, Vector3(0, h + 0.04, 0.0), "vernice_rossa", Vector3(90, 0, 0), 16))
+	n.add_child(cilindro(0.018, 0.018, 0.016, Vector3(0, h + 0.04, 0.0), "vernice_nera", Vector3(90, 0, 0), 12))
+
+
+## Scudo rotondo dei Siculi (faccia verso +Z locale): cuoio dipinto d'ocra rossa con l'anello nero, rombi chiari, orlo
+## di cuoio e umbone di bronzo.
+static func _scudo_sic(pos: Vector3, rot_y := 0.0, s := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	n.scale = Vector3.ONE * s
+	n.add_child(cilindro(0.085, 0.085, 0.012, Vector3.ZERO, "ocra_rossa", Vector3(90, 0, 0), 18))
+	n.add_child(_toro(0.08, 0.091, Vector3.ZERO, "cuoio", Vector3(90, 0, 0)))
+	n.add_child(cilindro(0.064, 0.064, 0.004, Vector3(0, 0, 0.007), "vernice_nera", Vector3(90, 0, 0), 18))
+	n.add_child(cilindro(0.052, 0.052, 0.004, Vector3(0, 0, 0.009), "ocra_rossa", Vector3(90, 0, 0), 18))
+	for k in 4:
+		var a := k * TAU / 4 + PI * 0.25
+		n.add_child(scatola(Vector3(0.018, 0.018, 0.004), Vector3(cos(a) * 0.035, sin(a) * 0.035, 0.012), "ceramica", Vector3(0, 0, 45)))
+	n.add_child(sfera(0.02, Vector3(0, 0, 0.011), "bronzo", Vector3(1, 1, 0.6)))
+	return n
+
+
+## Tettoia di canne e frasche su pali: alta dietro (-Z), bassa davanti (+Z). pos = centro a terra.
+static func _tettoia_sic(r: Node3D, pos: Vector3, larg: float, prof: float, h_alta: float, h_bassa: float, seme := 1) -> void:
+	var rng := _rng(seme)
+	var dh := h_alta - h_bassa
+	var ang := atan2(dh, prof)
+	var lung := sqrt(prof * prof + dh * dh) + 0.12
+	var xs := [-larg * 0.5, larg * 0.5]
+	if larg > 0.7:
+		xs.append(0.0)
+	for x: float in xs:
+		r.add_child(cilindro(0.015, 0.018, h_bassa, pos + Vector3(x, h_bassa * 0.5, prof * 0.5), "corteccia", Vector3.ZERO, 6))
+		r.add_child(cilindro(0.015, 0.018, h_alta, pos + Vector3(x, h_alta * 0.5, -prof * 0.5), "corteccia", Vector3.ZERO, 6))
+		r.add_child(cilindro(0.01, 0.01, 0.05, pos + Vector3(x, h_bassa + 0.01, prof * 0.5), "corteccia", Vector3(0, 0, 35), 5))
+	var ym := (h_alta + h_bassa) * 0.5 + 0.025
+	r.add_child(scatola(Vector3(larg + 0.14, 0.035, lung), pos + Vector3(0, ym, 0.0), "canne_sic", Vector3(rad_to_deg(ang), 0, 0)))
+	for k in int((larg + 0.14) / 0.09):
+		var x := -larg * 0.5 - 0.07 + (k + 0.5) * 0.09
+		r.add_child(cilindro(0.006, 0.006, lung, pos + Vector3(x, ym + 0.02, 0.0), "corda" if k % 2 == 0 else "legno_vecchio", Vector3(90 + rad_to_deg(ang), 0, 0), 4))
+	for k in int(larg * 14):
+		var t := rng.randf_range(-0.4, 0.45)
+		var p := pos + Vector3(rng.randf_range(-larg * 0.5, larg * 0.5), ym + 0.03 - t * dh, t * prof)
+		r.add_child(sfera(rng.randf_range(0.03, 0.045), p, "foglie_scure" if k % 3 == 0 else "frasche", Vector3(1.3, 0.45, 1.0)))
+	r.add_child(cilindro(0.016, 0.016, larg + 0.1, pos + Vector3(0, h_bassa - 0.005, prof * 0.5), "legno_vecchio", Vector3(0, 0, 90), 6))
+
+
+## Macina a sella: lastra di pietra incavata, pietra per macinare e un po' di farina.
+static func _macina_sella(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(sfera(0.08, Vector3(0, 0.0, 0), "roccia_chiara", Vector3(1.4, 0.4, 0.8)))
+	n.add_child(sfera(0.032, Vector3(0.01, 0.035, 0), "roccia_massi", Vector3(0.7, 0.6, 1.6)))
+	n.add_child(sfera(0.03, Vector3(-0.08, 0.025, 0.02), "lino", Vector3(1.4, 0.3, 1.0)))
+
+
+## Fascio di frasche legato, da bruciare nel forno.
+static func _fascina(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	for k in 6:
+		n.add_child(cilindro(0.006, 0.004, 0.24, Vector3(-0.01 + (k % 3) * 0.01, 0.025 + (k / 3) * 0.012, 0), "corteccia", Vector3(90, 0, -4 + k * 2), 4))
+	n.add_child(sfera(0.04, Vector3(0, 0.03, 0.1), "frasche", Vector3(1, 0.8, 1.3)))
+	n.add_child(cilindro(0.025, 0.025, 0.01, Vector3(0, 0.03, -0.03), "corda", Vector3(90, 0, 0), 8))
+
+
+## Rastrelliera di lance con i nastri d'ocra e scudi rotondi appoggiati.
+static func _rastrelliera_sic(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	for lato: int in [-1, 1]:
+		n.add_child(cilindro(0.012, 0.014, 0.3, Vector3(lato * 0.13, 0.15, 0), "corteccia", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.009, 0.009, 0.3, Vector3(0, 0.27, 0), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for k in 5:
+		var x := -0.1 + k * 0.05
+		n.add_child(cilindro(0.005, 0.005, 0.42, Vector3(x, 0.21, -0.02), "legno", Vector3(-8, 0, 0), 5))
+		n.add_child(cilindro(0.012, 0.0, 0.045, Vector3(x, 0.44, -0.05), "bronzo", Vector3(-8, 0, 0), 5))
+		n.add_child(scatola(Vector3(0.012, 0.03, 0.004), Vector3(x + 0.006, 0.38, -0.04), "ocra_rossa"))
+	for sc: Node3D in [_scudo_sic(Vector3(-0.08, 0.085, 0.06), 0.0, 1.0), _scudo_sic(Vector3(0.09, 0.08, 0.07), 10.0, 0.95)]:
+		sc.rotation_degrees.x = -12
+		n.add_child(sc)
+
+
+# ------------------------------------------------------------------ edifici dei Siculi
+
+## Casa dei Siculi: capanna ovale con lo zoccolo a secco e la cupola di canne, dispensa tonda accanto, focolare
+## all'aperto con la pentola, macina a sella, giare dipinte, orto chiuso da muretti a secco.
+static func casa_greca_siculi(seme := 1) -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.12, 0, -0.16), 0.5, 0.37, 0.46, seme)
+	_capanna_sic(r, Vector3(-0.64, 0, 0.32), 0.16, 0.15, 0.24, seme + 7, 60.0, false, 1.4)
+	# focolare con la pentola, macina, giare
+	_fuoco(r, Vector3(0.22, 0, 0.36), 0.8)
+	r.add_child(cilindro(0.04, 0.032, 0.05, Vector3(0.22, 0.07, 0.36), "terracotta", Vector3.ZERO, 10))
+	r.add_child(cilindro(0.041, 0.041, 0.008, Vector3(0.22, 0.09, 0.36), "vernice_nera", Vector3.ZERO, 10))
+	_fumo(r, Vector3(0.24, 0.16, 0.34), 3, 0.8)
+	_macina_sella(r, Vector3(-0.3, 0, 0.42), 20.0)
+	r.add_child(_giara(Vector3(0.05, 0, 0.36), 1.35, 0))
+	r.add_child(_giara(Vector3(-0.02, 0, 0.46), 1.0, 1))
+	r.add_child(_vaso_sic(Vector3(0.12, 0, 0.47), 1.0, 0))
+	_fascina(r, Vector3(0.36, 0, -0.12), 80.0)
+	legnaia(r, Vector3(0.38, 0, -0.32), 0.18, 3)
+	# orto chiuso da muretti a secco, con fave e cavoli
+	var o := Vector3(0.56, 0, 0.45)
+	r.add_child(scatola(Vector3(0.34, 0.012, 0.38), o + Vector3(0, 0.006, 0), "terra"))
+	var rng := _rng(seme + 19)
+	for f in 4:
+		for k in 5:
+			r.add_child(sfera(rng.randf_range(0.02, 0.028), o + Vector3(-0.14 + k * 0.07, 0.025, -0.14 + f * 0.093), "orto" if f % 2 == 0 else "foglie_chiare", Vector3(1, 0.8, 1)))
+	_muretto_secco(r, o + Vector3(-0.2, 0, 0.23), o + Vector3(0.21, 0, 0.23), 0.08, 0.07)
+	_muretto_secco(r, o + Vector3(0.21, 0, -0.21), o + Vector3(0.21, 0, 0.23), 0.08, 0.07)
+	return r
+
+
+## Magazzino dei Siculi: grande capanna lunga ovale e un granaio tondo, cortile chiuso dal muro a secco con le file
+## di grandi giare dipinte sotto la tettoia di canne, sacchi, ceste, asino col basto e l'insegna d'ocra.
+static func magazzino_siculi() -> Node3D:
+	var r := Node3D.new()
+	r.position = Vector3(0, 0, -0.1)
+	r.add_child(scatola(Vector3(2.0, 0.02, 1.6), Vector3(0, 0.01, 0.05), "terra"))
+	_capanna_sic(r, Vector3(-0.18, 0, -0.36), 0.8, 0.44, 0.58, 31, 0.0, true, 1.3)
+	_capanna_sic(r, Vector3(0.7, 0, -0.42), 0.28, 0.25, 0.46, 32, -30.0, true, 1.45)
+	# muro a secco attorno al cortile, con l'ingresso davanti fra due lastroni
+	_muretto_secco(r, Vector3(-0.98, 0, -0.62), Vector3(-0.98, 0, 0.82), 0.13, 0.1)
+	_muretto_secco(r, Vector3(-0.98, 0, 0.82), Vector3(-0.2, 0, 0.82), 0.13, 0.1)
+	_muretto_secco(r, Vector3(0.2, 0, 0.82), Vector3(0.98, 0, 0.82), 0.13, 0.1)
+	_muretto_secco(r, Vector3(0.98, 0, 0.82), Vector3(0.98, 0, -0.2), 0.13, 0.1)
+	for x: float in [-0.2, 0.2]:
+		r.add_child(scatola(Vector3(0.1, 0.24, 0.12), Vector3(x, 0.12, 0.82), "roccia_chiara", Vector3(0, 0, 3 * signf(x))))
+	# file di grandi giare dipinte nel cortile
+	var gi := 0
+	for j in 2:
+		for i in 4:
+			r.add_child(_giara(Vector3(-0.82 + i * 0.19 + j * 0.09, 0, 0.22 + j * 0.22), 1.85, gi))
+			gi += 1
+	# tettoia di canne sopra sacchi e ceste a destra
+	_tettoia_sic(r, Vector3(0.66, 0, 0.22), 0.5, 0.34, 0.4, 0.32, 33)
+	for i in 3:
+		r.add_child(sacco(Vector3(0.5 + i * 0.12, 0, 0.16), i * 0.6))
+	r.add_child(cesta(Vector3(0.82, 0, 0.32), "olive"))
+	r.add_child(cesta(Vector3(0.7, 0, 0.32), "formaggio"))
+	for i in 3:
+		r.add_child(_giara(Vector3(0.48 + i * 0.15, 0, 0.55), 1.25, i + 1))
+	r.add_child(_vaso_sic(Vector3(0.3, 0, 0.66), 1.25, 1))
+	r.add_child(_vaso_sic(Vector3(0.38, 0, 0.72), 1.15, 2))
+	# asino col basto e le ceste
+	r.add_child(asino(Vector3(0.08, 0, 0.62), 70))
+	r.add_child(cesta(Vector3(0.06, 0.11, 0.56), "olive", 0.7))
+	r.add_child(cesta(Vector3(0.1, 0.11, 0.68), "olive", 0.7))
+	_insegna_sic(r, Vector3(0.9, 0, 0.7), 0.78)
+	return r
+
+
+## Boscaiolo dei Siculi: capanna ovale, tettoia di canne sopra la legna spaccata, catasta di tronchi,
+## ceppo con l'ascia, fascine di frasche e una giara.
+static func boscaiolo_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.15, 0, -0.18), 0.4, 0.31, 0.34, 41)
+	_tettoia_sic(r, Vector3(0.42, 0, -0.18), 0.32, 0.5, 0.34, 0.26, 42)
+	legnaia(r, Vector3(0.42, 0, -0.32), 0.28, 5)
+	legnaia(r, Vector3(0.42, 0, -0.1), 0.28, 4)
+	catasta_tronchi(r, Vector3(0.55, 0, 0.55), 4, 0.5)
+	r.add_child(cilindro(0.07, 0.075, 0.09, Vector3(-0.2, 0.045, 0.5), "corteccia", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.066, 0.066, 0.006, Vector3(-0.2, 0.092, 0.5), "legno_chiaro", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.008, 0.008, 0.22, Vector3(-0.2, 0.18, 0.5), "legno", Vector3(0, 0, 22), 6))
+	r.add_child(scatola(Vector3(0.055, 0.04, 0.012), Vector3(-0.245, 0.27, 0.5), "bronzo", Vector3(0, 0, 22)))
+	for i in 6:
+		r.add_child(cilindro(0.02, 0.02, 0.06, Vector3(-0.38 + i * 0.06, 0.02, 0.62 + (i % 2) * 0.05), "legno_chiaro", Vector3(0, i * 37, 90), 6))
+	_fascina(r, Vector3(-0.62, 0, 0.35), 20.0)
+	_fascina(r, Vector3(-0.55, 0, 0.45), 35.0)
+	r.add_child(_giara(Vector3(0.1, 0, 0.32), 1.2, 0))
+	for pos: Vector3 in [Vector3(-0.72, 0, 0.0), Vector3(-0.6, 0, 0.75)]:
+		r.add_child(cilindro(0.06, 0.07, 0.05, pos + Vector3(0, 0.025, 0), "corteccia", Vector3.ZERO, 10))
+		r.add_child(cilindro(0.056, 0.056, 0.005, pos + Vector3(0, 0.052, 0), "legno_chiaro", Vector3.ZERO, 10))
+	return r
+
+
+## Segheria dei Siculi: capanna ovale, tettoia di canne e frasche sopra il tronco sui cavalletti con la sega a telaio,
+## pile di assi, cunei e mazzuolo, catasta di tronchi.
+static func segheria_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.27), 0.42, 0.31, 0.38, 51)
+	var t := Vector3(0.05, 0, 0.5)
+	_tettoia_sic(r, t, 0.9, 0.44, 0.42, 0.34, 52)
+	for px: float in [-0.25, 0.0, 0.25]:
+		r.add_child(scatola(Vector3(0.03, 0.12, 0.12), t + Vector3(px, 0.06, 0.0), "legno"))
+	r.add_child(cilindro(0.055, 0.055, 0.8, t + Vector3(0, 0.17, 0.0), "corteccia", Vector3(0, 0, 90), 9))
+	r.add_child(cilindro(0.047, 0.047, 0.805, t + Vector3(0, 0.17, 0.0), "legno_chiaro", Vector3(0, 0, 90), 9))
+	for z: float in [-0.08, 0.08]:
+		r.add_child(scatola(Vector3(0.014, 0.3, 0.014), t + Vector3(0.1, 0.24, z), "legno"))
+	r.add_child(scatola(Vector3(0.014, 0.014, 0.18), t + Vector3(0.1, 0.38, 0.0), "legno"))
+	r.add_child(scatola(Vector3(0.006, 0.006, 0.17), t + Vector3(0.1, 0.2, 0.0), "bronzo"))
+	r.add_child(cilindro(0.2, 0.2, 0.004, t + Vector3(0.1, 0.002, 0.0), "legno_chiaro", Vector3.ZERO, 16))
+	# cunei e mazzuolo accanto al tronco
+	for k in 3:
+		r.add_child(scatola(Vector3(0.03, 0.02, 0.05), t + Vector3(-0.35 + k * 0.05, 0.01, 0.17), "legno_scuro", Vector3(0, k * 30, 0)))
+	r.add_child(cilindro(0.025, 0.025, 0.07, t + Vector3(-0.2, 0.025, 0.18), "legno", Vector3(0, 30, 90), 8))
+	pila_assi(r, Vector3(0.62, 0, -0.25), 8, 90)
+	pila_assi(r, Vector3(0.62, 0, 0.12), 5, 90)
+	catasta_tronchi(r, Vector3(-0.65, 0, 0.55), 3, 0.42)
+	r.add_child(_giara(Vector3(0.4, 0, 0.85), 1.1, 1))
+	_fascina(r, Vector3(0.2, 0, 0.85), 70.0)
+	return r
+
+
+## Cava dei Siculi: capanna piccola, parete di calcare chiaro con le tombe a grotticella scavate, blocchi grezzi
+## squadrati, leva di legno, ceste di pietrame e slitta di tronchi.
+static func cava_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.38, 0, -0.32), 0.32, 0.27, 0.32, 61)
+	var rng := _rng(61)
+	for k in 9:
+		var p := Vector3(0.35 + rng.randf_range(-0.2, 0.2), 0.0, -0.4 + rng.randf_range(-0.15, 0.2))
+		var d := rng.randf_range(0.16, 0.3)
+		r.add_child(scatola(Vector3(d, d * rng.randf_range(0.7, 1.4), d * 0.8), p + Vector3(0, d * 0.4, 0), "tufo" if k % 3 != 0 else "roccia_massi", Vector3(0, rng.randf() * 60, 0)))
+	# parete principale con le grotticelle (porte quadrate scure scavate nel calcare)
+	r.add_child(scatola(Vector3(0.5, 0.36, 0.24), Vector3(0.3, 0.18, -0.36), "tufo", Vector3(0, -8, 0)))
+	for g: Vector3 in [Vector3(0.18, 0.2, -0.235), Vector3(0.36, 0.12, -0.21), Vector3(0.45, 0.27, -0.225)]:
+		r.add_child(scatola(Vector3(0.065, 0.06, 0.02), g, "buio", Vector3(0, -8, 0)))
+		r.add_child(scatola(Vector3(0.085, 0.012, 0.024), g + Vector3(0, -0.036, 0.002), "pietra_secca", Vector3(0, -8, 0)))
+	# blocchi grezzi pronti
+	for i in 4:
+		for j in 2 - (i / 3):
+			r.add_child(scatola(Vector3(0.13, 0.09, 0.09), Vector3(-0.1 + i * 0.15, 0.045 + j * 0.09, 0.45), "tufo", Vector3(0, i * 5 - 6, 0)))
+	# leva di legno sotto un blocco, ceste di pietrame
+	r.add_child(scatola(Vector3(0.14, 0.1, 0.1), Vector3(0.55, 0.05, 0.1), "tufo", Vector3(0, 20, 6)))
+	ramo(r, Vector3(0.5, 0.02, 0.18), Vector3(0.78, 0.2, 0.32), 0.01, "legno")
+	r.add_child(sfera(0.025, Vector3(0.52, 0.02, 0.22), "roccia_massi", Vector3(1.2, 0.8, 1)))
+	for k in 2:
+		var cp := Vector3(-0.55 + k * 0.13, 0, 0.3 + k * 0.08)
+		r.add_child(cilindro(0.065, 0.055, 0.06, cp + Vector3(0, 0.03, 0), "canne_sic", Vector3.ZERO, 12))
+		r.add_child(mucchio(cp + Vector3(0, 0.03, 0), "tufo", 5, 7 + k, 0.025))
+	# slitta di tronchi con un blocco
+	for lato: int in [-1, 1]:
+		r.add_child(cilindro(0.018, 0.018, 0.34, Vector3(-0.42, 0.018, 0.62 + lato * 0.06), "corteccia", Vector3(0, 0, 90), 6))
+	r.add_child(scatola(Vector3(0.26, 0.02, 0.16), Vector3(-0.42, 0.045, 0.62), "legno_vecchio"))
+	r.add_child(scatola(Vector3(0.12, 0.08, 0.09), Vector3(-0.42, 0.095, 0.62), "tufo"))
+	ramo(r, Vector3(-0.27, 0.02, 0.62), Vector3(-0.1, 0.06, 0.66), 0.004, "corda")
+	r.add_child(_giara(Vector3(-0.15, 0, 0.2), 1.0, 0))
+	return r
+
+
+## Guardaboschi dei Siculi: capanna ovale, vivaio di querce e olivastri giovani in file dentro il muretto a secco,
+## giara d'acqua, zappa e sacchi di ghiande.
+static func guardaboschi_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.32, 0, -0.32), 0.33, 0.26, 0.3, 71)
+	for i in 4:
+		for j in 3:
+			var p := Vector3(-0.1 + i * 0.16, 0, 0.3 + j * 0.15)
+			r.add_child(cilindro(0.05, 0.05, 0.012, p + Vector3(0, 0.006, 0), "terra", Vector3.ZERO, 10))
+			r.add_child(cilindro(0.006, 0.006, 0.06 + j * 0.02, p + Vector3(0, 0.03, 0), "corteccia", Vector3.ZERO, 5))
+			r.add_child(sfera(0.035 + j * 0.008, p + Vector3(0, 0.08 + j * 0.03, 0), "foglie_ulivo" if (i + j) % 2 == 0 else "foglie", Vector3(1, 0.85, 1)))
+	_muretto_secco(r, Vector3(-0.2, 0, 0.75), Vector3(0.52, 0, 0.75), 0.08, 0.07)
+	_muretto_secco(r, Vector3(0.52, 0, 0.2), Vector3(0.52, 0, 0.75), 0.08, 0.07)
+	r.add_child(_giara(Vector3(0.3, 0, -0.18), 1.2, 1))
+	r.add_child(_vaso_sic(Vector3(0.42, 0, -0.1), 1.0, 1))
+	r.add_child(cilindro(0.007, 0.007, 0.22, Vector3(0.2, 0.11, -0.3), "legno", Vector3(12, 0, -15), 5))
+	r.add_child(scatola(Vector3(0.05, 0.012, 0.04), Vector3(0.23, 0.01, -0.28), "bronzo", Vector3(0, 0, -15)))
+	r.add_child(sacco(Vector3(-0.58, 0, 0.3), 0.4))
+	r.add_child(sacco(Vector3(-0.62, 0, 0.42), -0.2))
+	r.add_child(quercia(43))
+	r.get_child(r.get_child_count() - 1).position = Vector3(0.55, 0, -0.55)
+	r.get_child(r.get_child_count() - 1).scale = Vector3.ONE * 0.6
+	return r
+
+
+## Pozzo dei Siculi: vera tonda di pietra a secco, pertica a bilanciere (con il contrappeso di pietra legato) su un palo
+## a forcella, giara appesa alla corda, abbeveratoio di pietra e giara dipinta.
+static func pozzo_siculi() -> Node3D:
+	var r := Node3D.new()
+	r.add_child(cilindro(0.2, 0.22, 0.17, Vector3(0, 0.085, 0), "pietra_secca", Vector3.ZERO, 18))
+	r.add_child(cilindro(0.15, 0.15, 0.005, Vector3(0, 0.168, 0), "acqua_pozzo", Vector3.ZERO, 18))
+	for k in 12:
+		var a := k * TAU / 12
+		r.add_child(sfera(0.045, Vector3(cos(a) * 0.18, 0.175, sin(a) * 0.18), "roccia_chiara" if k % 3 == 0 else "pietra_secca", Vector3(1.2, 0.5, 1.0)))
+	# palo a forcella piantato fra i sassi e pertica a bilanciere (in vista di traverso)
+	var pz := Vector3(-0.24, 0, 0.22)
+	r.add_child(cilindro(0.024, 0.028, 0.44, pz + Vector3(0, 0.22, 0), "corteccia", Vector3.ZERO, 7))
+	ramo(r, pz + Vector3(0, 0.42, 0), pz + Vector3(0.03, 0.5, 0.03), 0.013)
+	ramo(r, pz + Vector3(0, 0.42, 0), pz + Vector3(-0.03, 0.5, -0.03), 0.013)
+	r.add_child(cilindro(0.006, 0.006, 0.1, pz + Vector3(0, 0.46, 0), "ferro", Vector3(90, 45, 0), 4))
+	for k in 4:
+		r.add_child(sfera(0.042, pz + Vector3(cos(k * 1.6) * 0.055, 0.02, sin(k * 1.6) * 0.055), "roccia_chiara" if k % 2 == 0 else "pietra_secca", Vector3(1.2, 0.6, 1)))
+	var testa := Vector3(0.04, 0.62, -0.06)
+	var coda := Vector3(-0.47, 0.3, 0.45)
+	ramo(r, coda, testa, 0.014, "legno")
+	# contrappeso: grosso sasso legato con la corda
+	r.add_child(sfera(0.055, coda + Vector3(0.0, -0.045, 0.0), "roccia_massi", Vector3(1.1, 0.9, 1)))
+	r.add_child(_toro(0.035, 0.046, coda + Vector3(0, -0.03, 0), "corda", Vector3(0, 0, 20)))
+	# corda e giara appesa sopra l'acqua
+	r.add_child(cilindro(0.003, 0.003, 0.3, testa + Vector3(0, -0.15, 0), "corda", Vector3.ZERO, 4))
+	r.add_child(_vaso_sic(testa + Vector3(0, -0.39, 0), 1.1, 2))
+	# abbeveratoio di pietra, giare, sedile
+	r.add_child(scatola(Vector3(0.24, 0.06, 0.1), Vector3(0.26, 0.03, 0.2), "roccia_chiara", Vector3(0, -40, 0)))
+	r.add_child(scatola(Vector3(0.2, 0.005, 0.07), Vector3(0.26, 0.061, 0.2), "acqua_pozzo", Vector3(0, -40, 0)))
+	r.add_child(_giara(Vector3(0.24, 0, -0.18), 1.2, 0))
+	r.add_child(_giara(Vector3(0.05, 0, 0.3), 1.0, 1))
+	r.add_child(_vaso_sic(Vector3(0.14, 0, 0.36), 0.9, 1))
+	r.add_child(sfera(0.06, Vector3(-0.3, 0.02, -0.12), "roccia_chiara", Vector3(1.3, 0.6, 1)))
+	r.scale = Vector3.ONE * 1.2
+	return r
+
+
+## Fattoria dei Siculi: capanna ovale, granaio tondo d'argilla su un basamento di pietre, aia lastricata con i covoni,
+## campicello di grano, muretti a secco, asino, galline e giare.
+static func fattoria_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.24), 0.4, 0.3, 0.34, 81)
+	# granaio: silo d'argilla su un basamento di pietra con il tappo di canne
+	var g := Vector3(0.75, 0, -0.25)
+	r.add_child(cilindro(0.2, 0.22, 0.08, g + Vector3(0, 0.04, 0), "pietra_secca", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.15, 0.17, 0.26, g + Vector3(0, 0.21, 0), "argilla_sic", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.172, 0.172, 0.03, g + Vector3(0, 0.27, 0), "vernice_rossa", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.2, 0.03, 0.18, g + Vector3(0, 0.43, 0), "canne_sic", Vector3.ZERO, 16))
+	r.add_child(_toro(0.15, 0.165, g + Vector3(0, 0.375, 0), "corda"))
+	r.add_child(scatola(Vector3(0.07, 0.08, 0.02), g + Vector3(0.0, 0.2, 0.16), "legno_scuro"))
+	# aia tonda lastricata con i covoni
+	var a := Vector3(-0.35, 0, 0.5)
+	r.add_child(cilindro(0.26, 0.27, 0.02, a + Vector3(0, 0.01, 0), "roccia_chiara", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.22, 0.22, 0.005, a + Vector3(0, 0.022, 0), "paglia", Vector3.ZERO, 20))
+	for i in 4:
+		var cv := covone(1.15)
+		cv.position = a + Vector3(-0.15 + i * 0.1, 0.02, -0.05 + (i % 2) * 0.1)
+		cv.rotation_degrees.z = 8 * (i % 2 * 2 - 1)
+		r.add_child(cv)
+	# campicello di grano maturo chiuso dal muretto
+	var c := Vector3(0.45, 0, 0.45)
+	r.add_child(scatola(Vector3(0.42, 0.012, 0.36), c + Vector3(0, 0.006, 0), "terra"))
+	for i in 7:
+		for j in 5:
+			r.add_child(cilindro(0.012, 0.016, 0.1, c + Vector3(-0.18 + i * 0.06, 0.05, -0.14 + j * 0.07), "grano", Vector3.ZERO, 5))
+	_muretto_secco(r, c + Vector3(-0.23, 0, 0.21), c + Vector3(0.25, 0, 0.21), 0.07, 0.06)
+	_muretto_secco(r, c + Vector3(0.25, 0, -0.2), c + Vector3(0.25, 0, 0.21), 0.07, 0.06)
+	r.add_child(asino(Vector3(0.18, 0, 0.0), 120))
+	for i in 3:
+		r.add_child(sfera(0.025, Vector3(0.05 + i * 0.07, 0.03, 0.22 - i * 0.03), "intonaco", Vector3(1.3, 1, 1)))
+		r.add_child(sfera(0.008, Vector3(0.08 + i * 0.07, 0.05, 0.22 - i * 0.03), "geranio"))
+	r.add_child(_giara(Vector3(-0.7, 0, 0.1), 1.2, 1))
+	r.add_child(sacco(Vector3(0.48, 0, 0.0), 0.3))
+	r.add_child(sacco(Vector3(0.56, 0, 0.06), -0.4))
+	return r
+
+
+## Mulino dei Siculi: capanna ovale; sotto la tettoia di canne la macina tonda di pietra girata dall'asino,
+## accanto le macine a sella delle donne, sacchi di farina e giare.
+static func mulino_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.22, 0, -0.27), 0.38, 0.29, 0.38, 91)
+	var m := Vector3(-0.3, 0, 0.5)
+	r.add_child(cilindro(0.2, 0.22, 0.06, m + Vector3(0, 0.03, 0), "pietra_secca", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.17, 0.17, 0.005, m + Vector3(0, 0.061, 0), "lino", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.025, 0.025, 0.24, m + Vector3(0, 0.15, 0), "legno", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.11, 0.11, 0.07, m + Vector3(0.07, 0.16, 0), "roccia_chiara", Vector3(0, 0, 90), 18))
+	r.add_child(scatola(Vector3(0.5, 0.025, 0.025), m + Vector3(0.16, 0.25, 0), "legno_vecchio"))
+	r.add_child(asino(m + Vector3(0.38, 0, 0.0), 90))
+	_tettoia_sic(r, m + Vector3(0, 0, -0.2), 0.56, 0.3, 0.46, 0.4, 92)
+	_macina_sella(r, Vector3(0.12, 0, 0.66), 30.0)
+	_macina_sella(r, Vector3(0.3, 0, 0.58), 10.0)
+	for i in 5:
+		r.add_child(sacco(Vector3(0.45 + (i % 3) * 0.12, 0.0, -0.1 + (i / 3) * 0.13), i * 0.7))
+	var cv := covone(1.1)
+	cv.position = Vector3(0.6, 0, 0.42)
+	r.add_child(cv)
+	r.add_child(_giara(Vector3(0.36, 0, 0.3), 1.2, 0))
+	return r
+
+
+## Forno dei Siculi: capanna ovale, grande forno a cupola d'argilla con la fascia rossa, la bocca accesa e il fumo,
+## lastra di pietra con le focacce, fascine, ceste di pane, sacchi e giare d'acqua.
+static func forno_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.22, 0, -0.27), 0.38, 0.29, 0.36, 101)
+	_forno_sic(r, Vector3(0.45, 0, 0.4), 1.25)
+	_fascina(r, Vector3(0.75, 0, 0.15), 10.0)
+	_fascina(r, Vector3(0.68, 0, 0.05), 25.0)
+	# lastra di pietra su due sassi con le focacce
+	r.add_child(scatola(Vector3(0.32, 0.03, 0.15), Vector3(-0.3, 0.1, 0.55), "roccia_chiara"))
+	for lato: int in [-1, 1]:
+		r.add_child(sfera(0.05, Vector3(-0.3 + lato * 0.11, 0.04, 0.55), "pietra_secca", Vector3(1, 1.1, 1.2)))
+	for i in 5:
+		r.add_child(sfera(0.03, Vector3(-0.42 + i * 0.06, 0.125, 0.55 + (i % 2) * 0.03), "pane", Vector3(1, 0.45, 1)))
+	r.add_child(cesta(Vector3(-0.62, 0, 0.42), "pane"))
+	r.add_child(cesta(Vector3(0.05, 0, 0.66), "pane"))
+	r.add_child(sacco(Vector3(-0.68, 0, 0.15), 0.4))
+	r.add_child(_giara(Vector3(0.12, 0, 0.36), 1.2, 1))
+	r.add_child(_vaso_sic(Vector3(0.2, 0, 0.47), 1.0, 1))
+	return r
+
+
+## Ovile dei Siculi: capanna ovale bassa, stazzo tondo di pietra a secco con le pecore, abbeveratoio di pietra,
+## bastone del pastore, lana tosata e giara del latte.
+static func ovile_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.36, 0, -0.36), 0.36, 0.28, 0.32, 111)
+	var a := Vector3(0.18, 0, 0.18)
+	var np := 10
+	for k in np:
+		var a0 := deg_to_rad(-150.0 + k * 30.0)
+		var a1 := deg_to_rad(-150.0 + (k + 1) * 30.0)
+		if k == 6:
+			continue
+		_muretto_secco(r, a + Vector3(cos(a0), 0, sin(a0)) * 0.42, a + Vector3(cos(a1), 0, sin(a1)) * 0.42, 0.09, 0.07)
+	for p: Array in [[Vector3(0.0, 0, 0.1), 30], [Vector3(0.15, 0, -0.1), 160], [Vector3(0.2, 0, 0.18), -40],
+			[Vector3(-0.15, 0, 0.18), 90], [Vector3(0.05, 0, -0.22), 210]]:
+		r.add_child(pecora(a + p[0], p[1]))
+	r.add_child(scatola(Vector3(0.22, 0.05, 0.07), a + Vector3(-0.15, 0.025, -0.1), "roccia_chiara", Vector3(0, 30, 0)))
+	r.add_child(scatola(Vector3(0.18, 0.005, 0.04), a + Vector3(-0.15, 0.051, -0.1), "acqua_pozzo", Vector3(0, 30, 0)))
+	r.add_child(cilindro(0.007, 0.006, 0.36, Vector3(-0.05, 0.17, -0.02), "legno", Vector3(0, 0, -10), 5))
+	r.add_child(_toro(0.012, 0.02, Vector3(-0.08, 0.35, -0.02), "legno", Vector3(90, 0, 0)))
+	r.add_child(sfera(0.06, Vector3(-0.6, 0.04, 0.3), "lana", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(sfera(0.05, Vector3(-0.52, 0.035, 0.4), "lana", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(_giara(Vector3(-0.7, 0, 0.1), 1.1, 0))
+	return r
+
+
+## Capraio dei Siculi: capanna ovale, rocce calcaree con le capre, muretto a secco, graticcio di canne con i formaggi
+## a stagionare, giara del latte.
+static func capraio_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.32, 0, -0.32), 0.3, 0.24, 0.26, 121)
+	var a := Vector3(0.15, 0, 0.15)
+	r.add_child(sfera(0.16, a + Vector3(0.2, 0.0, -0.1), "roccia_chiara", Vector3(1.2, 0.85, 1.0)))
+	r.add_child(sfera(0.1, a + Vector3(-0.05, 0.0, 0.3), "roccia_chiara", Vector3(1.3, 0.7, 1.0)))
+	r.add_child(sfera(0.07, a + Vector3(0.38, 0.0, 0.1), "roccia_massi", Vector3(1.3, 0.8, 1.0)))
+	r.add_child(capra(a + Vector3(0.2, 0.12, -0.1), 40))
+	r.add_child(capra(a + Vector3(0.0, 0, 0.1), 200))
+	r.add_child(capra(a + Vector3(0.35, 0, 0.3), -30))
+	r.add_child(capra(a + Vector3(-0.1, 0.06, 0.3), 110))
+	_muretto_secco(r, a + Vector3(-0.4, 0, 0.52), a + Vector3(0.5, 0, 0.52), 0.08, 0.07)
+	# graticcio dei formaggi su quattro pali
+	var f := Vector3(-0.62, 0, 0.3)
+	for x: float in [-0.08, 0.08]:
+		for z: float in [-0.06, 0.06]:
+			r.add_child(cilindro(0.008, 0.008, 0.16, f + Vector3(x, 0.08, z), "corteccia", Vector3.ZERO, 5))
+	r.add_child(scatola(Vector3(0.2, 0.012, 0.16), f + Vector3(0, 0.16, 0), "canne_sic"))
+	for k in 4:
+		r.add_child(cilindro(0.025, 0.025, 0.024, f + Vector3(-0.055 + (k % 2) * 0.1, 0.178, -0.035 + (k / 2) * 0.07), "formaggio", Vector3.ZERO, 10))
+	r.add_child(_giara(Vector3(-0.42, 0, 0.5), 1.1, 1))
+	return r
+
+
+## Caserma dei Siculi: capanna ovale grande con l'insegna d'ocra, campo d'addestramento con il fantoccio di paglia
+## e lo scudo dipinto, rastrelliera di lance e due guerrieri che si esercitano.
+static func caserma_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.3, 0, -0.3), 0.35, 0.28, 0.36, 131)
+	_insegna_sic(r, Vector3(0.1, 0, -0.12), 0.7)
+	r.add_child(scatola(Vector3(0.75, 0.01, 0.55), Vector3(0.25, 0.005, 0.4), "terra"))
+	# fantoccio di paglia con lo scudo
+	var fp := Vector3(0.5, 0, 0.32)
+	r.add_child(cilindro(0.02, 0.022, 0.36, fp + Vector3(0, 0.18, 0), "legno_vecchio", Vector3.ZERO, 7))
+	r.add_child(cilindro(0.008, 0.008, 0.2, fp + Vector3(0, 0.27, 0), "legno_vecchio", Vector3(0, 0, 90), 5))
+	r.add_child(cilindro(0.045, 0.04, 0.14, fp + Vector3(0, 0.25, 0), "paglia", Vector3.ZERO, 10))
+	r.add_child(sfera(0.035, fp + Vector3(0, 0.355, 0), "paglia"))
+	r.add_child(_scudo_sic(fp + Vector3(0.0, 0.24, 0.06), 0.0, 0.9))
+	for k in 2:
+		var o := guerriero_siculo()
+		o.position = Vector3(0.05 + k * 0.28, 0, 0.55 - k * 0.15)
+		o.rotation_degrees.y = 150 - k * 60
+		o.scale = Vector3.ONE * 0.95
+		r.add_child(o)
+	_rastrelliera_sic(r, Vector3(-0.6, 0, 0.4), 30.0)
+	r.add_child(_giara(Vector3(-0.68, 0, 0.12), 1.0, 0))
+	return r
+
+
+## Torre di guardia dei Siculi: fusto tondo di pietra a secco che si restringe, fasce di legno, porta alta con la scala
+## a pioli, piattaforma di tavole con il parapetto di canne e il tettuccio a cono di canne, insegna d'ocra,
+## giare, scudi e lance alla base.
+static func torre_siculi() -> Node3D:
+	var r := Node3D.new()
+	var h := 1.0
+	r.add_child(cilindro(0.38, 0.4, 0.06, Vector3(0, 0.03, 0), "roccia_chiara", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.29, 0.34, h, Vector3(0, 0.06 + h * 0.5, 0), "pietra_secca", Vector3.ZERO, 22))
+	var rng := _rng(141)
+	for k in 46:
+		var a := deg_to_rad(rng.randf_range(-60.0, 150.0))
+		var y := rng.randf_range(0.1, h)
+		var rr := lerpf(0.34, 0.29, (y - 0.06) / h) + 0.004
+		var p := sfera(rng.randf_range(0.024, 0.034), Vector3(sin(a), 0, cos(a)) * rr + Vector3(0, y, 0), "roccia_chiara" if k % 3 == 0 else "pietra_secca", Vector3(1.4, 0.7, 0.45))
+		p.rotation.y = a
+		r.add_child(p)
+	for y: float in [0.42, 0.78]:
+		var rr := lerpf(0.34, 0.29, (y - 0.06) / h) + 0.006
+		r.add_child(cilindro(rr, rr, 0.03, Vector3(0, y, 0), "legno_vecchio", Vector3.ZERO, 22))
+	for y: float in [0.6, 0.95]:
+		r.add_child(scatola(Vector3(0.03, 0.08, 0.04), Vector3(0, y, 0.31), "buio"))
+		r.add_child(scatola(Vector3(0.04, 0.08, 0.03), Vector3(0.31, y, 0), "buio"))
+	# porta alta e scala a pioli
+	_porta_sic(r, Vector3(-0.134, 0.3, 0.323), -22.5, 0.11, 0.18)
+	for lato: int in [-1, 1]:
+		ramo(r, Vector3(-0.12 + lato * 0.04, 0, 0.62), Vector3(-0.15 + lato * 0.04, 0.32, 0.36), 0.009, "legno_vecchio")
+	for k in 5:
+		var t := (k + 1) / 6.0
+		r.add_child(scatola(Vector3(0.09, 0.008, 0.008), Vector3(-0.12 - 0.03 * t, 0.32 * t, 0.62 - 0.26 * t), "legno"))
+	# piattaforma, parapetto di canne, tettuccio
+	var top := 0.06 + h
+	r.add_child(cilindro(0.37, 0.37, 0.04, Vector3(0, top + 0.02, 0), "legno", Vector3.ZERO, 22))
+	for k in 12:
+		var a := k * TAU / 12
+		r.add_child(scatola(Vector3(0.035, 0.03, 0.1), Vector3(sin(a), 0, cos(a)) * 0.31 + Vector3(0, top - 0.012, 0), "legno_scuro", Vector3(0, rad_to_deg(a), 0)))
+	r.add_child(cilindro(0.355, 0.355, 0.12, Vector3(0, top + 0.1, 0), "canne_sic", Vector3.ZERO, 22))
+	r.add_child(_toro(0.35, 0.365, Vector3(0, top + 0.1, 0), "corda"))
+	r.add_child(_toro(0.35, 0.368, Vector3(0, top + 0.155, 0), "vernice_rossa", Vector3.ZERO, Vector3(1, 0.8, 1)))
+	for x: float in [-0.2, 0.2]:
+		for z: float in [-0.2, 0.2]:
+			r.add_child(cilindro(0.012, 0.012, 0.3, Vector3(x, top + 0.19, z), "corteccia", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.34, 0.06, 0.26, Vector3(0, top + 0.47, 0), "canne_sic", Vector3.ZERO, 20))
+	for k in 14:
+		var a := k * TAU / 14
+		var ci := sfera(0.03, Vector3(sin(a), 0, cos(a)) * 0.33 + Vector3(0, top + 0.345, 0), "frasche" if k % 3 == 0 else "canne_sic", Vector3(1.1, 0.5, 0.8))
+		ci.rotation.y = a
+		r.add_child(ci)
+	r.add_child(_toro(0.16, 0.175, Vector3(0, top + 0.5, 0), "corda"))
+	r.add_child(cilindro(0.04, 0.03, 0.05, Vector3(0, top + 0.62, 0), "ceramica", Vector3.ZERO, 10))
+	r.add_child(cilindro(0.041, 0.041, 0.014, Vector3(0, top + 0.62, 0), "vernice_rossa", Vector3.ZERO, 10))
+	_insegna_sic(r, Vector3(0.18, top + 0.04, 0.18), 0.66)
+	# alla base: giare, scudi e lance
+	r.add_child(_giara(Vector3(0.42, 0, 0.18), 1.2, 0))
+	r.add_child(_giara(Vector3(0.44, 0, 0.0), 1.0, 1))
+	var sc := _scudo_sic(Vector3(0.2, 0.085, 0.38), 20.0, 0.95)
+	sc.rotation_degrees.x = -14
+	r.add_child(sc)
+	for k in 3:
+		r.add_child(cilindro(0.005, 0.005, 0.36, Vector3(0.1 + k * 0.04, 0.18, 0.4), "legno", Vector3(-12, 0, 0), 5))
+		r.add_child(cilindro(0.011, 0.0, 0.04, Vector3(0.1 + k * 0.04, 0.37, 0.36), "bronzo", Vector3(-12, 0, 0), 5))
+	return r
+
+
+## Villaggio fortificato dei Siculi (castello 3x3): altura di calcare con le tombe a grotticella sui fianchi, cinta ovale
+## di pietra a secco con i bastioni tondi e la porta fra due torri, rampa d'accesso; dentro la casa del principe
+## (anaktoron) di grandi blocchi squadrati, capanne ovali, giare, recinto con le pecore e insegne d'ocra rossa.
+static func castello_siculi() -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(151)
+	var hc := 0.28
+	# altura rocciosa con il prato in cima
+	r.add_child(cilindro(1.6, 1.42, hc, Vector3(0, hc * 0.5, 0), "roccia_massi", Vector3.ZERO, 32))
+	r.add_child(cilindro(1.43, 1.43, 0.012, Vector3(0, hc + 0.004, 0), "prato", Vector3.ZERO, 32))
+	for k in 40:
+		var a := deg_to_rad(rng.randf_range(-80.0, 170.0))
+		var rr := rng.randf_range(1.48, 1.6)
+		r.add_child(_masso(Vector3(sin(a) * rr, 0.0, cos(a) * rr), rng.randf_range(0.08, 0.14), Vector3(1.3, rng.randf_range(1.0, 2.2), 1.0), "roccia_chiara" if k % 3 != 0 else "pietra_secca", rng.randf() * 90))
+	for k in 14:
+		var a := deg_to_rad(rng.randf_range(-80.0, 170.0))
+		r.add_child(sfera(rng.randf_range(0.05, 0.08), Vector3(sin(a), 0, cos(a)) * 1.44 + Vector3(0, hc, 0), "macchia", Vector3(1.3, 0.6, 1.0)))
+	# tombe a grotticella scavate nei fianchi
+	for k in 9:
+		var a := deg_to_rad(-70.0 + k * 20.0)
+		if k == 5:
+			continue
+		var d := Vector3(sin(a), 0, cos(a))
+		var y := 0.11 + (k % 2) * 0.06
+		var rr := 1.6 - y / hc * 0.18
+		r.add_child(scatola(Vector3(0.08, 0.07, 0.04), d * rr + Vector3(0, y, 0), "buio", Vector3(0, rad_to_deg(a), 0)))
+		r.add_child(scatola(Vector3(0.1, 0.014, 0.03), d * (rr + 0.012) + Vector3(0, y - 0.042, 0), "roccia_chiara", Vector3(0, rad_to_deg(a), 0)))
+	# cinta tonda di pietra a secco, interrotta dalla porta
+	var cx := 1.2
+	var nseg := 24
+	var hm := 0.3
+	for k in nseg:
+		if k == 1:
+			continue
+		var a0 := k * TAU / nseg
+		var a1 := (k + 1) * TAU / nseg
+		_muretto_secco(r, Vector3(sin(a0) * cx, hc, cos(a0) * cx), Vector3(sin(a1) * cx, hc, cos(a1) * cx), hm, 0.14)
+	var porta_a := 1.5 * TAU / nseg
+	var dir := Vector3(sin(porta_a), 0, cos(porta_a))
+	var pp := dir * cx + Vector3(0, hc, 0)
+	# bastioni tondi; quello dietro è un'alta torre di guardia col tettuccio di canne
+	for b in 4:
+		var aa := porta_a + (b + 1) * TAU / 5.0
+		var bp := Vector3(sin(aa) * cx, hc, cos(aa) * cx)
+		var hb := 0.85 if b == 1 else 0.42
+		r.add_child(cilindro(0.18, 0.22, hb, bp + Vector3(0, hb * 0.5, 0), "pietra_secca", Vector3.ZERO, 18))
+		r.add_child(cilindro(0.19, 0.19, 0.03, bp + Vector3(0, hb + 0.01, 0), "legno_vecchio", Vector3.ZERO, 18))
+		for j in 9:
+			var aj := j * TAU / 9
+			r.add_child(sfera(0.045, bp + Vector3(cos(aj) * 0.16, hb + 0.03, sin(aj) * 0.16), "roccia_chiara" if j % 2 == 0 else "pietra_secca", Vector3(1.1, 0.7, 1.0)))
+		if b == 1:
+			for x: float in [-0.1, 0.1]:
+				for z: float in [-0.1, 0.1]:
+					r.add_child(cilindro(0.01, 0.01, 0.22, bp + Vector3(x, hb + 0.13, z), "corteccia", Vector3.ZERO, 5))
+			r.add_child(cilindro(0.22, 0.04, 0.24, bp + Vector3(0, hb + 0.34, 0), "canne_sic", Vector3.ZERO, 16))
+			r.add_child(_toro(0.12, 0.135, bp + Vector3(0, hb + 0.36, 0), "corda"))
+			r.add_child(scatola(Vector3(0.04, 0.09, 0.03), bp + Vector3(0, hb * 0.6, 0.2), "buio"))
+			_insegna_sic(r, bp + Vector3(0.12, hb + 0.04, 0.12), 0.6)
+	# porta fra due torri con il tettuccio di canne, trave e battenti aperti
+	var tang := Vector3(cos(porta_a), 0, -sin(porta_a))
+	for lato: int in [-1, 1]:
+		var tp := pp + tang * lato * 0.24
+		r.add_child(cilindro(0.15, 0.18, 0.52, tp + Vector3(0, 0.26, 0), "pietra_secca", Vector3.ZERO, 16))
+		r.add_child(cilindro(0.16, 0.16, 0.035, tp + Vector3(0, 0.53, 0), "vernice_rossa", Vector3.ZERO, 16))
+		r.add_child(cilindro(0.19, 0.035, 0.22, tp + Vector3(0, 0.66, 0), "canne_sic", Vector3.ZERO, 14))
+		r.add_child(_toro(0.14, 0.155, tp + Vector3(0, 0.6, 0), "corda"))
+	var rotp := rad_to_deg(porta_a)
+	var nb := Node3D.new()
+	nb.position = pp
+	nb.rotation_degrees.y = rotp
+	r.add_child(nb)
+	nb.add_child(scatola(Vector3(0.36, 0.06, 0.12), Vector3(0, 0.34, 0), "legno_scuro"))
+	nb.add_child(scatola(Vector3(0.2, 0.31, 0.04), Vector3(0, 0.155, -0.07), "buio"))
+	for lato: int in [-1, 1]:
+		nb.add_child(scatola(Vector3(0.1, 0.29, 0.02), Vector3(lato * 0.11, 0.145, 0.08), "legno", Vector3(0, lato * 55, 0)))
+	_insegna_sic(r, pp + tang * 0.24 + Vector3(0, 0.74, 0), 0.5)
+	# rampa d'accesso giù per l'altura
+	var rp := pp + dir * 0.42
+	r.add_child(scatola(Vector3(0.3, 0.03, 0.56), Vector3(rp.x, hc * 0.5 - 0.005, rp.z), "terra", Vector3(rad_to_deg(atan2(hc, 0.52)), rotp, 0)))
+	# casa del principe (anaktoron): grandi blocchi squadrati, tetto di canne a due falde
+	var ana := Node3D.new()
+	ana.position = Vector3(-0.3, hc, -0.36)
+	r.add_child(ana)
+	var lx := 0.95
+	var lz := 0.6
+	var ha := 0.46
+	ana.add_child(scatola(Vector3(lx, ha, lz), Vector3(0, ha * 0.5, 0), "pietra_secca"))
+	for f in 3:
+		var y := (f + 0.5) * ha / 3.0
+		for k in 5:
+			var x := -lx * 0.5 + (k + 0.5) * lx / 5.0
+			ana.add_child(scatola(Vector3(lx / 5.0 - 0.014, ha / 3.0 - 0.014, 0.014), Vector3(x, y, lz * 0.5 + 0.004), "roccia_chiara" if (k + f) % 2 == 0 else "pietra_secca"))
+		for k in 3:
+			var z := -lz * 0.5 + (k + 0.5) * lz / 3.0
+			ana.add_child(scatola(Vector3(0.014, ha / 3.0 - 0.014, lz / 3.0 - 0.014), Vector3(lx * 0.5 + 0.004, y, z), "pietra_secca" if (k + f) % 2 == 0 else "roccia_chiara"))
+	_porta_sic(ana, Vector3(-0.12, 0, lz * 0.5 + 0.03), 0.0, 0.15, 0.26)
+	var pend := 34.0
+	var hr := ha + lz * 0.5 * tan(deg_to_rad(pend))
+	sottotetto(ana, lx, lz, ha, pend, "argilla_sic")
+	_tettoia_sic(ana, Vector3(0, 0, lz * 0.25), lx + 0.04, lz * 0.5, hr, ha, 152)
+	var ret := Node3D.new()
+	ret.rotation_degrees.y = 180
+	ana.add_child(ret)
+	_tettoia_sic(ret, Vector3(0, 0, lz * 0.25), lx + 0.04, lz * 0.5, hr, ha, 153)
+	ana.add_child(cilindro(0.04, 0.04, lx + 0.16, Vector3(0, hr + 0.05, 0), "canne_sic", Vector3(0, 0, 90), 8))
+	for k in 5:
+		ana.add_child(_toro(0.035, 0.048, Vector3(-lx * 0.44 + k * lx * 0.22, hr + 0.05, 0), "corda", Vector3(0, 0, 90)))
+	_insegna_sic(ana, Vector3(lx * 0.5 + 0.07, 0, lz * 0.5 + 0.07), 0.95)
+	for i in 3:
+		ana.add_child(_giara(Vector3(0.14 + i * 0.13, 0, lz * 0.5 + 0.11), 1.45, i))
+	# capanne del villaggio
+	_capanna_sic(r, Vector3(0.6, hc, -0.48), 0.32, 0.25, 0.36, 154, -20.0)
+	_capanna_sic(r, Vector3(-0.7, hc, 0.42), 0.3, 0.24, 0.34, 155, 30.0)
+	_capanna_sic(r, Vector3(0.0, hc, 0.8), 0.26, 0.2, 0.3, 156, 10.0)
+	# recinto con le pecore, forno, fuoco e giare
+	var o := Vector3(0.66, hc, 0.32)
+	for k in 8:
+		if k == 1:
+			continue
+		var a0 := deg_to_rad(k * 45.0)
+		var a1 := deg_to_rad((k + 1) * 45.0)
+		_muretto_secco(r, o + Vector3(cos(a0), 0, sin(a0)) * 0.27, o + Vector3(cos(a1), 0, sin(a1)) * 0.27, 0.08, 0.06)
+	r.add_child(pecora(o + Vector3(-0.06, 0, 0.0), 30))
+	r.add_child(pecora(o + Vector3(0.1, 0, -0.1), 200))
+	r.add_child(pecora(o + Vector3(0.05, 0, 0.12), 120))
+	_forno_sic(r, Vector3(-0.2, hc, 0.3), 0.8)
+	_fuoco(r, Vector3(0.26, hc, 0.12), 0.9)
+	r.add_child(_giara(Vector3(0.32, hc, 0.6), 1.3, 1))
+	r.add_child(_giara(Vector3(0.22, hc, 0.7), 1.1, 0))
+	return r
+
+
+## Bottega del vasaio (edificio unico dei Siculi): capanna ovale, grande forno a cupola per la ceramica con il fumo,
+## tornio sotto la tettoia di canne, assi con le file di vasi e giare dipinti ad asciugare, mucchio d'argilla
+## con la vasca d'acqua, cocci, fascine e legna.
+static func vasaio() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.25, 0, -0.3), 0.38, 0.29, 0.34, 161)
+	_forno_sic(r, Vector3(0.48, 0, -0.22), 1.3)
+	legnaia(r, Vector3(0.62, 0, 0.18), 0.24, 3)
+	_fascina(r, Vector3(0.78, 0, -0.05), 5.0)
+	# tettoia con il tornio
+	_tettoia_sic(r, Vector3(-0.44, 0, 0.18), 0.42, 0.24, 0.4, 0.34, 162)
+	_tornio_sic(r, Vector3(-0.42, 0, 0.44), -20.0)
+	# assi su sassi con i vasi ad asciugare
+	for f in 2:
+		var z := 0.36 + f * 0.17
+		var x0 := 0.0
+		r.add_child(scatola(Vector3(0.48, 0.016, 0.09), Vector3(x0 + 0.22, 0.07, z), "legno_chiaro"))
+		for lato: int in [-1, 1]:
+			r.add_child(sfera(0.04, Vector3(x0 + 0.22 + lato * 0.2, 0.03, z), "pietra_secca", Vector3(1, 0.9, 1.1)))
+		for k in 5:
+			r.add_child(_vaso_sic(Vector3(x0 + 0.04 + k * 0.09, 0.078, z), 0.95, (k + f) % 3))
+	# giare grandi già dipinte
+	r.add_child(_giara(Vector3(0.62, 0, 0.42), 1.5, 0))
+	r.add_child(_giara(Vector3(0.6, 0, 0.6), 1.25, 1))
+	# mucchio d'argilla e vasca d'acqua
+	r.add_child(mucchio(Vector3(-0.68, 0, 0.0), "argilla_cruda", 9, 163, 0.06))
+	r.add_child(cilindro(0.11, 0.1, 0.05, Vector3(-0.66, 0.025, 0.22), "pietra_secca", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.095, 0.095, 0.004, Vector3(-0.66, 0.048, 0.22), "acqua_pozzo", Vector3.ZERO, 14))
+	# cocci
+	var rng := _rng(164)
+	for k in 6:
+		r.add_child(scatola(Vector3(0.025, 0.006, 0.02), Vector3(0.3 + rng.randf_range(-0.1, 0.1), 0.003, 0.0 + rng.randf_range(-0.06, 0.06)), "ceramica" if k % 2 == 0 else "vernice_rossa", Vector3(0, rng.randf() * 180, 0)))
+	_insegna_sic(r, Vector3(0.86, 0, 0.3), 0.6)
+	return r
+
+
+## Guerriero siculo: tunica ocra con le fasce d'ocra rossa, cinturone e bandoliera di cuoio, elmo semplice di cuoio
+## con il paranuca e il ciuffo d'ocra, scudo rotondo dipinto e lancia con la punta di bronzo.
+static func guerriero_siculo() -> Node3D:
+	var r := portatore("", "ocra_rossa", "tunica_ocra")
+	var corpo: Node3D = r.get_node("corpo")
+	var anca := 0.2
+	corpo.add_child(cilindro(0.083, 0.083, 0.018, Vector3(0, anca + 0.06, 0), "cuoio", Vector3.ZERO, 12))
+	corpo.add_child(sfera(0.011, Vector3(0, anca + 0.06, 0.083), "bronzo"))
+	corpo.add_child(scatola(Vector3(0.022, 0.2, 0.006), Vector3(0.0, anca + 0.12, 0.072), "cuoio", Vector3(0, 0, 38)))
+	corpo.add_child(cilindro(0.088, 0.088, 0.008, Vector3(0, anca - 0.034, 0), "vernice_nera", Vector3.ZERO, 10))
+	# elmo di cuoio
+	corpo.add_child(sfera(0.081, Vector3(0, anca + 0.282, -0.006), "cuoio", Vector3(1, 0.72, 1.05)))
+	corpo.add_child(cilindro(0.083, 0.084, 0.014, Vector3(0, anca + 0.262, -0.006), "pelle_scura", Vector3.ZERO, 14))
+	corpo.add_child(scatola(Vector3(0.12, 0.012, 0.05), Vector3(0, anca + 0.248, -0.078), "cuoio", Vector3(-25, 0, 0)))
+	for lato: int in [-1, 1]:
+		corpo.add_child(scatola(Vector3(0.01, 0.045, 0.035), Vector3(lato * 0.078, anca + 0.24, 0.02), "cuoio"))
+	corpo.add_child(cilindro(0.012, 0.014, 0.02, Vector3(0, anca + 0.345, -0.005), "bronzo", Vector3.ZERO, 6))
+	for k in 3:
+		corpo.add_child(sfera(0.018, Vector3(0, anca + 0.365 - k * 0.012, -0.02 - k * 0.02), "ocra_rossa", Vector3(0.6, 1.0, 1.1)))
+	# scudo al braccio sinistro, lancia nella destra
+	var bs: Node3D = corpo.get_node("braccio_s")
+	bs.add_child(_scudo_sic(Vector3(-0.03, -0.075, 0.04), -90.0, 1.0))
+	var bd: Node3D = corpo.get_node("braccio_d")
+	bd.add_child(cilindro(0.007, 0.007, 0.5, Vector3(0, 0.06, 0.02), "legno", Vector3.ZERO, 5))
+	bd.add_child(cilindro(0.016, 0.0, 0.06, Vector3(0, 0.34, 0.02), "bronzo", Vector3.ZERO, 6))
+	bd.add_child(cilindro(0.009, 0.009, 0.018, Vector3(0, 0.3, 0.02), "ocra_rossa", Vector3.ZERO, 6))
+	r.set_meta("carico", "lancia")
+	return r
+
+
+# =================================================================== SICANI (step 26)
+# Lo stile dei Sicani, montanari della Sicilia occidentale: villaggi arroccati sugli speroni di roccia, case basse e
+# massicce di pietra grigia irregolare messa a secco (senza malta), con grossi blocchi agli angoli e i tetti piatti di
+# lastre di pietra coperti di terra e d'erba; terrazzamenti a gradoni sostenuti da muri a secco, cataste di pietre, lame
+# e schegge di ossidiana nera lucida portata dalle Eolie. Il colore del popolo è il blu lapislazzuli (stoffe, insegne,
+# scudi), con le pagliuzze d'oro della pietra. Ogni modello ha lo stesso ingombro del corrispondente greco (stesso nome
+# senza "_sicani").
+
+## Sasso grigio irregolare (scatola un po' storta), il mattone dei muri a secco dei Sicani; il seme sceglie la tinta.
+static func _sasso_sic(pos: Vector3, dim: Vector3, rot_y := 0.0, seme := 0) -> MeshInstance3D:
+	var mats := ["sasso_sic", "pietra_n_chiara", "roccia_massi", "sasso_sic", "lastra_sic"]
+	return scatola(dim, pos, mats[absi(seme) % 5], Vector3((absi(seme) % 5) * 3.0 - 6.0, rot_y, (absi(seme) % 7) * 2.5 - 7.5))
+
+
+## Casa dei Sicani: bassa e massiccia, muri di pietra grigia irregolare a secco con lo zoccolo a scarpa, grossi blocchi
+## agli angoli, travi che sporgono sotto il tetto piatto di lastre di pietra coperto di terra e d'erba (con sassi, ciuffi
+## e fiori), porta con l'architrave monolitico e la tenda blu, feritoia sul fianco. pos = centro a terra; la porta guarda
+## verso +Z locale (ruotata di rot_y), spostata di porta_x. Restituisce la quota della cima del tetto.
+static func _casa_sicana(r: Node3D, pos: Vector3, lx: float, lz: float, h: float, seme: int, rot_y := 0.0, porta := true, porta_x := 0.0, fumo := false) -> float:
+	var rng := _rng(seme)
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	# zoccolo a scarpa e muro
+	var hz := h * 0.4
+	n.add_child(scatola(Vector3(lx + 0.05, hz, lz + 0.05), Vector3(0, hz * 0.5, 0), "pietra_sicana"))
+	n.add_child(scatola(Vector3(lx, h, lz), Vector3(0, h * 0.5, 0), "pietra_sicana"))
+	# sassi sporgenti sulle quattro facce (0: +Z, 1: +X, 2: -Z, 3: -X)
+	for f in 4:
+		var lung := lx if f % 2 == 0 else lz
+		var meta := (lz if f % 2 == 0 else lx) * 0.5
+		var a := f * 90.0
+		var nk := int(lung * h * (120.0 if f < 2 else 40.0)) + 2
+		for k in nk:
+			var u := rng.randf_range(-lung * 0.5 + 0.035, lung * 0.5 - 0.035)
+			var y := rng.randf_range(0.025, h - 0.03)
+			var sp := meta + (0.025 if y < hz else 0.0) + 0.006
+			var p := Vector3(u, y, sp).rotated(Vector3.UP, deg_to_rad(a))
+			n.add_child(_sasso_sic(p, Vector3(rng.randf_range(0.045, 0.085), rng.randf_range(0.026, 0.046), 0.022), a + rng.randf_range(-3.0, 3.0), k * 3 + f))
+	# grossi blocchi d'angolo, alternati lunghi e corti
+	for cx: int in [-1, 1]:
+		for cz: int in [-1, 1]:
+			var y := 0.0
+			var j := 0
+			while y < h - 0.035:
+				var bh := minf(rng.randf_range(0.07, 0.1), h - y)
+				var fuori := 0.026 if y < hz else 0.012
+				var lungo := (j + cx + cz) % 2 == 0
+				var d := Vector3(0.15 if lungo else 0.085, bh - 0.008, 0.085 if lungo else 0.15)
+				n.add_child(scatola(d, Vector3(cx * (lx * 0.5 - d.x * 0.5 + fuori), y + bh * 0.5, cz * (lz * 0.5 - d.z * 0.5 + fuori)), "sasso_sic" if j % 2 == 0 else "pietra_n_chiara", Vector3(0, rng.randf_range(-4.0, 4.0), rng.randf_range(-2.0, 2.0))))
+				y += bh
+				j += 1
+	# travi che sporgono sotto il tetto, davanti e dietro
+	var nt := maxi(2, int(lx / 0.12))
+	for k in nt:
+		var x := -lx * 0.5 + (k + 0.5) * lx / nt
+		n.add_child(cilindro(0.017, 0.019, lz + 0.13, Vector3(x, h - 0.022, 0), "legno_vecchio", Vector3(90, 0, 0), 6))
+	# tetto piatto: lastre che sporgono, terra, cuscino d'erba
+	n.add_child(scatola(Vector3(lx + 0.1, 0.03, lz + 0.1), Vector3(0, h + 0.015, 0), "lastra_sic"))
+	for f in 4:
+		var lung := (lx if f % 2 == 0 else lz) + 0.1
+		var meta := (lz if f % 2 == 0 else lx) * 0.5 + 0.05
+		var a := f * 90.0
+		var nl := int(lung / 0.09) + 1
+		for k in nl:
+			var u := -lung * 0.5 + (k + 0.5) * lung / nl
+			var p := Vector3(u, h + 0.014 + rng.randf_range(-0.006, 0.006), meta + rng.randf_range(-0.01, 0.018)).rotated(Vector3.UP, deg_to_rad(a))
+			n.add_child(scatola(Vector3(lung / nl + 0.02, 0.022, rng.randf_range(0.07, 0.1)), p, "lastra_sic" if k % 3 != 0 else "sasso_sic", Vector3(rng.randf_range(-5.0, 5.0), a + rng.randf_range(-7.0, 7.0), 0)))
+	n.add_child(scatola(Vector3(lx + 0.02, 0.03, lz + 0.02), Vector3(0, h + 0.045, 0), "terra"))
+	n.add_child(sfera(0.5, Vector3(0, h + 0.058, 0), "erba_tetto", Vector3(lx + 0.03, 0.075, lz + 0.03)))
+	# ciuffi d'erba, sassi che tengono il tetto, fiori
+	for k in int(lx * lz * 70.0) + 5:
+		var px := rng.randf_range(-lx * 0.46, lx * 0.46)
+		var pz := rng.randf_range(-lz * 0.46, lz * 0.46)
+		var q := (px / (lx * 0.5)) * (px / (lx * 0.5)) + (pz / (lz * 0.5)) * (pz / (lz * 0.5))
+		var py := h + 0.058 + 0.0375 * sqrt(maxf(0.0, 1.0 - q)) if q < 1.0 else h + 0.06
+		var p := Vector3(px, py, pz)
+		if k % 6 == 0:
+			n.add_child(_sasso_sic(p, Vector3(0.05, 0.03, 0.04), rng.randf() * 90.0, k))
+		elif k % 9 == 4:
+			n.add_child(sfera(0.012, p + Vector3(0, 0.012, 0), "fiore"))
+		else:
+			n.add_child(sfera(rng.randf_range(0.022, 0.036), p, "prato" if k % 3 == 0 else ("foglie_chiare" if k % 3 == 1 else "erba_tetto"), Vector3(1.2, 0.6, 1.2)))
+	if fumo:
+		var fp := Vector3(lx * 0.28, h + 0.08, -lz * 0.22)
+		for k in 6:
+			var ak := k * TAU / 6
+			n.add_child(sfera(0.022, fp + Vector3(cos(ak), 0, sin(ak)) * 0.04, "sasso_sic", Vector3(1.2, 0.8, 1)))
+		n.add_child(cilindro(0.028, 0.028, 0.01, fp + Vector3(0, 0.008, 0), "buio", Vector3.ZERO, 8))
+		_fumo(n, fp + Vector3(0, 0.05, 0), 3, 0.8)
+	if porta:
+		var hp := minf(0.21, h - 0.12)
+		_porta_sicana(n, Vector3(porta_x, 0, lz * 0.5 + 0.026), 0.0, minf(0.13, lx * 0.3), hp, h - hp > 0.17)
+	# feritoia sul fianco destro
+	if lz > 0.3:
+		n.add_child(scatola(Vector3(0.012, 0.07, 0.035), Vector3(lx * 0.5 + 0.004, h * 0.6, -lz * 0.12), "buio"))
+		n.add_child(scatola(Vector3(0.03, 0.026, 0.1), Vector3(lx * 0.5 + 0.012, h * 0.6 + 0.048, -lz * 0.12), "lastra_sic"))
+	return h + 0.1
+
+
+## Porta dei Sicani (guarda verso +Z locale): vano buio fra due stipiti monolitici grigi, grande architrave di pietra
+## grezza, tenda blu lapislazzuli con i rombi bianchi, soglia di lastra e corna di montone appese sopra.
+static func _porta_sicana(r: Node3D, pos: Vector3, rot_y := 0.0, w := 0.13, h := 0.2, corna := true) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(scatola(Vector3(w, h, 0.12), Vector3(0, h * 0.5, -0.05), "buio"))
+	for lato: int in [-1, 1]:
+		n.add_child(scatola(Vector3(0.05, h + 0.01, 0.06), Vector3(lato * (w * 0.5 + 0.025), (h + 0.01) * 0.5, 0.0), "sasso_sic", Vector3(0, 0, lato * 1.5)))
+	n.add_child(scatola(Vector3(w + 0.17, 0.06, 0.075), Vector3(0, h + 0.04, 0.005), "pietra_n_chiara", Vector3(0, 0, -2)))
+	n.add_child(scatola(Vector3(w * 0.66, h - 0.015, 0.008), Vector3(w * 0.17, h * 0.5 + 0.005, 0.012), "lapislazzuli", Vector3(0, 0, -2)))
+	for k in 3:
+		n.add_child(scatola(Vector3(0.015, 0.015, 0.01), Vector3(w * 0.17 - w * 0.2 + k * w * 0.2, h * 0.28, 0.016), "lino_bianco", Vector3(0, 0, 45)))
+	n.add_child(scatola(Vector3(w * 0.66, 0.012, 0.01), Vector3(w * 0.17, 0.018, 0.016), "lino_bianco"))
+	n.add_child(scatola(Vector3(w + 0.07, 0.016, 0.09), Vector3(0, 0.008, 0.045), "lastra_sic"))
+	if corna:
+		var c := Vector3(0, h + 0.1, 0.035)
+		n.add_child(sfera(0.019, c, "osso", Vector3(0.85, 1.1, 0.7)))
+		for lato: int in [-1, 1]:
+			n.add_child(_toro(0.007, 0.02, c + Vector3(lato * 0.028, 0.006, -0.004), "osso", Vector3(90, 0, 0)))
+
+
+## Muro di pietra grigia a secco da un punto a un altro: corpo di sassi irregolari, sassi sporgenti, lastre piatte in cima.
+static func _muro_sic(r: Node3D, da: Vector3, a: Vector3, h := 0.1, sp := 0.08) -> void:
+	var d := a - da
+	d.y = 0.0
+	var lung := d.length()
+	var n := Node3D.new()
+	n.position = Vector3((da.x + a.x) * 0.5, da.y, (da.z + a.z) * 0.5)
+	n.rotation.y = atan2(-d.z, d.x)
+	r.add_child(n)
+	n.add_child(scatola(Vector3(lung, h, sp), Vector3(0, h * 0.5, 0), "pietra_sicana"))
+	var rng := _rng(int(absf(da.x * 977.0 + da.z * 131.0 + a.x * 53.0 + a.z * 7.0)) + 11)
+	var nk := maxi(2, int(lung / 0.075))
+	for k in nk:
+		var x := -lung * 0.5 + (k + 0.5) * lung / nk
+		n.add_child(scatola(Vector3(lung / nk + 0.012, 0.018, sp + 0.026), Vector3(x, h + 0.007, rng.randf_range(-0.006, 0.006)), "lastra_sic" if k % 3 != 0 else "sasso_sic", Vector3(rng.randf_range(-4.0, 4.0), rng.randf_range(-9.0, 9.0), rng.randf_range(-3.0, 3.0))))
+		for lato: int in [-1, 1]:
+			if rng.randf() < 0.75:
+				n.add_child(_sasso_sic(Vector3(x + rng.randf_range(-0.02, 0.02), rng.randf_range(0.02, maxf(0.025, h - 0.025)), lato * sp * 0.5), Vector3(rng.randf_range(0.035, 0.06), rng.randf_range(0.022, 0.036), 0.018), 0.0, k + lato + 2))
+
+
+## Terrazzamenti a gradoni: n ripiani che salgono verso -Z, ognuno sostenuto sul davanti da un muro di pietra a secco
+## con le lastre di copertina; sopra ogni ripiano uno strato di `sopra`. pos = centro dell'ingombro, a terra.
+## Il centro del ripiano k (0 = il più basso, davanti) è pos + (0, (k+1)·hs, prof/2 − (k+0.5)·prof/n).
+static func _gradoni(r: Node3D, pos: Vector3, larg: float, prof: float, n: int, hs: float, sopra := "terra", seme := 0) -> void:
+	var rng := _rng(seme + 5)
+	var ps := prof / n
+	for k in n:
+		var dz := prof - k * ps
+		var yk := (k + 1) * hs
+		r.add_child(scatola(Vector3(larg, yk, dz), pos + Vector3(0, yk * 0.5, -prof * 0.5 + dz * 0.5), "pietra_sicana"))
+		r.add_child(scatola(Vector3(larg - 0.012, 0.014, ps - 0.03), pos + Vector3(0, yk + 0.004, prof * 0.5 - (k + 0.5) * ps - 0.012), sopra))
+		var zf := prof * 0.5 - k * ps
+		var nk := maxi(2, int(larg / 0.07))
+		for j in nk:
+			var x := -larg * 0.5 + (j + 0.5) * larg / nk
+			for f in maxi(1, int(hs / 0.05)):
+				r.add_child(_sasso_sic(pos + Vector3(x + rng.randf_range(-0.015, 0.015), k * hs + (f + 0.5) * hs / maxi(1, int(hs / 0.05)), zf + 0.006), Vector3(rng.randf_range(0.045, 0.07), minf(0.04, hs * 0.7), 0.018), 0.0, j + k * 3 + f))
+			r.add_child(scatola(Vector3(larg / nk + 0.014, 0.014, 0.05), pos + Vector3(x, yk + 0.006, zf - 0.016), "lastra_sic" if j % 3 != 1 else "sasso_sic", Vector3(0, rng.randf_range(-6.0, 6.0), rng.randf_range(-3.0, 3.0))))
+		# sassi sul fianco destro (+X) del ripiano
+		for j in maxi(1, int(ps / 0.07)):
+			var z := zf - (j + 0.5) * ps / maxi(1, int(ps / 0.07))
+			r.add_child(_sasso_sic(pos + Vector3(larg * 0.5 + 0.006, rng.randf_range(0.02, yk - 0.015), z), Vector3(rng.randf_range(0.045, 0.065), minf(0.035, yk * 0.6), 0.018), 90.0, j + k + 1))
+
+
+## Catasta di pietre grigie raccolte nei campi (tre strati che si restringono).
+static func _catasta_pietre(r: Node3D, pos: Vector3, s := 1.0, seme := 0) -> void:
+	var rng := _rng(seme + 21)
+	for f in 3:
+		var nf := 4 - f
+		for k in nf:
+			for j in 2:
+				var p := pos + Vector3((k - (nf - 1) * 0.5) * 0.068 + rng.randf_range(-0.008, 0.008), 0.021 + f * 0.038, (j - 0.5) * (0.062 - f * 0.012)) * s
+				r.add_child(_sasso_sic(p, Vector3(0.064, 0.04, 0.056) * s * rng.randf_range(0.85, 1.1), rng.randf_range(-25.0, 25.0), k + j * 2 + f * 3))
+
+
+## Blocco di ossidiana: vetro vulcanico nero lucido a facce taglienti, con un po' di crosta grigia e riflessi chiari.
+static func _blocco_oss(pos: Vector3, s := 1.0, seme := 0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.scale = Vector3.ONE * s
+	n.rotation_degrees.y = seme * 47.0
+	var rng := _rng(seme + 400)
+	n.add_child(sfera(0.03, Vector3(-0.02, 0.018, -0.018), "sasso_sic", Vector3(1.1, 0.5, 0.9)))
+	for k in 4:
+		n.add_child(scatola(Vector3(rng.randf_range(0.04, 0.065), rng.randf_range(0.035, 0.055), rng.randf_range(0.04, 0.06)), Vector3(rng.randf_range(-0.015, 0.02), 0.03 + k * 0.007, rng.randf_range(-0.01, 0.02)), "ossidiana", Vector3(rng.randf_range(-35.0, 35.0), rng.randf_range(0.0, 90.0), rng.randf_range(-35.0, 35.0))))
+	n.add_child(scatola(Vector3(0.034, 0.004, 0.006), Vector3(0.006, 0.07, 0.022), "riflesso_oss", Vector3(15, 25, 10)))
+	n.add_child(scatola(Vector3(0.006, 0.026, 0.004), Vector3(0.03, 0.045, 0.032), "riflesso_oss", Vector3(-10, 40, 15)))
+	return n
+
+
+## Lama di ossidiana: scheggia lunga, sottile e appuntita, nera e lucida, con il filo chiaro; distesa lungo +X locale.
+## Con il manico ha l'impugnatura di legno legata col cuoio.
+static func _lama_oss(pos: Vector3, rot := Vector3.ZERO, lung := 0.09, manico := false) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees = rot
+	var l := cilindro(0.017, 0.0, lung, Vector3(lung * 0.1, 0, 0), "ossidiana", Vector3(0, 0, -90), 6)
+	l.scale = Vector3(0.4, 1, 1)
+	n.add_child(l)
+	n.add_child(scatola(Vector3(lung * 0.6, 0.002, 0.0025), Vector3(lung * 0.05, 0.0045, 0.004), "riflesso_oss"))
+	if manico:
+		n.add_child(cilindro(0.008, 0.009, lung * 0.5, Vector3(-lung * 0.6, 0, 0), "legno", Vector3(0, 0, 90), 6))
+		n.add_child(cilindro(0.0095, 0.0095, lung * 0.18, Vector3(-lung * 0.42, 0, 0), "cuoio", Vector3(0, 0, 90), 6))
+	return n
+
+
+## Specchio d'ossidiana: disco nero lucidato, cornice di cuoio, riflesso chiaro, su un piedino di legno (faccia +Z locale).
+static func _specchio_oss(pos: Vector3, rot_y := 0.0, s := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	n.scale = Vector3.ONE * s
+	n.add_child(scatola(Vector3(0.05, 0.02, 0.04), Vector3(0, 0.01, 0), "legno_vecchio"))
+	n.add_child(cilindro(0.04, 0.04, 0.01, Vector3(0, 0.062, 0), "ossidiana", Vector3(80, 0, 0), 16))
+	n.add_child(_toro(0.038, 0.046, Vector3(0, 0.062, 0), "cuoio", Vector3(80, 0, 0)))
+	n.add_child(scatola(Vector3(0.006, 0.04, 0.003), Vector3(-0.012, 0.07, 0.007), "riflesso_oss", Vector3(-10, 0, 30)))
+	return n
+
+
+## Arco di legno (vista di traverso, nel piano YZ locale): impugnatura legata di blu all'origine, flettenti che
+## piegano verso -Z, puntali d'osso e corda tesa fra le punte.
+static func _arco_sic(r: Node3D, presa: Vector3, h := 0.21, curva := 0.055, rot := Vector3.ZERO) -> void:
+	var n := Node3D.new()
+	n.position = presa
+	n.rotation_degrees = rot
+	r.add_child(n)
+	var pts: Array[Vector3] = []
+	for i in 7:
+		var t := -1.0 + i / 3.0
+		pts.append(Vector3(0, t * h * 0.5, -curva * t * t))
+	for i in 6:
+		ramo(n, pts[i], pts[i + 1], 0.009, "legno_scuro")
+	n.add_child(cilindro(0.009, 0.009, 0.035, Vector3.ZERO, "lapislazzuli", Vector3.ZERO, 6))
+	for i: int in [0, 6]:
+		n.add_child(sfera(0.007, pts[i], "osso"))
+	n.add_child(cilindro(0.0015, 0.0015, h, Vector3(0, 0, -curva), "lino_bianco", Vector3.ZERO, 3))
+
+
+## Faretra di cuoio con le fasce blu e le frecce impennate di bianco e di blu (asse lungo +Y locale).
+static func _faretra(pos: Vector3, rot := Vector3.ZERO, s := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees = rot
+	n.scale = Vector3.ONE * s
+	n.add_child(cilindro(0.026, 0.021, 0.2, Vector3.ZERO, "cuoio", Vector3.ZERO, 8))
+	n.add_child(cilindro(0.0275, 0.0275, 0.016, Vector3(0, 0.075, 0), "lapislazzuli", Vector3.ZERO, 8))
+	n.add_child(cilindro(0.023, 0.023, 0.012, Vector3(0, -0.06, 0), "lapislazzuli", Vector3.ZERO, 8))
+	for k in 4:
+		var p := Vector3((k % 2) * 0.016 - 0.008, 0.12, (k / 2) * 0.016 - 0.008)
+		n.add_child(cilindro(0.003, 0.003, 0.08, p + Vector3(0, -0.015, 0), "legno", Vector3.ZERO, 4))
+		n.add_child(scatola(Vector3(0.004, 0.035, 0.016), p + Vector3(0, 0.018, 0), "lino_bianco" if k % 2 == 0 else "lapislazzuli", Vector3(0, k * 45, 0)))
+	return n
+
+
+## Insegna dei Sicani: asta di legno con la traversa, drappo blu lapislazzuli con il monte bianco a gradoni e le
+## pagliuzze d'oro, frange bianche e blu; in cima corna di montone e una punta d'ossidiana.
+static func _insegna_sicana(r: Node3D, pos: Vector3, h := 0.6) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = 45
+	r.add_child(n)
+	n.add_child(cilindro(0.012, 0.015, h, Vector3(0, h * 0.5, 0), "corteccia", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.008, 0.008, 0.2, Vector3(0, h - 0.05, 0.01), "legno_vecchio", Vector3(0, 0, 90), 5))
+	n.add_child(scatola(Vector3(0.17, 0.22, 0.006), Vector3(0, h - 0.165, 0.014), "lapislazzuli"))
+	for k in 3:
+		n.add_child(scatola(Vector3(0.13 - k * 0.042, 0.024, 0.008), Vector3(0, h - 0.232 + k * 0.024, 0.016), "lino_bianco"))
+	for p: Vector2 in [Vector2(-0.055, -0.085), Vector2(0.05, -0.095), Vector2(0.02, -0.125), Vector2(-0.035, -0.14), Vector2(0.065, -0.15)]:
+		n.add_child(sfera(0.008, Vector3(p.x, h + p.y, 0.017), "oro_n"))
+	for k in 5:
+		n.add_child(scatola(Vector3(0.022, 0.04, 0.006), Vector3(-0.068 + k * 0.034, h - 0.29, 0.014), "lapislazzuli" if k % 2 == 0 else "lino_bianco"))
+	n.add_child(sfera(0.022, Vector3(0, h + 0.012, 0), "osso", Vector3(0.9, 1.0, 1.1)))
+	for lato: int in [-1, 1]:
+		n.add_child(_toro(0.008, 0.026, Vector3(lato * 0.032, h + 0.028, 0.0), "osso", Vector3(90, 0, 0)))
+	n.add_child(cilindro(0.017, 0.0, 0.075, Vector3(0, h + 0.07, 0), "ossidiana", Vector3.ZERO, 5))
+
+
+## Scudo dei Sicani (faccia verso +Z locale): ovale alto di cuoio dipinto di blu lapislazzuli, orlo di cuoio, fascia
+## di rombi bianchi e umbone d'ossidiana.
+static func _scudo_sicano(pos: Vector3, rot_y := 0.0, s := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	n.scale = Vector3.ONE * s
+	var o := Node3D.new()
+	o.scale = Vector3(0.72, 1.15, 1)
+	n.add_child(o)
+	o.add_child(cilindro(0.085, 0.085, 0.012, Vector3.ZERO, "lapislazzuli", Vector3(90, 0, 0), 18))
+	o.add_child(_toro(0.08, 0.091, Vector3.ZERO, "cuoio", Vector3(90, 0, 0)))
+	for k in 5:
+		n.add_child(scatola(Vector3(0.017, 0.017, 0.004), Vector3(0.0, -0.068 + k * 0.034, 0.009), "lino_bianco", Vector3(0, 0, 45)))
+	n.add_child(sfera(0.018, Vector3(0, 0, 0.011), "ossidiana", Vector3(1, 1, 0.6)))
+	return n
+
+
+## Tettoia dei Sicani su pali con la base di sasso: piano di tavole coperto di lastre di pietra (tenute da sassi, con
+## qualche ciuffo d'erba), alta dietro (-Z) e bassa davanti (+Z). pos = centro a terra.
+static func _tettoia_sicana(r: Node3D, pos: Vector3, larg: float, prof: float, h_alta: float, h_bassa: float, seme := 1) -> void:
+	var rng := _rng(seme)
+	var dh := h_alta - h_bassa
+	var ang := atan2(dh, prof)
+	var lung := sqrt(prof * prof + dh * dh) + 0.1
+	var xs := [-larg * 0.5, larg * 0.5]
+	if larg > 0.7:
+		xs.append(0.0)
+	for x: float in xs:
+		for z: float in [prof * 0.5, -prof * 0.5]:
+			var hp := h_bassa if z > 0.0 else h_alta
+			r.add_child(cilindro(0.016, 0.019, hp, pos + Vector3(x, hp * 0.5, z), "corteccia", Vector3.ZERO, 6))
+			r.add_child(_sasso_sic(pos + Vector3(x, 0.02, z), Vector3(0.06, 0.04, 0.06), 20.0, int(x * 10.0 + z * 10.0) + 3))
+	r.add_child(cilindro(0.017, 0.017, larg + 0.1, pos + Vector3(0, h_bassa - 0.005, prof * 0.5), "legno_vecchio", Vector3(0, 0, 90), 6))
+	r.add_child(cilindro(0.017, 0.017, larg + 0.1, pos + Vector3(0, h_alta - 0.005, -prof * 0.5), "legno_vecchio", Vector3(0, 0, 90), 6))
+	var ym := (h_alta + h_bassa) * 0.5 + 0.018
+	var c := pos + Vector3(0, ym, 0)
+	var asse_t := Vector3(0, -sin(ang), cos(ang))
+	var norm := Vector3(0, cos(ang), sin(ang))
+	r.add_child(scatola(Vector3(larg + 0.12, 0.022, lung), c, "legno_vecchio", Vector3(rad_to_deg(ang), 0, 0)))
+	var nl := maxi(2, int((larg + 0.12) / 0.1))
+	var nf := maxi(2, int(lung / 0.1))
+	for i in nl:
+		for j in nf:
+			var x := -(larg + 0.12) * 0.5 + (i + 0.5) * (larg + 0.12) / nl
+			var t := -lung * 0.5 + (j + 0.5) * lung / nf
+			var p := c + Vector3(x, 0, 0) + asse_t * t + norm * (0.018 + rng.randf_range(-0.003, 0.004))
+			r.add_child(scatola(Vector3((larg + 0.12) / nl + 0.016, 0.016, lung / nf + 0.016), p, "lastra_sic" if (i + j) % 4 != 0 else "sasso_sic", Vector3(rad_to_deg(ang) + rng.randf_range(-4.0, 4.0), rng.randf_range(-6.0, 6.0), rng.randf_range(-3.0, 3.0))))
+	for k in int(larg * 6.0) + 1:
+		var t := rng.randf_range(-0.35, 0.35) * lung
+		var p := c + Vector3(rng.randf_range(-larg * 0.45, larg * 0.45), 0, 0) + asse_t * t + norm * 0.04
+		if k % 2 == 0:
+			r.add_child(_sasso_sic(p, Vector3(0.05, 0.032, 0.045), rng.randf() * 90.0, k))
+		else:
+			r.add_child(sfera(0.026, p, "erba_tetto", Vector3(1.2, 0.5, 1.2)))
+
+
+## Forno dei Sicani a falsa cupola: base quadrata di pietra a secco, cupola di pietre grigie coperta di terra e d'erba,
+## bocca con l'architrave di lastra e le braci verso +Z, sfiatatoio e fumo.
+static func _forno_sicano(r: Node3D, pos: Vector3, s := 1.0, fumo := true) -> void:
+	r.add_child(scatola(Vector3(0.44, 0.12, 0.44) * s, pos + Vector3(0, 0.06 * s, 0), "pietra_sicana"))
+	for k in 10:
+		var a := deg_to_rad(-40.0 + k * 16.0)
+		r.add_child(_sasso_sic(pos + Vector3(sin(a), 0, cos(a)) * 0.205 * s + Vector3(0, 0.135 * s, 0), Vector3(0.06, 0.035, 0.03) * s, rad_to_deg(a), k))
+	r.add_child(sfera(0.2 * s, pos + Vector3(0, 0.12 * s, 0), "pietra_sicana", Vector3(1, 0.95, 1)))
+	r.add_child(sfera(0.165 * s, pos + Vector3(0, 0.205 * s, -0.015 * s), "erba_tetto", Vector3(1, 0.62, 1)))
+	for k in 5:
+		var a := k * TAU / 5 + 0.3
+		r.add_child(sfera(0.024 * s, pos + Vector3(cos(a) * 0.1, 0.29, sin(a) * 0.1) * s, "prato" if k % 2 == 0 else "foglie_chiare", Vector3(1.2, 0.6, 1.2)))
+	var b := pos + Vector3(0, 0, 0.2 * s)
+	r.add_child(scatola(Vector3(0.16, 0.14, 0.1) * s, b + Vector3(0, 0.07 * s, 0), "sasso_sic"))
+	r.add_child(scatola(Vector3(0.09, 0.08, 0.02) * s, b + Vector3(0, 0.055 * s, 0.045 * s), "buio"))
+	r.add_child(sfera(0.032 * s, b + Vector3(0, 0.03 * s, 0.05 * s), "brace", Vector3(1.2, 0.6, 0.8)))
+	r.add_child(scatola(Vector3(0.2, 0.035, 0.11) * s, b + Vector3(0, 0.15 * s, 0.005 * s), "lastra_sic", Vector3(0, 0, -3)))
+	r.add_child(scatola(Vector3(0.1, 0.05, 0.012) * s, b + Vector3(0, 0.2 * s, -0.02 * s), "fuliggine", Vector3(-20, 0, 0)))
+	r.add_child(cilindro(0.03 * s, 0.035 * s, 0.05 * s, pos + Vector3(0.02, 0.33, -0.03) * s, "sasso_sic", Vector3.ZERO, 6))
+	if fumo:
+		_fumo(r, pos + Vector3(0.02 * s, 0.38 * s, -0.03 * s), 4, s)
+
+
+## Rastrelliera degli arcieri: due pali con la traversa, archi appesi, faretre appoggiate e uno scudo blu.
+static func _rastrelliera_archi(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	for lato: int in [-1, 1]:
+		n.add_child(cilindro(0.012, 0.014, 0.32, Vector3(lato * 0.14, 0.16, 0), "corteccia", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.009, 0.009, 0.32, Vector3(0, 0.29, 0), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for k in 3:
+		_arco_sic(n, Vector3(-0.09 + k * 0.09, 0.18, 0.012), 0.22, 0.045, Vector3(0, 90, 0))
+	for k in 2:
+		n.add_child(_faretra(Vector3(-0.06 + k * 0.1, 0.1, 0.06), Vector3(-15, 0, -8 + k * 16), 1.0))
+	n.add_child(_scudo_sicano(Vector3(0.21, 0.1, 0.05), 20.0, 1.0))
+
+
+## Ripiano di un gradone coltivato: file di piante su una striscia larga `larg` e profonda `prof` (centro pos).
+static func _coltura_sic(r: Node3D, pos: Vector3, larg: float, prof: float, tipo := "grano", seme := 0) -> void:
+	var rng := _rng(seme + 31)
+	var nx := int(larg / 0.06)
+	var nz := maxi(1, int(prof / 0.07))
+	for i in nx:
+		for j in nz:
+			var p := pos + Vector3(-larg * 0.5 + (i + 0.5) * larg / nx, 0, -prof * 0.5 + (j + 0.5) * prof / nz)
+			match tipo:
+				"grano":
+					r.add_child(cilindro(0.012, 0.017, 0.1, p + Vector3(0, 0.05, 0), "grano", Vector3.ZERO, 5))
+				"orto":
+					r.add_child(sfera(rng.randf_range(0.02, 0.028), p + Vector3(0, 0.02, 0), "orto" if (i + j) % 2 == 0 else "foglie_chiare", Vector3(1, 0.8, 1)))
+				_:
+					r.add_child(cilindro(0.005, 0.005, 0.05, p + Vector3(0, 0.025, 0), "corteccia", Vector3.ZERO, 4))
+					r.add_child(sfera(0.03 + rng.randf() * 0.012, p + Vector3(0, 0.07, 0), "foglie_ulivo" if (i + j) % 2 == 0 else "foglie", Vector3(1, 0.85, 1)))
+
+
+# ------------------------------------------------------------------ edifici dei Sicani
+
+## Casa dei Sicani: casa bassa di pietra a secco col tetto d'erba sopra un basso terrazzamento, dispensa accanto,
+## focolare all'aperto con la pentola, panca di lastra, orto a due gradoni, catasta di pietre e una capra.
+static func casa_greca_sicani(seme := 1) -> Node3D:
+	var r := Node3D.new()
+	_gradoni(r, Vector3(-0.12, 0, -0.2), 0.98, 0.74, 1, 0.06, "terra", seme)
+	_casa_sicana(r, Vector3(-0.13, 0.06, -0.24), 0.8, 0.54, 0.34, seme, 0.0, true, -0.14, true)
+	_casa_sicana(r, Vector3(-0.66, 0, 0.32), 0.28, 0.26, 0.22, seme + 7, 90.0, true)
+	# focolare con la pentola, panca di lastra, ceste
+	_fuoco(r, Vector3(0.24, 0, 0.36), 0.8)
+	r.add_child(cilindro(0.04, 0.032, 0.05, Vector3(0.24, 0.07, 0.36), "terracotta", Vector3.ZERO, 10))
+	_fumo(r, Vector3(0.26, 0.16, 0.34), 3, 0.8)
+	r.add_child(scatola(Vector3(0.24, 0.03, 0.08), Vector3(-0.22, 0.075, 0.36), "lastra_sic", Vector3(0, 8, 0)))
+	for lato: int in [-1, 1]:
+		r.add_child(_sasso_sic(Vector3(-0.22 + lato * 0.08, 0.03, 0.36), Vector3(0.05, 0.06, 0.06), 8.0, lato + 2))
+	r.add_child(cesta(Vector3(0.04, 0, 0.42), "olive"))
+	r.add_child(anfora(Vector3(-0.04, 0, 0.5), 1.1))
+	r.add_child(sacco(Vector3(0.36, 0, -0.06), 0.4))
+	_catasta_pietre(r, Vector3(0.36, 0, -0.34), 0.9, seme)
+	# orto su due gradoni
+	var o := Vector3(0.56, 0, 0.44)
+	_gradoni(r, o, 0.36, 0.4, 2, 0.05, "terra", seme + 3)
+	for k in 2:
+		_coltura_sic(r, o + Vector3(0, (k + 1) * 0.05 + 0.01, 0.2 - (k + 0.5) * 0.2 - 0.01), 0.3, 0.12, "orto", seme + k)
+	r.add_child(capra(Vector3(-0.36, 0, 0.56), 60))
+	return r
+
+
+## Magazzino dei Sicani: casa lunga di pietra e una casa-torre bassa col tetto d'erba, cortile lastricato chiuso dal muro
+## a secco con la porta a trilite, sacchi e casse sotto la tettoia di lastre, file di grandi orci, cataste di pietre e di
+## tronchi, asino con le ceste e l'insegna blu.
+static func magazzino_sicani() -> Node3D:
+	var r := Node3D.new()
+	r.position = Vector3(0, 0, -0.1)
+	r.add_child(scatola(Vector3(2.0, 0.02, 1.6), Vector3(0, 0.01, 0.05), "terra"))
+	var rng := _rng(30)
+	for i in 12:
+		for j in 5:
+			var p := Vector3(-0.86 + i * 0.155 + rng.randf_range(-0.02, 0.02), 0.022, 0.06 + j * 0.15 + rng.randf_range(-0.02, 0.02))
+			r.add_child(scatola(Vector3(rng.randf_range(0.11, 0.14), 0.012, rng.randf_range(0.1, 0.13)), p, "lastra_sic" if (i + j) % 3 != 0 else "pietra_n_chiara", Vector3(0, rng.randf_range(-12.0, 12.0), 0)))
+	_casa_sicana(r, Vector3(-0.22, 0, -0.38), 1.3, 0.6, 0.44, 31, 0.0, true, -0.3, true)
+	_casa_sicana(r, Vector3(0.7, 0, -0.42), 0.46, 0.48, 0.56, 32, 0.0, true)
+	# muro a secco attorno al cortile, con la porta a trilite davanti
+	_muro_sic(r, Vector3(-0.98, 0, -0.62), Vector3(-0.98, 0, 0.82), 0.14, 0.1)
+	_muro_sic(r, Vector3(-0.98, 0, 0.82), Vector3(-0.22, 0, 0.82), 0.14, 0.1)
+	_muro_sic(r, Vector3(0.22, 0, 0.82), Vector3(0.98, 0, 0.82), 0.14, 0.1)
+	_muro_sic(r, Vector3(0.98, 0, 0.82), Vector3(0.98, 0, -0.2), 0.14, 0.1)
+	for x: float in [-0.2, 0.2]:
+		r.add_child(scatola(Vector3(0.1, 0.3, 0.12), Vector3(x, 0.15, 0.82), "sasso_sic", Vector3(0, 0, 2 * signf(x))))
+	r.add_child(scatola(Vector3(0.6, 0.07, 0.15), Vector3(0, 0.335, 0.82), "pietra_n_chiara", Vector3(0, 0, -1.5)))
+	r.add_child(sfera(0.022, Vector3(0, 0.39, 0.86), "osso", Vector3(0.85, 1.1, 0.7)))
+	for lato: int in [-1, 1]:
+		r.add_child(_toro(0.008, 0.024, Vector3(lato * 0.032, 0.395, 0.86), "osso", Vector3(90, 0, 0)))
+	# file di grandi orci e casse a sinistra
+	for j in 2:
+		for i in 4:
+			r.add_child(anfora(Vector3(-0.82 + i * 0.17 + j * 0.08, 0, 0.22 + j * 0.2), 1.6))
+	for i in 3:
+		r.add_child(cassa(Vector3(-0.8 + i * 0.14, 0, 0.64), i * 10.0, 0.12))
+	r.add_child(cassa(Vector3(-0.73, 0.1, 0.64), 25.0, 0.1))
+	# tettoia di lastre sopra sacchi e ceste a destra
+	_tettoia_sicana(r, Vector3(0.66, 0, 0.24), 0.5, 0.34, 0.42, 0.33, 33)
+	for i in 3:
+		r.add_child(sacco(Vector3(0.5 + i * 0.12, 0, 0.16), i * 0.6))
+	r.add_child(sacco(Vector3(0.56, 0.08, 0.17), 1.0))
+	r.add_child(cesta(Vector3(0.82, 0, 0.32), "olive"))
+	r.add_child(cesta(Vector3(0.7, 0, 0.32), "formaggio"))
+	_catasta_pietre(r, Vector3(0.62, 0, 0.6), 1.0, 34)
+	catasta_tronchi(r, Vector3(0.36, 0, 0.62), 3, 0.32)
+	# asino con le ceste
+	r.add_child(asino(Vector3(0.06, 0, 0.6), 70))
+	r.add_child(cesta(Vector3(0.04, 0.11, 0.54), "olive", 0.7))
+	r.add_child(cesta(Vector3(0.08, 0.11, 0.66), "olive", 0.7))
+	_insegna_sicana(r, Vector3(0.9, 0, 0.7), 0.8)
+	return r
+
+
+## Boscaiolo dei Sicani: casa di pietra col tetto d'erba, tettoia di lastre sopra la legna spaccata, catasta di
+## tronchi, ceppo con l'ascia dalla lama di pietra nera, fascine e una catasta di pietre.
+static func boscaiolo_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.15, 0, -0.2), 0.66, 0.48, 0.3, 41, 0.0, true, -0.08, true)
+	_tettoia_sicana(r, Vector3(0.43, 0, -0.18), 0.32, 0.5, 0.36, 0.28, 42)
+	legnaia(r, Vector3(0.43, 0, -0.32), 0.28, 5)
+	legnaia(r, Vector3(0.43, 0, -0.1), 0.28, 4)
+	catasta_tronchi(r, Vector3(0.55, 0, 0.55), 4, 0.5)
+	r.add_child(cilindro(0.07, 0.075, 0.09, Vector3(-0.2, 0.045, 0.5), "corteccia", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.066, 0.066, 0.006, Vector3(-0.2, 0.092, 0.5), "legno_chiaro", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.008, 0.008, 0.22, Vector3(-0.2, 0.18, 0.5), "legno", Vector3(0, 0, 22), 6))
+	r.add_child(scatola(Vector3(0.06, 0.04, 0.016), Vector3(-0.245, 0.27, 0.5), "ossidiana", Vector3(0, 0, 22)))
+	r.add_child(scatola(Vector3(0.012, 0.035, 0.018), Vector3(-0.27, 0.262, 0.5), "riflesso_oss", Vector3(0, 0, 22)))
+	for i in 6:
+		r.add_child(cilindro(0.02, 0.02, 0.06, Vector3(-0.38 + i * 0.06, 0.02, 0.62 + (i % 2) * 0.05), "legno_chiaro", Vector3(0, i * 37, 90), 6))
+	_fascina(r, Vector3(-0.62, 0, 0.35), 20.0)
+	_fascina(r, Vector3(-0.55, 0, 0.45), 35.0)
+	_catasta_pietre(r, Vector3(0.12, 0, 0.3), 0.8, 43)
+	for pos: Vector3 in [Vector3(-0.72, 0, 0.0), Vector3(-0.6, 0, 0.75)]:
+		r.add_child(cilindro(0.06, 0.07, 0.05, pos + Vector3(0, 0.025, 0), "corteccia", Vector3.ZERO, 10))
+		r.add_child(cilindro(0.056, 0.056, 0.005, pos + Vector3(0, 0.052, 0), "legno_chiaro", Vector3.ZERO, 10))
+	return r
+
+
+## Segheria dei Sicani: casa di pietra col tetto d'erba, tettoia di lastre sopra il tronco sui cavalletti con la sega a
+## telaio, pile di assi, cunei e mazzuolo, catasta di tronchi, catasta di pietre.
+static func segheria_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.2, 0, -0.3), 0.7, 0.5, 0.32, 51, 0.0, true, -0.1)
+	var t := Vector3(0.05, 0, 0.5)
+	_tettoia_sicana(r, t, 0.9, 0.44, 0.44, 0.35, 52)
+	for px: float in [-0.25, 0.0, 0.25]:
+		r.add_child(scatola(Vector3(0.03, 0.12, 0.12), t + Vector3(px, 0.06, 0.0), "legno"))
+	r.add_child(cilindro(0.055, 0.055, 0.8, t + Vector3(0, 0.17, 0.0), "corteccia", Vector3(0, 0, 90), 9))
+	r.add_child(cilindro(0.047, 0.047, 0.805, t + Vector3(0, 0.17, 0.0), "legno_chiaro", Vector3(0, 0, 90), 9))
+	for z: float in [-0.08, 0.08]:
+		r.add_child(scatola(Vector3(0.014, 0.3, 0.014), t + Vector3(0.1, 0.24, z), "legno"))
+	r.add_child(scatola(Vector3(0.014, 0.014, 0.18), t + Vector3(0.1, 0.38, 0.0), "legno"))
+	r.add_child(scatola(Vector3(0.006, 0.006, 0.17), t + Vector3(0.1, 0.2, 0.0), "bronzo"))
+	r.add_child(cilindro(0.2, 0.2, 0.004, t + Vector3(0.1, 0.002, 0.0), "legno_chiaro", Vector3.ZERO, 16))
+	for k in 3:
+		r.add_child(scatola(Vector3(0.03, 0.02, 0.05), t + Vector3(-0.35 + k * 0.05, 0.01, 0.17), "legno_scuro", Vector3(0, k * 30, 0)))
+	r.add_child(cilindro(0.025, 0.025, 0.07, t + Vector3(-0.2, 0.025, 0.18), "legno", Vector3(0, 30, 90), 8))
+	pila_assi(r, Vector3(0.62, 0, -0.25), 8, 90)
+	pila_assi(r, Vector3(0.62, 0, 0.12), 5, 90)
+	catasta_tronchi(r, Vector3(-0.65, 0, 0.55), 3, 0.42)
+	_catasta_pietre(r, Vector3(0.45, 0, 0.86), 0.8, 53)
+	_fascina(r, Vector3(0.2, 0, 0.86), 70.0)
+	return r
+
+
+## Cava dei Sicani: piccola casa di pietra, fronte di roccia grigia tagliata a gradoni con le tacche dei cunei, blocchi
+## squadrati pronti, leva di legno, ceste di pietrame, slitta di tronchi con un blocco e una catasta di pietre.
+static func cava_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.4, 0, -0.34), 0.48, 0.42, 0.28, 61, 0.0, true)
+	var rng := _rng(61)
+	# fronte di cava a tre gradoni di roccia viva
+	var c := Vector3(0.32, 0, -0.38)
+	for k in 3:
+		var dz := 0.42 - k * 0.12
+		var yk := 0.13 + k * 0.11
+		r.add_child(scatola(Vector3(0.58 - k * 0.06, yk, dz), c + Vector3(-k * 0.02, yk * 0.5, -0.21 + dz * 0.5), "sasso_sic" if k % 2 == 0 else "pietra_n_chiara"))
+		for j in 5:
+			r.add_child(scatola(Vector3(0.012, 0.03, 0.012), c + Vector3(-0.22 + j * 0.1 - k * 0.02, yk - 0.02, -0.21 + dz + 0.002), "buio"))
+		for j in 3:
+			r.add_child(_masso(c + Vector3(-0.25 + j * 0.22 + rng.randf_range(-0.04, 0.04), yk, -0.21 + dz * rng.randf_range(0.2, 0.6)), rng.randf_range(0.05, 0.08), Vector3(1.3, 0.8, 1.0), "pietra_n_chiara" if j % 2 == 0 else "sasso_sic", rng.randf() * 90.0))
+	for k in 6:
+		r.add_child(_masso(c + Vector3(rng.randf_range(-0.3, 0.3), 0.0, -0.25 + rng.randf_range(-0.04, 0.02)), rng.randf_range(0.08, 0.13), Vector3(1.2, rng.randf_range(1.5, 2.8), 1.0), "sasso_sic" if k % 2 == 0 else "pietra_n_scura", rng.randf() * 90.0))
+	# blocchi squadrati pronti
+	for i in 4:
+		for j in 2 - (i / 3):
+			r.add_child(scatola(Vector3(0.13, 0.09, 0.09), Vector3(-0.1 + i * 0.15, 0.045 + j * 0.09, 0.45), "sasso_sic" if (i + j) % 2 == 0 else "pietra_n_chiara", Vector3(0, i * 5 - 6, 0)))
+	# leva di legno sotto un blocco, ceste di pietrame
+	r.add_child(scatola(Vector3(0.14, 0.1, 0.1), Vector3(0.55, 0.05, 0.12), "sasso_sic", Vector3(0, 20, 6)))
+	ramo(r, Vector3(0.5, 0.02, 0.2), Vector3(0.78, 0.2, 0.34), 0.01, "legno")
+	r.add_child(sfera(0.025, Vector3(0.52, 0.02, 0.24), "roccia_massi", Vector3(1.2, 0.8, 1)))
+	for k in 2:
+		var cp := Vector3(-0.55 + k * 0.13, 0, 0.3 + k * 0.08)
+		r.add_child(cilindro(0.065, 0.055, 0.06, cp + Vector3(0, 0.03, 0), "paglia_scura", Vector3.ZERO, 12))
+		r.add_child(mucchio(cp + Vector3(0, 0.03, 0), "sasso_sic", 5, 7 + k, 0.025))
+	# slitta di tronchi con un blocco
+	for lato: int in [-1, 1]:
+		r.add_child(cilindro(0.018, 0.018, 0.34, Vector3(-0.42, 0.018, 0.62 + lato * 0.06), "corteccia", Vector3(0, 0, 90), 6))
+	r.add_child(scatola(Vector3(0.26, 0.02, 0.16), Vector3(-0.42, 0.045, 0.62), "legno_vecchio"))
+	r.add_child(scatola(Vector3(0.12, 0.08, 0.09), Vector3(-0.42, 0.095, 0.62), "sasso_sic"))
+	ramo(r, Vector3(-0.27, 0.02, 0.62), Vector3(-0.1, 0.06, 0.66), 0.004, "corda")
+	_catasta_pietre(r, Vector3(-0.08, 0, 0.12), 0.8, 62)
+	return r
+
+
+## Guardaboschi dei Sicani: casa di pietra col tetto d'erba, vivaio di querce e olivastri giovani su tre gradoni, orcio
+## d'acqua, zappa, sacchi di ghiande e una quercia.
+static func guardaboschi_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.32, 0, -0.34), 0.54, 0.44, 0.28, 71, 0.0, true)
+	var g := Vector3(0.16, 0, 0.45)
+	_gradoni(r, g, 0.66, 0.54, 3, 0.05, "terra", 72)
+	for k in 3:
+		_coltura_sic(r, g + Vector3(0, (k + 1) * 0.05 + 0.01, 0.27 - (k + 0.5) * 0.18 - 0.012), 0.6, 0.1, "vivaio", 70 + k)
+	r.add_child(anfora(Vector3(0.3, 0, -0.18), 1.3))
+	r.add_child(anfora(Vector3(0.4, 0, -0.1), 1.0))
+	r.add_child(cilindro(0.007, 0.007, 0.22, Vector3(0.2, 0.11, -0.3), "legno", Vector3(12, 0, -15), 5))
+	r.add_child(scatola(Vector3(0.05, 0.012, 0.04), Vector3(0.23, 0.01, -0.28), "bronzo", Vector3(0, 0, -15)))
+	r.add_child(sacco(Vector3(-0.58, 0, 0.3), 0.4))
+	r.add_child(sacco(Vector3(-0.62, 0, 0.42), -0.2))
+	_catasta_pietre(r, Vector3(-0.4, 0, 0.2), 0.7, 73)
+	var q := quercia(43)
+	q.position = Vector3(0.55, 0, -0.55)
+	q.scale = Vector3.ONE * 0.6
+	r.add_child(q)
+	return r
+
+
+## Pozzo dei Sicani: vera quadrata di pietra a secco con le lastre di copertina, trilite di due pietre ritte e un
+## architrave che regge il rullo di legno con la manovella, secchio di cuoio appeso, abbeveratoio di pietra e orci.
+static func pozzo_sicani() -> Node3D:
+	var r := Node3D.new()
+	var lv := 0.36
+	var sp := 0.08
+	for f in 4:
+		var a := f * 90.0
+		var p := Vector3(0, 0.08, lv * 0.5 - sp * 0.5).rotated(Vector3.UP, deg_to_rad(a))
+		r.add_child(scatola(Vector3(lv, 0.16, sp), p, "pietra_sicana", Vector3(0, a, 0)))
+		for k in 4:
+			var q := Vector3(-lv * 0.5 + (k + 0.5) * lv / 4.0, 0.168, lv * 0.5 - sp * 0.5).rotated(Vector3.UP, deg_to_rad(a))
+			r.add_child(scatola(Vector3(lv / 4.0 + 0.012, 0.018, sp + 0.03), q, "lastra_sic" if (k + f) % 3 != 0 else "sasso_sic", Vector3(0, a + (k - 1.5) * 4.0, 0)))
+		for k in 3:
+			var q := Vector3(-0.1 + k * 0.1, 0.05 + (k % 2) * 0.05, lv * 0.5 + 0.004).rotated(Vector3.UP, deg_to_rad(a))
+			r.add_child(_sasso_sic(q, Vector3(0.06, 0.035, 0.018), a, k + f))
+	r.add_child(scatola(Vector3(lv - 2 * sp, 0.1, lv - 2 * sp), Vector3(0, 0.09, 0), "buio"))
+	r.add_child(scatola(Vector3(lv - 2 * sp, 0.004, lv - 2 * sp), Vector3(0, 0.142, 0), "acqua_pozzo"))
+	# trilite con il rullo
+	for lato: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.07, 0.48, 0.08), Vector3(lato * 0.24, 0.24, 0), "sasso_sic", Vector3(0, 0, lato * 1.5)))
+	r.add_child(scatola(Vector3(0.62, 0.07, 0.11), Vector3(0, 0.515, 0), "pietra_n_chiara", Vector3(0, 0, 2)))
+	for k in 3:
+		r.add_child(sfera(0.02, Vector3(-0.16 + k * 0.13, 0.56, 0.01 - k * 0.01), "prato" if k % 2 == 0 else "foglie_chiare", Vector3(1.3, 0.6, 1.1)))
+	r.add_child(cilindro(0.028, 0.028, 0.42, Vector3(0, 0.4, 0), "legno", Vector3(0, 0, 90), 10))
+	r.add_child(cilindro(0.031, 0.031, 0.06, Vector3(-0.03, 0.4, 0), "corda", Vector3(0, 0, 90), 10))
+	r.add_child(scatola(Vector3(0.015, 0.1, 0.015), Vector3(0.29, 0.37, 0.0), "legno_scuro"))
+	r.add_child(cilindro(0.008, 0.008, 0.06, Vector3(0.29, 0.32, 0.03), "legno_scuro", Vector3(90, 0, 0), 5))
+	r.add_child(cilindro(0.003, 0.003, 0.15, Vector3(-0.03, 0.31, 0.0), "corda", Vector3.ZERO, 4))
+	r.add_child(cilindro(0.036, 0.03, 0.06, Vector3(-0.03, 0.21, 0.0), "cuoio", Vector3.ZERO, 10))
+	r.add_child(_toro(0.03, 0.036, Vector3(-0.03, 0.24, 0.0), "legno_scuro"))
+	# abbeveratoio di pietra, orci, catasta di pietre
+	r.add_child(scatola(Vector3(0.26, 0.06, 0.1), Vector3(0.3, 0.03, 0.26), "sasso_sic", Vector3(0, -40, 0)))
+	r.add_child(scatola(Vector3(0.21, 0.005, 0.065), Vector3(0.3, 0.061, 0.26), "acqua_pozzo", Vector3(0, -40, 0)))
+	r.add_child(anfora(Vector3(0.3, 0, -0.2), 1.3))
+	r.add_child(anfora(Vector3(0.05, 0, 0.32), 1.1))
+	r.add_child(anfora(Vector3(-0.06, 0, 0.36), 0.9))
+	_catasta_pietre(r, Vector3(-0.3, 0, 0.26), 0.7, 81)
+	r.scale = Vector3.ONE * 1.15
+	return r
+
+
+## Fattoria dei Sicani: casa di pietra col tetto d'erba, granaio quadrato di pietra, campi di grano a terrazze che salgono
+## sostenuti dai muri a secco, aia tonda lastricata con i covoni, asino, galline e sacchi.
+static func fattoria_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.26, 0, -0.32), 0.62, 0.46, 0.3, 81, 0.0, true, -0.1, true)
+	_casa_sicana(r, Vector3(0.72, 0, -0.3), 0.32, 0.3, 0.3, 82, 0.0, false)
+	r.add_child(scatola(Vector3(0.07, 0.09, 0.02), Vector3(0.72, 0.16, -0.14), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.12, 0.025, 0.04), Vector3(0.72, 0.22, -0.13), "lastra_sic"))
+	# campi a terrazze
+	var g := Vector3(0.36, 0, 0.34)
+	_gradoni(r, g, 0.74, 0.66, 3, 0.055, "terra", 83)
+	for k in 3:
+		_coltura_sic(r, g + Vector3(0, (k + 1) * 0.055 + 0.01, 0.33 - (k + 0.5) * 0.22 - 0.012), 0.68, 0.15, "grano", 83 + k)
+	# aia tonda lastricata con i covoni
+	var a := Vector3(-0.42, 0, 0.46)
+	r.add_child(cilindro(0.26, 0.27, 0.02, a + Vector3(0, 0.01, 0), "lastra_sic", Vector3.ZERO, 20))
+	for k in 16:
+		var ak := k * TAU / 16
+		r.add_child(_sasso_sic(a + Vector3(cos(ak), 0, sin(ak)) * 0.27 + Vector3(0, 0.02, 0), Vector3(0.05, 0.03, 0.04), -rad_to_deg(ak) + 90.0, k))
+	r.add_child(cilindro(0.22, 0.22, 0.005, a + Vector3(0, 0.022, 0), "paglia", Vector3.ZERO, 20))
+	for i in 4:
+		var cv := covone(1.15)
+		cv.position = a + Vector3(-0.15 + i * 0.1, 0.02, -0.05 + (i % 2) * 0.1)
+		cv.rotation_degrees.z = 8 * (i % 2 * 2 - 1)
+		r.add_child(cv)
+	r.add_child(asino(Vector3(-0.1, 0, 0.1), 160))
+	for i in 3:
+		r.add_child(sfera(0.025, Vector3(0.1 + i * 0.07, 0.03, 0.76 - i * 0.03), "intonaco", Vector3(1.3, 1, 1)))
+		r.add_child(sfera(0.008, Vector3(0.13 + i * 0.07, 0.05, 0.76 - i * 0.03), "geranio"))
+	r.add_child(sacco(Vector3(0.5, 0, -0.06), 0.3))
+	r.add_child(sacco(Vector3(0.58, 0, 0.0), -0.4))
+	r.add_child(anfora(Vector3(-0.72, 0, 0.12), 1.2))
+	return r
+
+
+## Mulino dei Sicani: casa di pietra col tetto d'erba; sotto la tettoia di lastre la macina tonda di pietra grigia girata
+## dall'asino, macine a sella, sacchi di farina, un covone e gli orci.
+static func mulino_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.22, 0, -0.3), 0.62, 0.46, 0.32, 91, 0.0, true, -0.1)
+	var m := Vector3(-0.3, 0, 0.5)
+	r.add_child(cilindro(0.2, 0.22, 0.06, m + Vector3(0, 0.03, 0), "pietra_sicana", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.17, 0.17, 0.005, m + Vector3(0, 0.061, 0), "lino", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.025, 0.025, 0.24, m + Vector3(0, 0.15, 0), "legno", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.11, 0.11, 0.07, m + Vector3(0.07, 0.16, 0), "sasso_sic", Vector3(0, 0, 90), 18))
+	r.add_child(scatola(Vector3(0.5, 0.025, 0.025), m + Vector3(0.16, 0.25, 0), "legno_vecchio"))
+	r.add_child(asino(m + Vector3(0.38, 0, 0.0), 90))
+	_tettoia_sicana(r, m + Vector3(0, 0, -0.2), 0.56, 0.3, 0.46, 0.4, 92)
+	_macina_sella(r, Vector3(0.12, 0, 0.66), 30.0)
+	_macina_sella(r, Vector3(0.3, 0, 0.58), 10.0)
+	for i in 5:
+		r.add_child(sacco(Vector3(0.45 + (i % 3) * 0.12, 0.0, -0.1 + (i / 3) * 0.13), i * 0.7))
+	var cv := covone(1.1)
+	cv.position = Vector3(0.6, 0, 0.42)
+	r.add_child(cv)
+	r.add_child(anfora(Vector3(0.36, 0, 0.3), 1.3))
+	return r
+
+
+## Forno dei Sicani: casa di pietra col tetto d'erba, grande forno a falsa cupola di pietra coperto d'erba con la bocca
+## accesa e il fumo, lastra con le focacce, fascine, ceste di pane, sacchi e orci.
+static func forno_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.22, 0, -0.3), 0.62, 0.46, 0.3, 101, 0.0, true, -0.1)
+	_forno_sicano(r, Vector3(0.45, 0, 0.36), 1.2)
+	_fascina(r, Vector3(0.75, 0, 0.1), 10.0)
+	_fascina(r, Vector3(0.68, 0, 0.0), 25.0)
+	r.add_child(scatola(Vector3(0.32, 0.03, 0.15), Vector3(-0.3, 0.1, 0.55), "lastra_sic"))
+	for lato: int in [-1, 1]:
+		r.add_child(_sasso_sic(Vector3(-0.3 + lato * 0.11, 0.043, 0.55), Vector3(0.06, 0.085, 0.1), 0.0, lato + 3))
+	for i in 5:
+		r.add_child(sfera(0.03, Vector3(-0.42 + i * 0.06, 0.125, 0.55 + (i % 2) * 0.03), "pane", Vector3(1, 0.45, 1)))
+	r.add_child(cesta(Vector3(-0.62, 0, 0.42), "pane"))
+	r.add_child(cesta(Vector3(0.05, 0, 0.66), "pane"))
+	r.add_child(sacco(Vector3(-0.68, 0, 0.15), 0.4))
+	r.add_child(anfora(Vector3(0.12, 0, 0.34), 1.2))
+	return r
+
+
+## Ovile dei Sicani: casa di pietra bassa, stazzo tondo di muro a secco grigio con le pecore, abbeveratoio di pietra,
+## bastone del pastore, lana tosata e orcio del latte.
+static func ovile_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.36, 0, -0.4), 0.52, 0.42, 0.28, 111, 0.0, true)
+	var a := Vector3(0.18, 0, 0.18)
+	for k in 10:
+		var a0 := deg_to_rad(-150.0 + k * 30.0)
+		var a1 := deg_to_rad(-150.0 + (k + 1) * 30.0)
+		if k == 6:
+			continue
+		_muro_sic(r, a + Vector3(cos(a0), 0, sin(a0)) * 0.42, a + Vector3(cos(a1), 0, sin(a1)) * 0.42, 0.1, 0.075)
+	for p: Array in [[Vector3(0.0, 0, 0.1), 30], [Vector3(0.15, 0, -0.1), 160], [Vector3(0.2, 0, 0.18), -40],
+			[Vector3(-0.15, 0, 0.18), 90], [Vector3(0.05, 0, -0.22), 210]]:
+		r.add_child(pecora(a + p[0], p[1]))
+	r.add_child(scatola(Vector3(0.22, 0.05, 0.07), a + Vector3(-0.15, 0.025, -0.1), "sasso_sic", Vector3(0, 30, 0)))
+	r.add_child(scatola(Vector3(0.18, 0.005, 0.04), a + Vector3(-0.15, 0.051, -0.1), "acqua_pozzo", Vector3(0, 30, 0)))
+	r.add_child(cilindro(0.007, 0.006, 0.36, Vector3(-0.05, 0.17, -0.02), "legno", Vector3(0, 0, -10), 5))
+	r.add_child(_toro(0.012, 0.02, Vector3(-0.08, 0.35, -0.02), "legno", Vector3(90, 0, 0)))
+	r.add_child(sfera(0.06, Vector3(-0.6, 0.04, 0.3), "lana", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(sfera(0.05, Vector3(-0.52, 0.035, 0.4), "lana", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(anfora(Vector3(-0.7, 0, 0.1), 1.1))
+	return r
+
+
+## Capraio dei Sicani: casa di pietra bassa, spuntoni di roccia grigia con le capre, muro a secco, rastrelliera di
+## formaggi con il ripiano di lastre e l'orcio del latte.
+static func capraio_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.32, 0, -0.34), 0.46, 0.38, 0.26, 121, 0.0, true)
+	var a := Vector3(0.15, 0, 0.15)
+	r.add_child(_masso(a + Vector3(0.2, 0.0, -0.1), 0.17, Vector3(1.2, 1.6, 1.0), "pietra_n_chiara", 20.0))
+	r.add_child(_masso(a + Vector3(-0.05, 0.0, 0.3), 0.11, Vector3(1.3, 1.4, 1.0), "sasso_sic", 50.0))
+	r.add_child(_masso(a + Vector3(0.38, 0.0, 0.1), 0.08, Vector3(1.3, 1.6, 1.0), "pietra_n_scura", 10.0))
+	r.add_child(sfera(0.03, a + Vector3(0.12, 0.05, 0.0), "prato", Vector3(1.3, 0.6, 1.2)))
+	r.add_child(capra(a + Vector3(0.2, 0.12, -0.1), 40))
+	r.add_child(capra(a + Vector3(0.0, 0, 0.1), 200))
+	r.add_child(capra(a + Vector3(0.35, 0, 0.3), -30))
+	r.add_child(capra(a + Vector3(-0.1, 0.07, 0.3), 110))
+	_muro_sic(r, a + Vector3(-0.4, 0, 0.52), a + Vector3(0.5, 0, 0.52), 0.09, 0.07)
+	var f := Vector3(-0.62, 0, 0.3)
+	for x: float in [-0.08, 0.08]:
+		for z: float in [-0.06, 0.06]:
+			r.add_child(cilindro(0.008, 0.008, 0.16, f + Vector3(x, 0.08, z), "corteccia", Vector3.ZERO, 5))
+	r.add_child(scatola(Vector3(0.21, 0.014, 0.17), f + Vector3(0, 0.16, 0), "lastra_sic"))
+	for k in 4:
+		r.add_child(cilindro(0.025, 0.025, 0.024, f + Vector3(-0.055 + (k % 2) * 0.1, 0.179, -0.035 + (k / 2) * 0.07), "formaggio", Vector3.ZERO, 10))
+	r.add_child(anfora(Vector3(-0.42, 0, 0.5), 1.1))
+	return r
+
+
+## Caserma dei Sicani: casa di pietra col tetto d'erba e l'insegna blu, campo di tiro con il bersaglio di paglia a cerchi
+## blu e bianchi, rastrelliera di archi e faretre, due arcieri che si esercitano e una catasta di pietre.
+static func caserma_sicani() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.3, 0, -0.32), 0.58, 0.48, 0.34, 131, 0.0, true, -0.08, true)
+	_insegna_sicana(r, Vector3(0.1, 0, -0.1), 0.72)
+	r.add_child(scatola(Vector3(0.75, 0.01, 0.55), Vector3(0.25, 0.005, 0.4), "terra"))
+	# bersaglio di paglia su un cavalletto
+	var b := Vector3(0.52, 0, 0.26)
+	for lato: int in [-1, 1]:
+		ramo(r, b + Vector3(lato * 0.08, 0, -0.03), b + Vector3(0, 0.3, 0.0), 0.009, "corteccia")
+	ramo(r, b + Vector3(0, 0, -0.12), b + Vector3(0, 0.3, 0.0), 0.009, "corteccia")
+	var bn := Node3D.new()
+	bn.position = b + Vector3(0, 0.22, 0.03)
+	bn.rotation_degrees = Vector3(-8, 40, 0)
+	r.add_child(bn)
+	bn.add_child(cilindro(0.1, 0.1, 0.04, Vector3.ZERO, "paglia", Vector3(90, 0, 0), 18))
+	bn.add_child(cilindro(0.08, 0.08, 0.042, Vector3.ZERO, "lapislazzuli", Vector3(90, 0, 0), 18))
+	bn.add_child(cilindro(0.055, 0.055, 0.044, Vector3.ZERO, "lino_bianco", Vector3(90, 0, 0), 16))
+	bn.add_child(cilindro(0.03, 0.03, 0.046, Vector3.ZERO, "lapislazzuli", Vector3(90, 0, 0), 14))
+	for k in 3:
+		var fp := Vector3(-0.03 + k * 0.03, 0.02 - k * 0.02, 0.03)
+		bn.add_child(cilindro(0.003, 0.003, 0.09, fp + Vector3(0, 0, 0.045), "legno", Vector3(90, 0, 0), 4))
+		bn.add_child(scatola(Vector3(0.004, 0.016, 0.03), fp + Vector3(0, 0, 0.085), "lino_bianco"))
+	for k in 2:
+		var o := arciere_sicano()
+		o.position = Vector3(0.0 + k * 0.24, 0, 0.6 - k * 0.12)
+		o.rotation_degrees.y = 120 - k * 30
+		o.scale = Vector3.ONE * 0.95
+		r.add_child(o)
+	_rastrelliera_archi(r, Vector3(-0.6, 0, 0.4), 30.0)
+	_catasta_pietre(r, Vector3(-0.66, 0, 0.1), 0.7, 132)
+	return r
+
+
+## Torre di guardia dei Sicani: torre quadrata di pietra a secco che si restringe, su un basamento di sassi, grossi blocchi
+## agli angoli, cornice di lastre, feritoie, porta alta con la scala a pioli, terrazza piatta d'erba col parapetto di
+## lastre ritte, braciere e insegna blu; alla base scudi, archi e una catasta di pietre.
+static func torre_sicani() -> Node3D:
+	var r := Node3D.new()
+	var h := 0.96
+	var b0 := 0.08
+	var rng := _rng(141)
+	r.add_child(scatola(Vector3(0.82, b0, 0.82), Vector3(0, b0 * 0.5, 0), "sasso_sic"))
+	for k in 10:
+		var a := deg_to_rad(rng.randf_range(-70.0, 160.0))
+		r.add_child(_masso(Vector3(sin(a), 0, cos(a)) * 0.46, rng.randf_range(0.05, 0.08), Vector3(1.3, 1.2, 1.0), "roccia_massi" if k % 2 == 0 else "sasso_sic", rng.randf() * 90.0))
+	var s0 := 0.35
+	var s1 := 0.29
+	r.add_child(cilindro(s0 / cos(PI / 4), s1 / cos(PI / 4), h, Vector3(0, b0 + h * 0.5, 0), "pietra_sicana", Vector3(0, 45, 0), 4))
+	# sassi sporgenti sulle due facce in vista
+	for f in 2:
+		var a := f * 90.0
+		for k in 70:
+			var y := rng.randf_range(0.03, h - 0.03)
+			var sh := lerpf(s0, s1, y / h)
+			var p := Vector3(rng.randf_range(-sh + 0.04, sh - 0.04), b0 + y, sh + 0.004).rotated(Vector3.UP, deg_to_rad(a))
+			r.add_child(_sasso_sic(p, Vector3(rng.randf_range(0.05, 0.09), rng.randf_range(0.028, 0.048), 0.02), a, k + f))
+	# blocchi d'angolo
+	for cx: int in [-1, 1]:
+		for cz: int in [-1, 1]:
+			var y := 0.0
+			var j := 0
+			while y < h - 0.04:
+				var bh := minf(rng.randf_range(0.08, 0.11), h - y)
+				var sh := lerpf(s0, s1, (y + bh * 0.5) / h)
+				var lungo := (j + cx + cz) % 2 == 0
+				var d := Vector3(0.16 if lungo else 0.09, bh - 0.008, 0.09 if lungo else 0.16)
+				r.add_child(scatola(d, Vector3(cx * (sh - d.x * 0.5 + 0.012), b0 + y + bh * 0.5, cz * (sh - d.z * 0.5 + 0.012)), "sasso_sic" if j % 2 == 0 else "pietra_n_chiara", Vector3(0, rng.randf_range(-3.0, 3.0), 0)))
+				y += bh
+				j += 1
+	# cornice di lastre a metà
+	var ym := b0 + h * 0.55
+	var sm := lerpf(s0, s1, 0.55) + 0.03
+	for f in 4:
+		r.add_child(scatola(Vector3(sm * 2 + 0.04, 0.025, 0.07), Vector3(0, ym, sm - 0.02).rotated(Vector3.UP, deg_to_rad(f * 90.0)), "lastra_sic", Vector3(0, f * 90.0, 0)))
+	# feritoie
+	for y: float in [0.62, 0.86]:
+		var sh := lerpf(s0, s1, y / h) + 0.005
+		r.add_child(scatola(Vector3(0.03, 0.08, 0.02), Vector3(0.08, b0 + y, sh), "buio"))
+		r.add_child(scatola(Vector3(0.02, 0.08, 0.03), Vector3(sh, b0 + y, -0.06), "buio"))
+	# porta alta e scala a pioli
+	var yp := b0 + 0.28
+	_porta_sicana(r, Vector3(-0.12, yp, lerpf(s0, s1, 0.3) + 0.03), 0.0, 0.11, 0.18, false)
+	for lato: int in [-1, 1]:
+		ramo(r, Vector3(-0.12 + lato * 0.045, 0, 0.66), Vector3(-0.12 + lato * 0.045, yp + 0.02, 0.37), 0.009, "legno_vecchio")
+	for k in 5:
+		var t := (k + 1) / 6.0
+		r.add_child(scatola(Vector3(0.1, 0.008, 0.008), Vector3(-0.12, (yp + 0.02) * t, 0.66 - 0.29 * t), "legno"))
+	# terrazza: travi, lastre sporgenti, erba e parapetto di lastre ritte
+	var top := b0 + h
+	for k in 5:
+		r.add_child(cilindro(0.016, 0.018, s1 * 2 + 0.1, Vector3(-s1 + 0.06 + k * (s1 * 2 - 0.12) / 4.0, top - 0.025, 0), "legno_vecchio", Vector3(90, 0, 0), 6))
+	r.add_child(scatola(Vector3(s1 * 2 + 0.12, 0.035, s1 * 2 + 0.12), Vector3(0, top + 0.017, 0), "lastra_sic"))
+	r.add_child(scatola(Vector3(s1 * 2 - 0.02, 0.02, s1 * 2 - 0.02), Vector3(0, top + 0.044, 0), "erba_tetto"))
+	for f in 4:
+		var a := f * 90.0
+		var np := 6
+		for k in np:
+			var u := -s1 + 0.03 + (k + 0.5) * (s1 * 2 - 0.06) / np
+			var hp := rng.randf_range(0.09, 0.15)
+			r.add_child(scatola(Vector3((s1 * 2 - 0.06) / np - 0.012, hp, 0.04), Vector3(u, top + 0.035 + hp * 0.5, s1 + 0.02).rotated(Vector3.UP, deg_to_rad(a)), "sasso_sic" if (k + f) % 3 != 0 else "pietra_n_chiara", Vector3(rng.randf_range(-4.0, 4.0), a + rng.randf_range(-5.0, 5.0), rng.randf_range(-4.0, 4.0))))
+	# braciere e piccolo riparo di lastre sul retro
+	var br := Vector3(0.06, top + 0.05, 0.08)
+	r.add_child(cilindro(0.05, 0.035, 0.05, br + Vector3(0, 0.025, 0), "sasso_sic", Vector3.ZERO, 8))
+	_fuoco(r, br + Vector3(0, 0.05, 0), 0.6)
+	for x: float in [-0.22, 0.0]:
+		r.add_child(cilindro(0.01, 0.01, 0.2, Vector3(x, top + 0.14, -0.08), "corteccia", Vector3.ZERO, 5))
+	r.add_child(scatola(Vector3(0.3, 0.025, 0.24), Vector3(-0.11, top + 0.25, -0.16), "lastra_sic", Vector3(10, 0, 0)))
+	r.add_child(sfera(0.06, Vector3(-0.11, top + 0.27, -0.16), "erba_tetto", Vector3(2.2, 0.4, 1.6)))
+	_insegna_sicana(r, Vector3(0.2, top + 0.04, 0.2), 0.62)
+	# alla base: scudo, archi, catasta di pietre, orcio
+	var sc := _scudo_sicano(Vector3(0.22, 0.1, 0.46), 20.0, 1.0)
+	sc.rotation_degrees.x = -14
+	r.add_child(sc)
+	_arco_sic(r, Vector3(0.42, 0.13, 0.3), 0.22, 0.045, Vector3(0, 0, 18))
+	_catasta_pietre(r, Vector3(0.5, 0, -0.05), 0.8, 142)
+	r.add_child(anfora(Vector3(0.46, 0, 0.16), 1.1))
+	return r
+
+
+## Rocca dei Sicani (castello 3x3): sperone di roccia grigia a tre ripiani, con i terrazzamenti e i muri a secco; in
+## basso la cinta con la porta a trilite fra due torri quadrate e la rampa, case col tetto d'erba sui ripiani, campi a
+## gradoni, recinto delle capre; in cima la casa del capo e la torre con le insegne blu.
+static func castello_sicani() -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(151)
+	var h1 := 0.26
+	var h2 := 0.5
+	var h3 := 0.7
+	# sperone di roccia a tre ripiani, ognuno con il prato in cima
+	r.add_child(cilindro(1.62, 1.46, h1, Vector3(0, h1 * 0.5, 0), "roccia_massi", Vector3.ZERO, 15))
+	r.add_child(cilindro(1.47, 1.47, 0.012, Vector3(0, h1 + 0.004, 0), "prato", Vector3.ZERO, 15))
+	var c2 := Vector3(-0.28, 0, -0.32)
+	r.add_child(cilindro(1.02, 0.9, h2 - h1, c2 + Vector3(0, h1 + (h2 - h1) * 0.5, 0), "roccia_massi", Vector3(0, 20, 0), 9))
+	r.add_child(cilindro(0.91, 0.91, 0.012, c2 + Vector3(0, h2 + 0.004, 0), "prato", Vector3(0, 20, 0), 9))
+	var c3 := Vector3(-0.5, 0, -0.55)
+	r.add_child(cilindro(0.64, 0.56, h3 - h2, c3 + Vector3(0, h2 + (h3 - h2) * 0.5, 0), "roccia_massi", Vector3(0, 10, 0), 8))
+	r.add_child(cilindro(0.57, 0.57, 0.012, c3 + Vector3(0, h3 + 0.004, 0), "prato", Vector3(0, 10, 0), 8))
+	# massi e spuntoni sui fianchi
+	for k in 44:
+		var a := deg_to_rad(rng.randf_range(-80.0, 170.0))
+		var rr := rng.randf_range(1.5, 1.68)
+		r.add_child(_masso(Vector3(sin(a) * rr, 0.0, cos(a) * rr), rng.randf_range(0.08, 0.15), Vector3(1.3, rng.randf_range(1.2, 2.6), 1.0), "roccia_massi" if k % 3 != 0 else "sasso_sic", rng.randf() * 90))
+	for k in 22:
+		var a := deg_to_rad(rng.randf_range(-60.0, 160.0))
+		var rr := rng.randf_range(0.88, 1.0)
+		r.add_child(_masso(c2 + Vector3(sin(a) * rr, h1, cos(a) * rr), rng.randf_range(0.06, 0.11), Vector3(1.3, rng.randf_range(1.4, 2.6), 1.0), "roccia_massi" if k % 2 != 0 else "sasso_sic", rng.randf() * 90))
+	for k in 14:
+		var a := deg_to_rad(rng.randf_range(-60.0, 160.0))
+		var rr := rng.randf_range(0.55, 0.63)
+		r.add_child(_masso(c3 + Vector3(sin(a) * rr, h2, cos(a) * rr), rng.randf_range(0.05, 0.09), Vector3(1.3, rng.randf_range(1.4, 2.4), 1.0), "roccia_massi" if k % 2 != 0 else "sasso_sic", rng.randf() * 90))
+	for k in 18:
+		var a := deg_to_rad(rng.randf_range(-80.0, 170.0))
+		r.add_child(sfera(rng.randf_range(0.05, 0.08), Vector3(sin(a), 0, cos(a)) * 1.42 + Vector3(0, h1, 0), "macchia", Vector3(1.3, 0.6, 1.0)))
+	# cinta di pietra a secco sul primo ripiano, interrotta dalla porta
+	var cx := 1.3
+	var nseg := 22
+	var porta_k := 2
+	for k in nseg:
+		if k == porta_k:
+			continue
+		var a0 := k * TAU / nseg
+		var a1 := (k + 1) * TAU / nseg
+		_muro_sic(r, Vector3(sin(a0) * cx, h1, cos(a0) * cx), Vector3(sin(a1) * cx, h1, cos(a1) * cx), 0.22, 0.13)
+	var porta_a := (porta_k + 0.5) * TAU / nseg
+	var dir := Vector3(sin(porta_a), 0, cos(porta_a))
+	var tang := Vector3(cos(porta_a), 0, -sin(porta_a))
+	var pp := dir * cx + Vector3(0, h1, 0)
+	var rotp := rad_to_deg(porta_a)
+	# due torri quadrate con il tetto d'erba ai lati della porta
+	for lato: int in [-1, 1]:
+		var tp := pp + tang * lato * 0.27
+		var tn := Node3D.new()
+		tn.position = tp
+		tn.rotation_degrees.y = rotp
+		r.add_child(tn)
+		_casa_sicana(tn, Vector3.ZERO, 0.24, 0.24, 0.46, 156 + lato, 0.0, false)
+		tn.add_child(scatola(Vector3(0.03, 0.07, 0.02), Vector3(0, 0.3, 0.13), "buio"))
+	var nb := Node3D.new()
+	nb.position = pp
+	nb.rotation_degrees.y = rotp
+	r.add_child(nb)
+	for lato: int in [-1, 1]:
+		nb.add_child(scatola(Vector3(0.08, 0.34, 0.12), Vector3(lato * 0.125, 0.17, 0.0), "sasso_sic", Vector3(0, 0, lato * 1.5)))
+	nb.add_child(scatola(Vector3(0.4, 0.08, 0.15), Vector3(0, 0.38, 0.0), "pietra_n_chiara", Vector3(0, 0, -1.5)))
+	nb.add_child(scatola(Vector3(0.17, 0.33, 0.04), Vector3(0, 0.165, -0.05), "buio"))
+	for lato: int in [-1, 1]:
+		nb.add_child(scatola(Vector3(0.08, 0.3, 0.02), Vector3(lato * 0.085, 0.15, 0.06), "legno", Vector3(0, lato * 55, 0)))
+	nb.add_child(sfera(0.024, Vector3(0, 0.45, 0.06), "osso", Vector3(0.85, 1.1, 0.7)))
+	for lato: int in [-1, 1]:
+		nb.add_child(_toro(0.009, 0.026, Vector3(lato * 0.034, 0.456, 0.06), "osso", Vector3(90, 0, 0)))
+	_insegna_sicana(r, pp + tang * 0.27 + Vector3(0, 0.56, 0), 0.5)
+	# rampa a gradini giù per lo sperone
+	for k in 4:
+		var rp := pp + dir * (0.1 + k * 0.1)
+		var sg := scatola(Vector3(0.32, h1 - k * h1 / 4.0, 0.1), Vector3(rp.x, (h1 - k * h1 / 4.0) * 0.5, rp.z), "sasso_sic" if k % 2 == 0 else "pietra_n_chiara", Vector3(0, rotp, 0))
+		r.add_child(sg)
+		r.add_child(scatola(Vector3(0.33, 0.014, 0.11), Vector3(rp.x, h1 - k * h1 / 4.0 + 0.004, rp.z), "lastra_sic", Vector3(0, rotp + 3, 0)))
+	# primo ripiano: case, campi a gradoni, recinto delle capre, catasta di pietre
+	_casa_sicana(r, Vector3(0.72, h1, 0.2), 0.36, 0.3, 0.26, 152, 0.0, true, 0.0, true)
+	_casa_sicana(r, Vector3(-0.92, h1, 0.5), 0.28, 0.26, 0.24, 153, 90.0, true)
+	_casa_sicana(r, Vector3(0.82, h1, -0.42), 0.3, 0.28, 0.24, 154, 0.0, true)
+	var g := Vector3(-0.3, h1, 0.86)
+	_gradoni(r, g, 0.56, 0.3, 2, 0.04, "terra", 155)
+	for k in 2:
+		_coltura_sic(r, g + Vector3(0, (k + 1) * 0.04 + 0.01, 0.15 - (k + 0.5) * 0.15 - 0.012), 0.5, 0.08, "grano", 155 + k)
+	var o := Vector3(0.3, h1, 0.62)
+	for k in 8:
+		if k == 2:
+			continue
+		var a0 := deg_to_rad(k * 45.0)
+		var a1 := deg_to_rad((k + 1) * 45.0)
+		_muro_sic(r, o + Vector3(cos(a0), 0, sin(a0)) * 0.22, o + Vector3(cos(a1), 0, sin(a1)) * 0.22, 0.08, 0.06)
+	r.add_child(capra(o + Vector3(-0.05, 0, 0.0), 30))
+	r.add_child(capra(o + Vector3(0.08, 0, -0.08), 200))
+	_catasta_pietre(r, Vector3(0.5, h1, 0.0), 0.9, 157)
+	r.add_child(anfora(Vector3(0.58, h1, 0.5), 1.3))
+	# secondo ripiano: muro di sostegno davanti, case e forno
+	for k in 7:
+		var a0 := deg_to_rad(-40.0 + k * 22.0)
+		var a1 := deg_to_rad(-40.0 + (k + 1) * 22.0)
+		_muro_sic(r, c2 + Vector3(sin(a0), 0, cos(a0)) * 0.86 + Vector3(0, h2, 0), c2 + Vector3(sin(a1), 0, cos(a1)) * 0.86 + Vector3(0, h2, 0), 0.08, 0.07)
+	_casa_sicana(r, c2 + Vector3(0.52, h2, 0.22), 0.36, 0.3, 0.26, 158, 0.0, true)
+	_casa_sicana(r, c2 + Vector3(-0.2, h2, 0.56), 0.34, 0.26, 0.24, 159, 0.0, true, 0.0, true)
+	_forno_sicano(r, c2 + Vector3(0.22, h2, 0.62), 0.6, true)
+	# in cima: casa del capo e torre quadrata con le insegne
+	_casa_sicana(r, c3 + Vector3(0.14, h3, 0.22), 0.48, 0.3, 0.3, 160, 0.0, true, -0.08, true)
+	var tt := c3 + Vector3(-0.16, h3, -0.16)
+	var ht := 0.62
+	r.add_child(cilindro(0.22 / cos(PI / 4), 0.19 / cos(PI / 4), ht, tt + Vector3(0, ht * 0.5, 0), "pietra_sicana", Vector3(0, 45, 0), 4))
+	for f in 2:
+		var a := f * 90.0
+		for k in 30:
+			var y := rng.randf_range(0.03, ht - 0.03)
+			var sh := lerpf(0.22, 0.19, y / ht)
+			r.add_child(_sasso_sic(tt + Vector3(rng.randf_range(-sh + 0.03, sh - 0.03), y, sh + 0.004).rotated(Vector3.UP, deg_to_rad(a)), Vector3(rng.randf_range(0.045, 0.08), rng.randf_range(0.026, 0.044), 0.02), a, k + f))
+	r.add_child(scatola(Vector3(0.46, 0.03, 0.46), tt + Vector3(0, ht + 0.015, 0), "lastra_sic"))
+	r.add_child(scatola(Vector3(0.36, 0.02, 0.36), tt + Vector3(0, ht + 0.04, 0), "erba_tetto"))
+	for f in 4:
+		var a := f * 90.0
+		for k in 4:
+			var u := -0.16 + (k + 0.5) * 0.08
+			var hp := rng.randf_range(0.07, 0.11)
+			r.add_child(scatola(Vector3(0.068, hp, 0.035), tt + Vector3(u, ht + 0.03 + hp * 0.5, 0.195).rotated(Vector3.UP, deg_to_rad(a)), "sasso_sic", Vector3(0, a + rng.randf_range(-5.0, 5.0), rng.randf_range(-4.0, 4.0))))
+	for y: float in [0.3, 0.48]:
+		r.add_child(scatola(Vector3(0.03, 0.07, 0.02), tt + Vector3(0.0, y, lerpf(0.22, 0.19, y / ht) + 0.005), "buio"))
+	_insegna_sicana(r, tt + Vector3(0.1, ht + 0.03, 0.1), 0.62)
+	_insegna_sicana(r, c3 + Vector3(0.36, h3, 0.34), 0.55)
+	return r
+
+
+## Laboratorio dell'ossidiana (edificio unico dei Sicani): casa bassa di pietra col tetto d'erba, banco di lastra sotto la
+## tettoia con i blocchi di vetro vulcanico nero, il percussore di corno e le lame appena staccate; tavola esposta col
+## panno blu, lame e specchi neri lucidi, mucchi di schegge, ceste di grezzi, catasta di pietre e insegna blu.
+static func ossidiana() -> Node3D:
+	var r := Node3D.new()
+	_casa_sicana(r, Vector3(-0.28, 0, -0.32), 0.62, 0.46, 0.28, 171, 0.0, true, -0.1, true)
+	_tettoia_sicana(r, Vector3(0.42, 0, -0.36), 0.46, 0.26, 0.4, 0.34, 172)
+	r.add_child(mucchio(Vector3(0.36, 0, -0.38), "ossidiana", 10, 177, 0.026))
+	r.add_child(_blocco_oss(Vector3(0.52, 0, -0.36), 1.6, 5))
+	# banco di lavoro all'aperto: grossa lastra su due sassi
+	var b := Vector3(0.42, 0, 0.08)
+	r.add_child(scatola(Vector3(0.44, 0.04, 0.18), b + Vector3(0, 0.13, 0), "lastra_sic", Vector3(0, -3, 0)))
+	for lato: int in [-1, 1]:
+		r.add_child(_sasso_sic(b + Vector3(lato * 0.15, 0.055, 0), Vector3(0.08, 0.11, 0.14), 0.0, lato + 2))
+	r.add_child(_blocco_oss(b + Vector3(-0.12, 0.15, -0.01), 1.4, 1))
+	r.add_child(_blocco_oss(b + Vector3(0.03, 0.15, -0.03), 1.0, 2))
+	ramo(r, b + Vector3(0.08, 0.16, 0.04), b + Vector3(0.18, 0.17, 0.0), 0.01, "osso")
+	ramo(r, b + Vector3(0.14, 0.168, 0.015), b + Vector3(0.16, 0.2, 0.03), 0.006, "osso")
+	for k in 4:
+		r.add_child(_lama_oss(b + Vector3(0.08 + k * 0.035, 0.155, 0.05), Vector3(0, 70 + k * 8, 0), 0.09))
+	# tavola esposta inclinata col panno blu, lame in fila
+	var e := Vector3(0.02, 0, 0.46)
+	for x: float in [-0.22, 0.22]:
+		r.add_child(cilindro(0.012, 0.014, 0.18, e + Vector3(x, 0.09, -0.05), "corteccia", Vector3.ZERO, 5))
+		r.add_child(cilindro(0.012, 0.014, 0.1, e + Vector3(x, 0.05, 0.06), "corteccia", Vector3.ZERO, 5))
+	var tv := Node3D.new()
+	tv.position = e + Vector3(0, 0.14, 0.0)
+	tv.rotation_degrees.x = 30
+	r.add_child(tv)
+	tv.add_child(scatola(Vector3(0.5, 0.014, 0.16), Vector3.ZERO, "legno_vecchio"))
+	tv.add_child(scatola(Vector3(0.46, 0.004, 0.14), Vector3(0, 0.009, 0), "lino"))
+	for z: float in [-0.064, 0.064]:
+		tv.add_child(scatola(Vector3(0.46, 0.005, 0.014), Vector3(0, 0.01, z), "lapislazzuli"))
+	for i in 7:
+		for j in 2:
+			tv.add_child(_lama_oss(Vector3(-0.19 + i * 0.063, 0.016, -0.03 + j * 0.06), Vector3(0, 90 + (i % 2) * 6 - 3, 0), 0.07 if j == 0 else 0.085, j == 1 and i % 2 == 0))
+	# specchi neri
+	r.add_child(_specchio_oss(Vector3(0.44, 0, 0.5), -20.0, 1.7))
+	r.add_child(_specchio_oss(Vector3(0.62, 0, 0.4), -40.0, 1.4))
+	# mucchi di schegge nere e cocci sparsi
+	r.add_child(mucchio(Vector3(0.74, 0, 0.12), "ossidiana", 9, 173, 0.022))
+	r.add_child(mucchio(Vector3(0.18, 0, 0.12), "ossidiana", 6, 174, 0.018))
+	var rng := _rng(175)
+	for k in 10:
+		r.add_child(scatola(Vector3(0.018, 0.005, 0.012), Vector3(0.45 + rng.randf_range(-0.2, 0.2), 0.003, 0.26 + rng.randf_range(-0.06, 0.06)), "ossidiana" if k % 3 != 0 else "riflesso_oss", Vector3(0, rng.randf() * 180, 0)))
+	# ceste di grezzi d'ossidiana
+	for k in 2:
+		var cp := Vector3(-0.62 + k * 0.15, 0, 0.26 + k * 0.1)
+		r.add_child(cilindro(0.07, 0.058, 0.065, cp + Vector3(0, 0.032, 0), "paglia_scura", Vector3.ZERO, 12))
+		r.add_child(_toro(0.066, 0.074, cp + Vector3(0, 0.064, 0), "legno_vecchio"))
+		r.add_child(_blocco_oss(cp + Vector3(0, 0.03, 0), 0.75, 3 + k))
+	_catasta_pietre(r, Vector3(-0.3, 0, 0.5), 0.75, 176)
+	_insegna_sicana(r, Vector3(0.84, 0, 0.3), 0.6)
+	return r
+
+
+## Arciere sicano: tunica blu lapislazzuli, cintura di cuoio col pugnale d'ossidiana, mantellina di pelle, berretto di
+## pelle con il risvolto di pelliccia e i paraorecchie, faretra sulla schiena con le frecce dalla punta d'ossidiana,
+## arco nella sinistra (col bracciale di cuoio) e una freccia nella destra.
+static func arciere_sicano() -> Node3D:
+	var r := portatore("", "lapislazzuli", "tunica_lapis")
+	var corpo: Node3D = r.get_node("corpo")
+	var anca := 0.2
+	corpo.add_child(cilindro(0.083, 0.083, 0.018, Vector3(0, anca + 0.06, 0), "cuoio", Vector3.ZERO, 12))
+	corpo.add_child(sfera(0.01, Vector3(0, anca + 0.06, 0.083), "oro_n"))
+	corpo.add_child(cilindro(0.006, 0.006, 0.035, Vector3(0.062, anca + 0.055, 0.05), "legno", Vector3(0, 0, 8), 5))
+	corpo.add_child(cilindro(0.01, 0.0, 0.05, Vector3(0.066, anca + 0.014, 0.053), "ossidiana", Vector3(180, 0, 8), 5))
+	# mantellina di pelle sulle spalle
+	corpo.add_child(cilindro(0.088, 0.075, 0.05, Vector3(0, anca + 0.165, -0.006), "pelliccia", Vector3.ZERO, 12))
+	# tracolla della faretra
+	corpo.add_child(scatola(Vector3(0.02, 0.21, 0.006), Vector3(0.0, anca + 0.1, 0.074), "cuoio", Vector3(0, 0, -36)))
+	# berretto di pelle
+	corpo.add_child(sfera(0.08, Vector3(0, anca + 0.285, -0.008), "cuoio", Vector3(1, 0.8, 1.05)))
+	corpo.add_child(_toro(0.07, 0.087, Vector3(0, anca + 0.268, -0.008), "pelliccia", Vector3.ZERO, Vector3(1, 1.6, 1)))
+	corpo.add_child(cilindro(0.081, 0.081, 0.01, Vector3(0, anca + 0.29, -0.008), "lapislazzuli", Vector3.ZERO, 14))
+	corpo.add_child(cilindro(0.032, 0.0, 0.06, Vector3(0, anca + 0.36, -0.03), "cuoio", Vector3(-25, 0, 0), 8))
+	for lato: int in [-1, 1]:
+		corpo.add_child(scatola(Vector3(0.01, 0.05, 0.035), Vector3(lato * 0.078, anca + 0.235, 0.0), "cuoio"))
+	# faretra sulla schiena
+	corpo.add_child(_faretra(Vector3(0.035, anca + 0.16, -0.09), Vector3(-12, 0, -22), 1.0))
+	# arco nella sinistra, col bracciale di cuoio
+	var bs: Node3D = corpo.get_node("braccio_s")
+	bs.add_child(cilindro(0.02, 0.018, 0.045, Vector3(0, -0.1, 0), "cuoio", Vector3.ZERO, 6))
+	_arco_sic(bs, Vector3(-0.005, -0.14, 0.02), 0.24, 0.05)
+	# freccia nella destra, con la punta d'ossidiana
+	var bd: Node3D = corpo.get_node("braccio_d")
+	bd.add_child(cilindro(0.0035, 0.0035, 0.28, Vector3(0, -0.08, 0.02), "legno", Vector3.ZERO, 4))
+	bd.add_child(cilindro(0.01, 0.0, 0.035, Vector3(0, 0.077, 0.02), "ossidiana", Vector3.ZERO, 5))
+	bd.add_child(scatola(Vector3(0.004, 0.035, 0.016), Vector3(0, -0.2, 0.02), "lino_bianco"))
 	return r

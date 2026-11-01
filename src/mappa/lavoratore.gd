@@ -273,7 +273,7 @@ func _lavora_dentro() -> void:
 			return
 		edificio.ingresso["armi"] -= 1
 		stato = Stato.LAVORO
-		_attesa = info.get("durata", DURATA_DENTRO) * edificio.villaggio.vantaggi.get("lavoro", 1.0)
+		_attesa = info.get("durata", DURATA_DENTRO) * edificio.villaggio.vantaggi.get("lavoro", 1.0) * Popoli.durata(mestiere)
 		return
 	if mestiere == "fabbro":
 		_attrezzo_scelto = logistica.attrezzo_da_fare()
@@ -303,7 +303,7 @@ func _lavora_dentro() -> void:
 	for tipo in ingressi:
 		edificio.ingresso[tipo] -= 1
 	stato = Stato.LAVORO
-	_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO) * edificio.villaggio.vantaggi.get("lavoro", 1.0)
+	_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO) * edificio.villaggio.vantaggi.get("lavoro", 1.0) * Popoli.durata(mestiere)
 
 
 ## Agorà: vende una merce arrivata (i ducati vanno subito in cassa), altrimenti compra quella scelta
@@ -327,7 +327,7 @@ func _lavora_agora() -> void:
 		v.scorte_cambiate.emit()
 		_attrezzo_scelto = a
 		stato = Stato.LAVORO
-		_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO) * edificio.villaggio.vantaggi.get("lavoro", 1.0)
+		_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO) * edificio.villaggio.vantaggi.get("lavoro", 1.0) * Popoli.durata(mestiere)
 
 
 func _rientra_vuoto() -> void:
