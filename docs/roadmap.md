@@ -61,7 +61,7 @@ Piano: vedi [`storia.md`](storia.md), «Il seguito in Sicilia».
 
 | Step | Nome | Stato |
 |---|---|---|
-| 25 | Mappa della Sicilia con la forma reale (Messina, Etna, Siracusa, Palermo, Eolie) | |
+| 25 | Mappa della Sicilia con la forma reale: mappa di gioco «Zancle e l'Etna» (Milazzo, Messina, lo Stretto con la punta della Calabria, Taormina, l'Etna, Catania) | fatto (v0.30.0); Siracusa, Palermo ed Eolie sulla mappa della campagna con lo step 27 |
 | 26 | Nuovi popoli dell'isola: Siculi e Sicani (catene e edifici propri) | |
 | 27 | Campagna «Il fuoco sotto la montagna» (6 missioni) | |
 | 28 | Lo Stretto: navi, porti e traversate tra Calabria e Sicilia | |

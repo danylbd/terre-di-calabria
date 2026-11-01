@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.29.0** (step 24, prima parte). Tutti i test automatici passano (25 script in `tools/test/`).
+Ultima release: **v0.30.0** (step 25). Tutti i test automatici passano (26 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,11 +14,11 @@ Ultima release: **v0.29.0** (step 24, prima parte). Tutti i test automatici pass
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 24, prima parte): comandi touch in `CameraMappa` (un dito trascina, due dita pizzicano per lo zoom, tocco lungo = annulla con il segnale `tocco_lungo`) e in `partita.gd` (il clic che arriva da un dito vale quando si alza, se non era un trascinamento; i clic usano la posizione dell'evento; `_annulla()` comune a tasto destro e tocco lungo); test `test_touch`.
+Ultime modifiche significative (step 25, Fase 6): mappa di gioco «Zancle e l'Etna» (`GeneratoreMappa.genera_zancle()`, 96×96, coste vere di Sicilia e Calabria: Milazzo, Messina, lo Stretto largo 5 caselle, Taormina, l'Etna innevato con la terra nera, Catania; Peloritani e Nebrodi); `_distanza_costa()` ora accetta più coste e terre; pulsante «Gioca a Zancle» sulla mappa della Calabria; test `test_zancle`. Prima: comandi touch (step 24).
 
 ## In sviluppo
 
-- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Nel frattempo si passa alla **Fase 6 (Sicilia)**.
+- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25 fatto, prossimo lo step 26 (Siculi e Sicani).
 
 ## Da fare (in ordine)
 
@@ -44,4 +44,4 @@ Ultime modifiche significative (step 24, prima parte): comandi touch in `CameraM
 
 ## Prossima attività consigliata
 
-**Fase 6 — la Sicilia** (`docs/roadmap.md`, step 25–29, e il seguito in `docs/storia.md`): cominciare dallo step 25 (mappa della Sicilia con la forma reale, come la mappa della Calabria, e una mappa di gioco siciliana). Prima rileggere le righe della Fase 6 in roadmap.
+**Step 26 — Siculi e Sicani** (Fase 6): due popoli nuovi dell'isola, con lo stesso schema dei cinque calabresi (`Popoli.DATI`, edificio unico, merce speciale, soldato, abilità, modelli `<tipo>_siculi` / `<tipo>_sicani` con un subagente). Da `storia.md`: Siculi pastori e vasai dell'interno (Pantalica), Sicani gente delle montagne a ovest. Scrivere prima il piano in `docs/siculi_sicani.md`.

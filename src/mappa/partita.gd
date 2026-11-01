@@ -644,7 +644,12 @@ func _mappa_da_usare() -> String:
 func _metti_brettii() -> void:
 	var centro := dati.villaggio
 	var presi: Array[Vector2i] = []
-	var versi := [Vector2(-0.4, 1), Vector2(1, 0.6)] if mappa == "monteleone" else [Vector2(-1, -0.4), Vector2(-0.3, 1)]
+	var versi := [Vector2(-1, -0.4), Vector2(-0.3, 1)]
+	match mappa:
+		"monteleone":
+			versi = [Vector2(-0.4, 1), Vector2(1, 0.6)]
+		"zancle":
+			versi = [Vector2(-1, 0.3), Vector2(-0.5, 1)]
 	for verso in versi:
 		var migliore := Vector2i(-1, -1)
 		var punteggio := -INF

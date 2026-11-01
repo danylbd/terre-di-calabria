@@ -2,19 +2,18 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 24 (prima parte: comandi touch) unito a `main`, release v0.29.0.
+**Aggiornato:** 2026-11-02, step 25 chiuso (release v0.30.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-**Step 24 — iPhone, prima parte**: comandi touch.
-- `src/mappa/camera_mappa.gd`: `_tocco()` (un dito trascina, due dita zoom), `tocco_mosso`, `tocco_lungo_fatto`, segnale `tocco_lungo`.
-- `src/mappa/partita.gd`: clic da dito (`InputEvent.DEVICE_ID_EMULATION`) al rilascio; `_annulla()`; i clic usano `mb.position`.
-- Test `tools/test/test_touch.gd`. Tutti i 25 test OK.
-- L'esportazione iOS aspetta la risposta del proprietario (serve un Mac): domanda del 2026-11-02.
+**Step 25 — mappa «Zancle e l'Etna»** (Fase 6), fatto e unito a `main`.
+- `src/mappa/generatore_mappa.gd`: `COSTA_SICILIA`, `COSTA_CALABRIA`, `LUOGHI_ZANCLE`, `ETNA`, `genera_zancle()`, `_distanza_segmento()`; `_distanza_costa(p, coste, terre)` generale; `crea()` con `match`.
+- `partita.gd`: direzioni dei nemici per la mappa `zancle`. `mappa_calabria.gd`: pulsante «Gioca a Zancle».
+- Test `tools/test/test_zancle.gd`. Tutti i 26 test OK.
 
-## Prossimo: Fase 6 — la Sicilia (step 25)
+## Prossimo: step 26 — Siculi e Sicani
 
-Leggere le righe della Fase 6 in `docs/roadmap.md` e il seguito «Il fuoco sotto la montagna» in `docs/storia.md`; scrivere il piano dello step 25.
+Due popoli nuovi (piano da scrivere in `docs/siculi_sicani.md`), stesso schema dei popoli calabresi. Idee: Siculi vasai e pastori (edificio unico: la bottega del vasaio di Pantalica; merce: ceramiche), Sicani della montagna (edificio unico: la cava di ossidiana/pomice? oppure sale di roccia); soldati e modelli con un subagente.
 
 ## Problemi irrisolti
 
@@ -26,4 +25,4 @@ Leggere le righe della Fase 6 in `docs/roadmap.md` e il seguito «Il fuoco sotto
 
 ## Da dove riprendere
 
-Aprire il ramo dello step 25 e scrivere il piano della Sicilia.
+Aprire il ramo `step-26-siculi-sicani` e scrivere il piano.

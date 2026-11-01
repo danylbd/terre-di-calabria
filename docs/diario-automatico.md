@@ -149,3 +149,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step 24 iPhone, prima parte: comandi touch
 - `CameraMappa`: un dito trascina la mappa, due dita pizzicano per lo zoom, il tocco lungo (0,6 s fermo) annulla come il tasto destro. `partita.gd`: il clic del dito vale quando si alza e solo se non era un trascinamento o un tocco lungo.
 - Nuovo test `test_touch`; tutti i 25 test OK. Versione 0.29.0. L'esportazione iOS aspetta la risposta del proprietario sul Mac; prossimo: Fase 6 (Sicilia).
+
+## 2026-11-02 — step 25 mappa della Sicilia «Zancle e l'Etna» (Fase 6)
+- Nuovo generatore `genera_zancle` con le coste vere (Patti, Tindari, Milazzo, Capo Peloro, Messina, Taormina, Acireale, Catania) e la punta della Calabria oltre lo Stretto; Peloritani, Nebrodi, Etna con neve, terra nera e cratere.
+- Il villaggio è stato spostato due volte: prima la dorsale dei Peloritani ci passava sopra, poi Zancle era sulla riva con il magazzino in acqua. Ora sta tra i due mari, come la Messina vera.
+- Nuovo test `test_zancle`; tutti i 26 test OK. Versione 0.30.0. Prossimo: step 26 Siculi e Sicani.
