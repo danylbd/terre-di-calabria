@@ -7,6 +7,7 @@ signal strada_da(e: Edificio)
 signal demolisci(e: Edificio)
 signal attacca(e: Edificio)
 signal forma_schiera(e: Edificio)
+signal arma_nave(e: Edificio)
 
 var edificio: Edificio
 var villaggio: Villaggio
@@ -20,6 +21,8 @@ var _pulsanti: HBoxContainer
 var _attacca: Button
 var _schiera: Button
 var schiere: Schiere
+var navi_guerra: NaviGuerra
+var _nave: Button
 
 
 func _ready() -> void:
@@ -98,6 +101,11 @@ func _ready() -> void:
 	_schiera.custom_minimum_size = Vector2(100, 36)
 	_schiera.pressed.connect(func(): forma_schiera.emit(edificio))
 	pulsanti.add_child(_schiera)
+	_nave = Button.new()
+	_nave.text = "Nave da guerra"
+	_nave.custom_minimum_size = Vector2(140, 36)
+	_nave.pressed.connect(func(): arma_nave.emit(edificio))
+	pulsanti.add_child(_nave)
 	visible = false
 
 
@@ -137,6 +145,11 @@ func _riempi() -> void:
 	righe.append("[i]%s[/i]" % info["descrizione"])
 	_attacca.visible = info.has("soldati_max") and e.presidiata
 	_attacca.disabled = e.soldati < 2
+	_nave.visible = e.tipo == "porto" and e.finito and Schiere.attive() and navi_guerra != null
+	if _nave.visible:
+		var no := navi_guerra.motivo_no_nave(e)
+		_nave.disabled = no != ""
+		_nave.tooltip_text = no if no != "" else "Assi 6, armi 2: va a colpire la torre nemica più vicina alla costa"
 	_schiera.visible = e.tipo in ["caserma", "castello", "mastio"] and e.finito and Schiere.attive()
 	if _schiera.visible and schiere:
 		var perche := schiere.motivo_no_schiera()
