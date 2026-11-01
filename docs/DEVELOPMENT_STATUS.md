@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.39.0** (step G6e). Tutti i test automatici passano (31 script in `tools/test/`).
+Ultima release: **v0.40.0** (step G6f). Tutti i test automatici passano (31 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.39.0** (step G6e). Tutti i test automatici passano (31 scri
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step G6e): i Siculi hanno tutti gli edifici nel loro stile (24 modelli nuovi `<tipo>_siculi`, popolo aggiunto a `COMPLETI` in `test_aspetto`).
+Ultime modifiche significative (step G6f): i Sicani hanno tutti gli edifici nel loro stile (24 modelli nuovi `<tipo>_sicani`, popolo aggiunto a `COMPLETI` in `test_aspetto`).
 
 ## In sviluppo
 
@@ -36,15 +36,11 @@ Ultime modifiche significative (step G6e): i Siculi hanno tutti gli edifici nel 
 - Le materie prime grezze (olive, tronchi…) non hanno tetto di scorta: solo pozzo e trasformatori si fermano.
 - Con una sola strada verso il magazzino si formano code (normale: il giocatore aggiunge strade).
 - Sulla mappa di Monteleone i Brettii mettono entrambi gli avamposti sul Poro (le Serre sono troppo ripide e boscose).
-- Normanni giocabili: 15 edifici con l'aspetto normanno, gli altri greco.
-- Saraceni giocabili: 15 edifici con l'aspetto saraceno, gli altri greco; la noria non c'è ancora (scelta provvisoria).
-- Romani giocabili: 15 edifici con l'aspetto romano, gli altri greco; il cantiere stradale non c'è ancora (scelta provvisoria).
-- I Brettii giocabili hanno tutti gli edifici nel loro stile; i frombolieri hanno ancora i colori rossi di quando erano solo nemici; la campagna resta dei Greci.
-- Gli altri popoli hanno solo torri (non un villaggio completo): arriverà con la Fase 4.
 
 ## Prossima attività consigliata
 
-Le fasi 1–4 e 6 sono fatte (tranne l'esportazione iPhone, in attesa del Mac). La **Fase 5** (idee da Coral Island) richiede prima le domande al proprietario: scriverle in `domande-per-il-proprietario.md`. Intanto, lavori utili che non dipendono da nessuno:
-1. **Rifinitura grafica G6**: gli edifici che hanno ancora l'aspetto greco per gli altri popoli (miniere, zecca, fonderia, fabbro, vigneto, cantina, agrumeto...), i colori dei frombolieri brettii.
-2. **Bilanciamento**: partite lunghe con ogni popolo (test di durata per popolo).
-3. **Sfide** da `storia.md` («nutri 200 abitanti in un'ora», «porta la seta da un mare all'altro», «sopravvivi all'alluvione»).
+Tutto il piano possibile senza il proprietario è fatto (rifinitura G6 compresa). Lavori utili che non dipendono da nessuno:
+1. **Sfide** da `storia.md` («nutri 200 abitanti in un'ora», «porta la seta da un mare all'altro», «sopravvivi all'alluvione»): modalità nuova con obiettivi a tempo facoltativi.
+2. **Bilanciamento**: test di durata per ogni popolo (estendere `test_durata` con `POPOLO`).
+3. Colori dei frombolieri brettii giocabili (oggi rossi da nemici).
+In attesa del proprietario: Fase 5, musica vera, iPhone, chi è Rocco.
