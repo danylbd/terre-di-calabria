@@ -37,10 +37,30 @@
 
 | Argomento | Scelta provvisoria |
 |---|---|
-| Chi è Rocco della Lira | **È re Italo**, che ha aspettato secoli di vedere i popoli scegliere (l'idea scritta in `storia.md`). Si svela nell'epilogo «L'ultimo canto» (step 29). Domanda aperta in `domande-per-il-proprietario.md`: se il proprietario sceglie altro, si cambiano solo i testi di `ultimo_canto` e di `soglia_sigillo` in `src/storia/missione.gd`. |
+| Chi è Rocco della Lira | **È re Italo** — confermato dal proprietario il 2026-11-02 (non più provvisoria). |
 
 ## Decisioni del 2026-11-02 (dal proprietario)
 
 | Argomento | Decisione |
 |---|---|
 | Update «Imperivm» | Unire al gioco le idee e la dinamica di *Imperivm: le guerre puniche* (villaggi da conquistare, condottieri con schiere, cibo dell'esercito, morale, navi, assedi) e una grafica di guerra più ricca, **senza annullare o rovinare il lavoro fatto**: piano in `piano-imperivm.md` (Fase 7) |
+
+## Risposte del proprietario del 2026-11-02 («tutto confermato»)
+
+| # | Argomento | Decisione |
+|---|---|---|
+| 1 | Musica | FluidSynth + soundfont orchestrale libero; brani originali scritti in codice (zampogna, lira, tamburello, archi) |
+| 2 | Rocco della Lira | È re Italo |
+| 3 | iPhone | Rimandato |
+| 4 | Schiere (Fase 7) | Controllo diretto dei condottieri; l'economia resta alla Settlers |
+| 5 | Cartaginesi | Ottavo popolo giocabile, con gli elefanti |
+| 6 | Guerra ed economia | Le schiere mangiano le razioni del magazzino |
+| 7 | Altro da Imperivm | Niente da aggiungere al piano |
+| 8 | Personaggi del villaggio (Fase 5) | Sì, pochi e importanti (8–10) |
+| 9 | Feste stagionali | Con piccoli giochi e premi |
+| 10 | Cura del mare e della costa | Sì |
+| 11 | Collezioni e museo | Sì |
+| 12 | Personaggio del giocatore | No: tutto dall'alto, i personaggi si visitano con un clic |
+| 13 | Dove | Modalità a parte «Vita del villaggio» |
+| 14 | Altro da Coral Island | Niente da aggiungere |
+| 15 | Ordine | Prima la Fase 7 (Annibale), poi la Fase 5 (Coral Island); la musica quando serve una pausa dal codice |

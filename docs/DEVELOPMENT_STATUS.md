@@ -28,7 +28,7 @@ Ultime modifiche significative (v0.44.0): i Brettii del giocatore hanno i colori
 
 ## Bug e limiti noti
 
-- **Musica segnaposto** (sintetizzata): la domanda su come fare la musica vera è aperta in [`domande-per-il-proprietario.md`](domande-per-il-proprietario.md).
+- **Musica segnaposto**: deciso come rifarla (FluidSynth + soundfont libero, brani originali), da fare.
 - **Compilazioni su GitHub non verificate da qui**: `gh` non è installato; i push partono, l'esito delle Actions va guardato su GitHub.
 - Animali degli allevamenti fermi nel modello (non si muovono).
 - Le rocce sono finite e i boschi naturali non ricrescono da soli: per giocare ore servono guardaboschi accanto ai boscaioli e cave nuove quando le rocce finiscono (voluto, come in Settlers).
@@ -40,4 +40,4 @@ Ultime modifiche significative (v0.44.0): i Brettii del giocatore hanno i colori
 ## Prossima attività consigliata
 
 **Fase 7 — «Le guerre di Annibale»** (idee da Imperivm, richiesta del proprietario del 2026-11-02): piano in `docs/piano-imperivm.md`. Cominciare dallo **step 30 (villaggi indigeni)**, che non dipende dalle domande aperte; poi condottieri e schiere (step 31) quando il proprietario conferma il controllo diretto (o, se non risponde, con il controllo diretto come scelta provvisoria).
-In attesa del proprietario: Fase 5, musica, iPhone, Rocco, domande della Fase 7.
+Il proprietario ha risposto a tutte le domande (vedi `decisioni.md`): Fase 7 con controllo diretto e Cartaginesi con elefanti, poi Fase 5 come modalità «Vita del villaggio»; musica con FluidSynth; iPhone rimandato.

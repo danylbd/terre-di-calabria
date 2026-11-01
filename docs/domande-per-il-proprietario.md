@@ -15,13 +15,13 @@ Raccomandazione: **1** per i primi 3 brani (poi si può sostituire con l'opzione
 
 Nel frattempo (stesso giorno): ci sono 3 brani segnaposto sintetizzati in Python (`tools/suoni/musica.py`: mattino, lavoro, sera) con zampogna, lira, chitarra battente, tamburello e archi imitati. Funzionano nel gioco, ma la qualità è da segnaposto. La domanda resta aperta.
 
-Risposta:
+Risposta: confermate le scelte consigliate (2026-11-02), vedi `decisioni.md`.
 
 ## 2026-11-02 — Step 23 (campagna finale): chi è Rocco della Lira?
 
 In `storia.md` c'è scritto «Chi è Rocco? Lo decidiamo insieme. Un'idea: è Italo stesso». Nel finale dell'Unione della campagna «La Soglia» Rocco ora lo lascia solo intuire («Un re, a volte, deve solo aspettare che i suoi figli imparino»), senza dirlo. Va bene così, o preferisci un'altra identità (o nessuna rivelazione)? Il testo si cambia in un attimo (`src/storia/missione.gd`, missione `soglia_sigillo`).
 
-Risposta:
+Risposta: confermate le scelte consigliate (2026-11-02), vedi `decisioni.md`.
 
 ## 2026-11-02 — Step 24 (versione iPhone): serve un Mac
 
@@ -32,7 +32,7 @@ Per esportare il gioco per iPhone, Godot ha bisogno di un **Mac con Xcode** e di
 
 Nel frattempo, senza aspettare la risposta, comincio dalla parte che non dipende dal Mac: comandi touch e interfaccia adatta agli schermi piccoli.
 
-Risposta:
+Risposta: confermate le scelte consigliate (2026-11-02), vedi `decisioni.md`.
 
 ## 2026-11-02 — Fase 5 (idee da Coral Island): che cosa vuoi prendere?
 
@@ -48,7 +48,7 @@ Le fasi 1–4 e 6 sono fatte. Prima di progettare la Fase 5 ho bisogno di capire
 
 Nel frattempo, senza aspettare, lavoro alla rifinitura grafica (edifici dei popoli che hanno ancora l'aspetto greco) e al bilanciamento.
 
-Risposta:
+Risposta: confermate le scelte consigliate (2026-11-02), vedi `decisioni.md`.
 
 ## 2026-11-02 — Update «Le guerre di Annibale» (idee da Imperivm)
 
@@ -60,4 +60,6 @@ Il piano è in `docs/piano-imperivm.md`. Quattro domande:
 
 Intanto comincio dallo step 30 (villaggi indigeni), che non dipende da queste risposte.
 
-Risposta:
+Risposta: confermate le scelte consigliate (2026-11-02), vedi `decisioni.md`.
+
+*Tutte le domande fin qui hanno risposta (2026-11-02): le scelte sono in `decisioni.md`.*
