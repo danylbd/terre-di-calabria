@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step G6e chiuso (release v0.39.0 in `main`): Siculi con tutti gli edifici nel loro stile. Prossimo: G6f Sicani.
+**Aggiornato:** 2026-11-02, step G6f chiuso (release v0.40.0 in `main`): Sicani con tutti gli edifici nel loro stile. Prossimo: bilanciamento e sfide.
 
 ## Ultimo obiettivo affrontato
 
@@ -19,7 +19,8 @@ Fasi 1, 2, 3, 4 (tranne l'esportazione iPhone) e 6 fatte. Sette popoli giocabili
 ## Prossimo
 
 1. Scrivere in `domande-per-il-proprietario.md` le domande per la **Fase 5** (idee da Coral Island: cosa piace, cosa prendere).
-2. **Rifinitura grafica G6**, un popolo per step con un subagente (24 edifici: porcile, macelleria, apiario, caseificio, argillaio, fornace, saline, tessitura, pescatore, frantoio, uliveto, vigneto, cantina, ortolano, agrumeto, pesca_spada, miniera_ferro, miniera_argento, zecca, armaiolo, porto, carbonaia, fonderia, fabbro): Brettii fatti (G6a); prossimo G6b Romani, poi Saraceni, Normanni, Siculi, Sicani. Dopo ognuno aggiungere il popolo a `COMPLETI` in `tools/test/test_aspetto.gd`.
+2. **Rifinitura grafica G6**: fatta (G6a–G6f): ogni popolo ha tutti gli edifici nel suo stile; `tools/test/test_aspetto.gd` lo controlla.
+3. Poi: sfide e bilanciamento (vedi `DEVELOPMENT_STATUS.md`).
 
 ## Problemi irrisolti
 
