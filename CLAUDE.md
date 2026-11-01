@@ -69,8 +69,8 @@ python tools/suoni/suoni.py ; python tools/suoni/musica.py ; python tools/terren
 godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCalabria.exe
 ```
 
-**Verifica a fine step**: tutti i test di `tools/test/` in primo piano, a gruppi di 5–6 (ognuno sotto i 10 minuti); devono stampare `RISULTATO: OK` (o `tutto bene`). Poi screenshot di quello che è cambiato.
+**Verifica a fine step**: tutti i test di `tools/test/` in primo piano, a gruppi di 5–6 (ognuno sotto i 10 minuti; `test_durata` da solo, circa 6 minuti); devono stampare `RISULTATO: OK` (o `tutto bene`). Poi screenshot di quello che è cambiato.
 
 ## Stato
 
-Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1–V2 (mappa e monumenti di Monteleone) fatti (release v0.22.0); prossimo lo step **V3 – partite senza fine**. Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.
+Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1–V3 (Monteleone: mappa, monumenti, partite senza fine) fatti (release v0.23.0); prossima la **Fase 4**, step 19 – Brettii giocabili. Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.
