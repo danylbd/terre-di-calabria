@@ -37,6 +37,7 @@ var _evidenziato: Edificio
 var _ascolto_mare := 0.0
 var monumenti: Monumenti
 var indigeni: VillaggiIndigeni
+var schiere: Schiere
 var pannello_indigeno: PannelloIndigeno
 var mappa := "costa_ionica"
 var popolo := "greci"         # il popolo del giocatore (Popoli.DATI)   # quale mappa si gioca (GeneratoreMappa.MAPPE)
@@ -97,6 +98,9 @@ func _ready() -> void:
 	indigeni = VillaggiIndigeni.new()
 	add_child(indigeni)
 	indigeni.prepara(villaggio, dati, oggetti, risorse)
+	schiere = Schiere.new()
+	add_child(schiere)
+	schiere.prepara(villaggio, guerra, indigeni, dati, oggetti)
 	avversario.imposta_modalita("pace" if Impostazioni.missione != "" else Impostazioni.modalita)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
@@ -190,7 +194,9 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		if pannello.visible or pannello_villaggio.visible:
+		if schiere.scelta:
+			schiere.scegli(false)
+		elif pannello.visible or pannello_villaggio.visible:
 			pannello.chiudi_pannello()
 			pannello_villaggio.visible = false
 		elif modalita != "":
@@ -230,8 +236,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			_annulla()
 
 
-## Tasto destro o tocco lungo: annulla la strada iniziata o esce dalla modalità.
+## Tasto destro o tocco lungo: annulla la strada iniziata o esce dalla modalità (o lascia la schiera).
 func _annulla() -> void:
+	if schiere.scelta:
+		schiere.scegli(false)
+		return
 	if modalita == "":
 		return
 	if modalita == "strada" and _inizio_strada.x >= 0:
@@ -278,6 +287,14 @@ func _clic(c: Vector2i) -> void:
 			elif rete.rimuovi_strada_in(c):
 				_mostra_avviso("Strada rimossa", false)
 		"":
+			# la schiera: clic sul condottiero per sceglierlo, poi ordini (muovi, attacca)
+			if schiere.in_casella(c):
+				Suono.suona("clic")
+				schiere.scegli(true)
+				return
+			if schiere.scelta:
+				_ordine_schiera(c)
+				return
 			# clic su un edificio: il suo pannello; su una bandierina: scorciatoia per iniziare una strada
 			var e := villaggio.edificio_in(c)
 			if e == null:
@@ -297,6 +314,23 @@ func _clic(c: Vector2i) -> void:
 				_clic_strada(c)
 			else:
 				pannello.chiudi_pannello()
+
+
+## Ordine alla schiera scelta: una torre nemica o un villaggio indigeno da attaccare, altrimenti dove andare.
+func _ordine_schiera(c: Vector2i) -> void:
+	var n := villaggio.nemico_in(c)
+	var ind := indigeni.villaggio_in(c)
+	var ok := false
+	if n:
+		ok = schiere.attacca(n)
+	elif ind >= 0 and indigeni.elenco[ind]["stato"] != "nostro":
+		ok = schiere.attacca(ind)
+	else:
+		ok = schiere.muovi(c)
+	if ok:
+		Suono.suona("clic")
+	else:
+		_mostra_avviso("La schiera non può arrivare lì", true)
 
 
 func _clic_strada(c: Vector2i) -> void:
@@ -757,6 +791,11 @@ func _crea_interfaccia() -> void:
 	pannello = PannelloEdificio.new()
 	pannello.villaggio = villaggio
 	strato.add_child(pannello)
+	pannello.schiere = schiere
+	pannello.forma_schiera.connect(func(e: Edificio):
+		if schiere.forma(e):
+			pannello.chiudi_pannello()
+			schiere.scegli(true))
 	pannello_indigeno = PannelloIndigeno.new()
 	pannello_indigeno.indigeni = indigeni
 	strato.add_child(pannello_indigeno)

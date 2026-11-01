@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 30 chiuso (release v0.45.0 in `main`): villaggi indigeni. Tutte le domande hanno risposta (`decisioni.md`). Prossimo: step 31, condottieri e schiere (controllo diretto). Dettagli dell'avanzamento in fondo a `docs/piano-imperivm.md`.
+**Aggiornato:** 2026-11-02, step 31 chiuso (release v0.46.0 in `main`): condottieri e schiere. Prossimo: step 32, cibo, morale ed esperienza delle schiere. Dettagli in fondo a `docs/piano-imperivm.md`.
 
 ## Ultimo obiettivo affrontato
 

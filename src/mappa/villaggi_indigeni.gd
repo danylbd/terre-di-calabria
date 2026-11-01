@@ -232,6 +232,13 @@ func conquista(i: int, rng := RandomNumberGenerator.new()) -> bool:
 		villaggio.messaggio.emit("L'attacco a %s è fallito: servono più soldati" % v["nome"], true)
 		_aggiorna_etichetta(i)
 		return false
+	prendi(i)
+	return true
+
+
+## Il villaggio diventa nostro (dopo un assalto vinto, dei soldati di riserva o di una schiera).
+func prendi(i: int) -> void:
+	var v: Dictionary = elenco[i]
 	v["stato"] = "nostro"
 	v["abitanti"] = maxi(10, v["abitanti"] - 5)
 	villaggio.messaggio.emit("%s è conquistato! I confini si allargano" % v["nome"], false)
@@ -239,7 +246,6 @@ func conquista(i: int, rng := RandomNumberGenerator.new()) -> bool:
 	_aggiorna_etichetta(i)
 	_aggiorna_confini()
 	cambiato.emit()
-	return true
 
 
 func _aggiorna_confini() -> void:

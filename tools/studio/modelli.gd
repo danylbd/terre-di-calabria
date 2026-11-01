@@ -419,6 +419,12 @@ static func catalogo() -> Dictionary:
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["guardia_lotta"] = {"crea": guardia, "posa": posa_lotta,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	# condottieri (step 31): cella più alta per lo stendardo, stessa ancora rispetto al fondo della cella
+	for popolo in ["greci", "brettii", "romani", "saraceni", "normanni", "siculi", "sicani"]:
+		c["condottiero_" + popolo] = {"crea": condottiero.bind(popolo), "posa": posa_cammino,
+			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(42, 96)}
+		c["condottiero_%s_lotta" % popolo] = {"crea": condottiero.bind(popolo), "posa": posa_lotta,
+			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(42, 96)}
 	# i Brettii del giocatore, con il colore del giocatore (quelli nemici restano con la bandiera rossa)
 	c["brettio_giocatore"] = {"crea": brettio.bind("giocatore"), "posa": posa_cammino,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
@@ -956,6 +962,8 @@ static func materiale(nome: String) -> Material:
 			m.cull_mode = BaseMaterial3D.CULL_DISABLED
 		"tunica_lapis":
 			m.albedo_texture = _rumore(145, 0.4, Color("1c3a80"), Color("3560b0"))
+		"mantello_blu":
+			m.albedo_texture = _rumore(146, 0.35, Color("18234a"), Color("2a3c72"))
 		"ossidiana":
 			m.albedo_color = Color("0e0c12")
 			m.metallic = 0.35
@@ -16953,4 +16961,324 @@ static func armaiolo_sicani() -> Node3D:
 	r.add_child(_blocco_oss(Vector3(0.12, 0, 0.62), 0.9, 3))
 	r.add_child(sfera(0.04, Vector3(0.5, 0.03, 0.64), "cuoio", Vector3(1, 0.75, 1.05)))
 	r.add_child(cilindro(0.041, 0.042, 0.01, Vector3(0.5, 0.012, 0.64), "pelle_scura", Vector3.ZERO, 12))
+	return r
+
+
+# =================================================================== CONDOTTIERI (step 31)
+# Eroi che guidano una schiera, uno per popolo: un po' più grandi dei soldati (scala 1,15), mantello lungo,
+# copricapo distintivo e uno stendardo alto fissato alla schiena col colore del giocatore (materiale "giocatore").
+
+## Mantello lungo: drappo sulle spalle, telo dietro che si allarga verso i polpacci, due lembi ai fianchi,
+## orlo in basso e fibbia davanti.
+static func _mantello(corpo: Node3D, mat: String, fibbia := "moneta", orlo := "") -> void:
+	var anca := 0.2
+	corpo.add_child(sfera(0.07, Vector3(0, anca + 0.165, -0.016), mat, Vector3(1.25, 0.4, 1.05)))
+	# telo in tre pieghe che si allargano verso il basso
+	for k in 3:
+		var dx := (k - 1) * 0.04
+		corpo.add_child(scatola(Vector3(0.05, 0.3, 0.01), Vector3(dx * 1.1, anca + 0.01, -0.094 - (0.006 if k == 1 else 0.0)), mat, Vector3(12, -dx * 500.0, -dx * 120.0)))
+	if orlo != "":
+		for k in 3:
+			var dx := (k - 1) * 0.04
+			corpo.add_child(scatola(Vector3(0.052, 0.014, 0.013), Vector3(dx * 1.25, anca - 0.135, -0.126 - (0.006 if k == 1 else 0.0)), orlo, Vector3(12, -dx * 500.0, -dx * 120.0)))
+	corpo.add_child(sfera(0.016, Vector3(0, anca + 0.155, 0.064), fibbia))
+
+
+## Simbolo del popolo dipinto sui due lati del drappo; c = centro del simbolo sul piano del drappo.
+static func _simbolo_stendardo(s: Node3D, tipo: String, c: Vector3) -> void:
+	for dz: float in [0.0055, -0.0045]:
+		var p := c + Vector3(0, 0, dz)
+		match tipo:
+			"stella":  # stella a otto raggi bianca
+				for k in 4:
+					s.add_child(scatola(Vector3(0.078, 0.012, 0.003), p, "lino_bianco", Vector3(0, 0, k * 45)))
+				s.add_child(cilindro(0.016, 0.016, 0.004, p, "oro_n", Vector3(90, 0, 0), 10))
+			"toro":  # testa di toro: muso d'osso e corna
+				s.add_child(sfera(0.03, p + Vector3(0, -0.01, 0), "osso", Vector3(0.8, 1.1, 0.12)))
+				for lato: int in [-1, 1]:
+					s.add_child(scatola(Vector3(0.04, 0.012, 0.003), p + Vector3(lato * 0.026, 0.03, 0), "osso", Vector3(0, 0, lato * 40)))
+			"corona":  # corona d'alloro d'oro
+				s.add_child(_toro(0.03, 0.04, p, "moneta", Vector3(90, 0, 0), Vector3(1, 0.25, 1)))
+				s.add_child(sfera(0.01, p, "moneta", Vector3(1, 1, 0.3)))
+			"stella8":  # stella a otto punte: due quadrati d'oro sovrapposti
+				for k in 2:
+					s.add_child(scatola(Vector3(0.06, 0.06, 0.003), p, "oro_n", Vector3(0, 0, k * 45)))
+				s.add_child(cilindro(0.014, 0.014, 0.004, p, "stoffa_smeraldo", Vector3(90, 0, 0), 10))
+			"croce":  # croce d'oro
+				s.add_child(scatola(Vector3(0.018, 0.11, 0.003), p, "oro_n"))
+				s.add_child(scatola(Vector3(0.07, 0.018, 0.003), p + Vector3(0, 0.02, 0), "oro_n"))
+			"spirale":  # cerchi dipinti d'ocra e di nero
+				s.add_child(cilindro(0.045, 0.045, 0.003, p, "ocra_rossa", Vector3(90, 0, 0), 14))
+				s.add_child(cilindro(0.032, 0.032, 0.004, p, "vernice_nera", Vector3(90, 0, 0), 14))
+				s.add_child(cilindro(0.02, 0.02, 0.005, p, "ocra_rossa", Vector3(90, 0, 0), 12))
+				s.add_child(cilindro(0.008, 0.008, 0.006, p, "ceramica", Vector3(90, 0, 0), 8))
+			"monte":  # monte bianco a gradoni
+				for k in 3:
+					s.add_child(scatola(Vector3(0.084 - k * 0.026, 0.024, 0.003), p + Vector3(0, -0.03 + k * 0.024, 0), "lino_bianco"))
+
+
+## Puntale in cima all'asta dello stendardo.
+static func _puntale(s: Node3D, tipo: String, cima: float) -> void:
+	var p := Vector3(0, cima, 0)
+	match tipo:
+		"lancia":
+			s.add_child(cilindro(0.016, 0.0, 0.07, p + Vector3(0, 0.035, 0), "bronzo", Vector3.ZERO, 6))
+			s.add_child(cilindro(0.012, 0.012, 0.015, p, "bronzo", Vector3.ZERO, 6))
+		"corna":
+			s.add_child(sfera(0.018, p + Vector3(0, 0.012, 0), "osso"))
+			for lato: int in [-1, 1]:
+				s.add_child(cilindro(0.01, 0.0, 0.07, p + Vector3(lato * 0.03, 0.035, 0), "osso", Vector3(0, 0, -lato * 40), 6))
+		"aquila":
+			s.add_child(sfera(0.018, p + Vector3(0, 0.01, 0), "moneta"))
+			s.add_child(sfera(0.02, p + Vector3(0, 0.04, 0), "moneta", Vector3(0.8, 1.2, 0.8)))
+			for lato: int in [-1, 1]:
+				s.add_child(scatola(Vector3(0.05, 0.03, 0.008), p + Vector3(lato * 0.03, 0.055, 0), "moneta", Vector3(0, 0, lato * 30)))
+		"pomo":
+			s.add_child(sfera(0.022, p + Vector3(0, 0.02, 0), "oro_n"))
+			s.add_child(cilindro(0.006, 0.0, 0.04, p + Vector3(0, 0.06, 0), "oro_n", Vector3.ZERO, 5))
+		"croce_ferro":
+			s.add_child(scatola(Vector3(0.012, 0.07, 0.012), p + Vector3(0, 0.035, 0), "ferro"))
+			s.add_child(scatola(Vector3(0.05, 0.012, 0.012), p + Vector3(0, 0.045, 0), "ferro"))
+		"piume":
+			for k in 3:
+				var m: String = ["ocra_rossa", "lino_bianco", "vernice_nera"][k]
+				s.add_child(sfera(0.016, p + Vector3(-0.02 + k * 0.02, 0.035 + (1 - absi(k - 1)) * 0.012, 0), m, Vector3(0.55, 2.2, 0.8)))
+		"montone":
+			s.add_child(cilindro(0.01, 0.0, 0.06, p + Vector3(0, 0.035, 0), "ossidiana", Vector3.ZERO, 5))
+			for lato: int in [-1, 1]:
+				s.add_child(_toro(0.008, 0.02, p + Vector3(lato * 0.022, 0.012, 0), "osso", Vector3(0, 0, 90), Vector3(1, 1, 1)))
+
+
+## Stendardo alto fissato alla schiena: asta, traversa, drappo col colore del giocatore a coda di rondine,
+## orlo e simbolo del popolo, puntale. Il drappo è girato di 25 gradi perché non si veda mai di taglio.
+static func _stendardo(corpo: Node3D, simbolo: String, orlo: String, puntale: String, x := -0.035) -> void:
+	var anca := 0.2
+	var s := Node3D.new()
+	s.name = "stendardo"
+	s.position = Vector3(x, 0, -0.118)
+	s.rotation_degrees.y = 25
+	corpo.add_child(s)
+	var cima := 0.86
+	var base := 0.12
+	s.add_child(cilindro(0.008, 0.008, cima - base, Vector3(0, (cima + base) * 0.5, 0), "legno_scuro", Vector3.ZERO, 6))
+	s.add_child(scatola(Vector3(0.17, 0.012, 0.012), Vector3(0, cima - 0.05, 0), "legno_scuro"))
+	for lato: int in [-1, 1]:
+		s.add_child(sfera(0.011, Vector3(lato * 0.087, cima - 0.05, 0), orlo))
+	# drappo piegato a U (pannello centrale col simbolo, due lembi che girano indietro), con l'orlo in alto e in basso
+	var cz := 0.004
+	s.add_child(scatola(Vector3(0.09, 0.16, 0.007), Vector3(0, cima - 0.135, cz), "giocatore"))
+	for y: float in [cima - 0.06, cima - 0.21]:
+		s.add_child(scatola(Vector3(0.092, 0.012, 0.009), Vector3(0, y, cz), orlo))
+	for lato: int in [-1, 1]:
+		var a := deg_to_rad(40.0)
+		var c := Vector3(lato * (0.045 + 0.02 * cos(a)), 0, cz - 0.02 * sin(a))
+		var rot := Vector3(0, lato * 40.0, 0)
+		s.add_child(scatola(Vector3(0.042, 0.16, 0.007), c + Vector3(0, cima - 0.135, 0), "giocatore", rot))
+		for y: float in [cima - 0.06, cima - 0.21]:
+			s.add_child(scatola(Vector3(0.042, 0.012, 0.009), c + Vector3(0, y, 0), orlo, rot))
+		# coda di rondine sotto il pannello centrale
+		s.add_child(scatola(Vector3(0.04, 0.065, 0.007), Vector3(lato * 0.024, cima - 0.24, cz), "giocatore", Vector3(0, 0, lato * 14)))
+	_simbolo_stendardo(s, simbolo, Vector3(0, cima - 0.135, 0.004))
+	_puntale(s, puntale, cima)
+	# cinghie di cuoio che tengono l'asta alla schiena
+	corpo.add_child(cilindro(0.067, 0.065, 0.014, Vector3(0, anca + 0.15, 0), "cuoio", Vector3.ZERO, 12))
+	corpo.add_child(scatola(Vector3(0.02, 0.22, 0.006), Vector3(0.0, anca + 0.1, 0.074), "cuoio", Vector3(0, 0, -34)))
+
+
+## Condottiero di un popolo (greci, brettii, romani, saraceni, normanni, siculi, sicani).
+static func condottiero(popolo: String) -> Node3D:
+	var anca := 0.2
+	var r: Node3D
+	match popolo:
+		"greci":
+			# Eudora: chitone chiaro fino ai piedi, mantello blu scuro, diadema, scudo con la stella, lancia
+			r = portatore("", "giocatore", "lino_bianco")
+			var corpo: Node3D = r.get_node("corpo")
+			corpo.add_child(cilindro(0.078, 0.086, 0.15, Vector3(0, anca - 0.075, 0), "lino_bianco", Vector3.ZERO, 12))
+			corpo.add_child(cilindro(0.087, 0.087, 0.012, Vector3(0, anca - 0.145, 0), "mantello_blu", Vector3.ZERO, 12))
+			# capelli lunghi raccolti dietro, diadema d'oro
+			corpo.add_child(sfera(0.05, Vector3(0, anca + 0.22, -0.055), "capelli", Vector3(1.1, 1.5, 0.7)))
+			corpo.add_child(sfera(0.032, Vector3(0, anca + 0.3, -0.075), "capelli"))
+			corpo.add_child(_toro(0.072, 0.083, Vector3(0, anca + 0.286, -0.008), "oro_n", Vector3(-8, 0, 0), Vector3(1, 1.6, 1)))
+			corpo.add_child(sfera(0.013, Vector3(0, anca + 0.3, 0.074), "lapislazzuli"))
+			_mantello(corpo, "mantello_blu", "oro_n", "oro_n")
+			_stendardo(corpo, "stella", "oro_n", "lancia")
+			var bs: Node3D = corpo.get_node("braccio_s")
+			bs.add_child(cilindro(0.09, 0.09, 0.014, Vector3(-0.02, -0.07, 0.04), "bronzo", Vector3(0, 0, 90), 16))
+			bs.add_child(cilindro(0.072, 0.072, 0.004, Vector3(-0.028, -0.07, 0.04), "mantello_blu", Vector3(0, 0, 90), 16))
+			for k in 4:
+				bs.add_child(scatola(Vector3(0.004, 0.11, 0.012), Vector3(-0.031, -0.07, 0.04), "lino_bianco", Vector3(k * 45, 0, 0)))
+			bs.add_child(sfera(0.014, Vector3(-0.032, -0.07, 0.04), "oro_n"))
+			var bd: Node3D = corpo.get_node("braccio_d")
+			bd.add_child(cilindro(0.007, 0.007, 0.56, Vector3(0, 0.08, 0.02), "legno", Vector3.ZERO, 5))
+			bd.add_child(cilindro(0.017, 0.0, 0.065, Vector3(0, 0.39, 0.02), "bronzo", Vector3.ZERO, 6))
+			r.set_meta("carico", "lancia")
+		"brettii":
+			# Tauro: pelliccia, berretto di pelo, mantello verde bosco, ascia e scudo ovale di legno
+			r = portatore("", "giocatore", "pelliccia")
+			var corpo: Node3D = r.get_node("corpo")
+			corpo.add_child(sfera(0.086, Vector3(0, anca + 0.29, -0.01), "pelliccia", Vector3(1.05, 0.68, 1.05)))
+			corpo.add_child(_toro(0.07, 0.09, Vector3(0, anca + 0.27, -0.01), "pelliccia", Vector3.ZERO, Vector3(1, 1.8, 1)))
+			corpo.add_child(sfera(0.012, Vector3(0, anca + 0.345, -0.02), "osso", Vector3(1, 2.2, 1)))
+			corpo.add_child(sfera(0.045, Vector3(0, anca + 0.215, 0.05), "capelli", Vector3(1.0, 0.9, 0.6)))
+			_mantello(corpo, "stoffa_verde", "bronzo", "pelliccia")
+			corpo.add_child(sfera(0.08, Vector3(0, anca + 0.17, -0.01), "pelliccia", Vector3(1.25, 0.35, 1.15)))
+			_stendardo(corpo, "toro", "stoffa_verde", "corna")
+			var bs: Node3D = corpo.get_node("braccio_s")
+			bs.add_child(sfera(0.1, Vector3(-0.025, -0.07, 0.03), "legno", Vector3(0.2, 1.25, 0.85)))
+			bs.add_child(sfera(0.085, Vector3(-0.032, -0.07, 0.03), "stoffa_verde", Vector3(0.12, 0.6, 0.12)))
+			bs.add_child(sfera(0.026, Vector3(-0.045, -0.07, 0.03), "ferro"))
+			var bd: Node3D = corpo.get_node("braccio_d")
+			bd.add_child(scatola(Vector3(0.014, 0.014, 0.25), Vector3(0, -0.14, 0.08), "legno"))
+			bd.add_child(scatola(Vector3(0.009, 0.08, 0.05), Vector3(0, -0.125, 0.19), "ferro"))
+			bd.add_child(scatola(Vector3(0.011, 0.02, 0.03), Vector3(0, -0.14, 0.2), "legno_scuro"))
+			r.set_meta("carico", "spada")
+		"romani":
+			# Gaio Settimio: agrimensore in armatura leggera di cuoio, mantello rosso pompeiano,
+			# elmo con la cresta trasversale, gladio e la groma in spalla
+			r = portatore("", "giocatore", "lino_bianco")
+			var corpo: Node3D = r.get_node("corpo")
+			for k in 3:
+				var y := anca + 0.115 + k * 0.022
+				var rr := 0.085 - (y - (anca - 0.03)) / 0.2 * 0.025 + 0.007
+				corpo.add_child(cilindro(rr, rr - 0.002, 0.019, Vector3(0, y, 0), "cuoio" if k % 2 == 0 else "pelle_scura", Vector3.ZERO, 12))
+			for lato: int in [-1, 1]:
+				corpo.add_child(sfera(0.034, Vector3(lato * 0.058, anca + 0.17, 0), "cuoio", Vector3(1.15, 0.55, 1.1)))
+			corpo.add_child(cilindro(0.083, 0.083, 0.018, Vector3(0, anca + 0.075, 0), "pelle_scura", Vector3.ZERO, 12))
+			for k in 5:
+				corpo.add_child(scatola(Vector3(0.014, 0.05, 0.006), Vector3(-0.036 + k * 0.018, anca + 0.04, 0.085), "cuoio"))
+			# elmo di bronzo con la cresta rossa trasversale (da un orecchio all'altro)
+			corpo.add_child(sfera(0.08, Vector3(0, anca + 0.282, -0.005), "bronzo", Vector3(1, 0.72, 1.05)))
+			corpo.add_child(scatola(Vector3(0.13, 0.012, 0.06), Vector3(0, anca + 0.245, -0.08), "bronzo", Vector3(-22, 0, 0)))
+			for lato: int in [-1, 1]:
+				corpo.add_child(scatola(Vector3(0.01, 0.055, 0.04), Vector3(lato * 0.077, anca + 0.235, 0.025), "bronzo"))
+			for k in 7:
+				var x := -0.075 + k * 0.025
+				corpo.add_child(sfera(0.024, Vector3(x, anca + 0.37 - absf(x) * 0.45, -0.005), "stoffa_pompeiana", Vector3(0.9, 1.2, 0.55)))
+			_mantello(corpo, "rosso_pompeiano", "moneta", "moneta")
+			_stendardo(corpo, "corona", "moneta", "aquila", 0.04)
+			# groma: asta sulla spalla sinistra, croce in cima con quattro fili a piombo
+			var g := Node3D.new()
+			g.position = Vector3(-0.09, anca + 0.17, 0.035)
+			g.rotation_degrees = Vector3(-24, 0, 12)
+			corpo.add_child(g)
+			g.add_child(cilindro(0.007, 0.007, 0.55, Vector3(0, 0.12, 0), "legno", Vector3.ZERO, 5))
+			g.add_child(cilindro(0.009, 0.0, 0.03, Vector3(0, -0.17, 0), "ferro", Vector3(180, 0, 0), 5))
+			var cr := Node3D.new()
+			cr.position = Vector3(0, 0.39, 0)
+			cr.rotation_degrees = Vector3(24, 0, -12)
+			g.add_child(cr)
+			cr.add_child(scatola(Vector3(0.17, 0.01, 0.01), Vector3.ZERO, "legno_scuro", Vector3(0, 45, 0)))
+			cr.add_child(scatola(Vector3(0.17, 0.01, 0.01), Vector3.ZERO, "legno_scuro", Vector3(0, -45, 0)))
+			for k in 4:
+				var a := k * PI * 0.5 + PI * 0.25
+				var e := Vector3(cos(a) * 0.08, 0, sin(a) * 0.08)
+				cr.add_child(cilindro(0.0015, 0.0015, 0.08, e + Vector3(0, -0.04, 0), "corda", Vector3.ZERO, 3))
+				cr.add_child(cilindro(0.008, 0.0, 0.02, e + Vector3(0, -0.088, 0), "bronzo", Vector3(180, 0, 0), 6))
+			# gladio nella destra
+			var bd: Node3D = corpo.get_node("braccio_d")
+			bd.add_child(scatola(Vector3(0.01, 0.018, 0.15), Vector3(0, -0.14, 0.09), "spada"))
+			bd.add_child(cilindro(0.009, 0.0, 0.025, Vector3(0, -0.14, 0.177), "spada", Vector3(90, 0, 0), 4))
+			bd.add_child(scatola(Vector3(0.036, 0.016, 0.014), Vector3(0, -0.14, 0.012), "bronzo"))
+			bd.add_child(scatola(Vector3(0.012, 0.014, 0.03), Vector3(0, -0.14, -0.01), "legno_scuro"))
+			bd.add_child(sfera(0.011, Vector3(0, -0.14, -0.028), "moneta"))
+			r.set_meta("carico", "spada")
+		"saraceni":
+			# Zahra: veste e turbante bianchi, fascia e mantello verde smeraldo, scimitarra e piccolo scudo tondo
+			r = portatore("", "giocatore", "lino_bianco")
+			var corpo: Node3D = r.get_node("corpo")
+			corpo.add_child(cilindro(0.078, 0.088, 0.15, Vector3(0, anca - 0.075, 0), "lino_bianco", Vector3.ZERO, 12))
+			corpo.add_child(cilindro(0.088, 0.088, 0.03, Vector3(0, anca + 0.06, 0), "stoffa_smeraldo", Vector3.ZERO, 12))
+			corpo.add_child(scatola(Vector3(0.02, 0.07, 0.006), Vector3(0.03, anca + 0.02, 0.085), "stoffa_smeraldo", Vector3(0, 0, 8)))
+			corpo.add_child(sfera(0.09, Vector3(0, anca + 0.3, -0.008), "lino_bianco", Vector3(1.05, 0.78, 1.05)))
+			corpo.add_child(_toro(0.068, 0.095, Vector3(0, anca + 0.282, -0.008), "lino_bianco", Vector3(-6, 0, 0), Vector3(1, 0.9, 1)))
+			corpo.add_child(sfera(0.015, Vector3(0, anca + 0.29, 0.09), "smeraldo"))
+			corpo.add_child(sfera(0.009, Vector3(0, anca + 0.31, 0.088), "oro_n"))
+			_mantello(corpo, "stoffa_smeraldo", "oro_n", "oro_n")
+			_stendardo(corpo, "stella8", "oro_n", "pomo")
+			var bs: Node3D = corpo.get_node("braccio_s")
+			bs.add_child(cilindro(0.058, 0.058, 0.012, Vector3(-0.02, -0.085, 0.04), "maiolica_verde", Vector3(0, 0, 90), 14))
+			bs.add_child(_toro(0.052, 0.06, Vector3(-0.022, -0.085, 0.04), "oro_n", Vector3(0, 0, 90)))
+			bs.add_child(sfera(0.017, Vector3(-0.03, -0.085, 0.04), "oro_n"))
+			var bd: Node3D = corpo.get_node("braccio_d")
+			bd.add_child(scatola(Vector3(0.012, 0.014, 0.04), Vector3(0, -0.14, -0.002), "legno_scuro"))
+			bd.add_child(scatola(Vector3(0.012, 0.045, 0.012), Vector3(0, -0.14, 0.022), "oro_n"))
+			for k in 5:
+				var z := 0.045 + k * 0.034
+				bd.add_child(scatola(Vector3(0.008, 0.022 - k * 0.002, 0.038), Vector3(0, -0.14 + k * k * 0.0045, z), "spada", Vector3(-k * 9, 0, 0)))
+			r.set_meta("carico", "spada")
+		"normanni":
+			# Osmund: cavaliere a piedi in cotta di maglia, elmo a nasale, mantello giallo oro, scudo a mandorla, spada
+			r = portatore("", "giocatore", "maglia")
+			var corpo: Node3D = r.get_node("corpo")
+			corpo.add_child(cilindro(0.082, 0.094, 0.1, Vector3(0, anca - 0.045, 0), "maglia", Vector3.ZERO, 12))
+			corpo.add_child(cilindro(0.086, 0.086, 0.02, Vector3(0, anca + 0.07, 0), "pelle_scura", Vector3.ZERO, 12))
+			corpo.add_child(sfera(0.011, Vector3(0, anca + 0.07, 0.086), "oro_n"))
+			corpo.add_child(sfera(0.079, Vector3(0, anca + 0.235, -0.005), "maglia", Vector3(1.05, 1.0, 1.05)))
+			corpo.add_child(sfera(0.071, Vector3(0, anca + 0.25, 0.012), "pelle"))
+			corpo.add_child(cilindro(0.082, 0.082, 0.04, Vector3(0, anca + 0.28, -0.005), "ferro", Vector3.ZERO, 12))
+			corpo.add_child(cilindro(0.082, 0.0, 0.1, Vector3(0, anca + 0.35, -0.005), "ferro", Vector3.ZERO, 12))
+			corpo.add_child(cilindro(0.084, 0.084, 0.012, Vector3(0, anca + 0.268, -0.005), "oro_n", Vector3.ZERO, 12))
+			corpo.add_child(scatola(Vector3(0.014, 0.055, 0.012), Vector3(0, anca + 0.245, 0.08), "ferro"))
+			_mantello(corpo, "stoffa_oro", "ferro", "pelle_scura")
+			_stendardo(corpo, "croce", "oro_n", "croce_ferro")
+			var bs: Node3D = corpo.get_node("braccio_s")
+			bs.add_child(_scudo_n(Vector3(-0.03, -0.09, 0.035), -90.0, 1.2))
+			var bd: Node3D = corpo.get_node("braccio_d")
+			bd.add_child(scatola(Vector3(0.01, 0.02, 0.22), Vector3(0, -0.14, 0.13), "spada"))
+			bd.add_child(cilindro(0.01, 0.0, 0.025, Vector3(0, -0.14, 0.252), "spada", Vector3(90, 0, 0), 4))
+			bd.add_child(scatola(Vector3(0.065, 0.012, 0.012), Vector3(0, -0.14, 0.018), "ferro"))
+			bd.add_child(scatola(Vector3(0.012, 0.014, 0.035), Vector3(0, -0.14, -0.005), "pelle_scura"))
+			bd.add_child(sfera(0.012, Vector3(0, -0.14, -0.026), "oro_n"))
+			r.set_meta("carico", "spada")
+		"siculi":
+			# Duketio: tunica ocra, mantello rosso-ocra, elmo di cuoio con le piume, lancia lunga, scudo dipinto
+			r = portatore("", "giocatore", "tunica_ocra")
+			var corpo: Node3D = r.get_node("corpo")
+			corpo.add_child(cilindro(0.083, 0.083, 0.018, Vector3(0, anca + 0.04, 0), "cuoio", Vector3.ZERO, 12))
+			corpo.add_child(sfera(0.011, Vector3(0, anca + 0.04, 0.083), "bronzo"))
+			corpo.add_child(sfera(0.081, Vector3(0, anca + 0.282, -0.006), "cuoio", Vector3(1, 0.72, 1.05)))
+			corpo.add_child(cilindro(0.083, 0.084, 0.014, Vector3(0, anca + 0.262, -0.006), "bronzo", Vector3.ZERO, 14))
+			corpo.add_child(scatola(Vector3(0.12, 0.012, 0.05), Vector3(0, anca + 0.248, -0.078), "cuoio", Vector3(-25, 0, 0)))
+			for lato: int in [-1, 1]:
+				corpo.add_child(scatola(Vector3(0.01, 0.045, 0.035), Vector3(lato * 0.078, anca + 0.24, 0.02), "cuoio"))
+			# ventaglio di piume alte sull'elmo
+			corpo.add_child(cilindro(0.014, 0.016, 0.022, Vector3(0, anca + 0.345, -0.005), "bronzo", Vector3.ZERO, 6))
+			for k in 5:
+				var m: String = ["ocra_rossa", "lino_bianco", "vernice_nera", "lino_bianco", "ocra_rossa"][k]
+				corpo.add_child(sfera(0.018, Vector3(-0.036 + k * 0.018, anca + 0.385 + (2 - absi(k - 2)) * 0.014, -0.01), m, Vector3(0.55, 2.2, 0.8)))
+			_mantello(corpo, "ocra_rossa", "bronzo", "vernice_nera")
+			_stendardo(corpo, "spirale", "ocra_rossa", "piume")
+			var bs: Node3D = corpo.get_node("braccio_s")
+			bs.add_child(_scudo_sic(Vector3(-0.03, -0.075, 0.04), -90.0, 1.12))
+			var bd: Node3D = corpo.get_node("braccio_d")
+			bd.add_child(cilindro(0.0075, 0.0075, 0.64, Vector3(0, 0.1, 0.02), "legno", Vector3.ZERO, 5))
+			bd.add_child(cilindro(0.018, 0.0, 0.07, Vector3(0, 0.455, 0.02), "bronzo", Vector3.ZERO, 6))
+			bd.add_child(cilindro(0.01, 0.01, 0.02, Vector3(0, 0.41, 0.02), "ocra_rossa", Vector3.ZERO, 6))
+			r.set_meta("carico", "lancia")
+		"sicani":
+			# Kokalo: tunica blu lapislazzuli, mantello di pelle, corona di bronzo, arco e pugnale d'ossidiana
+			r = portatore("", "giocatore", "tunica_lapis")
+			var corpo: Node3D = r.get_node("corpo")
+			corpo.add_child(cilindro(0.08, 0.092, 0.11, Vector3(0, anca - 0.055, 0), "tunica_lapis", Vector3.ZERO, 12))
+			corpo.add_child(cilindro(0.083, 0.083, 0.018, Vector3(0, anca + 0.06, 0), "cuoio", Vector3.ZERO, 12))
+			corpo.add_child(sfera(0.011, Vector3(0, anca + 0.06, 0.083), "oro_n"))
+			# barba e corona di bronzo a punte
+			corpo.add_child(sfera(0.048, Vector3(0, anca + 0.21, 0.048), "capelli", Vector3(1.0, 1.0, 0.6)))
+			corpo.add_child(_toro(0.072, 0.084, Vector3(0, anca + 0.29, -0.008), "bronzo", Vector3.ZERO, Vector3(1, 2.2, 1)))
+			for k in 7:
+				var a := k * TAU / 7 + PI * 0.5
+				corpo.add_child(cilindro(0.012, 0.0, 0.04, Vector3(cos(a) * 0.078, anca + 0.32, sin(a) * 0.078 - 0.008), "bronzo", Vector3.ZERO, 5))
+			corpo.add_child(sfera(0.012, Vector3(0, anca + 0.295, 0.083), "lapislazzuli"))
+			_mantello(corpo, "cuoio", "oro_n", "pelliccia")
+			corpo.add_child(sfera(0.08, Vector3(0, anca + 0.17, -0.012), "pelliccia", Vector3(1.25, 0.35, 1.15)))
+			_stendardo(corpo, "monte", "lino_bianco", "montone")
+			var bs: Node3D = corpo.get_node("braccio_s")
+			bs.add_child(cilindro(0.02, 0.018, 0.045, Vector3(0, -0.1, 0), "cuoio", Vector3.ZERO, 6))
+			_arco_sic(bs, Vector3(-0.005, -0.14, 0.02), 0.26, 0.055)
+			var bd: Node3D = corpo.get_node("braccio_d")
+			bd.add_child(scatola(Vector3(0.012, 0.014, 0.035), Vector3(0, -0.14, 0.0), "cuoio"))
+			bd.add_child(scatola(Vector3(0.03, 0.01, 0.01), Vector3(0, -0.14, 0.02), "oro_n"))
+			bd.add_child(cilindro(0.014, 0.0, 0.08, Vector3(0, -0.14, 0.064), "ossidiana", Vector3(90, 0, 0), 5))
+	r.scale = Vector3.ONE * 1.15
 	return r

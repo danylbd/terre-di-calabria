@@ -6,6 +6,7 @@ extends PanelContainer
 signal strada_da(e: Edificio)
 signal demolisci(e: Edificio)
 signal attacca(e: Edificio)
+signal forma_schiera(e: Edificio)
 
 var edificio: Edificio
 var villaggio: Villaggio
@@ -17,6 +18,8 @@ var _compra: OptionButton
 var _riga_compra: HBoxContainer
 var _pulsanti: HBoxContainer
 var _attacca: Button
+var _schiera: Button
+var schiere: Schiere
 
 
 func _ready() -> void:
@@ -90,6 +93,11 @@ func _ready() -> void:
 	demol.pressed.connect(func(): demolisci.emit(edificio))
 	pulsanti.add_child(demol)
 	pulsanti.add_child(_attacca)
+	_schiera = Button.new()
+	_schiera.text = "Schiera"
+	_schiera.custom_minimum_size = Vector2(100, 36)
+	_schiera.pressed.connect(func(): forma_schiera.emit(edificio))
+	pulsanti.add_child(_schiera)
 	visible = false
 
 
@@ -129,6 +137,11 @@ func _riempi() -> void:
 	righe.append("[i]%s[/i]" % info["descrizione"])
 	_attacca.visible = info.has("soldati_max") and e.presidiata
 	_attacca.disabled = e.soldati < 2
+	_schiera.visible = e.tipo in ["caserma", "castello", "mastio"] and e.finito and Schiere.attive()
+	if _schiera.visible and schiere:
+		var perche := schiere.motivo_no_schiera()
+		_schiera.disabled = perche != ""
+		_schiera.tooltip_text = perche if perche != "" else "%s esce con i soldati di riserva (fino a %d)" % [Schiere.nome_condottiero(), Schiere.MAX_SOLDATI]
 	if e.proprietario != 1:
 		righe.append("[b]Difensori: %d[/b]" % e.soldati)
 		_testo.text = "\n".join(righe)
