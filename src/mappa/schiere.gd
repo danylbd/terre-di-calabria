@@ -10,6 +10,13 @@ signal cambiata
 const MAX_SOLDATI := 12
 const DURATA_DUELLO := 1.5
 const DISTANZA_ASSALTO := 3.5        # caselle dal bersaglio entro cui la schiera combatte
+## step 32: cibo, morale ed esperienza
+const RAZIONI_MAX := 20
+const CONSUMO := 20.0                # secondi per ogni razione mangiata dalla schiera
+const FAME := 30.0                   # senza razioni, ogni tanto un soldato se ne va
+const RAGGIO_MAGAZZINO := 6.0        # vicino a un nostro magazzino la schiera si rifornisce e si rinforza
+const ESPERIENZA_LIVELLO := 10       # duelli vinti per ogni livello del condottiero
+const LIVELLO_MAX := 5
 const NOMI := {"greci": "Eudora", "brettii": "Tauro", "romani": "Gaio Settimio", "saraceni": "Zahra",
 	"normanni": "Osmund", "siculi": "Duketio", "sicani": "Kokalo"}
 
@@ -23,6 +30,9 @@ var scelta := false                  # il giocatore ha selezionato la schiera
 var _rng := RandomNumberGenerator.new()
 var _duello := 0.0
 var _difensori_villaggio := -1       # difensori rimasti del villaggio indigeno sotto attacco
+var esperienza := 0                  # duelli vinti dal condottiero (resta anche quando la schiera si scioglie)
+var _pasto := CONSUMO
+var _fame := FAME
 
 
 func prepara(v: Villaggio, g: Guerra, ind: VillaggiIndigeni, d: DatiMappa, nodo_oggetti: Node2D) -> void:
@@ -75,7 +85,8 @@ func forma(da: Edificio) -> bool:
 		var s := _nuovo(inizio + _posto(k), Popoli.soldati(1)[0])
 		s.velocita = 1.0
 		truppa.append(s)
-	schiera = {"condottiero": capo, "soldati": truppa, "bersaglio": null}
+	schiera = {"condottiero": capo, "soldati": truppa, "bersaglio": null, "razioni": 0, "morale": 70}
+	_rifornisci()
 	villaggio.messaggio.emit("%s guida una schiera di %d soldati: cliccalo per dargli ordini" % [nome_condottiero(), n], false)
 	cambiata.emit()
 	return true
@@ -204,10 +215,73 @@ func percorso_a_piedi(da: Vector2i, a: Vector2i) -> Array[Vector2]:
 	return rotta
 
 
+## Il livello del condottiero (1–5): sale con i duelli vinti dalla sua schiera.
+func livello() -> int:
+	return mini(LIVELLO_MAX, 1 + esperienza / ESPERIENZA_LIVELLO)
+
+
+## Probabilità che un nostro soldato vinca un duello: base, vantaggi dei monumenti, morale e livello.
+func probabilita_vittoria() -> float:
+	var morale: float = schiera.get("morale", 70) if esiste() else 70.0
+	return clampf(0.55 + villaggio.vantaggi.get("duelli", 0.0) + (morale - 50.0) / 500.0 + 0.02 * (livello() - 1), 0.1, 0.9)
+
+
+func _cambia_morale(d: int) -> void:
+	schiera["morale"] = clampi(schiera["morale"] + d, 0, 100)
+
+
+## Vicino a un nostro magazzino: razioni piene dal magazzino e soldati di riserva che tornano nella schiera.
+func _rifornisci() -> void:
+	var capo: Colono = schiera["condottiero"]
+	var vicino := false
+	for e in villaggio.edifici.values():
+		if e.tipo == "magazzino" and e.finito and e.centro().distance_to(capo.pos) <= RAGGIO_MAGAZZINO:
+			vicino = true
+	if not vicino:
+		return
+	var preso := false
+	for c in CatalogoEdifici.CIBI:
+		while schiera["razioni"] < RAZIONI_MAX and villaggio.scorte.get(c, 0) > 0:
+			villaggio.scorte[c] -= 1
+			schiera["razioni"] += 1
+			preso = true
+	if preso:
+		villaggio.scorte_cambiate.emit()
+	while schiera["soldati"].size() < MAX_SOLDATI and villaggio.soldati > 0:
+		villaggio.soldati -= 1
+		var k: int = schiera["soldati"].size()
+		var s := _nuovo(capo.pos + _posto(k), Popoli.soldati(1)[0])
+		s.velocita = 1.0
+		schiera["soldati"].append(s)
+
+
+## La schiera mangia: senza razioni la fame fa andare via i soldati e cala il morale.
+func _mangia(delta: float) -> void:
+	_pasto -= delta
+	if _pasto <= 0.0:
+		_pasto = CONSUMO
+		if schiera["razioni"] > 0:
+			schiera["razioni"] -= 1
+			_cambia_morale(1)
+	if schiera["razioni"] > 0:
+		_fame = FAME
+		return
+	_fame -= delta
+	if _fame <= 0.0:
+		_fame = FAME
+		_cambia_morale(-15)
+		villaggio.messaggio.emit("La schiera di %s ha fame: un soldato torna a casa" % nome_condottiero(), true)
+		_perdi_soldato()
+
+
 func _process(delta: float) -> void:
 	if not esiste():
 		return
 	queue_redraw()
+	_rifornisci()
+	_mangia(delta)
+	if not esiste():
+		return
 	var b = schiera["bersaglio"]
 	if b == null:
 		return
@@ -234,8 +308,9 @@ func _process(delta: float) -> void:
 
 ## Un duello: vince il nostro (con il vantaggio dei duelli e il condottiero che dà coraggio) o il difensore.
 func _combatti(b) -> void:
-	var vittoria: float = 0.55 + villaggio.vantaggi.get("duelli", 0.0)
-	if _rng.randf() < vittoria:
+	if _rng.randf() < probabilita_vittoria():
+		esperienza += 1
+		_cambia_morale(3)
 		if b is Edificio:
 			b.soldati -= 1
 			if b.soldati <= 0:
@@ -247,6 +322,7 @@ func _combatti(b) -> void:
 				indigeni.prendi(b)
 				_fine_assalto("")
 	else:
+		_cambia_morale(-4)
 		_perdi_soldato()
 
 
@@ -287,9 +363,17 @@ func _draw() -> void:
 	if scelta:
 		draw_arc(p, 26.0, 0.0, TAU, 32, Color(Palette.PERGAMENA_CHIARA, 0.9), 3.0)
 	var forza := float(soldati()) / MAX_SOLDATI
-	var barra := Rect2(p + Vector2(-24, -96), Vector2(48, 6))
+	var barra := Rect2(p + Vector2(-24, -104), Vector2(48, 6))
 	draw_rect(barra, Color(0, 0, 0, 0.55))
 	draw_rect(Rect2(barra.position, Vector2(48 * forza, 6)), Color("6fbf4a") if forza > 0.4 else Color("d0a030"))
+	# morale (azzurro) e razioni (ocra) sotto la forza, livello del condottiero accanto
+	var morale := Rect2(barra.position + Vector2(0, 8), Vector2(48, 4))
+	draw_rect(morale, Color(0, 0, 0, 0.55))
+	draw_rect(Rect2(morale.position, Vector2(48 * schiera["morale"] / 100.0, 4)), Color("6fb0e0"))
+	var cibo := Rect2(morale.position + Vector2(0, 6), Vector2(48, 4))
+	draw_rect(cibo, Color(0, 0, 0, 0.55))
+	draw_rect(Rect2(cibo.position, Vector2(48.0 * schiera["razioni"] / RAZIONI_MAX, 4)), Color("d8a040"))
+	draw_string(ThemeDB.fallback_font, barra.position + Vector2(52, 8), "liv %d" % livello(), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Palette.PERGAMENA_CHIARA)
 
 
 ## Rimanda i soldati nella riserva (per il salvataggio: la schiera si riforma dopo il caricamento).

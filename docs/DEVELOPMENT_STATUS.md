@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.46.0** (step 31). Tutti i test automatici passano (34 script in `tools/test/`).
+Ultima release: **v0.47.0** (step 32). Tutti i test automatici passano (35 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.46.0** (step 31). Tutti i test automatici passano (34 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 31, Fase 7): condottieri e schiere con controllo diretto (`Schiere`, pulsante «Schiera», ordini con il clic, assalto a torri e villaggi indigeni), sette condottieri disegnati; test `test_schiere`. Prima: villaggi indigeni (step 30).
+Ultime modifiche significative (step 32, Fase 7): cibo, morale ed esperienza delle schiere (razioni dal magazzino, fame, rifornimento e rinforzi vicino al magazzino, morale e livelli del condottiero che cambiano i duelli); test `test_morale`. Prima: condottieri e schiere (step 31).
 
 ## In sviluppo
 
@@ -39,4 +39,4 @@ Ultime modifiche significative (step 31, Fase 7): condottieri e schiere con cont
 
 ## Prossima attività consigliata
 
-**Step 32 — cibo, morale ed esperienza** (Fase 7, `docs/piano-imperivm.md`): razioni della schiera dal magazzino (pane, pesce, formaggio, carne) consumate col tempo, fame che toglie soldati, cibo che li fa tornare (dalla riserva) quando la schiera passa vicino al magazzino; morale (sale col cibo e le vittorie, scende con fame e sconfitte) che cambia la probabilità dei duelli; esperienza e livelli del condottiero. Tutto in `Schiere`, salvato con la riserva.
+**Step 33 — tipi di unità** (Fase 7, `docs/piano-imperivm.md`): fanteria, tiratori, cavalleria con vantaggi incrociati (la cavalleria batte i tiratori, i tiratori la fanteria, la fanteria la cavalleria); ogni popolo ha già il suo soldato: dargli un tipo (`Popoli.DATI[...]["tipo_soldato"]`: guardia/legionario/guerriero siculo = fanteria, frombolieri/arcieri = tiratori, cavalieri = cavalleria); i tiratori colpiscono da lontano (2–3 caselle, proiettili disegnati); la probabilità del duello tiene conto dei tipi. Proiettili e polvere come effetti.

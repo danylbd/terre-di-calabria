@@ -35,6 +35,7 @@ func _prova() -> void:
 	_controlla(caserma != null, "caserma costruita")
 	_controlla(sch.motivo_no_schiera().begins_with("Servono soldati"), "senza soldati niente schiera")
 	v.soldati = 14
+	v.scorte["pane"] = 30      # le razioni della schiera (step 32)
 	_controlla(sch.forma(caserma) and sch.soldati() == 12 and v.soldati == 2, "il condottiero esce con 12 soldati (2 restano in riserva)")
 	_controlla(not sch.forma(caserma), "un condottiero solo per volta")
 	var capo: Colono = sch.schiera["condottiero"]
