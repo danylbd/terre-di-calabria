@@ -1,6 +1,6 @@
 class_name Popoli
 ## I popoli giocabili (Fase 4): nome, nemici, soldati, passo dei portatori e aspetto degli edifici.
-## Vedi docs/brettii.md, docs/romani.md e docs/saraceni.md.
+## Vedi docs/brettii.md, docs/romani.md, docs/saraceni.md e docs/normanni.md.
 
 const DATI := {
 	"greci": {"nome": "Greci", "descrizione": "Città sulla costa: olio, vino e commercio all'agorà.",
@@ -11,6 +11,8 @@ const DATI := {
 		"nemici": "brettii", "soldati": ["legionario", "legionario_lotta"], "torre": "torre", "passo": 1.15},
 	"saraceni": {"nome": "Saraceni", "descrizione": "Venuti dal mare: giardini irrigati, gelsi e seta, cavalieri leggeri.",
 		"nemici": "romani", "soldati": ["cavaliere_leggero", "cavaliere_leggero_lotta"], "torre": "torre", "irriga": true},
+	"normanni": {"nome": "Normanni", "descrizione": "Cavalieri del nord: cavalli, castelli e un mastio che domina la valle.",
+		"nemici": "saraceni", "soldati": ["cavaliere_pesante", "cavaliere_pesante_lotta"], "torre": "torre", "confini": 2},
 }
 const AGILITA := 1.25               # Brettii: portatori più veloci nei boschi e in montagna
 const QUOTA_MONTAGNA := 60.0
@@ -41,6 +43,11 @@ static func soldati(proprietario: int) -> Array:
 ## Quanto più svelti camminano i portatori del giocatore ovunque (Romani: strade lastricate).
 static func passo() -> float:
 	return DATI[giocatore].get("passo", 1.0)
+
+
+## Caselle in più di confine per torri e castelli del giocatore (Normanni).
+static func confini() -> int:
+	return DATI[giocatore].get("confini", 0)
 
 
 ## Il giocatore irriga i campi vicino all'acqua (Saraceni).

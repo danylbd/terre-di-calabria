@@ -331,7 +331,7 @@ func _ricalcola_territorio() -> void:
 		if e.tipo == "magazzino":
 			centri.append([Vector2i(e.centro()), RAGGIO_MAGAZZINO + vantaggi.get("confini", 0), 1])
 		elif CatalogoEdifici.dati(e.tipo).has("territorio") and e.presidiata:
-			centri.append([Vector2i(e.centro()), float(CatalogoEdifici.dati(e.tipo)["territorio"]) + vantaggi.get("confini", 0), 1])
+			centri.append([Vector2i(e.centro()), float(CatalogoEdifici.dati(e.tipo)["territorio"]) + vantaggi.get("confini", 0) + Popoli.confini(), 1])
 	for n in nemici.values():
 		centri.append([Vector2i(n.centro()), float(CatalogoEdifici.dati(n.tipo)["territorio"]), n.proprietario])
 	centri.append_array(centri_esterni)

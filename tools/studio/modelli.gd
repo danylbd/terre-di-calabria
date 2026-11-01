@@ -8,7 +8,7 @@ static var _rumore_rgb: ImageTexture
 const SHADER_VISSUTO := preload("res://tools/studio/vissuto.gdshader")
 
 # materiali che restano "semplici" (metallo, stoffa sottile, acqua)
-const MATERIALI_SEMPLICI := ["ferro", "stoffa", "acqua_pozzo", "buio", "mare", "pece", "acqua_chiara", "vapore"]
+const MATERIALI_SEMPLICI := ["ferro", "stoffa", "acqua_pozzo", "buio", "mare", "pece", "acqua_chiara", "vapore", "maglia"]
 # regolazioni per materiale: [sporco, macchie, saturazione]
 const REGOLAZIONI := {
 	"aghi": [0.0, 0.0, 1.3], "foglie_ulivo": [0.0, 0.0, 1.2], "foglie": [0.0, 0.0, 1.15], "foglie_scure": [0.0, 0.0, 1.1],
@@ -38,6 +38,9 @@ const REGOLAZIONI := {
 	"seta_oro": [0.0, 0.0, 1.25], "seta_azzurra": [0.0, 0.0, 1.25], "seta_zafferano": [0.0, 0.0, 1.25], "bozzolo": [0.0, 0.05, 1.0],
 	"cavallo": [0.0, 0.05, 1.0], "cavallo_muso": [0.0, 0.0, 1.0], "crine": [0.0, 0.0, 1.0], "lino_bianco": [0.0, 0.05, 1.0],
 	"legno_verde": [0.15, 0.25, 1.15], "schiuma": [0.0, 0.0, 1.0], "battuto": [0.2, 0.3, 1.0], "cammello": [0.0, 0.1, 1.05],
+	"pietra_normanna": [0.4, 0.35, 1.0], "pietra_n_scura": [0.35, 0.3, 1.0], "pietra_n_chiara": [0.3, 0.3, 1.0],
+	"ardesia": [0.1, 0.3, 1.0], "ardesia_b": [0.1, 0.3, 1.0], "graticcio_n": [0.4, 0.4, 1.05], "stoffa_oro": [0.0, 0.0, 1.2],
+	"oro_n": [0.0, 0.0, 1.15], "cavallo_baio": [0.0, 0.05, 1.05], "prato": [0.1, 0.2, 1.0],
 }
 
 
@@ -146,6 +149,24 @@ static func catalogo() -> Dictionary:
 		"filanda": {"crea": filanda},
 		"merce_bozzoli": {"crea": merce.bind("bozzoli")},
 		"merce_seta": {"crea": merce.bind("seta")},
+		"casa_greca_normanni": {"crea": casa_greca_normanni.bind(1)},
+		"magazzino_normanni": {"crea": magazzino_normanni},
+		"boscaiolo_normanni": {"crea": boscaiolo_normanni},
+		"segheria_normanni": {"crea": segheria_normanni},
+		"cava_normanni": {"crea": cava_normanni},
+		"guardaboschi_normanni": {"crea": guardaboschi_normanni},
+		"pozzo_normanni": {"crea": pozzo_normanni},
+		"fattoria_normanni": {"crea": fattoria_normanni},
+		"mulino_normanni": {"crea": mulino_normanni},
+		"forno_normanni": {"crea": forno_normanni},
+		"ovile_normanni": {"crea": ovile_normanni},
+		"capraio_normanni": {"crea": capraio_normanni},
+		"caserma_normanni": {"crea": caserma_normanni},
+		"castello_normanni": {"crea": castello_normanni},
+		"torre_normanni": {"crea": torre_normanni},
+		"allevamento_cavalli": {"crea": allevamento_cavalli},
+		"mastio": {"crea": mastio},
+		"merce_cavalli": {"crea": merce.bind("cavalli")},
 		"merce_armi": {"crea": merce.bind("armi")},
 		"cantiere_0": {"crea": cantiere.bind(0)},
 		"cantiere_1": {"crea": cantiere.bind(1)},
@@ -225,6 +246,10 @@ static func catalogo() -> Dictionary:
 	c["cavaliere_leggero"] = {"crea": cavaliere_leggero, "posa": posa_galoppo,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["cavaliere_leggero_lotta"] = {"crea": cavaliere_leggero, "posa": posa_carica,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["cavaliere_pesante"] = {"crea": cavaliere_pesante, "posa": posa_galoppo,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["cavaliere_pesante_lotta"] = {"crea": cavaliere_pesante, "posa": posa_carica,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["barca_remi"] = {"crea": barca_remi, "posa": posa_remata,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(112, 96), "ancora": Vector2(56, 64)}
@@ -655,6 +680,39 @@ static func materiale(nome: String) -> Material:
 			m.albedo_color = Color("16110d")
 			m.roughness = 0.18
 			m.metallic = 0.15
+		# materiali dei Normanni
+		"pietra_normanna":
+			m.albedo_texture = _conci_tex(110)
+			m.uv1_scale = Vector3(1.5, 1.5, 1.5)
+		"pietra_n_scura":
+			m.albedo_texture = _conci_tex(111, 128, Color("444648"), Color("686a6a"), Color("2a2a2a"))
+			m.uv1_scale = Vector3(1.5, 1.5, 1.5)
+		"pietra_n_chiara":
+			m.albedo_texture = _rumore(112, 0.12, Color("787874"), Color("9c9a94"))
+		"ardesia":
+			m.albedo_texture = _ardesia_tex(113)
+			m.uv1_scale = Vector3(2.5, 2.5, 2.5)
+		"ardesia_b":
+			m.albedo_texture = _rumore(114, 0.3, Color("262a33"), Color("3e4552"))
+			m.uv1_scale = Vector3(3, 3, 3)
+		"graticcio_n":
+			m.albedo_texture = _rumore(115, 0.1, Color("c2b48e"), Color("e0d4b4"))
+			m.uv1_scale = Vector3(2, 2, 2)
+		"stoffa_oro":
+			m.albedo_color = Color("e2a619")
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"oro_n":
+			m.albedo_color = Color("e8b022")
+		"maglia":
+			m.albedo_texture = _rumore(116, 0.9, Color("4e5258"), Color("a4aab0"))
+			m.metallic = 0.55
+			m.roughness = 0.45
+			m.uv1_scale = Vector3(6, 6, 6)
+		"cavallo_baio":
+			m.albedo_texture = _rumore(117, 0.35, Color("4a2814"), Color("7e4a26"))
+		"prato":
+			m.albedo_texture = _rumore(118, 0.3, Color("2c4018"), Color("4a6228"))
+			m.uv1_scale = Vector3(3, 3, 3)
 	var finale: Material = m if nome in MATERIALI_SEMPLICI else _a_vissuto(m, nome)
 	_cache_mat[nome] = finale
 	return finale
@@ -1125,6 +1183,18 @@ static func merce(tipo: String) -> Node3D:
 				r.add_child(_toro(0.016, 0.04, Vector3((k - 1) * 0.012, 0.018 + k * 0.026, (k % 2) * 0.012), tinte[k], Vector3(0, 25 + k * 35, 0), Vector3(1.9, 2.0, 0.9)))
 			var appesa := _toro(0.014, 0.036, Vector3(0.05, 0.05, 0.02), "seta_azzurra", Vector3(0, 0, 80), Vector3(1.8, 1.6, 0.8))
 			r.add_child(appesa)
+		"cavalli":
+			var cv := _cavallo_n("cavallo_baio", 1.0)
+			cv.scale = Vector3.ONE * 0.42
+			cv.rotation_degrees.y = 60
+			var cc: Node3D = cv.get_node("corpo")
+			cc.add_child(scatola(Vector3(0.17, 0.014, 0.16), Vector3(0, 0.395, -0.01), "stoffa_oro"))
+			for lato: int in [-1, 1]:
+				cc.add_child(scatola(Vector3(0.008, 0.09, 0.16), Vector3(lato * 0.084, 0.35, -0.01), "stoffa_oro"))
+				cc.add_child(scatola(Vector3(0.01, 0.016, 0.162), Vector3(lato * 0.085, 0.305, -0.01), "bandiera_rossa"))
+			cc.add_child(scatola(Vector3(0.095, 0.03, 0.11), Vector3(0, 0.415, -0.015), "pelle_scura"))
+			cc.add_child(scatola(Vector3(0.08, 0.05, 0.018), Vector3(0, 0.44, 0.04), "pelle_scura"))
+			r.add_child(cv)
 	r.scale = Vector3.ONE * 1.25
 	return r
 
@@ -7928,3 +7998,1237 @@ static func posa_carica(modello: Node3D, fotogramma: int, totale: int) -> void:
 	bd.position = Vector3(0.07, 0.355, affondo * 0.05)
 	bd.rotation = Vector3(-0.85 + affondo * 0.75, 0, 0.12)
 	(cc.get_node("braccio_s") as Node3D).rotation = Vector3(-0.95 + 0.15 * sin(t * 2.0), 0, -0.35)
+
+
+# =================================================================== NORMANNI (step 22)
+# Pietra squadrata grigia a conci regolari, tetti di ardesia scura molto inclinati, piani alti a graticcio di legno scuro,
+# torri quadrate merlate con le lesene, palizzate di pali appuntiti, stendardi e scudi a mandorla; colore del popolo: giallo oro.
+
+## Texture di conci squadrati: file regolari di blocchi rettangolari sfalsati, giunti sottili di malta grigia.
+static func _conci_tex(seme: int, dim := 128, scuro := Color("66686a"), chiaro := Color("a2a29c"), malta := Color("3c3c3a")) -> ImageTexture:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seme
+	var img := Image.create(dim, dim, false, Image.FORMAT_RGBA8)
+	img.fill(malta)
+	var n := FastNoiseLite.new()
+	n.seed = seme
+	n.frequency = 0.18
+	var fila := 0
+	for y in range(0, dim, 16):
+		var x := -(fila % 2) * 16
+		while x < dim:
+			var w := 32
+			var base := scuro.lerp(chiaro, rng.randf())
+			for yy in range(y + 1, mini(y + 15, dim)):
+				for xx in range(maxi(x + 1, 0), mini(x + w - 1, dim)):
+					var v := n.get_noise_2d(xx, yy) * 0.07
+					var bordo := 1.0 - 0.14 * float(yy == y + 1 or xx == x + 1)
+					var c := Color(base.r + v, base.g + v, base.b + v) * bordo
+					c.a = 1.0
+					img.set_pixel(xx, yy, c)
+			x += w
+		fila += 1
+	img.generate_mipmaps()
+	return ImageTexture.create_from_image(img)
+
+
+## Texture di ardesia: file di lastre scure sfalsate, ogni lastra più scura verso il basso dove copre quella sotto.
+static func _ardesia_tex(seme: int, dim := 128) -> ImageTexture:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seme
+	var img := Image.create(dim, dim, false, Image.FORMAT_RGBA8)
+	img.fill(Color("181b21"))
+	var scuro := Color("2c313b")
+	var chiaro := Color("525b69")
+	for y in range(0, dim, 8):
+		var x := -rng.randi_range(0, 10)
+		while x < dim:
+			var w := rng.randi_range(10, 16)
+			var base := scuro.lerp(chiaro, rng.randf())
+			for yy in range(y, mini(y + 7, dim)):
+				var t := float(yy - y) / 7.0
+				for xx in range(maxi(x + 1, 0), mini(x + w, dim)):
+					img.set_pixel(xx, yy, base.darkened(t * 0.35))
+			x += w
+	img.generate_mipmaps()
+	return ImageTexture.create_from_image(img)
+
+
+## Muri normanni: zoccolo di conci scuri, muro di conci grigi con i cantonali chiari e la cornice in cima.
+## Con graticcio > 0 solo quella frazione in basso è di pietra: sopra c'è il piano a graticcio di legno scuro,
+## appena sporgente, con montanti, traversi e croci. Restituisce la quota della gronda.
+static func _muri_n(r: Node3D, lx: float, lz: float, h: float, seme: int, graticcio := 0.0) -> float:
+	r.add_child(scatola(Vector3(lx + 0.06, 0.07, lz + 0.06), Vector3(0, 0.035, 0), "pietra_n_scura"))
+	var hs := h if graticcio <= 0.0 else h * graticcio
+	r.add_child(scatola(Vector3(lx, hs, lz), Vector3(0, 0.07 + hs * 0.5, 0), "pietra_normanna"))
+	# cantonali chiari sugli spigoli in vista
+	var y := 0.1
+	var k := 0
+	while y < 0.07 + hs - 0.02:
+		var lungo := 0.1 if k % 2 == 0 else 0.06
+		r.add_child(scatola(Vector3(0.03, 0.05, lungo), Vector3(lx * 0.5 + 0.004, y, lz * 0.5 - lungo * 0.5 + 0.006), "pietra_n_chiara"))
+		r.add_child(scatola(Vector3(lungo, 0.05, 0.03), Vector3(lx * 0.5 - lungo * 0.5 + 0.006, y, lz * 0.5 + 0.004), "pietra_n_chiara"))
+		r.add_child(scatola(Vector3(lungo, 0.05, 0.03), Vector3(-lx * 0.5 + lungo * 0.5 - 0.006, y, lz * 0.5 + 0.004), "pietra_n_chiara"))
+		r.add_child(scatola(Vector3(0.03, 0.05, lungo), Vector3(lx * 0.5 + 0.004, y, -lz * 0.5 + lungo * 0.5 - 0.006), "pietra_n_chiara"))
+		y += 0.056
+		k += 1
+	if graticcio <= 0.0:
+		r.add_child(scatola(Vector3(lx + 0.03, 0.03, lz + 0.03), Vector3(0, 0.07 + h - 0.015, 0), "pietra_n_scura"))
+		return 0.07 + h
+	# piano a graticcio sporgente sulla trave
+	var hg := h - hs
+	var y0 := 0.07 + hs
+	r.add_child(scatola(Vector3(lx + 0.07, 0.03, lz + 0.07), Vector3(0, y0 + 0.015, 0), "legno_scuro"))
+	r.add_child(scatola(Vector3(lx + 0.04, hg, lz + 0.04), Vector3(0, y0 + hg * 0.5, 0), "graticcio_n"))
+	_telaio_n(r, Vector3(0, y0, lz * 0.5 + 0.026), lx + 0.04, hg, 0.0, seme)
+	_telaio_n(r, Vector3(lx * 0.5 + 0.026, y0, 0), lz + 0.04, hg, 90.0, seme + 1)
+	_telaio_n(r, Vector3(-lx * 0.5 - 0.026, y0, 0), lz + 0.04, hg, -90.0, seme + 2)
+	return 0.07 + h
+
+
+## Telaio di legno scuro su una parete (piano locale z = 0, faccia verso +Z locale): montanti, traversi, saette e croci.
+static func _telaio_n(r: Node3D, pos: Vector3, larg: float, alt: float, rot_y: float, seme: int) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	var np := maxi(2, int(round(larg / 0.17)))
+	var passo := larg / np
+	for k in np + 1:
+		n.add_child(scatola(Vector3(0.024, alt, 0.014), Vector3(-larg * 0.5 + k * passo, alt * 0.5, 0), "legno_scuro"))
+	for yy: float in [0.012, alt * 0.5, alt - 0.012]:
+		n.add_child(scatola(Vector3(larg + 0.02, 0.022, 0.014), Vector3(0, yy, 0.001), "legno_scuro"))
+	var rng := _rng(seme)
+	for k in np:
+		var cx := -larg * 0.5 + (k + 0.5) * passo
+		var tipo := rng.randi_range(0, 2)
+		var d := sqrt(passo * passo + alt * alt * 0.25)
+		var a := rad_to_deg(atan2(alt * 0.5, passo))
+		if tipo == 0:
+			n.add_child(scatola(Vector3(d, 0.02, 0.012), Vector3(cx, alt * 0.25, 0.003), "legno_scuro", Vector3(0, 0, a if k % 2 == 0 else -a)))
+		elif tipo == 1:
+			for s: float in [-1.0, 1.0]:
+				n.add_child(scatola(Vector3(d, 0.02, 0.012), Vector3(cx, alt * 0.75, 0.003 + (s + 1.0) * 0.001), "legno_scuro", Vector3(0, 0, a * s)))
+		else:
+			n.add_child(scatola(Vector3(d, 0.02, 0.012), Vector3(cx, alt * 0.75, 0.003), "legno_scuro", Vector3(0, 0, -a if k % 2 == 0 else a)))
+
+
+## Tetto di ardesia molto inclinato (colmo lungo X): file di lastre sovrapposte, colmo di piombo, timpani pieni.
+## Restituisce la quota del colmo.
+static func _tetto_n(r: Node3D, larg: float, prof: float, base_y: float, pendenza: float, seme: int, timpano := "pietra_normanna") -> float:
+	var rng := _rng(seme)
+	var meta := prof * 0.5 + 0.06
+	var ang := deg_to_rad(pendenza)
+	var lung := meta / cos(ang)
+	var alt := meta * tan(ang)
+	if timpano != "":
+		sottotetto(r, larg - 0.06, prof, base_y, pendenza, timpano)
+	var nr := maxi(3, int(lung / 0.05))
+	for lato: int in [-1, 1]:
+		var falda := Node3D.new()
+		falda.position = Vector3(0, base_y + alt * 0.5, lato * meta * 0.5)
+		falda.rotation.x = lato * ang
+		r.add_child(falda)
+		falda.add_child(scatola(Vector3(larg + 0.1, 0.022, lung), Vector3.ZERO, "ardesia_b"))
+		for j in nr:
+			var z := lato * (-lung * 0.5 + (j + 0.5) * lung / nr)
+			var fila := scatola(Vector3(larg + 0.1, 0.012, lung / nr * 1.25), Vector3(0, 0.016, z), "ardesia" if rng.randf() < 0.75 else "ardesia_b")
+			fila.rotation_degrees.x = -lato * 5.0
+			falda.add_child(fila)
+		for k in 4:
+			var x := rng.randf_range(-larg * 0.45, larg * 0.45)
+			var z := lato * rng.randf_range(-lung * 0.4, lung * 0.4)
+			falda.add_child(scatola(Vector3(0.05, 0.014, 0.05), Vector3(x, 0.024, z), "pietra_n_scura"))
+	r.add_child(scatola(Vector3(larg + 0.12, 0.035, 0.05), Vector3(0, base_y + alt + 0.01, 0), "piombo"))
+	return base_y + alt
+
+
+## Tettoia di ardesia a una falda su pali di legno scuro: alta dietro (-Z locale), bassa davanti (+Z locale).
+static func _tettoia_n(r: Node3D, pos: Vector3, larg: float, prof: float, h_dietro: float, h_davanti: float, rot_y := 0.0, pali_dietro := true) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	for x: float in [-larg * 0.5 + 0.02, larg * 0.5 - 0.02]:
+		n.add_child(scatola(Vector3(0.03, h_davanti, 0.03), Vector3(x, h_davanti * 0.5, prof * 0.5 - 0.02), "legno_scuro"))
+		if pali_dietro:
+			n.add_child(scatola(Vector3(0.03, h_dietro, 0.03), Vector3(x, h_dietro * 0.5, -prof * 0.5 + 0.02), "legno_scuro"))
+		var dl := sqrt(0.01 + 0.01)
+		n.add_child(scatola(Vector3(0.016, dl, 0.016), Vector3(x, h_davanti - 0.06, prof * 0.5 - 0.08), "legno_scuro", Vector3(45, 0, 0)))
+	n.add_child(scatola(Vector3(larg, 0.03, 0.03), Vector3(0, h_davanti - 0.015, prof * 0.5 - 0.02), "legno_scuro"))
+	var dh := h_dietro - h_davanti
+	var lung := sqrt(prof * prof + dh * dh) + 0.08
+	var f := Node3D.new()
+	f.position = Vector3(0, (h_dietro + h_davanti) * 0.5 + 0.02, 0)
+	f.rotation.x = atan2(dh, prof)
+	n.add_child(f)
+	f.add_child(scatola(Vector3(larg + 0.08, 0.02, lung), Vector3.ZERO, "ardesia_b"))
+	var nr := maxi(3, int(lung / 0.05))
+	for j in nr:
+		var fila := scatola(Vector3(larg + 0.08, 0.012, lung / nr * 1.25), Vector3(0, 0.014, -lung * 0.5 + (j + 0.5) * lung / nr), "ardesia" if j % 3 != 1 else "ardesia_b")
+		fila.rotation_degrees.x = 5.0
+		f.add_child(fila)
+
+
+## Porta ad arco a tutto sesto su una facciata (piede in pos, faccia verso +Z locale): stipiti e conci chiari,
+## battente di legno scuro con le bandelle di ferro (o vano buio se aperta), gradino.
+static func _porta_n(r: Node3D, pos: Vector3, rot_y := 0.0, w := 0.13, h := 0.17, aperta := false) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	var mat := "buio" if aperta else "legno_scuro"
+	n.add_child(scatola(Vector3(w, h, 0.02), Vector3(0, h * 0.5, 0.004), mat))
+	n.add_child(cilindro(w * 0.5, w * 0.5, 0.02, Vector3(0, h, 0.004), mat, Vector3(90, 0, 0), 14))
+	if not aperta:
+		for yy: float in [h * 0.3, h * 0.75]:
+			n.add_child(scatola(Vector3(w * 0.85, 0.012, 0.008), Vector3(0, yy, 0.016), "ferro"))
+		n.add_child(sfera(0.008, Vector3(w * 0.25, h * 0.5, 0.018), "ferro"))
+	for s: float in [-1.0, 1.0]:
+		n.add_child(scatola(Vector3(0.03, h, 0.03), Vector3(s * (w * 0.5 + 0.015), h * 0.5, 0.01), "pietra_n_chiara"))
+	var nc := 7
+	var rg := w * 0.5 + 0.015
+	for k in nc:
+		var a := (k + 0.5) * PI / nc
+		n.add_child(scatola(Vector3(0.03, PI * rg / nc * 1.05, 0.034), Vector3(cos(a) * rg, h + sin(a) * rg, 0.01), "pietra_n_chiara" if k % 2 == 0 else "pietra_n_scura", Vector3(0, 0, rad_to_deg(a))))
+	n.add_child(scatola(Vector3(w + 0.08, 0.03, 0.06), Vector3(0, -0.015, 0.03), "pietra_n_scura"))
+
+
+## Monofora a tutto sesto (centro in pos, faccia verso +Z locale): vano buio stretto, conci chiari, davanzale.
+static func _finestra_n(r: Node3D, pos: Vector3, rot_y := 0.0, w := 0.05, h := 0.08) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(scatola(Vector3(w, h, 0.02), Vector3(0, 0, 0.004), "buio"))
+	n.add_child(cilindro(w * 0.5, w * 0.5, 0.02, Vector3(0, h * 0.5, 0.004), "buio", Vector3(90, 0, 0), 12))
+	var rg := w * 0.5 + 0.012
+	for k in 5:
+		var a := (k + 0.5) * PI / 5
+		n.add_child(scatola(Vector3(0.022, PI * rg / 5 * 1.1, 0.026), Vector3(cos(a) * rg, h * 0.5 + sin(a) * rg, 0.008), "pietra_n_chiara", Vector3(0, 0, rad_to_deg(a))))
+	n.add_child(scatola(Vector3(w + 0.04, 0.018, 0.035), Vector3(0, -h * 0.5 - 0.009, 0.014), "pietra_n_chiara"))
+
+
+## Finestrella quadrata del piano a graticcio con l'imposta di legno aperta (faccia verso +Z locale).
+static func _finestrella_n(r: Node3D, pos: Vector3, rot_y := 0.0, w := 0.07, h := 0.07) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(scatola(Vector3(w, h, 0.02), Vector3(0, 0, 0.006), "buio"))
+	n.add_child(scatola(Vector3(w + 0.03, 0.018, 0.024), Vector3(0, h * 0.5 + 0.009, 0.01), "legno_scuro"))
+	n.add_child(scatola(Vector3(w + 0.03, 0.018, 0.03), Vector3(0, -h * 0.5 - 0.009, 0.012), "legno_scuro"))
+	n.add_child(scatola(Vector3(0.008, h, 0.01), Vector3(0, 0, 0.016), "legno_scuro"))
+	n.add_child(scatola(Vector3(w * 0.5, h, 0.01), Vector3(w * 0.5 + w * 0.22, 0, 0.03), "legno", Vector3(0, -50, 0)))
+
+
+## Merli quadrati lungo il bordo di un rettangolo (centro in c alla quota della cima), con il camminamento.
+static func _merli_n(r: Node3D, c: Vector3, lx: float, lz: float, mat := "pietra_normanna", passo := 0.12, alt := 0.08) -> void:
+	r.add_child(scatola(Vector3(lx + 0.03, 0.03, lz + 0.03), c + Vector3(0, -0.015, 0), "pietra_n_scura"))
+	var sp := 0.05
+	for i in 4:
+		var lungo := lx if i % 2 == 0 else lz
+		var off := (lz if i % 2 == 0 else lx) * 0.5 - sp * 0.5
+		var m := Node3D.new()
+		m.position = c
+		m.rotation_degrees.y = i * 90.0
+		r.add_child(m)
+		var nm := maxi(2, int(round(lungo / passo)))
+		for k in nm:
+			m.add_child(scatola(Vector3(lungo / nm * 0.55, alt, sp), Vector3(-lungo * 0.5 + (k + 0.5) * lungo / nm, alt * 0.5, off), mat))
+
+
+## Torre quadrata normanna: zoccolo a scarpa, conci grigi, lesene sugli spigoli, cornici, feritoie, merli.
+## Con tetto = true sopra i merli sale una cuspide di ardesia a piramide. Restituisce la quota dei merli.
+static func _torre_n(r: Node3D, pos: Vector3, lato: float, h: float, tetto := false, finestre := true) -> float:
+	r.add_child(cilindro(lato * 0.78, lato * 0.71, 0.14, pos + Vector3(0, 0.07, 0), "pietra_n_scura", Vector3(0, 45, 0), 4))
+	r.add_child(scatola(Vector3(lato, h, lato), pos + Vector3(0, h * 0.5, 0), "pietra_normanna"))
+	for s: float in [-1.0, 1.0]:
+		r.add_child(scatola(Vector3(0.05, h - 0.12, 0.022), pos + Vector3(s * (lato * 0.5 - 0.025), 0.12 + (h - 0.12) * 0.5, lato * 0.5 + 0.01), "pietra_n_chiara"))
+		r.add_child(scatola(Vector3(0.022, h - 0.12, 0.05), pos + Vector3(lato * 0.5 + 0.01, 0.12 + (h - 0.12) * 0.5, s * (lato * 0.5 - 0.025)), "pietra_n_chiara"))
+	for yy: float in [h * 0.45, h - 0.03]:
+		r.add_child(scatola(Vector3(lato + 0.03, 0.03, lato + 0.03), pos + Vector3(0, yy, 0), "pietra_n_scura"))
+	if finestre:
+		r.add_child(scatola(Vector3(0.022, 0.09, 0.02), pos + Vector3(0, h * 0.3, lato * 0.5 + 0.004), "buio"))
+		r.add_child(scatola(Vector3(0.02, 0.09, 0.022), pos + Vector3(lato * 0.5 + 0.004, h * 0.3, 0), "buio"))
+		_finestra_n(r, pos + Vector3(0, h * 0.7, lato * 0.5), 0.0, 0.045, 0.07)
+		_finestra_n(r, pos + Vector3(lato * 0.5, h * 0.7, 0), 90.0, 0.045, 0.07)
+	_merli_n(r, pos + Vector3(0, h, 0), lato + 0.03, lato + 0.03, "pietra_normanna", 0.11)
+	if tetto:
+		var rg := lato * 0.62
+		r.add_child(cilindro(rg, 0.0, lato * 1.25, pos + Vector3(0, h + lato * 0.625, 0), "ardesia", Vector3(0, 45, 0), 4))
+		r.add_child(cilindro(0.012, 0.005, 0.1, pos + Vector3(0, h + lato * 1.25 + 0.04, 0), "piombo", Vector3.ZERO, 6))
+	return h
+
+
+## Stendardo normanno: asta scura con il puntale, gonfalone giallo oro a due code con la banda rossa.
+static func _stendardo_n(r: Node3D, pos: Vector3, h := 0.6, s := 1.0) -> void:
+	r.add_child(cilindro(0.011 * s, 0.011 * s, h, pos + Vector3(0, h * 0.5, 0), "legno_scuro", Vector3.ZERO, 6))
+	r.add_child(cilindro(0.016 * s, 0.0, 0.05 * s, pos + Vector3(0, h + 0.025 * s, 0), "ferro", Vector3.ZERO, 6))
+	var b := Node3D.new()
+	b.position = pos + Vector3(0, h - 0.02 * s, 0)
+	b.scale = Vector3.ONE * s
+	r.add_child(b)
+	b.add_child(scatola(Vector3(0.012, 0.012, 0.17), Vector3(0, 0, 0.085), "legno_scuro"))
+	b.add_child(scatola(Vector3(0.007, 0.16, 0.16), Vector3(0, -0.085, 0.09), "stoffa_oro"))
+	for z: float in [0.045, 0.135]:
+		b.add_child(scatola(Vector3(0.007, 0.06, 0.06), Vector3(0, -0.19, z), "stoffa_oro", Vector3(0, 0, 0)))
+	b.add_child(scatola(Vector3(0.009, 0.032, 0.162), Vector3(0, -0.085, 0.09), "bandiera_rossa"))
+	b.add_child(scatola(Vector3(0.009, 0.162, 0.032), Vector3(0, -0.085, 0.09), "bandiera_rossa"))
+
+
+## Scudo a mandorla giallo oro (faccia verso +Z locale): parte alta tonda, punta in basso, orlo scuro, croce rossa e umbone.
+static func _scudo_n(pos: Vector3, rot_y := 0.0, s := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	n.scale = Vector3(s, s, s * 0.22)
+	n.add_child(sfera(0.056, Vector3(0, 0.03, -0.025), "legno_scuro", Vector3(1, 0.9, 1)))
+	n.add_child(cilindro(0.0, 0.056, 0.135, Vector3(0, -0.04, -0.025), "legno_scuro", Vector3(0, 45, 0), 4))
+	n.add_child(sfera(0.05, Vector3(0, 0.03, 0), "oro_n", Vector3(1, 0.9, 1)))
+	n.add_child(cilindro(0.0, 0.05, 0.12, Vector3(0, -0.035, 0), "oro_n", Vector3(0, 45, 0), 4))
+	n.add_child(scatola(Vector3(0.016, 0.17, 0.05), Vector3(0, -0.01, 0.03), "bandiera_rossa"))
+	n.add_child(scatola(Vector3(0.08, 0.016, 0.05), Vector3(0, 0.035, 0.03), "bandiera_rossa"))
+	n.add_child(sfera(0.014, Vector3(0, 0.035, 0.06), "ferro"))
+	return n
+
+
+## Cavallo normanno (destriero robusto), con le stesse parti mobili del cavallo saraceno per le pose di galoppo e carica.
+static func _cavallo_n(mat := "cavallo_baio", robusto := 1.12) -> Node3D:
+	var r := Node3D.new()
+	var corpo := Node3D.new()
+	corpo.name = "corpo"
+	r.add_child(corpo)
+	for nome in ["zampa_as", "zampa_ad", "zampa_ps", "zampa_pd"]:
+		var davanti: bool = nome.begins_with("zampa_a")
+		var lato := -1.0 if nome.ends_with("s") else 1.0
+		var z := Node3D.new()
+		z.name = nome
+		z.position = Vector3(lato * 0.046 * robusto, 0.27, 0.12 if davanti else -0.12)
+		corpo.add_child(z)
+		z.add_child(cilindro(0.025 * robusto if davanti else 0.031 * robusto, 0.017, 0.13, Vector3(0, -0.065, 0), mat, Vector3.ZERO, 7))
+		var st := Node3D.new()
+		st.name = "stinco"
+		st.position = Vector3(0, -0.13, 0)
+		z.add_child(st)
+		st.add_child(cilindro(0.015, 0.013, 0.12, Vector3(0, -0.06, 0), mat, Vector3.ZERO, 6))
+		# barbette chiare sopra lo zoccolo, come i cavalli da guerra pesanti
+		st.add_child(cilindro(0.017, 0.022, 0.03, Vector3(0, -0.105, 0.002), "lino_bianco", Vector3.ZERO, 7))
+		st.add_child(cilindro(0.018, 0.02, 0.02, Vector3(0, -0.127, 0.004), "crine", Vector3.ZERO, 7))
+	corpo.add_child(sfera(0.1, Vector3(0, 0.31, 0), mat, Vector3(0.78 * robusto, 0.82, 1.85)))
+	corpo.add_child(sfera(0.08, Vector3(0, 0.315, 0.12), mat, Vector3(1.0 * robusto, 1.08, 1.0)))
+	corpo.add_child(sfera(0.084, Vector3(0, 0.325, -0.12), mat, Vector3(1.0 * robusto, 1.0, 1.05)))
+	var collo := Node3D.new()
+	collo.name = "collo"
+	collo.position = Vector3(0, 0.34, 0.15)
+	corpo.add_child(collo)
+	var cn := Node3D.new()
+	cn.rotation_degrees.x = 30
+	collo.add_child(cn)
+	cn.add_child(cilindro(0.036, 0.056, 0.2, Vector3(0, 0.08, 0), mat, Vector3.ZERO, 8))
+	cn.add_child(scatola(Vector3(0.018, 0.19, 0.03), Vector3(0, 0.085, -0.04), "crine"))
+	var testa := sfera(0.045, Vector3(0, 0.165, 0.135), mat, Vector3(0.78, 0.8, 1.55))
+	testa.rotation_degrees.x = 38
+	collo.add_child(testa)
+	collo.add_child(sfera(0.032, Vector3(0, 0.12, 0.19), "crine", Vector3(0.85, 0.85, 1.1)))
+	collo.add_child(scatola(Vector3(0.012, 0.05, 0.03), Vector3(0, 0.19, 0.15), "lino_bianco", Vector3(38, 0, 0)))
+	for lato: int in [-1, 1]:
+		collo.add_child(cilindro(0.008, 0.002, 0.04, Vector3(lato * 0.017, 0.215, 0.1), mat, Vector3(-15, 0, lato * 12.0), 5))
+		collo.add_child(sfera(0.007, Vector3(lato * 0.031, 0.17, 0.15), "buio"))
+	collo.add_child(_toro(0.03, 0.036, Vector3(0, 0.13, 0.175), "pelle_scura", Vector3(60, 0, 0), Vector3(1, 1, 1.1)))
+	collo.add_child(_toro(0.042, 0.049, Vector3(0, 0.16, 0.115), "pelle_scura", Vector3(-30, 0, 0)))
+	corpo.add_child(cilindro(0.026, 0.014, 0.22, Vector3(0, 0.25, -0.25), "crine", Vector3(25, 0, 0), 7))
+	corpo.add_child(sfera(0.027, Vector3(0, 0.36, -0.205), "crine"))
+	return r
+
+
+## Gualdrappa giallo oro con l'orlo rosso sul cavallo, pettorale di cuoio con le borchie, sella alta.
+static func _gualdrappa_n(corpo: Node3D, robusto := 1.12) -> void:
+	corpo.add_child(sfera(0.106, Vector3(0, 0.318, -0.03), "stoffa_oro", Vector3(0.8 * robusto, 0.82, 1.95)))
+	for lato: int in [-1, 1]:
+		var x := lato * 0.082 * robusto
+		corpo.add_child(scatola(Vector3(0.008, 0.14, 0.38), Vector3(x, 0.3, -0.03), "stoffa_oro"))
+		corpo.add_child(scatola(Vector3(0.01, 0.022, 0.382), Vector3(x + lato * 0.001, 0.235, -0.03), "bandiera_rossa"))
+		corpo.add_child(scatola(Vector3(0.011, 0.07, 0.016), Vector3(x + lato * 0.002, 0.31, -0.03), "bandiera_rossa"))
+		corpo.add_child(scatola(Vector3(0.011, 0.016, 0.07), Vector3(x + lato * 0.002, 0.32, -0.03), "bandiera_rossa"))
+	corpo.add_child(_toro(0.074, 0.084, Vector3(0, 0.3, 0.16), "pelle_scura", Vector3(70, 0, 0), Vector3(0.95 * robusto, 1, 1)))
+	for k in 5:
+		var a := deg_to_rad(-60.0 + k * 30.0)
+		corpo.add_child(sfera(0.009, Vector3(sin(a) * 0.074 * robusto, 0.27 - cos(a) * 0.02, 0.195 + cos(a) * 0.01), "oro_n"))
+	corpo.add_child(scatola(Vector3(0.095, 0.03, 0.11), Vector3(0, 0.412, -0.015), "pelle_scura"))
+	corpo.add_child(scatola(Vector3(0.08, 0.055, 0.018), Vector3(0, 0.44, 0.04), "pelle_scura"))
+	corpo.add_child(scatola(Vector3(0.08, 0.04, 0.016), Vector3(0, 0.43, -0.07), "pelle_scura"))
+
+
+# ------------------------------------------------------------------ edifici dei Normanni
+
+## Casa dei Normanni: pianterreno di conci grigi, piano alto a graticcio di legno scuro, tetto ripido di ardesia,
+## comignolo di pietra, scudo giallo oro sopra la porta, orto e legnaia.
+static func casa_greca_normanni(seme := 1) -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.12, 0, -0.15)
+	r.add_child(c)
+	var lx := 0.9
+	var lz := 0.66
+	var top := _muri_n(c, lx, lz, 0.4, seme + 1100, 0.5)
+	_porta_n(c, Vector3(-0.2, 0.07, lz * 0.5), 0.0, 0.11, 0.13)
+	_finestra_n(c, Vector3(0.17, 0.17, lz * 0.5), 0.0)
+	_finestra_n(c, Vector3(lx * 0.5, 0.17, 0.0), 90.0)
+	_finestrella_n(c, Vector3(-0.16, 0.37, lz * 0.5 + 0.03), 0.0)
+	_finestrella_n(c, Vector3(0.2, 0.37, lz * 0.5 + 0.03), 0.0)
+	_finestrella_n(c, Vector3(lx * 0.5 + 0.03, 0.37, 0.0), 90.0)
+	var cima := _tetto_n(c, lx + 0.06, lz + 0.04, top, 46.0, seme + 1100, "graticcio_n")
+	c.add_child(scatola(Vector3(0.09, cima - top + 0.12, 0.09), Vector3(-0.28, top + (cima - top + 0.12) * 0.5, -0.1), "pietra_normanna"))
+	c.add_child(scatola(Vector3(0.1, 0.03, 0.1), Vector3(-0.28, cima + 0.12, -0.1), "pietra_n_scura"))
+	_fumo(c, Vector3(-0.28, cima + 0.16, -0.1), 3, 0.7)
+	c.add_child(_scudo_n(Vector3(-0.02, 0.17, lz * 0.5 + 0.012), 0.0, 0.8))
+	# panca, botte, legnaia sotto la falda
+	c.add_child(panca(Vector3(0.12, 0, lz * 0.5 + 0.1), 0))
+	c.add_child(barile(Vector3(-0.38, 0.0, lz * 0.5 + 0.1)))
+	legnaia(c, Vector3(lx * 0.5 + 0.07, 0.0, -0.18), 0.26, 3)
+	# orto chiuso dal graticcio
+	orto(r, Vector3(0.56, 0, 0.42), 0.36, 0.42, seme + 3)
+	r.add_child(barile(Vector3(-0.62, 0.0, 0.62)))
+	r.add_child(sacco(Vector3(-0.52, 0.0, 0.58), 0.4))
+	return r
+
+
+## Magazzino dei Normanni: grande sala di conci grigi con tre arconi, tetto ripido di ardesia,
+## porta del fienile con il paranco nel timpano, torre quadrata merlata con lo stendardo, merci davanti.
+static func magazzino_normanni() -> Node3D:
+	var r := Node3D.new()
+	var lx := 1.7
+	var lz := 1.15
+	r.position = Vector3(0, 0, -0.1)
+	r.add_child(scatola(Vector3(lx + 0.32, 0.05, lz + 0.36), Vector3(0, 0.025, 0.02), "pietra_n_scura"))
+	var c := Node3D.new()
+	c.position = Vector3(0, 0.03, -0.04)
+	r.add_child(c)
+	var top := _muri_n(c, lx, lz, 0.56, 1201)
+	var fz := lz * 0.5
+	var fx := lx * 0.5
+	for k in 3:
+		var x := -0.55 + k * 0.55
+		_porta_n(c, Vector3(x, 0.07, fz), 0.0, 0.24, 0.2, k != 1)
+		_finestra_n(c, Vector3(x, 0.5, fz), 0.0, 0.06, 0.09)
+	for k in 2:
+		_finestra_n(c, Vector3(fx, 0.5, -0.25 + k * 0.5), 90.0, 0.06, 0.09)
+	_porta_n(c, Vector3(fx, 0.07, 0.2), 90.0, 0.16, 0.18)
+	# lesene sulla facciata
+	for x: float in [-0.83, -0.28, 0.28, 0.83]:
+		c.add_child(scatola(Vector3(0.05, top - 0.1, 0.02), Vector3(x, 0.07 + (top - 0.07) * 0.5, fz + 0.01), "pietra_n_chiara"))
+	var cima := _tetto_n(c, lx + 0.08, lz, top, 40.0, 1201)
+	# porta del fienile nel timpano con la trave del paranco, la corda e un sacco appeso
+	var gy := top + (cima - top) * 0.3
+	c.add_child(scatola(Vector3(0.02, 0.13, 0.11), Vector3(fx + 0.04, gy, 0.0), "legno_scuro"))
+	c.add_child(scatola(Vector3(0.022, 0.15, 0.13), Vector3(fx + 0.035, gy, 0.0), "pietra_n_chiara"))
+	c.add_child(scatola(Vector3(0.24, 0.03, 0.03), Vector3(fx + 0.12, gy + 0.13, 0.0), "legno_scuro"))
+	c.add_child(cilindro(0.003, 0.003, 0.3, Vector3(fx + 0.22, gy - 0.02, 0.0), "corda", Vector3.ZERO, 4))
+	c.add_child(sfera(0.045, Vector3(fx + 0.22, gy - 0.18, 0.0), "lino", Vector3(0.9, 1.2, 0.9)))
+	# torre quadrata merlata dietro a destra
+	var tp := Vector3(fx - 0.18, 0, -lz * 0.5 + 0.18)
+	var ht := _torre_n(c, tp, 0.38, cima + 0.12, false, true)
+	_stendardo_n(c, tp + Vector3(0.1, ht, 0.1), 0.5)
+	_stendardo_n(c, Vector3(-fx + 0.05, cima - 0.04, 0.0), 0.36, 0.8)
+	# merci e vita davanti al magazzino
+	var fr := lz * 0.5 + 0.03
+	for i in 4:
+		r.add_child(barile(Vector3(-0.85 + (i % 2) * 0.12, 0.05, fr + 0.14 + (i / 2) * 0.12), 1.15))
+	for i in 3:
+		r.add_child(cassa(Vector3(0.42 + i * 0.13, 0.05, fr + 0.16), i * 12))
+	r.add_child(cassa(Vector3(0.49, 0.05 + 0.088, fr + 0.16), 25, 0.09))
+	for i in 3:
+		r.add_child(sacco(Vector3(-0.32 + i * 0.1, 0.05, fr + 0.14), i * 0.5))
+	r.add_child(barile(Vector3(0.98, 0.0, 0.25), 1.2))
+	r.add_child(barile(Vector3(1.0, 0.0, 0.38), 1.2))
+	pila_assi(r, Vector3(0.98, 0.0, -0.2), 5, 90)
+	carretto(r, Vector3(-0.15, 0.0, fr + 0.5), 20, "sacchi")
+	_stendardo_n(r, Vector3(fx + 0.14, 0, lz * 0.5 + 0.16), 0.75)
+	return r
+
+
+## Boscaiolo dei Normanni: casetta a graticcio sullo zoccolo di pietra, tettoia di ardesia sopra la legna,
+## ceppo con l'ascia, catasta di tronchi e un tratto di palizzata.
+static func boscaiolo_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.15, 0, -0.18)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.56
+	var top := _muri_n(c, lx, lz, 0.32, 1301, 0.35)
+	_porta_n(c, Vector3(-0.14, 0.07, lz * 0.5), 0.0, 0.11, 0.12)
+	_finestrella_n(c, Vector3(0.17, 0.27, lz * 0.5 + 0.03), 0.0)
+	_finestrella_n(c, Vector3(lx * 0.5 + 0.03, 0.27, 0.0), 90.0)
+	var cima := _tetto_n(c, lx + 0.06, lz + 0.04, top, 48.0, 1301, "graticcio_n")
+	c.add_child(scatola(Vector3(0.08, 0.14, 0.08), Vector3(-0.22, cima - 0.04, -0.08), "pietra_normanna"))
+	_tettoia_n(c, Vector3(lx * 0.5 + 0.15, 0, 0.0), 0.56, 0.3, 0.36, 0.26, 90.0, false)
+	legnaia(c, Vector3(lx * 0.5 + 0.15, 0.0, 0.0), 0.46, 5)
+	catasta_tronchi(r, Vector3(0.55, 0, 0.55), 4, 0.5)
+	r.add_child(cilindro(0.07, 0.075, 0.09, Vector3(-0.2, 0.045, 0.5), "corteccia", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.066, 0.066, 0.006, Vector3(-0.2, 0.092, 0.5), "legno_chiaro", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.008, 0.008, 0.22, Vector3(-0.2, 0.18, 0.5), "legno", Vector3(0, 0, 22), 6))
+	r.add_child(scatola(Vector3(0.06, 0.045, 0.012), Vector3(-0.245, 0.27, 0.5), "ferro", Vector3(0, 0, 22)))
+	for i in 6:
+		r.add_child(cilindro(0.02, 0.02, 0.06, Vector3(-0.38 + i * 0.06, 0.02, 0.62 + (i % 2) * 0.05), "legno_chiaro", Vector3(0, i * 37, 90), 6))
+	for pos in [Vector3(-0.72, 0, 0.3), Vector3(-0.6, 0, 0.75)]:
+		r.add_child(cilindro(0.06, 0.07, 0.05, pos + Vector3(0, 0.025, 0), "corteccia", Vector3.ZERO, 10))
+		r.add_child(cilindro(0.056, 0.056, 0.005, pos + Vector3(0, 0.052, 0), "legno_chiaro", Vector3.ZERO, 10))
+	_palizzata(r, Vector3(-0.75, 0, -0.1), Vector3(-0.75, 0, -0.55), 0.26)
+	r.add_child(barile(Vector3(-0.02, 0, 0.2), 1.0))
+	return r
+
+
+## Segheria dei Normanni: bottega di pietra col piano a graticcio, tettoia di ardesia su pali sopra il cavalletto
+## con la sega a telaio, pile di assi e tronchi.
+static func segheria_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.82
+	var lz := 0.58
+	var top := _muri_n(c, lx, lz, 0.4, 1401, 0.5)
+	_porta_n(c, Vector3(-0.22, 0.07, lz * 0.5), 0.0, 0.14, 0.14, true)
+	_finestra_n(c, Vector3(0.16, 0.17, lz * 0.5), 0.0)
+	_finestrella_n(c, Vector3(0.0, 0.37, lz * 0.5 + 0.03), 0.0)
+	_finestrella_n(c, Vector3(lx * 0.5 + 0.03, 0.37, 0.0), 90.0)
+	_tetto_n(c, lx + 0.06, lz + 0.04, top, 46.0, 1401, "graticcio_n")
+	# tettoia di ardesia sopra il cavalletto
+	var t := Node3D.new()
+	t.position = Vector3(0.05, 0, 0.52)
+	r.add_child(t)
+	_tettoia_n(t, Vector3(0, 0, 0.02), 0.95, 0.46, 0.5, 0.38)
+	for px: float in [-0.25, 0.0, 0.25]:
+		t.add_child(scatola(Vector3(0.03, 0.12, 0.12), Vector3(px, 0.06, 0.0), "legno_scuro"))
+	t.add_child(cilindro(0.055, 0.055, 0.8, Vector3(0, 0.17, 0.0), "corteccia", Vector3(0, 0, 90), 9))
+	t.add_child(cilindro(0.047, 0.047, 0.805, Vector3(0, 0.17, 0.0), "legno_chiaro", Vector3(0, 0, 90), 9))
+	for z: float in [-0.08, 0.08]:
+		t.add_child(scatola(Vector3(0.014, 0.3, 0.014), Vector3(0.1, 0.24, z), "legno"))
+	t.add_child(scatola(Vector3(0.014, 0.014, 0.18), Vector3(0.1, 0.38, 0.0), "legno"))
+	t.add_child(scatola(Vector3(0.006, 0.006, 0.17), Vector3(0.1, 0.2, 0.0), "ferro"))
+	t.add_child(cilindro(0.2, 0.2, 0.004, Vector3(0.1, 0.002, 0.0), "legno_chiaro", Vector3.ZERO, 16))
+	pila_assi(r, Vector3(0.62, 0, -0.25), 8, 90)
+	pila_assi(r, Vector3(0.62, 0, 0.12), 5, 90)
+	catasta_tronchi(r, Vector3(-0.65, 0, 0.55), 3, 0.42)
+	carretto(r, Vector3(0.35, 0, 0.88), -30, "tronchi")
+	return r
+
+
+## Cava dei Normanni: casupola di conci col tetto d'ardesia, parete di roccia grigia, blocchi squadrati in pila,
+## gru a ruota (il cavatore cammina dentro la ruota) che solleva un concio, carretto.
+static func cava_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.38, 0, -0.32)
+	r.add_child(c)
+	var top := _muri_n(c, 0.46, 0.4, 0.24, 1501)
+	_porta_n(c, Vector3(-0.06, 0.07, 0.2), 0.0, 0.1, 0.1)
+	_tetto_n(c, 0.5, 0.42, top, 50.0, 1501)
+	# rupe grigia a gradoni
+	var rng := _rng(1502)
+	for k in 10:
+		var p := Vector3(0.32 + rng.randf_range(-0.22, 0.22), 0.0, -0.42 + rng.randf_range(-0.14, 0.18))
+		var d := rng.randf_range(0.16, 0.3)
+		r.add_child(scatola(Vector3(d, d * rng.randf_range(0.7, 1.5), d * 0.8), p + Vector3(0, d * 0.45, 0), "roccia_massi" if k % 3 != 0 else "pietra_n_chiara", Vector3(0, rng.randf() * 60, 0)))
+	for i in 4:
+		for j in 2 - (i / 3):
+			r.add_child(scatola(Vector3(0.13, 0.08, 0.09), Vector3(-0.15 + i * 0.15, 0.04 + j * 0.08, 0.48), "pietra_n_chiara" if (i + j) % 2 == 0 else "pietra_normanna", Vector3(0, i * 5 - 6, 0)))
+	# gru a ruota: telaio, ruota grande, albero e braccio con la carrucola
+	var g := Vector3(0.12, 0, 0.08)
+	var ruota := Vector3(g.x - 0.12, 0.2, g.z)
+	r.add_child(_toro(0.15, 0.175, ruota, "legno_scuro", Vector3(0, 0, 90)))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.012, 0.33, 0.012), ruota, "legno", Vector3(k * 30.0, 0, 0)))
+	r.add_child(cilindro(0.016, 0.016, 0.16, ruota, "legno_scuro", Vector3(0, 0, 90), 8))
+	for s: float in [-1.0, 1.0]:
+		r.add_child(scatola(Vector3(0.025, 0.2, 0.025), Vector3(ruota.x + s * 0.04, 0.1, ruota.z), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.03, 0.5, 0.03), g + Vector3(0.0, 0.25, 0), "legno_scuro"))
+	var braccio := scatola(Vector3(0.36, 0.025, 0.025), g + Vector3(0.14, 0.47, 0), "legno_scuro", Vector3(0, 0, 18))
+	r.add_child(braccio)
+	var punta := g + Vector3(0.31, 0.53, 0)
+	r.add_child(cilindro(0.022, 0.022, 0.012, punta, "legno", Vector3(90, 0, 0), 10))
+	r.add_child(cilindro(0.003, 0.003, 0.3, punta + Vector3(0, -0.15, 0), "corda", Vector3.ZERO, 4))
+	r.add_child(scatola(Vector3(0.1, 0.07, 0.08), punta + Vector3(0, -0.34, 0), "pietra_n_chiara"))
+	r.add_child(cilindro(0.008, 0.008, 0.22, Vector3(0.6, 0.11, 0.35), "legno", Vector3(0, 0, -25), 6))
+	r.add_child(scatola(Vector3(0.11, 0.014, 0.014), Vector3(0.65, 0.21, 0.35), "ferro", Vector3(0, 0, -25)))
+	carretto(r, Vector3(-0.45, 0, 0.62), 15)
+	r.add_child(scatola(Vector3(0.1, 0.07, 0.07), Vector3(-0.45, 0.16, 0.62), "pietra_n_chiara"))
+	r.add_child(barile(Vector3(-0.7, 0, 0.18), 1.0))
+	return r
+
+
+## Guardaboschi dei Normanni: casetta a graticcio col tetto di ardesia, vivaio di abeti e querce giovani
+## in file dentro il recinto di graticcio, pala, secchio e sacchi di semi.
+static func guardaboschi_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var top := _muri_n(c, 0.56, 0.46, 0.28, 1601, 0.4)
+	_porta_n(c, Vector3(0.1, 0.07, 0.23), 0.0, 0.1, 0.1)
+	_finestrella_n(c, Vector3(-0.13, 0.25, 0.23 + 0.03), 0.0, 0.06, 0.06)
+	_finestrella_n(c, Vector3(0.28 + 0.03, 0.25, 0.0), 90.0, 0.06, 0.06)
+	_tetto_n(c, 0.62, 0.5, top, 50.0, 1601, "graticcio_n")
+	# vivaio nel recinto di graticcio
+	var o := Vector3(0.0, 0, 0.3)
+	_graticcio(r, o + Vector3(-0.08, 0, 0.0), o + Vector3(0.66, 0, 0.0))
+	_graticcio(r, o + Vector3(0.66, 0, 0.0), o + Vector3(0.66, 0, 0.5))
+	_graticcio(r, o + Vector3(-0.08, 0, 0.5), o + Vector3(0.66, 0, 0.5))
+	r.add_child(scatola(Vector3(0.72, 0.008, 0.48), o + Vector3(0.29, 0.004, 0.25), "terra"))
+	for i in 4:
+		for j in 3:
+			var p := o + Vector3(0.04 + i * 0.16, 0, 0.1 + j * 0.15)
+			r.add_child(cilindro(0.005, 0.005, 0.05 + j * 0.02, p + Vector3(0, 0.025 + j * 0.01, 0), "corteccia", Vector3.ZERO, 5))
+			if (i + j) % 2 == 0:
+				r.add_child(cilindro(0.034 + j * 0.008, 0.0, 0.1 + j * 0.03, p + Vector3(0, 0.08 + j * 0.03, 0), "aghi", Vector3.ZERO, 7))
+			else:
+				r.add_child(sfera(0.036 + j * 0.008, p + Vector3(0, 0.09 + j * 0.03, 0), "foglie_scure", Vector3(1, 0.9, 1)))
+	r.add_child(barile(Vector3(-0.2, 0, 0.42), 0.8))
+	r.add_child(cilindro(0.007, 0.007, 0.24, Vector3(-0.32, 0.12, 0.5), "legno", Vector3(12, 0, -15), 5))
+	r.add_child(scatola(Vector3(0.05, 0.06, 0.01), Vector3(-0.295, 0.02, 0.48), "ferro", Vector3(12, 0, -15)))
+	r.add_child(sacco(Vector3(-0.58, 0, 0.3), 0.4))
+	r.add_child(sacco(Vector3(-0.62, 0, 0.44), -0.2))
+	r.add_child(pino_laricio(3))
+	r.get_child(r.get_child_count() - 1).position = Vector3(0.55, 0, -0.5)
+	r.get_child(r.get_child_count() - 1).scale = Vector3.ONE * 0.55
+	return r
+
+
+## Pozzo dei Normanni: vera tonda di conci grigi con l'orlo chiaro, tettuccio ripido di ardesia su due pali,
+## argano con la manovella, secchio di legno cerchiato, abbeveratoio di pietra.
+static func pozzo_normanni() -> Node3D:
+	var r := Node3D.new()
+	r.add_child(cilindro(0.26, 0.26, 0.03, Vector3(0, 0.015, 0), "pietra_n_scura", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.17, 0.18, 0.18, Vector3(0, 0.12, 0), "pietra_normanna", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.19, 0.19, 0.03, Vector3(0, 0.215, 0), "pietra_n_chiara", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.14, 0.14, 0.005, Vector3(0, 0.205, 0), "acqua_pozzo", Vector3.ZERO, 14))
+	for x: float in [-0.2, 0.2]:
+		r.add_child(scatola(Vector3(0.035, 0.46, 0.035), Vector3(x, 0.23 + 0.03, 0), "legno_scuro"))
+		r.add_child(scatola(Vector3(0.012, 0.1, 0.012), Vector3(x * 0.8, 0.42, 0), "legno_scuro", Vector3(0, 0, -45.0 * signf(x))))
+	r.add_child(cilindro(0.025, 0.025, 0.4, Vector3(0, 0.36, 0), "legno", Vector3(0, 0, 90), 8))
+	r.add_child(scatola(Vector3(0.012, 0.07, 0.012), Vector3(0.225, 0.33, 0.0), "ferro"))
+	r.add_child(scatola(Vector3(0.012, 0.012, 0.05), Vector3(0.235, 0.3, 0.02), "ferro"))
+	r.add_child(cilindro(0.028, 0.028, 0.06, Vector3(0, 0.36, 0), "corda", Vector3(0, 0, 90), 8))
+	r.add_child(cilindro(0.003, 0.003, 0.1, Vector3(0, 0.3, 0.02), "corda", Vector3.ZERO, 4))
+	r.add_child(cilindro(0.03, 0.026, 0.05, Vector3(0, 0.24, 0.02), "legno", Vector3.ZERO, 10))
+	r.add_child(cilindro(0.031, 0.031, 0.008, Vector3(0, 0.255, 0.02), "ferro", Vector3.ZERO, 10))
+	_tetto_n(r, 0.46, 0.26, 0.5, 52.0, 1701, "")
+	# abbeveratoio di pietra e secchio
+	r.add_child(scatola(Vector3(0.26, 0.07, 0.11), Vector3(0.06, 0.035, 0.33), "pietra_normanna"))
+	r.add_child(scatola(Vector3(0.22, 0.004, 0.08), Vector3(0.06, 0.071, 0.33), "acqua_chiara"))
+	r.add_child(barile(Vector3(-0.26, 0.0, 0.2), 0.8))
+	r.scale = Vector3.ONE * 1.15
+	return r
+
+
+## Fattoria dei Normanni: casa di pietra col piano a graticcio, fienile aperto di pali col tetto ripido d'ardesia
+## pieno di fieno, campi di grano chiusi dal graticcio, covoni, carretto e galline.
+static func fattoria_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.24)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.54
+	var top := _muri_n(c, lx, lz, 0.34, 1801, 0.5)
+	_porta_n(c, Vector3(-0.12, 0.07, lz * 0.5), 0.0, 0.11, 0.12)
+	_finestra_n(c, Vector3(0.18, 0.16, lz * 0.5), 0.0)
+	_finestrella_n(c, Vector3(0.0, 0.32, lz * 0.5 + 0.03), 0.0, 0.06, 0.06)
+	_finestrella_n(c, Vector3(lx * 0.5 + 0.03, 0.32, 0.0), 90.0, 0.06, 0.06)
+	var cima := _tetto_n(c, lx + 0.06, lz + 0.04, top, 46.0, 1801, "graticcio_n")
+	c.add_child(scatola(Vector3(0.08, 0.14, 0.08), Vector3(-0.22, cima - 0.05, -0.06), "pietra_normanna"))
+	# fienile aperto sul lato destro
+	var f := Node3D.new()
+	f.position = Vector3(0.74, 0, -0.22)
+	r.add_child(f)
+	for p in [Vector3(-0.16, 0, -0.26), Vector3(0.16, 0, -0.26), Vector3(-0.16, 0, 0.26), Vector3(0.16, 0, 0.26)]:
+		f.add_child(scatola(Vector3(0.03, 0.3, 0.03), p + Vector3(0, 0.15, 0), "legno_scuro"))
+	for z: float in [-0.26, 0.26]:
+		f.add_child(scatola(Vector3(0.36, 0.03, 0.03), Vector3(0, 0.3, z), "legno_scuro"))
+	var fr := Node3D.new()
+	fr.rotation_degrees.y = 90
+	f.add_child(fr)
+	_tetto_n(fr, 0.56, 0.32, 0.31, 50.0, 1802, "")
+	for i in 6:
+		f.add_child(sfera(0.075, Vector3(-0.08 + (i % 2) * 0.15, 0.06 + (i / 2) * 0.07, -0.18 + (i % 3) * 0.18), "paglia", Vector3(1.1, 0.7, 1.2)))
+	# campi di grano nel graticcio
+	_graticcio(r, Vector3(-0.8, 0, 0.3), Vector3(-0.08, 0, 0.3), 0.08)
+	_graticcio(r, Vector3(-0.8, 0, 0.3), Vector3(-0.8, 0, 0.82), 0.08)
+	for j in 3:
+		r.add_child(scatola(Vector3(0.66, 0.012, 0.13), Vector3(-0.45, 0.006, 0.4 + j * 0.15), "terra"))
+		for i in 7:
+			r.add_child(cilindro(0.028, 0.02, 0.07, Vector3(-0.73 + i * 0.095, 0.04, 0.4 + j * 0.15), "grano" if j != 1 else "grano_verde", Vector3.ZERO, 6))
+	carretto(r, Vector3(0.42, 0, 0.58), -20, "sacchi")
+	for i in 3:
+		var cv := covone(1.15)
+		cv.position = Vector3(0.1 + i * 0.12, 0.0, 0.32 + (i % 2) * 0.06)
+		r.add_child(cv)
+	for i in 3:
+		r.add_child(sfera(0.025, Vector3(0.05 + i * 0.07, 0.03, 0.55 - i * 0.03), "lino_bianco", Vector3(1.3, 1, 1)))
+		r.add_child(sfera(0.008, Vector3(0.08 + i * 0.07, 0.05, 0.55 - i * 0.03), "geranio"))
+	return r
+
+
+## Mulino dei Normanni ad acqua: casa di macina di conci e graticcio col tetto d'ardesia, grande ruota verticale
+## sul fianco destro mossa dall'acqua che arriva nella gora di legno, macine di scorta, sacchi, asino.
+static func mulino_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.26, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.7
+	var lz := 0.56
+	var top := _muri_n(c, lx, lz, 0.44, 1901, 0.55)
+	_porta_n(c, Vector3(-0.12, 0.07, lz * 0.5), 0.0, 0.12, 0.14)
+	_finestra_n(c, Vector3(0.16, 0.2, lz * 0.5), 0.0)
+	_finestrella_n(c, Vector3(0.05, 0.42, lz * 0.5 + 0.03), 0.0)
+	_finestrella_n(c, Vector3(lx * 0.5 + 0.03, 0.42, -0.15), 90.0)
+	_tetto_n(c, lx + 0.06, lz + 0.04, top, 47.0, 1901, "graticcio_n")
+	# ruota verticale sul fianco destro, gora di legno che porta l'acqua in cima, canale sotto
+	var rp := Vector3(lx * 0.5 + 0.11, 0.24, 0.05)
+	_ruota_mulino(c, rp, 0.22)
+	c.add_child(scatola(Vector3(0.12, 0.05, 0.5), Vector3(rp.x, 0.5, rp.z - 0.4), "legno_scuro"))
+	c.add_child(scatola(Vector3(0.08, 0.008, 0.5), Vector3(rp.x, 0.526, rp.z - 0.4), "acqua_chiara"))
+	for z: float in [-0.25, -0.55]:
+		c.add_child(scatola(Vector3(0.03, 0.5, 0.03), Vector3(rp.x, 0.25, rp.z + z), "legno_scuro"))
+	for k in 4:
+		c.add_child(sfera(0.02, Vector3(rp.x + (k % 2 - 0.5) * 0.04, 0.47 - k * 0.04, rp.z - 0.17), "schiuma", Vector3(1, 0.6, 1)))
+	c.add_child(scatola(Vector3(0.16, 0.01, 0.9), Vector3(rp.x, 0.005, rp.z + 0.2), "acqua_chiara"))
+	for s: int in [-1, 1]:
+		c.add_child(scatola(Vector3(0.03, 0.04, 0.9), Vector3(rp.x + s * 0.095, 0.02, rp.z + 0.2), "pietra_n_scura"))
+	for k in 4:
+		c.add_child(sfera(0.022, Vector3(rp.x + (k % 2 - 0.5) * 0.05, 0.02, rp.z + 0.08 + k * 0.05), "schiuma", Vector3(1, 0.5, 1)))
+	# macine di scorta, sacchi, asino, covone
+	r.add_child(cilindro(0.11, 0.11, 0.04, Vector3(-0.62, 0.11, 0.3), "pietra_n_chiara", Vector3(90, 30, 0), 18))
+	r.add_child(cilindro(0.11, 0.11, 0.04, Vector3(-0.55, 0.11, 0.38), "pietra_normanna", Vector3(90, 30, 0), 18))
+	for i in 5:
+		r.add_child(sacco(Vector3(-0.42 + (i % 3) * 0.12, 0.0, 0.5 + (i / 3) * 0.13), i * 0.7))
+	r.add_child(asino(Vector3(-0.02, 0, 0.58), 160))
+	var cv := covone(1.1)
+	cv.position = Vector3(-0.68, 0, 0.6)
+	r.add_child(cv)
+	r.add_child(cassa(Vector3(0.62, 0, 0.66), 15))
+	return r
+
+
+## Forno dei Normanni: bottega di conci col tetto d'ardesia, forno a cupola di pietra addossato al fianco
+## con la bocca rossa e il fumo, tettoia sopra il banco dei pani, legnaia, sacchi di farina e ceste.
+static func forno_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.22, 0, -0.26)
+	r.add_child(c)
+	var lx := 0.72
+	var lz := 0.54
+	var top := _muri_n(c, lx, lz, 0.36, 2001)
+	_porta_n(c, Vector3(-0.15, 0.07, lz * 0.5), 0.0, 0.12, 0.14, true)
+	_finestra_n(c, Vector3(0.17, 0.25, lz * 0.5), 0.0)
+	_tetto_n(c, lx + 0.06, lz, top, 46.0, 2001)
+	# forno a cupola sul fianco destro
+	var fp := Vector3(lx * 0.5 + 0.17, 0, 0.02)
+	c.add_child(cilindro(0.21, 0.22, 0.12, fp + Vector3(0, 0.06, 0), "pietra_normanna", Vector3.ZERO, 16))
+	c.add_child(sfera(0.2, fp + Vector3(0, 0.12, 0), "pietra_normanna", Vector3(1, 0.85, 1)))
+	c.add_child(scatola(Vector3(0.12, 0.1, 0.06), fp + Vector3(0, 0.17, 0.18), "pietra_n_chiara"))
+	c.add_child(cilindro(0.04, 0.04, 0.02, fp + Vector3(0, 0.18, 0.21), "brace", Vector3(90, 0, 0), 10))
+	c.add_child(scatola(Vector3(0.08, 0.05, 0.02), fp + Vector3(0, 0.155, 0.212), "brace"))
+	c.add_child(scatola(Vector3(0.07, 0.2, 0.07), fp + Vector3(-0.06, 0.35, -0.08), "pietra_normanna"))
+	c.add_child(scatola(Vector3(0.08, 0.03, 0.08), fp + Vector3(-0.06, 0.46, -0.08), "fuliggine"))
+	_fumo(c, fp + Vector3(-0.06, 0.5, -0.08), 4, 0.8)
+	c.add_child(cilindro(0.008, 0.008, 0.3, fp + Vector3(0.14, 0.12, 0.2), "legno", Vector3(0, 0, -30), 5))
+	c.add_child(scatola(Vector3(0.06, 0.006, 0.05), fp + Vector3(0.21, 0.24, 0.2), "legno_chiaro", Vector3(0, 0, -30)))
+	legnaia(c, Vector3(fp.x + 0.02, 0, -0.33), 0.26, 3)
+	# banco dei pani sotto la tettoia
+	_tettoia_n(r, Vector3(-0.34, 0, 0.5), 0.46, 0.26, 0.36, 0.28)
+	r.add_child(scatola(Vector3(0.36, 0.1, 0.12), Vector3(-0.34, 0.05, 0.53), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.38, 0.016, 0.14), Vector3(-0.34, 0.108, 0.53), "legno_chiaro"))
+	for i in 5:
+		r.add_child(sfera(0.032, Vector3(-0.46 + i * 0.06, 0.13, 0.53 + (i % 2) * 0.02), "pane", Vector3(1.3, 0.7, 0.9)))
+	r.add_child(cesta(Vector3(-0.64, 0, 0.45), "pane"))
+	r.add_child(cesta(Vector3(0.05, 0, 0.66), "pane"))
+	r.add_child(sacco(Vector3(-0.7, 0, 0.15), 0.4))
+	r.add_child(sacco(Vector3(-0.62, 0, 0.05), 1.4))
+	r.add_child(barile(Vector3(0.18, 0, 0.45), 0.95))
+	return r
+
+
+## Ovile dei Normanni: stalla bassa di conci col tetto ripido d'ardesia, recinto di graticci con le pecore,
+## rastrelliera del fieno, trogolo di legno, lana tosata.
+static func ovile_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.32, 0, -0.32)
+	r.add_child(c)
+	var lx := 0.6
+	var lz := 0.46
+	var top := _muri_n(c, lx, lz, 0.24, 2101)
+	_porta_n(c, Vector3(0.1, 0.07, lz * 0.5), 0.0, 0.13, 0.1, true)
+	_finestra_n(c, Vector3(-0.15, 0.18, lz * 0.5), 0.0, 0.04, 0.06)
+	_tetto_n(c, lx + 0.06, lz, top, 50.0, 2101)
+	var a := Vector3(0.1, 0, 0.1)
+	_graticcio(r, a + Vector3(-0.34, 0, 0.45), a + Vector3(0.48, 0, 0.45))
+	_graticcio(r, a + Vector3(0.48, 0, -0.22), a + Vector3(0.48, 0, 0.45))
+	for p in [[Vector3(0.0, 0, 0.25), 30], [Vector3(0.2, 0, 0.05), 160], [Vector3(0.3, 0, 0.3), -40],
+			[Vector3(-0.15, 0, 0.32), 90], [Vector3(0.32, 0, -0.12), 210]]:
+		r.add_child(pecora(a + (p[0] as Vector3), p[1]))
+	# rastrelliera del fieno e trogolo
+	var rf := a + Vector3(-0.22, 0, 0.05)
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.02, 0.16, 0.02), rf + Vector3(s * 0.12, 0.08, 0), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.26, 0.012, 0.012), rf + Vector3(0, 0.15, 0.03), "legno_scuro"))
+	r.add_child(sfera(0.08, rf + Vector3(0, 0.13, 0), "paglia", Vector3(1.4, 0.6, 0.6)))
+	r.add_child(scatola(Vector3(0.24, 0.05, 0.08), a + Vector3(-0.2, 0.025, 0.25), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.21, 0.004, 0.055), a + Vector3(-0.2, 0.051, 0.25), "acqua_chiara"))
+	r.add_child(sfera(0.06, Vector3(-0.55, 0.04, 0.55), "lana", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(sfera(0.05, Vector3(-0.45, 0.035, 0.62), "lana", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(barile(Vector3(-0.7, 0, 0.3), 0.9))
+	return r
+
+
+## Capraio dei Normanni: casupola di conci col tetto d'ardesia, rocce grigie con le capre, muretto di pietre,
+## cesta di formaggi e botte.
+static func capraio_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var top := _muri_n(c, 0.48, 0.4, 0.24, 2201)
+	_porta_n(c, Vector3(-0.08, 0.07, 0.2), 0.0, 0.1, 0.1)
+	_finestra_n(c, Vector3(0.24, 0.17, 0.0), 90.0, 0.04, 0.06)
+	_tetto_n(c, 0.52, 0.42, top, 50.0, 2201)
+	var a := Vector3(0.15, 0, 0.15)
+	r.add_child(sfera(0.16, a + Vector3(0.2, 0.0, -0.1), "roccia_massi", Vector3(1.2, 0.8, 1.0)))
+	r.add_child(sfera(0.1, a + Vector3(-0.05, 0.0, 0.3), "roccia_massi", Vector3(1.3, 0.7, 1.0)))
+	r.add_child(capra(a + Vector3(0.2, 0.1, -0.1), 40))
+	r.add_child(capra(a + Vector3(0.0, 0, 0.1), 200))
+	r.add_child(capra(a + Vector3(0.35, 0, 0.25), -30))
+	r.add_child(capra(a + Vector3(-0.1, 0.05, 0.3), 110))
+	var rng := _rng(2202)
+	for k in 10:
+		r.add_child(scatola(Vector3(0.09, 0.06, 0.06), a + Vector3(-0.4 + k * 0.095, 0.03, 0.5), "pietra_n_chiara" if k % 2 else "pietra_normanna", Vector3(0, rng.randf_range(-15, 15), 0)))
+	r.add_child(barile(Vector3(-0.62, 0, 0.22), 1.0))
+	r.add_child(cesta(Vector3(-0.52, 0, 0.36), "formaggio"))
+	return r
+
+
+## Caserma dei Normanni: sala di conci col tetto d'ardesia e la torre quadrata merlata con gli stendardi gialli,
+## campo d'addestramento con la quintana (il fantoccio girevole con lo scudo), cavaliere che carica,
+## rastrelliera di lance coi pennoncelli d'oro e scudi a mandorla.
+static func caserma_normanni() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.62
+	var lz := 0.48
+	var top := _muri_n(c, lx, lz, 0.36, 2301)
+	_porta_n(c, Vector3(0.08, 0.07, lz * 0.5), 0.0, 0.13, 0.15)
+	_finestra_n(c, Vector3(lx * 0.5, 0.28, 0.05), 90.0)
+	_finestra_n(c, Vector3(-0.15, 0.3, lz * 0.5), 0.0)
+	var cima := _tetto_n(c, lx + 0.06, lz, top, 45.0, 2301)
+	var tp := Vector3(-lx * 0.5 + 0.06, 0, -lz * 0.5 + 0.06)
+	var ht := _torre_n(c, tp, 0.3, cima + 0.16)
+	_stendardo_n(c, tp + Vector3(0.08, ht, 0.08), 0.42)
+	c.add_child(_scudo_n(Vector3(0.08, 0.36, lz * 0.5 + 0.012), 0.0, 0.85))
+	# campo d'addestramento con la quintana
+	r.add_child(scatola(Vector3(0.78, 0.01, 0.58), Vector3(0.25, 0.005, 0.4), "terra"))
+	var q := Vector3(0.52, 0, 0.3)
+	r.add_child(cilindro(0.022, 0.026, 0.34, q + Vector3(0, 0.17, 0), "legno_scuro", Vector3.ZERO, 8))
+	var braccio := Node3D.new()
+	braccio.position = q + Vector3(0, 0.32, 0)
+	braccio.rotation_degrees.y = 30
+	r.add_child(braccio)
+	braccio.add_child(scatola(Vector3(0.34, 0.022, 0.022), Vector3.ZERO, "legno_scuro"))
+	braccio.add_child(_scudo_n(Vector3(-0.16, -0.06, 0.02), 0.0, 0.8))
+	braccio.add_child(cilindro(0.003, 0.003, 0.08, Vector3(0.16, -0.04, 0), "corda", Vector3.ZERO, 4))
+	braccio.add_child(sfera(0.035, Vector3(0.16, -0.1, 0), "lino", Vector3(0.9, 1.2, 0.9)))
+	var cav := cavaliere_pesante()
+	cav.position = Vector3(0.12, 0, 0.55)
+	cav.rotation_degrees.y = 120
+	cav.scale = Vector3.ONE * 0.9
+	posa_carica(cav, 2, 8)
+	r.add_child(cav)
+	# rastrelliera di lance coi pennoncelli d'oro e scudi a mandorla
+	var rs := Vector3(-0.62, 0, 0.42)
+	r.add_child(scatola(Vector3(0.03, 0.03, 0.3), rs + Vector3(0, 0.2, 0), "legno_scuro"))
+	for lato: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.03, 0.22, 0.03), rs + Vector3(0, 0.11, lato * 0.14), "legno_scuro"))
+	for k in 4:
+		var z := -0.11 + k * 0.073
+		r.add_child(cilindro(0.005, 0.005, 0.5, rs + Vector3(-0.02, 0.25, z), "legno", Vector3(0, 0, -8), 5))
+		r.add_child(cilindro(0.01, 0.0, 0.04, rs + Vector3(-0.055, 0.52, z), "ferro", Vector3(0, 0, -8), 5))
+		r.add_child(scatola(Vector3(0.004, 0.03, 0.05), rs + Vector3(-0.05, 0.45, z + 0.025), "stoffa_oro"))
+	for k in 2:
+		r.add_child(_scudo_n(Vector3(-0.48 + k * 0.12, 0.09, 0.64 - k * 0.03), 15.0 - k * 20.0, 1.0))
+	return r
+
+
+## Torre di guardia dei Normanni: torre quadrata di conci con lo zoccolo a scarpa, lesene, monofore,
+## merli sulla cima e torretta d'angolo, scala di legno fino alla porta alta, stendardo giallo, palizzata alla base.
+static func torre_normanni() -> Node3D:
+	var r := Node3D.new()
+	var lato := 0.55
+	var h := 1.25
+	r.add_child(scatola(Vector3(lato + 0.18, 0.06, lato + 0.18), Vector3(0, 0.03, 0), "pietra_n_scura"))
+	var ht := _torre_n(r, Vector3(0, 0.06, 0), lato, h)
+	var cima := 0.06 + ht
+	# torretta d'angolo dietro a sinistra, più alta, con la cuspide d'ardesia
+	var tt := Vector3(-lato * 0.5 + 0.09, cima, -lato * 0.5 + 0.09)
+	r.add_child(scatola(Vector3(0.18, 0.22, 0.18), tt + Vector3(0, 0.11, 0), "pietra_normanna"))
+	_finestra_n(r, tt + Vector3(0, 0.13, 0.09), 0.0, 0.03, 0.05)
+	r.add_child(cilindro(0.13, 0.0, 0.26, tt + Vector3(0, 0.22 + 0.13, 0), "ardesia", Vector3(0, 45, 0), 4))
+	_stendardo_n(r, Vector3(lato * 0.5 - 0.06, cima, lato * 0.5 - 0.06), 0.5)
+	# porta alta e scala di legno addossata alla faccia in vista
+	_porta_n(r, Vector3(-0.1, 0.42, lato * 0.5), 0.0, 0.11, 0.14)
+	r.add_child(scatola(Vector3(0.18, 0.025, 0.1), Vector3(-0.1, 0.405, lato * 0.5 + 0.05), "legno_scuro"))
+	var ns := 7
+	for k in ns:
+		var t := float(k) / ns
+		r.add_child(scatola(Vector3(0.08, 0.02, 0.1), Vector3(0.18 - t * 0.24, 0.05 + t * 0.36, lato * 0.5 + 0.05), "legno"))
+	var dl := sqrt(0.24 * 0.24 + 0.38 * 0.38)
+	r.add_child(scatola(Vector3(dl, 0.03, 0.02), Vector3(0.06, 0.24, lato * 0.5 + 0.1), "legno_scuro", Vector3(0, 0, -rad_to_deg(atan2(0.38, 0.24)))))
+	r.add_child(scatola(Vector3(0.025, 0.4, 0.025), Vector3(-0.02, 0.2, lato * 0.5 + 0.09), "legno_scuro"))
+	# palizzata, botti, lance e scudo alla base
+	_palizzata(r, Vector3(lato * 0.5 + 0.2, 0, -0.32), Vector3(lato * 0.5 + 0.2, 0, 0.05), 0.24)
+	r.add_child(barile(Vector3(lato * 0.5 + 0.12, 0.0, 0.25), 1.1))
+	r.add_child(cassa(Vector3(-lato * 0.5 - 0.02, 0.0, lato * 0.5 + 0.12), 10))
+	for k in 3:
+		r.add_child(cilindro(0.005, 0.005, 0.36, Vector3(0.3 + k * 0.035, 0.18, lato * 0.5 + 0.14), "legno", Vector3(-12, 0, 0), 5))
+	r.add_child(_scudo_n(Vector3(lato * 0.5 + 0.05, 0.1, lato * 0.5 + 0.18), 30.0, 1.1))
+	return r
+
+
+## Castello dei Normanni (3x3): cinta di conci grigi merlata, torri quadrate agli angoli con le cuspidi d'ardesia,
+## porta fra due torri con la saracinesca e il ponte di legno, sala grande col tetto ripido, mastio quadrato merlato,
+## stendardi gialli, cortile con il pozzo, la stalla e le botti.
+static func castello_normanni() -> Node3D:
+	var r := Node3D.new()
+	var lato := 2.3
+	var h := 0.5
+	r.add_child(scatola(Vector3(lato + 0.32, 0.06, lato + 0.32), Vector3(0, 0.03, 0), "pietra_n_scura"))
+	r.add_child(scatola(Vector3(lato - 0.1, 0.008, lato - 0.1), Vector3(0, 0.064, 0), "terra"))
+	var y0 := 0.06
+	# cinta merlata con il camminamento e le feritoie
+	for i in 4:
+		var m := Node3D.new()
+		m.rotation_degrees.y = i * 90
+		r.add_child(m)
+		m.add_child(scatola(Vector3(lato, h, 0.16), Vector3(0, y0 + h * 0.5, lato * 0.5), "pietra_normanna"))
+		m.add_child(scatola(Vector3(lato + 0.01, 0.03, 0.2), Vector3(0, y0 + h - 0.015, lato * 0.5), "pietra_n_scura"))
+		m.add_child(scatola(Vector3(lato + 0.01, 0.05, 0.19), Vector3(0, y0 + 0.025, lato * 0.5), "pietra_n_scura"))
+		for k in 13:
+			m.add_child(scatola(Vector3(0.09, 0.09, 0.06), Vector3(-lato * 0.5 + 0.12 + k * (lato - 0.24) / 12, y0 + h + 0.045, lato * 0.5 + 0.05), "pietra_normanna"))
+		for k in 4:
+			var x := -0.75 + k * 0.5
+			if i == 0 and absf(x - 0.25) < 0.3:
+				continue
+			m.add_child(scatola(Vector3(0.022, 0.09, 0.02), Vector3(x, y0 + 0.3, lato * 0.5 + 0.082), "buio"))
+	# torri quadrate agli angoli, le due dietro con la cuspide d'ardesia
+	for x: float in [-1.0, 1.0]:
+		for z: float in [-1.0, 1.0]:
+			var p := Vector3(x * lato * 0.5, y0, z * lato * 0.5)
+			var hh := _torre_n(r, p, 0.46, h + 0.38, z < 0.0)
+			if z > 0.0:
+				_stendardo_n(r, p + Vector3(0.12, hh, 0.12), 0.45)
+	# porta fra due torri sul lato in vista
+	var gx := 0.25
+	var gz := lato * 0.5
+	for k: int in [-1, 1]:
+		var p := Vector3(gx + k * 0.3, y0, gz + 0.03)
+		r.add_child(scatola(Vector3(0.26, h + 0.24, 0.3), p + Vector3(0, (h + 0.24) * 0.5, 0), "pietra_normanna"))
+		r.add_child(scatola(Vector3(0.05, h + 0.12, 0.02), p + Vector3(k * 0.105, (h + 0.12) * 0.5 + 0.06, 0.15), "pietra_n_chiara"))
+		_merli_n(r, p + Vector3(0, h + 0.24, 0), 0.27, 0.31, "pietra_normanna", 0.1)
+		_finestra_n(r, p + Vector3(0, h * 0.75, 0.15), 0.0, 0.04, 0.07)
+	r.add_child(scatola(Vector3(0.36, 0.2, 0.22), Vector3(gx, y0 + h + 0.04 - 0.1, gz + 0.03), "pietra_normanna"))
+	_merli_n(r, Vector3(gx, y0 + h + 0.04, gz + 0.03), 0.34, 0.22, "pietra_normanna", 0.1)
+	_porta_n(r, Vector3(gx, y0, gz + 0.15), 0.0, 0.22, 0.2, true)
+	for k in 5:
+		r.add_child(scatola(Vector3(0.008, 0.24, 0.008), Vector3(gx - 0.09 + k * 0.045, y0 + 0.2, gz + 0.165), "ferro"))
+	for k in 3:
+		r.add_child(scatola(Vector3(0.22, 0.008, 0.008), Vector3(gx, y0 + 0.14 + k * 0.08, gz + 0.165), "ferro"))
+	r.add_child(scatola(Vector3(0.24, 0.025, 0.36), Vector3(gx, 0.04, gz + 0.36), "legno", Vector3(-6, 0, 0)))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.24, 0.004, 0.012), Vector3(gx, 0.056 - k * 0.006, gz + 0.22 + k * 0.055), "legno_scuro", Vector3(-6, 0, 0)))
+	_stendardo_n(r, Vector3(gx - 0.3, y0 + h + 0.24, gz + 0.03), 0.5)
+	_stendardo_n(r, Vector3(gx + 0.3, y0 + h + 0.24, gz + 0.03), 0.5)
+	# sala grande col tetto ripido d'ardesia (dietro a sinistra)
+	var sl := Node3D.new()
+	sl.position = Vector3(-0.42, y0 - 0.07, -0.25)
+	r.add_child(sl)
+	var ts := _muri_n(sl, 1.0, 0.6, 0.52, 2401)
+	_porta_n(sl, Vector3(0.1, 0.07, 0.3), 0.0, 0.13, 0.15)
+	for x: float in [-0.3, 0.3]:
+		_finestra_n(sl, Vector3(x, 0.38, 0.3), 0.0, 0.06, 0.1)
+	_finestra_n(sl, Vector3(0.5, 0.38, 0.0), 90.0, 0.06, 0.1)
+	_tetto_n(sl, 1.06, 0.6, ts, 48.0, 2401)
+	# mastio quadrato dietro a destra
+	var mp := Vector3(0.45, y0, -0.55)
+	var hm := _torre_n(r, mp, 0.62, 1.35)
+	for k: int in [-1, 1]:
+		_finestra_n(r, mp + Vector3(k * 0.12, 1.05, 0.31), 0.0, 0.05, 0.09)
+		_finestra_n(r, mp + Vector3(0.31, 1.05, k * 0.12), 90.0, 0.05, 0.09)
+	_stendardo_n(r, mp + Vector3(0.0, hm, 0.0), 0.6, 1.2)
+	# cortile: pozzo, stalla con un cavallo, botti e casse
+	r.add_child(cilindro(0.09, 0.1, 0.1, Vector3(0.6, y0 + 0.05, 0.05), "pietra_normanna", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.07, 0.07, 0.005, Vector3(0.6, y0 + 0.102, 0.05), "acqua_pozzo", Vector3.ZERO, 12))
+	_tettoia_n(r, Vector3(-0.85, y0, 0.45), 0.5, 0.34, 0.36, 0.28, 90.0)
+	var cv := _cavallo_n("cavallo_baio", 1.0)
+	cv.position = Vector3(-0.72, y0, 0.45)
+	cv.rotation_degrees.y = 180
+	cv.scale = Vector3.ONE * 0.85
+	r.add_child(cv)
+	r.add_child(barile(Vector3(0.75, y0, 0.45), 1.1))
+	r.add_child(barile(Vector3(0.86, y0, 0.38), 1.1))
+	r.add_child(cassa(Vector3(0.7, y0, 0.6), 20))
+	r.add_child(cassa(Vector3(-0.2, y0, 0.55), 5))
+	return r
+
+
+## Mastio dei Normanni (3x3, edificio unico): grande torre quadrata di conci (donjon) su una motta erbosa,
+## lesene, cornici, bifore, merli, torrette d'angolo e cuspide d'ardesia, stendardi gialli; ingresso alto con la scala
+## di legno coperta, cinta di palizzata con la porta di legno, scala giù per la motta, stalla e botti nel cortile.
+static func mastio() -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(2501)
+	var lato := 2.3
+	var c := lato * 0.5
+	var sm := 0.38
+	r.add_child(scatola(Vector3(lato + 0.3, 0.05, lato + 0.3), Vector3(0, 0.025, 0), "terra"))
+	r.add_child(scatola(Vector3(lato + 0.1, 0.008, lato + 0.1), Vector3(0, 0.054, 0), "prato"))
+	# palizzata a ottagono (quadrato con gli angoli smussati), con la porta davanti
+	var v := [Vector3(-c + sm, 0.05, c), Vector3(c - sm, 0.05, c), Vector3(c, 0.05, c - sm), Vector3(c, 0.05, -c + sm),
+		Vector3(c - sm, 0.05, -c), Vector3(-c + sm, 0.05, -c), Vector3(-c, 0.05, -c + sm), Vector3(-c, 0.05, c - sm)]
+	var gx := 0.3
+	for i in 8:
+		var da: Vector3 = v[i]
+		var a: Vector3 = v[(i + 1) % 8]
+		if i == 0:
+			_palizzata(r, da, Vector3(gx - 0.3, 0.05, c), 0.32)
+			_palizzata(r, Vector3(gx + 0.3, 0.05, c), a, 0.32)
+		else:
+			_palizzata(r, da, a, 0.32)
+	for k in 4:
+		var p: Vector3 = v[k * 2]
+		r.add_child(scatola(Vector3(0.08, 0.5, 0.08), p + Vector3(0, 0.25, 0), "legno_scuro"))
+	# porta di legno con il tettuccio d'ardesia e lo stendardo
+	var gp := Node3D.new()
+	gp.position = Vector3(gx, 0.05, c)
+	r.add_child(gp)
+	for s: float in [-1.0, 1.0]:
+		gp.add_child(scatola(Vector3(0.07, 0.52, 0.07), Vector3(s * 0.29, 0.26, 0), "legno_scuro"))
+	gp.add_child(scatola(Vector3(0.66, 0.05, 0.09), Vector3(0, 0.47, 0), "legno_scuro"))
+	_tetto_n(gp, 0.68, 0.16, 0.5, 50.0, 2502, "")
+	gp.add_child(scatola(Vector3(0.26, 0.36, 0.025), Vector3(-0.2, 0.18, 0.1), "legno", Vector3(0, 60, 0)))
+	gp.add_child(scatola(Vector3(0.26, 0.36, 0.025), Vector3(0.2, 0.18, 0.1), "legno", Vector3(0, -60, 0)))
+	_stendardo_n(gp, Vector3(0.29, 0.52, 0.04), 0.36, 0.9)
+	_stendardo_n(gp, Vector3(-0.29, 0.52, 0.04), 0.36, 0.9)
+	# motta erbosa con i sassi
+	var hm := 0.45
+	var mc := Vector3(-0.22, 0.05, -0.22)
+	r.add_child(cilindro(0.72, 0.98, hm, mc + Vector3(0, hm * 0.5, 0), "prato", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.73, 0.73, 0.012, mc + Vector3(0, hm + 0.006, 0), "terra", Vector3.ZERO, 20))
+	r.add_child(cilindro(0.99, 1.0, 0.03, mc + Vector3(0, 0.015, 0), "terra", Vector3.ZERO, 20))
+	for k in 11:
+		var a := k * TAU / 11 + 0.3
+		var rr := rng.randf_range(0.78, 0.92)
+		r.add_child(_masso(mc + Vector3(cos(a) * rr, hm * (0.98 - rr) / 0.26 * 0.9, sin(a) * rr), rng.randf_range(0.05, 0.09), Vector3(1.3, 1.0, 1.0), "roccia_massi", rng.randf() * 180))
+	var top := mc + Vector3(0, hm, 0)
+	_palizzata(r, top + Vector3(-0.62, 0, 0.3), top + Vector3(-0.55, 0, -0.42), 0.2)
+	_palizzata(r, top + Vector3(-0.55, 0, -0.42), top + Vector3(0.3, 0, -0.64), 0.2)
+	# donjon
+	var ml := 0.9
+	var mh := 1.6
+	var d := top + Vector3(0.0, 0, -0.08)
+	r.add_child(cilindro(ml * 0.8, ml * 0.73, 0.22, d + Vector3(0, 0.11, 0), "pietra_n_scura", Vector3(0, 45, 0), 4))
+	r.add_child(scatola(Vector3(ml, mh, ml), d + Vector3(0, mh * 0.5, 0), "pietra_normanna"))
+	for o: float in [-ml * 0.5 + 0.035, -ml / 6.0, ml / 6.0, ml * 0.5 - 0.035]:
+		r.add_child(scatola(Vector3(0.07, mh - 0.22, 0.025), d + Vector3(o, 0.22 + (mh - 0.22) * 0.5, ml * 0.5 + 0.012), "pietra_n_chiara"))
+		r.add_child(scatola(Vector3(0.025, mh - 0.22, 0.07), d + Vector3(ml * 0.5 + 0.012, 0.22 + (mh - 0.22) * 0.5, o), "pietra_n_chiara"))
+	for yy: float in [0.6, 1.1, mh - 0.04]:
+		r.add_child(scatola(Vector3(ml + 0.04, 0.035, ml + 0.04), d + Vector3(0, yy, 0), "pietra_n_scura"))
+	# archetti pensili sotto il coronamento
+	for k in 9:
+		var o := -ml * 0.5 + 0.06 + k * (ml - 0.12) / 8
+		r.add_child(cilindro(0.032, 0.032, 0.02, d + Vector3(o, mh - 0.1, ml * 0.5 + 0.008), "pietra_n_chiara", Vector3(90, 0, 0), 10))
+		r.add_child(cilindro(0.032, 0.032, 0.02, d + Vector3(ml * 0.5 + 0.008, mh - 0.1, o), "pietra_n_chiara", Vector3(0, 0, 90), 10))
+	# feritoie in basso, monofore al primo piano, bifore in alto
+	for s: float in [-0.3, 0.3]:
+		r.add_child(scatola(Vector3(0.022, 0.1, 0.02), d + Vector3(s, 0.36, ml * 0.5 + 0.004), "buio"))
+		r.add_child(scatola(Vector3(0.02, 0.1, 0.022), d + Vector3(ml * 0.5 + 0.004, 0.36, s), "buio"))
+		_finestra_n(r, d + Vector3(ml * 0.5, 0.84, s), 90.0, 0.05, 0.09)
+	_finestra_n(r, d + Vector3(-0.3, 0.84, ml * 0.5), 0.0, 0.05, 0.09)
+	for s: float in [-0.3, 0.3]:
+		for b: float in [-0.035, 0.035]:
+			_finestra_n(r, d + Vector3(s + b, 1.3, ml * 0.5), 0.0, 0.04, 0.1)
+			_finestra_n(r, d + Vector3(ml * 0.5, 1.3, s + b), 90.0, 0.04, 0.1)
+	# grandi drappi giallo oro con la croce rossa appesi al coronamento
+	for f in 2:
+		var dr := Node3D.new()
+		dr.position = d + (Vector3(0, mh - 0.13, ml * 0.5 + 0.03) if f == 0 else Vector3(ml * 0.5 + 0.03, mh - 0.13, 0))
+		dr.rotation_degrees.y = 0.0 if f == 0 else 90.0
+		r.add_child(dr)
+		dr.add_child(scatola(Vector3(0.18, 0.4, 0.008), Vector3(0, -0.2, 0), "stoffa_oro"))
+		for z: float in [-0.045, 0.045]:
+			dr.add_child(scatola(Vector3(0.08, 0.07, 0.008), Vector3(z, -0.43, 0), "stoffa_oro"))
+		dr.add_child(scatola(Vector3(0.035, 0.3, 0.012), Vector3(0, -0.2, 0), "bandiera_rossa"))
+		dr.add_child(scatola(Vector3(0.15, 0.035, 0.012), Vector3(0, -0.14, 0), "bandiera_rossa"))
+		dr.add_child(scatola(Vector3(0.22, 0.02, 0.02), Vector3(0, 0.0, 0), "legno_scuro"))
+	# coronamento merlato, torrette d'angolo, cuspide centrale
+	var tc := d + Vector3(0, mh, 0)
+	_merli_n(r, tc, ml + 0.04, ml + 0.04, "pietra_normanna", 0.11, 0.09)
+	for x: float in [-1.0, 1.0]:
+		for z: float in [-1.0, 1.0]:
+			var p := tc + Vector3(x * (ml * 0.5 - 0.07), 0, z * (ml * 0.5 - 0.07))
+			r.add_child(scatola(Vector3(0.19, 0.28, 0.19), p + Vector3(0, 0.14, 0), "pietra_normanna"))
+			r.add_child(scatola(Vector3(0.02, 0.07, 0.02), p + Vector3(0, 0.15, 0.096), "buio"))
+			_merli_n(r, p + Vector3(0, 0.28, 0), 0.2, 0.2, "pietra_normanna", 0.07, 0.06)
+	r.add_child(scatola(Vector3(0.46, 0.18, 0.46), tc + Vector3(0, 0.09, 0), "pietra_normanna"))
+	r.add_child(cilindro(0.34, 0.0, 0.5, tc + Vector3(0, 0.18 + 0.25, 0), "ardesia", Vector3(0, 45, 0), 4))
+	_stendardo_n(r, tc + Vector3(0, 0.6, 0), 0.45, 1.5)
+	_stendardo_n(r, tc + Vector3(ml * 0.5 - 0.07, 0.28, ml * 0.5 - 0.07), 0.36, 1.0)
+	_stendardo_n(r, tc + Vector3(-ml * 0.5 + 0.07, 0.28, ml * 0.5 - 0.07), 0.36, 1.0)
+	# ingresso al primo piano: pianerottolo di legno e scala ripida
+	var ip := d + Vector3(0.2, 0, ml * 0.5)
+	_porta_n(r, ip + Vector3(0, 0.6, 0), 0.0, 0.12, 0.15)
+	r.add_child(scatola(Vector3(0.22, 0.03, 0.16), ip + Vector3(0, 0.58, 0.08), "legno_scuro"))
+	for s: float in [-1.0, 1.0]:
+		r.add_child(scatola(Vector3(0.025, 0.58, 0.025), ip + Vector3(s * 0.1, 0.29, 0.15), "legno_scuro"))
+	var ns := 9
+	for k in ns:
+		var t := float(k) / ns
+		r.add_child(scatola(Vector3(0.12, 0.022, 0.07), ip + Vector3(0.0, 0.03 + t * 0.55, 0.44 - t * 0.3), "legno"))
+	var dl := sqrt(0.3 * 0.3 + 0.55 * 0.55)
+	for s: float in [-1.0, 1.0]:
+		r.add_child(scatola(Vector3(0.02, 0.03, dl), ip + Vector3(s * 0.065, 0.3, 0.29), "legno_scuro", Vector3(rad_to_deg(atan2(0.55, 0.3)), 0, 0)))
+	# scala di tronchi giù per la motta, verso la porta
+	for k in 7:
+		var t := float(k) / 7
+		r.add_child(cilindro(0.016, 0.016, 0.16, mc + Vector3(0.52 + t * 0.2, hm - t * hm * 0.95, 0.52 + t * 0.2), "corteccia", Vector3(0, 45, 90), 6))
+	# cortile: stalla col tetto d'ardesia e un cavallo, botti, casse, fieno, cavaliere che rientra
+	_tettoia_n(r, Vector3(0.85, 0.05, 0.42), 0.52, 0.32, 0.4, 0.3, 90.0)
+	var cv := _cavallo_n("cavallo_baio", 1.0)
+	cv.position = Vector3(0.82, 0.05, 0.42)
+	cv.scale = Vector3.ONE * 0.8
+	r.add_child(cv)
+	r.add_child(sfera(0.12, Vector3(-0.75, 0.08, 0.7), "paglia", Vector3(1.2, 0.8, 1.0)))
+	for i in 3:
+		r.add_child(barile(Vector3(0.42 + i * 0.11, 0.05, 0.8 - i * 0.06), 1.1))
+	r.add_child(cassa(Vector3(-0.3, 0.05, 0.88), 20))
+	r.add_child(cassa(Vector3(-1.0, 0.05, 0.5), 5))
+	var k1 := cavaliere_pesante()
+	k1.position = Vector3(0.15, 0.05, 0.85)
+	k1.rotation_degrees.y = 160
+	k1.scale = Vector3.ONE * 0.9
+	posa_galoppo(k1, 0, 8)
+	r.add_child(k1)
+	return r
+
+
+## Allevamento di cavalli (edificio unico dei Normanni): scuderia lunga di conci e graticcio col tetto d'ardesia,
+## mezze porte con i cavalli che si affacciano, recinto di staccionata con tre cavalli, abbeveratoio, fieno e sella.
+static func allevamento_cavalli() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.28, 0, -0.38)
+	r.add_child(c)
+	var lx := 1.0
+	var lz := 0.46
+	var top := _muri_n(c, lx, lz, 0.34, 2601, 0.5)
+	for k in 3:
+		var x := -0.32 + k * 0.3
+		c.add_child(scatola(Vector3(0.14, 0.17, 0.02), Vector3(x, 0.155, lz * 0.5 + 0.004), "buio"))
+		c.add_child(scatola(Vector3(0.14, 0.08, 0.025), Vector3(x, 0.11, lz * 0.5 + 0.012), "legno_scuro"))
+		c.add_child(scatola(Vector3(0.16, 0.02, 0.03), Vector3(x, 0.25, lz * 0.5 + 0.014), "legno_scuro"))
+		var ts := Node3D.new()
+		ts.position = Vector3(x, 0.17, lz * 0.5 + 0.04)
+		c.add_child(ts)
+		ts.add_child(sfera(0.04, Vector3(0, 0.02, 0.0), ["cavallo_baio", "cavallo", "crine"][k], Vector3(0.75, 0.85, 1.6)))
+		ts.add_child(sfera(0.028, Vector3(0, -0.005, 0.05), "crine", Vector3(0.85, 0.85, 1.0)))
+		for s: int in [-1, 1]:
+			ts.add_child(cilindro(0.008, 0.002, 0.035, Vector3(s * 0.015, 0.06, -0.02), ["cavallo_baio", "cavallo", "crine"][k], Vector3(-15, 0, s * 12.0), 5))
+	_finestrella_n(c, Vector3(lx * 0.5 + 0.03, 0.33, 0.0), 90.0)
+	var cima := _tetto_n(c, lx + 0.06, lz + 0.04, top, 46.0, 2601, "graticcio_n")
+	_stendardo_n(c, Vector3(lx * 0.5 - 0.02, cima - 0.06, 0.0), 0.36, 0.8)
+	c.add_child(_scudo_n(Vector3(-0.47, 0.32, lz * 0.5 + 0.03), 0.0, 0.7))
+	# tettoia del fieno sul fianco destro
+	_tettoia_n(c, Vector3(lx * 0.5 + 0.14, 0, 0.0), 0.44, 0.28, 0.34, 0.26, 90.0, false)
+	for i in 4:
+		c.add_child(scatola(Vector3(0.12, 0.08, 0.16), Vector3(lx * 0.5 + 0.14, 0.04 + (i / 2) * 0.08, -0.1 + (i % 2) * 0.18), "paglia", Vector3(0, i * 7.0, 0)))
+	# recinto di staccionata davanti con tre cavalli
+	var a := Vector3(-0.78, 0, 0.12)
+	var b := Vector3(0.78, 0, 0.88)
+	for seg in [[Vector3(a.x, 0, a.z), Vector3(b.x, 0, a.z)], [Vector3(b.x, 0, a.z), Vector3(b.x, 0, b.z)],
+			[Vector3(a.x, 0, b.z), Vector3(b.x, 0, b.z)], [Vector3(a.x, 0, a.z), Vector3(a.x, 0, b.z)]]:
+		var da: Vector3 = seg[0]
+		var fa: Vector3 = seg[1]
+		var lung := da.distance_to(fa)
+		var n := int(lung / 0.2) + 1
+		for k in n + 1:
+			r.add_child(scatola(Vector3(0.025, 0.14, 0.025), da.lerp(fa, float(k) / n) + Vector3(0, 0.07, 0), "legno_scuro"))
+		var dir := (fa - da).normalized()
+		var rot := rad_to_deg(atan2(dir.x, dir.z))
+		for y: float in [0.06, 0.12]:
+			r.add_child(scatola(Vector3(0.014, 0.018, lung), (da + fa) * 0.5 + Vector3(0, y, 0), "legno", Vector3(0, rot, 0)))
+	for p in [[Vector3(-0.35, 0, 0.5), 70.0, "cavallo_baio"], [Vector3(0.15, 0, 0.62), -120.0, "cavallo"], [Vector3(0.45, 0, 0.35), 160.0, "crine"]]:
+		var cv := _cavallo_n(p[2], 1.0)
+		cv.position = p[0]
+		cv.rotation_degrees.y = p[1]
+		cv.scale = Vector3.ONE * 0.8
+		r.add_child(cv)
+	var pul := _cavallo_n("cavallo_baio", 0.9)
+	pul.position = Vector3(-0.15, 0, 0.75)
+	pul.rotation_degrees.y = 100
+	pul.scale = Vector3.ONE * 0.5
+	r.add_child(pul)
+	# abbeveratoio di legno, mucchio di fieno, sella sulla staccionata, secchio
+	r.add_child(scatola(Vector3(0.3, 0.06, 0.09), Vector3(-0.55, 0.03, 0.22), "legno_scuro"))
+	r.add_child(scatola(Vector3(0.27, 0.004, 0.065), Vector3(-0.55, 0.061, 0.22), "acqua_chiara"))
+	r.add_child(sfera(0.13, Vector3(0.6, 0.06, 0.2), "paglia", Vector3(1.0, 0.75, 1.0)))
+	r.add_child(scatola(Vector3(0.08, 0.04, 0.1), Vector3(b.x, 0.15, 0.55), "pelle_scura"))
+	r.add_child(scatola(Vector3(0.012, 0.08, 0.1), Vector3(b.x + 0.04, 0.11, 0.55), "stoffa_oro"))
+	r.add_child(barile(Vector3(0.95, 0, 0.3), 0.8))
+	return r
+
+
+## Cavaliere pesante dei Normanni: destriero baio con la gualdrappa giallo oro, cavaliere in cotta di maglia con l'elmo
+## a nasale, scudo a mandorla giallo con la croce rossa, lancia lunga col pennoncello d'oro.
+static func cavaliere_pesante() -> Node3D:
+	var r := _cavallo_n("cavallo_baio", 1.12)
+	var corpo: Node3D = r.get_node("corpo")
+	_gualdrappa_n(corpo, 1.12)
+	var cav := portatore("", "oro_n", "maglia")
+	cav.name = "cavaliere"
+	cav.scale = Vector3.ONE * 0.85
+	cav.position = Vector3(0, 0.44 - 0.2 * 0.85, -0.02)
+	corpo.add_child(cav)
+	var cc: Node3D = cav.get_node("corpo")
+	var anca := 0.2
+	var gs: Node3D = cc.get_node("gamba_s")
+	var gd: Node3D = cc.get_node("gamba_d")
+	gs.rotation = Vector3(-0.75, 0, -0.5)
+	gd.rotation = Vector3(-0.75, 0, 0.5)
+	for g: Node3D in [gs, gd]:
+		g.add_child(cilindro(0.026, 0.022, 0.17, Vector3(0, -0.09, 0), "maglia", Vector3.ZERO, 7))
+		g.add_child(scatola(Vector3(0.045, 0.025, 0.075), Vector3(0, -0.185, 0.015), "pelle_scura"))
+	# usbergo lungo fino alle cosce, cintura d'oro, cappuccio di maglia ed elmo conico a nasale
+	cc.add_child(cilindro(0.1, 0.11, 0.07, Vector3(0, anca - 0.02, 0), "maglia", Vector3.ZERO, 12))
+	cc.add_child(sfera(0.082, Vector3(0, anca + 0.245, -0.004), "maglia", Vector3(1.0, 1.05, 1.0)))
+	cc.add_child(sfera(0.05, Vector3(0, anca + 0.24, 0.04), "pelle", Vector3(1.1, 1.0, 0.9)))
+	cc.add_child(cilindro(0.084, 0.0, 0.12, Vector3(0, anca + 0.34, -0.004), "ferro", Vector3.ZERO, 12))
+	cc.add_child(cilindro(0.086, 0.086, 0.018, Vector3(0, anca + 0.285, -0.004), "oro_n", Vector3.ZERO, 12))
+	cc.add_child(scatola(Vector3(0.014, 0.07, 0.01), Vector3(0, anca + 0.25, 0.088), "ferro"))
+	for lato: String in ["braccio_s", "braccio_d"]:
+		(cc.get_node(lato) as Node3D).add_child(cilindro(0.021, 0.018, 0.14, Vector3(0, -0.07, 0), "maglia", Vector3.ZERO, 7))
+	# scudo a mandorla al braccio sinistro, rivolto verso l'esterno
+	var bs: Node3D = cc.get_node("braccio_s")
+	bs.add_child(_scudo_n(Vector3(-0.03, -0.1, 0.03), -90.0, 1.45))
+	# lancia lunga col pennoncello d'oro a due code
+	var bd: Node3D = cc.get_node("braccio_d")
+	bd.add_child(cilindro(0.007, 0.007, 0.52, Vector3(0, -0.14, 0.13), "legno", Vector3(90, 0, 0), 5))
+	bd.add_child(cilindro(0.014, 0.0, 0.05, Vector3(0, -0.14, 0.414), "ferro", Vector3(90, 0, 0), 6))
+	bd.add_child(scatola(Vector3(0.004, 0.04, 0.06), Vector3(0, -0.118, 0.36), "stoffa_oro"))
+	bd.add_child(scatola(Vector3(0.004, 0.016, 0.04), Vector3(0, -0.106, 0.31), "stoffa_oro"))
+	bd.add_child(scatola(Vector3(0.004, 0.016, 0.04), Vector3(0, -0.13, 0.31), "bandiera_rossa"))
+	r.set_meta("carico", "lancia")
+	return r
