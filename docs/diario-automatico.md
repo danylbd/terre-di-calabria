@@ -234,3 +234,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step 33 tipi di unità (Fase 7)
 - Fanteria, tiratori e cavalleria per popolo con vantaggi incrociati (+/− 0,15) nei duelli della guerra di oggi e delle schiere; i tiratori si fermano a distanza e tirano, con sassi e frecce disegnati in volo; polvere nei corpo a corpo.
 - Nuovo test `test_tipi`; tutti i 36 test OK. Versione 0.48.0. Prossimo: step 34 abilità dei condottieri.
+
+## 2026-11-02 — step 34 abilità dei condottieri (Fase 7)
+- Due abilità per popolo (ai livelli 2 e 4, ricarica 60 s): falange e canto di Eudora, passo di montagna e imboscata, disciplina e testuggine, carica rapida e grido del deserto, giuramento e carica pesante, grido degli antenati e lance lunghe, rifugio sui monti e pioggia di frecce. Pannello della schiera in basso al centro, tasti 1 e 2.
+- Nuovo test `test_abilita`; tutti i 37 test OK. Versione 0.49.0. Prossimo: step 35 navi da guerra e traversate.

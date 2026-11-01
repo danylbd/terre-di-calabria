@@ -39,6 +39,7 @@ var monumenti: Monumenti
 var indigeni: VillaggiIndigeni
 var schiere: Schiere
 var pannello_indigeno: PannelloIndigeno
+var pannello_schiera: PannelloSchiera
 var mappa := "costa_ionica"
 var popolo := "greci"         # il popolo del giocatore (Popoli.DATI)   # quale mappa si gioca (GeneratoreMappa.MAPPE)
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
@@ -219,6 +220,9 @@ func _unhandled_input(event: InputEvent) -> void:
 					get_tree().reload_current_scene()
 			KEY_I:
 				pannello_villaggio.alterna()
+			KEY_1, KEY_2:
+				if schiere.scelta:
+					schiere.usa_abilita((event as InputEventKey).keycode - KEY_1)
 			KEY_M:
 				_mostra_avviso("Musica accesa" if Suono.alterna_musica() else "Musica spenta", false)
 	elif event is InputEventMouseButton:
@@ -796,6 +800,12 @@ func _crea_interfaccia() -> void:
 		if schiere.forma(e):
 			pannello.chiudi_pannello()
 			schiere.scegli(true))
+	pannello_schiera = PannelloSchiera.new()
+	pannello_schiera.schiere = schiere
+	strato.add_child(pannello_schiera)
+	pannello_schiera.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM, Control.PRESET_MODE_MINSIZE, 50)
+	pannello_schiera.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	pannello_schiera.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	pannello_indigeno = PannelloIndigeno.new()
 	pannello_indigeno.indigeni = indigeni
 	strato.add_child(pannello_indigeno)

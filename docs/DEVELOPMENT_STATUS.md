@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.48.0** (step 33). Tutti i test automatici passano (36 script in `tools/test/`).
+Ultima release: **v0.49.0** (step 34). Tutti i test automatici passano (37 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.48.0** (step 33). Tutti i test automatici passano (36 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 33, Fase 7): tipi di unità (fanteria, tiratori, cavalleria) con vantaggi incrociati nei duelli di guerra e schiere; i tiratori tirano da lontano con proiettili disegnati, polvere nei corpo a corpo; test `test_tipi`. Prima: cibo, morale ed esperienza (step 32).
+Ultime modifiche significative (step 34, Fase 7): abilità dei condottieri (due per popolo, ai livelli 2 e 4, con ricarica), pannello della schiera e tasti 1/2; test `test_abilita`. Prima: tipi di unità (step 33).
 
 ## In sviluppo
 
@@ -39,4 +39,4 @@ Ultime modifiche significative (step 33, Fase 7): tipi di unità (fanteria, tira
 
 ## Prossima attività consigliata
 
-**Step 34 — abilità dei condottieri** (Fase 7): 2 abilità per popolo, sbloccate dai livelli (livello 2 e 4), usabili con un pulsante quando la schiera è scelta e con un tempo di ricarica: per esempio Greci «falange» (difesa), Brettii «imboscata nel bosco», Romani «testuggine», Saraceni «carica rapida», Normanni «carica pesante», Siculi «grido degli antenati», Sicani «pioggia di frecce». Effetti come vantaggi temporanei in `Schiere.probabilita_vittoria()` o sulla velocità; icone e pulsanti in un piccolo pannello della schiera.
+**Step 35 — navi da guerra e traversate delle schiere** (Fase 7): la nave del porto (step 28, `Lavoratore` stato `NAVIGA`, `rotta_nave`) porta una schiera da un porto a un altro (ordine: schiera scelta + clic su un nostro porto: sale a bordo, arriva all'altro porto, sbarca); una nave da guerra (edificio «cantiere navale» o il porto stesso) che tira sulle torri nemiche sulla costa. Modello della nave da guerra con un subagente.
