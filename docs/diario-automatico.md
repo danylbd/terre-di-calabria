@@ -106,3 +106,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-01 09:00 — sistema di memoria del progetto
 - Su richiesta del proprietario: CLAUDE.md riordinato (76 righe: regole permanenti, continuità tra sessioni, gestione del contesto, comandi) e quattro documenti nuovi: PROJECT_MEMORY (conoscenze stabili e mappa del codice), DEVELOPMENT_STATUS (stato), DECISIONS (decisioni tecniche con motivi), SESSION_HANDOFF (punto di ripresa). Nessuna informazione persa: le note per step sono confluite in PROJECT_MEMORY.
 - Il proprietario vuole «tutto automatico» (commit, merge, push compresi) e un contesto leggero. Nessuna modifica al gioco.
+
+## 2026-11-01 10:00 — step V1 mappa di Monteleone
+- Nuovo generatore `genera_monteleone` (96×96): costa del Vibonese dalle coordinate vere (Pizzo → Nicotera), mare a nord-ovest, Monteleone sul colle come villaggio, Vibo Marina, Bivona, Briatico, Tropea sulla rupe con lo scoglio dell'Isola, Capo Vaticano, altopiano del Poro, valle del Mesima, Serre, lago dell'Angitola. Nomi dei luoghi scritti sulla mappa.
+- Scelta della mappa nel pannello «Nuova partita» e pulsante «Gioca a Monteleone» sulla mappa della Calabria; il salvataggio ricorda la mappa (i vecchi restano sulla Costa ionica).
+- Nuovo test `test_monteleone` (catena di produzione + forma + salvataggio). Tutti i 17 test OK. Versione 0.21.0. Prossimo: V2 monumenti.
