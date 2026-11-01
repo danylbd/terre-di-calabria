@@ -4,6 +4,7 @@ extends Node
 ## bandierina, e ogni merce passa di bandierina in bandierina, portata dal portatore di ogni tratto.
 
 signal scorte_cambiate
+signal prodotta(tipo: String)
 
 const INTERVALLO_USCITA := 0.7      # secondi tra un'uscita e l'altra da un magazzino
 const MAX_PER_BANDIERA := 8
@@ -105,6 +106,7 @@ func produci(tipo: String, da: Edificio) -> void:
 		return
 	da.prodotti += 1
 	storia.append([tempo, tipo])
+	prodotta.emit(tipo)
 	var dest := _destinazione_per(tipo, da.bandiera)
 	if dest == null:
 		return

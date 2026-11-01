@@ -30,6 +30,7 @@ var centri_esterni := []             # territori di altri popoli: [casella, ragg
 var nemici := {}                     # id -> Edificio di un altro popolo (torri con i loro difensori)
 var soldati := 0                     # soldati di riserva, pronti a raggiungere i forti
 var guerra: Guerra
+var vantaggi := {}                   # dai monumenti: "confini" (+raggio), "nascita" e "lavoro" (×tempo), "duelli" (+probabilità)
 var caricamento := false             # si sta ricostruendo una partita salvata: niente costi né messaggi
 
 const TEMPO_NASCITA := 40.0          # secondi tra una nascita e l'altra in ogni abitazione
@@ -267,11 +268,11 @@ func _cresci(casa: Edificio, delta: float) -> void:
 		casa.nascita = 0.0
 		return
 	if casa.nascita <= 0.0:
-		casa.nascita = TEMPO_NASCITA
+		casa.nascita = TEMPO_NASCITA * vantaggi.get("nascita", 1.0)
 		for l in CatalogoEdifici.LUSSO:
 			if scorte.get(l, 0) > 0:
 				scorte[l] -= 1
-				casa.nascita = TEMPO_NASCITA_LUSSO
+				casa.nascita = TEMPO_NASCITA_LUSSO * vantaggi.get("nascita", 1.0)
 				scorte_cambiate.emit()
 				break
 		return
@@ -328,9 +329,9 @@ func _ricalcola_territorio() -> void:
 		if not e.finito:
 			continue
 		if e.tipo == "magazzino":
-			centri.append([Vector2i(e.centro()), RAGGIO_MAGAZZINO, 1])
+			centri.append([Vector2i(e.centro()), RAGGIO_MAGAZZINO + vantaggi.get("confini", 0), 1])
 		elif CatalogoEdifici.dati(e.tipo).has("territorio") and e.presidiata:
-			centri.append([Vector2i(e.centro()), float(CatalogoEdifici.dati(e.tipo)["territorio"]), 1])
+			centri.append([Vector2i(e.centro()), float(CatalogoEdifici.dati(e.tipo)["territorio"]) + vantaggi.get("confini", 0), 1])
 	for n in nemici.values():
 		centri.append([Vector2i(n.centro()), float(CatalogoEdifici.dati(n.tipo)["territorio"]), n.proprietario])
 	centri.append_array(centri_esterni)

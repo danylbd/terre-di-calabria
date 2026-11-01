@@ -31,7 +31,7 @@ Gioco di strategia ed economia **originale** in stile *The Settlers 3*, ambienta
 - **Natura**: `risorse_naturali.gd` (alberi, massi, ulivi e olive, campi per coltura con perenni, pesce e pesce spada che si ripopolano, giacimenti di ferro e argento, ceppi e stoppie).
 - **Tempo**: `stagioni.gd` (4 stagioni da 300 s, crescita per coltura, neve, foglie, luce).
 - **Guerra**: `guerra.gd` (rinforzi ai forti, attacco, duelli, conquista, valida per entrambi i lati), `avversario.gd` (i Brettii: espansione, tregua, attacchi, modalità).
-- **Storia**: `src/storia/missione.gd` (missioni in `Missione.MISSIONI`, obiettivi generici, eventi, progressi della campagna), `src/ui/pannello_missione.gd`, `src/main/mappa_calabria.gd` (mappa della campagna, Calabria reale).
+- **Storia**: `src/storia/missione.gd` (missioni in `Missione.MISSIONI`, obiettivi generici, eventi, progressi della campagna), `src/ui/pannello_missione.gd`, `src/main/mappa_calabria.gd` (mappa della campagna, Calabria reale), `src/storia/monumenti.gd` (monumenti di Monteleone: traguardi in ordine, posa, doni; vantaggi in `Villaggio.vantaggi`).
 - **Interfaccia** (`src/ui/`): `menu_costruzione.gd`, `barra_risorse.gd`, `pannello_edificio.gd` (stato e motivo se fermo, agorà, attacco), `pannello_villaggio.gd` (tasto I), `tema_gioco.gd`. Menu iniziale `src/main/title_screen.gd`.
 - **Sistema**: `src/core/` — `salvataggio.gd`, `impostazioni.gd` (modalità e missione scelte nel menu), `sprites.gd`, `iso.gd` (casella 112×56), `palette.gd`. Audio: autoload `Audio` (`src/audio/audio.gd`) usato negli script tramite la classe statica `Suono`.
 

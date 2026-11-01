@@ -111,3 +111,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Nuovo generatore `genera_monteleone` (96×96): costa del Vibonese dalle coordinate vere (Pizzo → Nicotera), mare a nord-ovest, Monteleone sul colle come villaggio, Vibo Marina, Bivona, Briatico, Tropea sulla rupe con lo scoglio dell'Isola, Capo Vaticano, altopiano del Poro, valle del Mesima, Serre, lago dell'Angitola. Nomi dei luoghi scritti sulla mappa.
 - Scelta della mappa nel pannello «Nuova partita» e pulsante «Gioca a Monteleone» sulla mappa della Calabria; il salvataggio ricorda la mappa (i vecchi restano sulla Costa ionica).
 - Nuovo test `test_monteleone` (catena di produzione + forma + salvataggio). Tutti i 17 test OK. Versione 0.21.0. Prossimo: V2 monumenti.
+
+## 2026-11-01 11:00 — step V2 monumenti di Monteleone
+- `Monumenti` (src/storia/monumenti.gd): 11 monumenti in ordine storico, ognuno sbloccato da un traguardo (fondazione, coloni, pescatore, agorà e ducati, castello, mestieri, ducati coniati, pesci spada, un anno senza perdere forti), posato su 2×2 caselle libere vicino al luogo vero; vantaggi in `Villaggio.vantaggi` (confini, nascite, lavoro, duelli) e doni a ogni stagione.
+- 11 modelli 3D nuovi (fatti da un subagente in tools/studio/modelli.gd). Monumenti nel salvataggio e nel pannello del villaggio; tabella aggiornata in monteleone.md.
+- Nuovo test `test_monumenti`; tutti i 18 test OK. Versione 0.22.0. Prossimo: V3 partite senza fine.

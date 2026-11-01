@@ -4,28 +4,27 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.21.0** (step V1). Tutti i test automatici passano (17 script in `tools/test/`).
+Ultima release: **v0.22.0** (step V2). Tutti i test automatici passano (18 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
 | 1 — Il villaggio vive | 00, G1, 01–05, M1, G2, 06–11 | fondamenta e installer, studio grafico, mappa, costruzione, strade, trasporto, prima catena, audio (musica segnaposto), grafica livello 2, cibo (campi, allevamenti, pesca), metallo e attrezzi, popolazione e pannelli, salvataggio, stagioni, Greci completi (36 edifici, agorà) |
 | 2 — Guerra e avversario | 12–15 | territorio per proprietario, torri e castello presidiati, soldati e conquista, i Brettii controllati dal computer, scelta della modalità (pace / pace poi guerra / guerra) |
 | 3 — La storia | 16–18 | tutorial «Il naufragio», campagna dei Greci (6 missioni, sblocco progressivo), mappa della Calabria con la forma reale |
-| Vibo Valentia | V1 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria |
+| Vibo Valentia | V1–V2 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi |
 
-Ultime modifiche significative (step V1): `GeneratoreMappa.genera_monteleone()` (costa da coordinate vere, colle di Monteleone, rupe di Tropea e scoglio dell'Isola, Capo Vaticano, altopiano del Poro, valle del Mesima, Serre, lago dell'Angitola); `DatiMappa.luoghi` con i nomi scritti sulla mappa; `Impostazioni.mappa`; il salvataggio ricorda la mappa (`Salvataggio.mappa_di`); test `test_monteleone`.
+Ultime modifiche significative (step V2): `src/storia/monumenti.gd` (catalogo, traguardi in ordine, posa su 2×2 caselle libere vicino al luogo vero, doni a ogni stagione); `Villaggio.vantaggi` (confini, nascita, lavoro, duelli) usato da villaggio, lavoratore e guerra; segnali `Logistica.prodotta` e `Guerra.forte_perso`; monumenti nel salvataggio e nel pannello del villaggio; 11 modelli 3D nuovi; test `test_monumenti`.
 
 ## In sviluppo
 
-- **Step V2 — monumenti di Monteleone**: da aprire (ramo `step-v2-monumenti`).
+- **Step V3 — partite senza fine**: da aprire (ramo `step-v3-senza-fine`).
 
 ## Da fare (in ordine)
 
-1. **V2** monumenti di Monteleone: 11 monumenti sbloccati a traguardi, posati al loro posto, con vantaggi (tabella in `monteleone.md`).
-2. **V3** partite senza fine: verificare che dopo l'ultima missione si continui; prestazioni per partite di ore.
-3. **Fase 4**: Brettii, Romani, Saraceni, Normanni giocabili, campagna finale «La Soglia», versione iPhone.
-4. **Fase 6**: la Sicilia (mappa reale, Siculi e Sicani, campagna «Il fuoco sotto la montagna», navi sullo Stretto).
-5. **Fase 5** (Coral Island): solo dopo le domande al proprietario.
+1. **V3** partite senza fine: verificare che dopo l'ultima missione si continui; prestazioni per partite di ore.
+2. **Fase 4**: Brettii, Romani, Saraceni, Normanni giocabili, campagna finale «La Soglia», versione iPhone.
+3. **Fase 6**: la Sicilia (mappa reale, Siculi e Sicani, campagna «Il fuoco sotto la montagna», navi sullo Stretto).
+4. **Fase 5** (Coral Island): solo dopo le domande al proprietario.
 
 ## Bug e limiti noti
 
@@ -40,4 +39,4 @@ Ultime modifiche significative (step V1): `GeneratoreMappa.genera_monteleone()` 
 
 ## Prossima attività consigliata
 
-Aprire **step V2** (monumenti di Monteleone) seguendo la tabella in `monteleone.md`; le caselle dei luoghi sono in `GeneratoreMappa.LUOGHI_MONTELEONE`.
+Aprire **step V3** (partite senza fine): partita lunga accelerata su Monteleone, misurare prestazioni (nodi, merci, FPS) e memoria dopo ore di gioco, controllare che dopo l'ultima missione e l'ultimo monumento si possa continuare.

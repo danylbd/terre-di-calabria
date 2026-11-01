@@ -35,6 +35,7 @@ var _fantasma: Sprite2D
 var _casella_mouse := Vector2i(-1, -1)
 var _evidenziato: Edificio
 var _ascolto_mare := 0.0
+var monumenti: Monumenti
 var mappa := "costa_ionica"   # quale mappa si gioca (GeneratoreMappa.MAPPE)
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
 
@@ -86,6 +87,8 @@ func _ready() -> void:
 	add_child(avversario)
 	avversario.prepara(villaggio, guerra, dati)
 	avversario.messaggio.connect(_mostra_avviso)
+	monumenti = Monumenti.new()
+	add_child(monumenti)
 	avversario.imposta_modalita("pace" if Impostazioni.missione != "" else Impostazioni.modalita)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
@@ -118,6 +121,7 @@ func _ready() -> void:
 
 	_crea_interfaccia()
 	stagioni.prepara(terreno, risorse, _crea_luce(), _crea_fiocchi())
+	monumenti.prepara(villaggio, dati, oggetti, logistica, guerra, stagioni, mappa)
 	stagioni.cambiata.connect(func(s: int):
 		barra.aggiorna_stagione(stagioni.nome())
 		_mostra_avviso("Arriva %s" % ["la primavera", "l'estate", "l'autunno", "l'inverno"][s], false))
@@ -728,6 +732,7 @@ func _crea_interfaccia() -> void:
 	pannello_villaggio.rete = rete
 	pannello_villaggio.stagioni = stagioni
 	pannello_villaggio.avversario = avversario
+	pannello_villaggio.monumenti = monumenti
 	strato.add_child(pannello_villaggio)
 	pannello_villaggio.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 70)
 	pannello_villaggio.grow_horizontal = Control.GROW_DIRECTION_BEGIN
