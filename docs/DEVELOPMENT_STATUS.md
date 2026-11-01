@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.42.0** (bilanciamento). Tutti i test automatici passano (32 script in `tools/test/`).
+Ultima release: **v0.43.0** (Eolie). Tutti i test automatici passano (32 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.42.0** (bilanciamento). Tutti i test automatici passano (32
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (bilanciamento): `test_durata` accetta `POPOLO`; misure per i sette popoli in `docs/bilanciamento.md` (catena di base quasi uguale per tutti, partite stabili). Prima: sfide (v0.41.0).
+Ultime modifiche significative (v0.43.0): le isole Eolie sulla mappa della campagna (coordinate vere, il fuoco di Stromboli); il pulsante «L'ultimo canto» spostato per non coprire Monteleone. Prima: bilanciamento (v0.42.0).
 
 ## In sviluppo
 

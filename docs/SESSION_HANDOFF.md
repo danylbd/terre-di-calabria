@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, bilanciamento misurato (release v0.42.0 in `main`). Tutto quello che non dipende dal proprietario è fatto; restano piccole rifiniture (colori dei frombolieri) e le domande aperte (Fase 5, musica, iPhone, Rocco).
+**Aggiornato:** 2026-11-02, Eolie sulla mappa della campagna (release v0.43.0 in `main`). Tutto quello che non dipende dal proprietario è fatto; restano piccole rifiniture (colori dei frombolieri) e le domande aperte (Fase 5, musica, iPhone, Rocco).
 
 ## Ultimo obiettivo affrontato
 

@@ -206,3 +206,6 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 
 ## 2026-11-02 — bilanciamento
 - `test_durata` con `POPOLO`: mezz'ora di gioco per ognuno dei sette popoli, tutte stabili; la catena di base rende quasi uguale (55–59 merci ogni 5 minuti). Risultati in docs/bilanciamento.md. Versione 0.42.0.
+
+## 2026-11-02 — le Eolie sulla mappa della campagna
+- Promesse allo step 25 e poi dimenticate: le sette isole Eolie disegnate con le coordinate vere, con il fuoco di Stromboli; il pulsante dell'epilogo spostato sul mar Ionio. Test della campagna OK. Versione 0.43.0.
