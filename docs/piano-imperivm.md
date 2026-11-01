@@ -1,0 +1,66 @@
+# Piano dell'update «Le guerre di Annibale» (Fase 7)
+
+*Piano del 2026-11-02, su richiesta del proprietario: unire al gioco le idee e la dinamica di **Imperivm: le guerre puniche** (Haemimont Games / FX Interactive, 2003–2004) **senza annullare né rovinare il lavoro fatto**. Come sempre: si prendono le **idee di gioco**, mai grafica, nomi, testi o musiche di quel gioco.*
+
+## 1. Che cosa prendiamo da Imperivm (le idee, rifatte a modo nostro)
+
+| Idea di Imperivm | Come diventa in Terre di Calabria |
+|---|---|
+| Sulla mappa ci sono **villaggi, forti, porti e città da conquistare**, non solo da costruire | **Villaggi indigeni** sulla mappa (pastori, pescatori, città greche): si possono **conquistare** con l'esercito o **unire con i doni** (lo stesso tema «unire o conquistare» della Soglia) |
+| **La popolazione fa la produzione**: più abitanti, più risorse | I villaggi indigeni producono da soli cibo e una merce tipica in proporzione agli abitanti, e la mandano al nostro magazzino se sono nostri o alleati |
+| **Eroi / generali** che guidano un esercito, con abilità speciali ed esperienza | **Condottieri** (uno o due per popolo, con nome e carattere originali) che comandano una **schiera** di soldati; salgono di livello e imparano abilità |
+| **Cibo per l'esercito**: le truppe in marcia mangiano, senza cibo perdono salute, il cibo cura | La schiera porta con sé **razioni** dal magazzino (pane, pesce, formaggio, carne): l'economia «Settlers» nutre la guerra «Imperivm» |
+| **Morale ed esperienza** delle unità | I soldati guadagnano esperienza nei duelli; il morale sale con il cibo e il condottiero vicino, scende con la fame e le sconfitte |
+| Diversi **tipi di unità** che si battono a vicenda | Fanteria, tiratori (frombolieri, arcieri), cavalleria: un piccolo «sasso-carta-forbice» |
+| **Navi** che trasportano truppe e colpiscono la costa | Le navi del porto (step 28) imparano a **portare una schiera** da una sponda all'altra |
+| **Assedi** di fortezze con macchine | **Ariete** e **onagro** costruiti dall'armaiolo, per le torri e i castelli nemici |
+| Campagne storiche **dai due lati** | Campagna «**Annibale nel Bruzio**»: la seconda guerra punica in Calabria, giocabile con i Romani o con i Cartaginesi e gli alleati Brettii |
+
+## 2. Perché sta bene nel nostro gioco (la storia vera)
+
+Annibale, dopo Canne, passò **anni nel Bruzio** (l'antica Calabria): i **Brettii** si allearono con lui, **Crotone** e **Locri** passarono dalla sua parte, e nel 203 a.C. si imbarcò per l'Africa proprio da Crotone. È la nostra terra, i nostri popoli (Brettii, Greci, Romani) e un popolo nuovo: i **Cartaginesi**. L'update non è un gioco diverso appoggiato sopra: è un **capitolo nuovo della stessa storia**, con il Mercante senza Volto che vende elefanti ad Annibale e ponti a Roma.
+
+## 3. La regola d'oro: niente si rompe
+
+1. **L'economia alla Settlers resta il cuore del gioco**: costruzione, strade, portatori, catene, territorio. Le idee di Imperivm si aggiungono **sopra**, non al posto.
+2. **Il controllo resta indiretto per l'economia** e diventa **diretto solo per le schiere dei condottieri** (selezioni il condottiero, clicchi dove andare o chi attaccare). I forti, la caserma e gli attacchi di oggi (step 12–15) restano come sono: la schiera è un modo in più per fare la guerra.
+3. **Tutto quello che c'è continua a funzionare**: le modalità pace / pace poi guerra / guerra, le campagne già fatte, le sfide, Monteleone e i monumenti. Nella **modalità pace non compaiono né schiere né villaggi da conquistare** (i villaggi indigeni ci sono, ma solo da unire con i doni).
+4. **I salvataggi vecchi si caricano**: ogni dato nuovo ha un valore di serie se manca.
+5. **Tutti i test esistenti restano verdi** a ogni step, più un test nuovo per ogni sistema nuovo.
+6. Ogni sistema nuovo ha un **interruttore** in `Impostazioni` («Guerra con i condottieri»: sì/no) finché non è rifinito.
+
+## 4. Gli step (Fase 7)
+
+| Step | Nome | Contenuto | Grafica |
+|---|---|---|---|
+| 30 | **Villaggi indigeni** | villaggi neutrali sulla mappa (capanne, abitanti che crescono, cibo e merce tipica); si uniscono con i doni o si conquistano; se nostri o alleati mandano merci al magazzino | 6–8 modelli di villaggio (pastori, pescatori, città greca, borgo brettio, borgo siculo) |
+| 31 | **Condottieri e schiere** | un condottiero per popolo (dalla caserma o dal castello), schiera fino a 12 soldati, selezione e ordini diretti (muovi, attacca, segui), barra della salute | condottieri con stendardo e mantello; cerchi di selezione; barre della salute |
+| 32 | **Cibo, morale ed esperienza** | razioni della schiera dal magazzino, fame che toglie salute, cibo che cura; morale; esperienza e livelli del condottiero | icone sopra le teste (fame, morale), effetti di livello |
+| 33 | **Tipi di unità** | fanteria, tiratori, cavalleria con vantaggi incrociati; i soldati di ogni popolo diventano di un tipo (frombolieri e arcieri = tiratori, cavalieri = cavalleria) | proiettili (sassi, frecce), polvere e scintille nei duelli |
+| 34 | **Abilità dei condottieri** | 2–3 abilità per popolo (carica, grido di battaglia, muro di scudi, imboscata nel bosco per i Brettii...) | effetti delle abilità |
+| 35 | **Navi da guerra e traversate** | la nave del porto porta una schiera da una sponda all'altra; nave da guerra che tira sulla costa | nave da guerra (8 direzioni), sbarco |
+| 36 | **Assedi** | ariete e onagro dall'armaiolo; mura e porte dei castelli con più resistenza | ariete, onagro, pietre in volo, crolli |
+| 37 | **I Cartaginesi** | ottavo popolo giocabile (edifici, porto commerciale grande, soldati, elefanti come unità speciale) | ~40 modelli cartaginesi, l'elefante |
+| 38 | **Mappa «Il Bruzio di Annibale»** | mappa grande della Calabria centrale con la forma vera: Crotone, Locri, Petelia, Consentia, la Sila; villaggi indigeni e città greche | etichette e segni sulla mappa |
+| 39 | **Campagna «Annibale nel Bruzio»** | 8–10 missioni giocabili dai due lati (Roma o Cartagine con i Brettii), con le scelte e il Mercante | ritratti e scene di dialogo |
+| 40 | **Rifinitura grafica di guerra** | animazioni di morte e di vittoria, bandiere che sventolano sui villaggi conquistati, minimappa | come sopra |
+
+Ordine pensato per **non rompere nulla**: prima le cose che si aggiungono da sole (villaggi), poi l'esercito, poi i sistemi che lo arricchiscono, per ultimi il popolo, la mappa e la campagna nuovi.
+
+## 5. Come si incastra con il codice di oggi
+
+- **Villaggi indigeni**: un nodo nuovo `VillaggiIndigeni` (come `Monumenti`), dati nel salvataggio; usa `Villaggio.centri_esterni` per i loro confini e `Logistica.produci()` per mandare le merci.
+- **Schiere**: un nodo nuovo `Schiere` accanto a `Guerra`; riusa `Colono` per camminare, `Guerra._combatti` / `_fine_duello` per i duelli, `Popoli.soldati()` per l'aspetto. I soldati della schiera vengono dalla riserva (`Villaggio.soldati`).
+- **Cibo**: la schiera chiede le razioni come chiede le merci un edificio (`Logistica`), il carro dei viveri è un portatore.
+- **Navi**: il `Lavoratore` del porto (stato `NAVIGA`) impara a portare una schiera.
+- **Cartaginesi**: una voce in `Popoli.DATI` e i modelli `<tipo>_cartaginesi`, come per gli altri sette popoli.
+- **Campagna**: missioni in `Missione.MISSIONI` con prove nuove (`villaggi`, `schiera`, `condottiero_livello`).
+
+## 6. Domande per il proprietario (scritte anche in `domande-per-il-proprietario.md`)
+
+1. Per le schiere va bene il **controllo diretto** (clic sul condottiero e poi dove andare), mentre l'economia resta alla Settlers?
+2. I **Cartaginesi** come ottavo popolo giocabile: sì? E gli **elefanti**?
+3. La campagna di Annibale prima o dopo la Fase 5 (Coral Island)?
+4. Qualcosa di Imperivm che ti piaceva in modo particolare e che qui manca?
+
+Finché non arrivano le risposte si può cominciare dallo **step 30 (villaggi indigeni)**, che non dipende da nessuna di queste scelte.

@@ -212,3 +212,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 
 ## 2026-11-02 — colori dei Brettii del giocatore
 - `brettio(squadra)` e fogli `brettio_giocatore`: i guerrieri brettii del giocatore hanno le fasce del giocatore, i nemici quelle rosse. Test toccati OK. Versione 0.44.0.
+
+## 2026-11-02 — piano dell'update «Le guerre di Annibale» (idee da Imperivm)
+- Richiesta del proprietario: unire le idee e la dinamica di Imperivm: le guerre puniche, con grafica nuova, senza rovinare il lavoro fatto. Ricerca sul gioco (villaggi da conquistare, popolazione che produce, eroi con eserciti, cibo che cura, morale, navi, assedi).
+- Piano in docs/piano-imperivm.md: Fase 7 (step 30–40), regola «niente si rompe», tema storico coerente (Annibale nel Bruzio con i Brettii). Quattro domande al proprietario; si comincia dai villaggi indigeni.
