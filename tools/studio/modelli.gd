@@ -64,6 +64,7 @@ static func catalogo() -> Dictionary:
 		"mulino": {"crea": mulino},
 		"forno": {"crea": forno},
 		"pescatore": {"crea": capanna_pescatore},
+		"porto": {"crea": porto},
 		"porcile": {"crea": porcile},
 		"macelleria": {"crea": macelleria},
 		"ovile": {"crea": ovile},
@@ -300,6 +301,8 @@ static func catalogo() -> Dictionary:
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["barca_remi"] = {"crea": barca_remi, "posa": posa_remata,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(112, 96), "ancora": Vector2(56, 64)}
+	c["nave"] = {"crea": nave, "posa": posa_vela,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 74)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
 	for att in ["ascia", "piccone", "pala", "falce", "canna"]:
 		c["lavoratore_%s" % att] = {"crea": lavoratore.bind(att), "posa": posa_cammino,
@@ -2794,6 +2797,255 @@ static func posa_remata(modello: Node3D, fotogramma: int, totale: int) -> void:
 		var remo: Node3D = b.get_node(nome)
 		remo.rotation.y = (0.5 * sin(t)) * (1 if nome == "remo_d" else -1)
 		remo.rotation.z = 0.15 * cos(t) * (1 if nome == "remo_d" else -1)
+
+
+# =================================================================== PORTO E NAVE (step 28)
+
+## Porto commerciale greco: magazzino con portico, banchina di pietra, pontile di legno sul mare,
+## bitte, anfore, casse, gru a capra e una vela arrotolata.
+static func porto() -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(2801)
+	# banchina di pietra lungo il lato del mare (+x)
+	r.add_child(scatola(Vector3(0.42, 0.1, 1.08), Vector3(0.36, 0.05, 0.02), "blocchi_greci"))
+	r.add_child(scatola(Vector3(0.46, 0.025, 1.12), Vector3(0.36, 0.112, 0.02), "pietra"))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.012, 0.004, 1.1), Vector3(0.18 + k * 0.07, 0.126, 0.02), "pietra_grezza"))
+	# pontile di legno su pali che entra nel mare
+	var pz := 0.26
+	for k in 4:
+		var x := 0.66 + k * 0.13
+		for s in [-1, 1]:
+			r.add_child(cilindro(0.017, 0.019, 0.26, Vector3(x, -0.01, pz + s * 0.12), "legno_vecchio", Vector3.ZERO, 7))
+			r.add_child(cilindro(0.02, 0.02, 0.012, Vector3(x, 0.01, pz + s * 0.12), "foglie_scure", Vector3.ZERO, 7))
+	for s in [-1, 1]:
+		r.add_child(scatola(Vector3(0.5, 0.025, 0.02), Vector3(0.82, 0.095, pz + s * 0.12), "legno_scuro"))
+	for k in 13:
+		var x := 0.59 + k * 0.038
+		r.add_child(scatola(Vector3(0.034, 0.014, 0.28), Vector3(x, 0.112 + rng.randf_range(-0.003, 0.003), pz), "legno" if k % 3 else "legno_chiaro", Vector3(0, rng.randf_range(-2, 2), 0)))
+	# bitte di pietra e di legno con le cime
+	for z in [-0.42, -0.08, 0.5]:
+		r.add_child(cilindro(0.022, 0.026, 0.07, Vector3(0.54, 0.16, z), "blocco", Vector3.ZERO, 10))
+		r.add_child(cilindro(0.03, 0.03, 0.014, Vector3(0.54, 0.198, z), "blocco", Vector3.ZERO, 10))
+	for x in [0.72, 1.02]:
+		for s in [-1, 1]:
+			r.add_child(cilindro(0.014, 0.016, 0.07, Vector3(x, 0.155, pz + s * 0.125), "legno_scuro", Vector3.ZERO, 7))
+	r.add_child(cilindro(0.03, 0.03, 0.014, Vector3(0.54, 0.177, -0.08), "corda", Vector3.ZERO, 10))
+	ramo(r, Vector3(0.54, 0.175, -0.08), Vector3(0.66, 0.02, -0.02), 0.005, "corda")
+	ramo(r, Vector3(1.02, 0.17, pz + 0.125), Vector3(1.1, 0.03, pz + 0.2), 0.005, "corda")
+	# magazzino del porto con portico di colonne sul davanti
+	var c := Node3D.new()
+	c.position = Vector3(-0.28, 0, -0.26)
+	r.add_child(c)
+	var lx := 0.62
+	var lz := 0.4
+	var h := 0.32
+	casa_muri(c, lx, lz, h, 2801, "intonaco")
+	porta_z(c, -0.1, lz * 0.5 + 0.01, 0.14, 0.22)
+	finestra_z(c, 0.16, 0.3, lz * 0.5 + 0.01, 0.07, 0.07)
+	finestra_x(c, 0.0, 0.28, lx * 0.5 + 0.01, 0.07, 0.08)
+	# fascia rossa sotto la gronda, alla greca
+	c.add_child(scatola(Vector3(lx + 0.01, 0.025, lz + 0.01), Vector3(0, 0.07 + h - 0.02, 0), "rosso_pompeiano"))
+	# portico: gradino, quattro colonne, architrave
+	var pd := 0.2
+	c.add_child(scatola(Vector3(lx + 0.06, 0.06, pd + 0.02), Vector3(0, 0.03, lz * 0.5 + pd * 0.5), "blocchi_greci"))
+	c.add_child(scatola(Vector3(lx + 0.08, 0.02, pd + 0.04), Vector3(0, 0.07, lz * 0.5 + pd * 0.5), "marmo"))
+	for k in 4:
+		_colonna(c, Vector3(-lx * 0.5 + 0.04 + k * (lx - 0.08) / 3.0, 0.08, lz * 0.5 + pd - 0.03), h - 0.03, 0.022)
+	c.add_child(scatola(Vector3(lx + 0.04, 0.04, 0.05), Vector3(0, 0.08 + h - 0.03 + 0.04, lz * 0.5 + pd - 0.03), "marmo"))
+	var tt := Node3D.new()
+	tt.position = Vector3(0, 0, pd * 0.5)
+	c.add_child(tt)
+	sottotetto(tt, lx, lz + pd, 0.07 + h + 0.03, 22.0)
+	tetto(tt, lx + 0.06, lz + pd, 0.07 + h + 0.03, 22.0, 2801)
+	# acroterio e antefisse sul colmo
+	var alt := ((lz + pd) * 0.5 + 0.07) * tan(deg_to_rad(22.0))
+	for s in [-1, 1]:
+		tt.add_child(sfera(0.025, Vector3(s * (lx * 0.5 + 0.1), 0.07 + h + 0.03 + alt + 0.05, 0), "terracotta", Vector3(1, 1.4, 0.5)))
+	# sotto il portico: anfore e sacchi
+	for i in 4:
+		c.add_child(anfora(Vector3(0.06 + i * 0.06, 0.08, lz * 0.5 + 0.07), 0.85))
+	c.add_child(sacco(Vector3(-0.22, 0.08, lz * 0.5 + 0.08), 0.3))
+	# insegna: un'anfora dipinta sopra la porta
+	c.add_child(scatola(Vector3(0.1, 0.06, 0.01), Vector3(-0.1, 0.07 + 0.27, lz * 0.5 + 0.006), "intonaco_bianco"))
+	c.add_child(sfera(0.014, Vector3(-0.1, 0.07 + 0.27, lz * 0.5 + 0.012), "terracotta", Vector3(1, 1.4, 0.3)))
+	# piazzale lastricato davanti al magazzino
+	r.add_child(scatola(Vector3(0.62, 0.012, 0.5), Vector3(-0.12, 0.006, 0.32), "pietra"))
+	# anfore impilate su una rastrelliera (sdraiate, a piramide)
+	var ra := Node3D.new()
+	ra.position = Vector3(-0.42, 0, 0.34)
+	r.add_child(ra)
+	ra.add_child(scatola(Vector3(0.3, 0.02, 0.2), Vector3(0, 0.02, 0), "legno_scuro"))
+	for f in 3:
+		for k in 3 - f:
+			var a := anfora(Vector3((k - (2 - f) * 0.5) * 0.085, 0.07 + f * 0.072, -0.07), 0.8)
+			a.rotation_degrees.x = 90
+			ra.add_child(a)
+	for k in 3:
+		ra.add_child(anfora(Vector3(-0.1 + k * 0.1, 0.03, 0.12), 0.9))
+	# casse impilate e un barile
+	r.add_child(cassa(Vector3(0.06, 0.012, 0.42), 10))
+	r.add_child(cassa(Vector3(0.18, 0.012, 0.44), -15))
+	r.add_child(cassa(Vector3(0.11, 0.1, 0.43), 30, 0.1))
+	r.add_child(scatola(Vector3(0.1, 0.004, 0.1), Vector3(0.11, 0.182, 0.43), "corda", Vector3(0, 30, 0)))
+	r.add_child(barile(Vector3(-0.06, 0.012, 0.52), 0.9))
+	r.add_child(cesta(Vector3(0.28, 0.125, 0.4), "pesce", 0.8))
+	# gru a capra di legno sulla banchina, sporta verso il mare con un carico di anfore appeso
+	var g := Node3D.new()
+	g.position = Vector3(0.42, 0.125, -0.28)
+	r.add_child(g)
+	var cima := Vector3(0.36, 0.62, 0.0)
+	for s in [-1, 1]:
+		ramo(g, Vector3(-0.04, 0, s * 0.12), cima, 0.016, "legno")
+	ramo(g, Vector3(-0.22, 0, 0), cima + Vector3(-0.02, -0.02, 0), 0.012, "legno_vecchio")
+	g.add_child(scatola(Vector3(0.02, 0.02, 0.26), Vector3(0.06, 0.18, 0), "legno_scuro"))
+	g.add_child(cilindro(0.03, 0.03, 0.2, Vector3(0.0, 0.1, 0), "legno_scuro", Vector3(90, 0, 0), 10))
+	g.add_child(cilindro(0.032, 0.032, 0.06, Vector3(0.0, 0.1, 0), "corda", Vector3(90, 0, 0), 10))
+	g.add_child(cilindro(0.025, 0.025, 0.04, cima, "legno_chiaro", Vector3(90, 0, 0), 10))
+	ramo(g, Vector3(0.0, 0.12, 0), cima, 0.004, "corda")
+	ramo(g, cima, cima + Vector3(0, -0.34, 0), 0.004, "corda")
+	var rete := Node3D.new()
+	rete.position = cima + Vector3(0, -0.42, 0)
+	g.add_child(rete)
+	rete.add_child(scatola(Vector3(0.09, 0.006, 0.09), Vector3.ZERO, "legno_chiaro"))
+	for k in 2:
+		rete.add_child(anfora(Vector3(-0.022 + k * 0.044, 0.003, 0), 0.6))
+	for s in [-1, 1]:
+		ramo(rete, Vector3(s * 0.045, 0, 0), Vector3(0, 0.08, 0), 0.003, "corda")
+	# vela arrotolata a strisce su un pennone, sulla banchina
+	var v := Node3D.new()
+	v.position = Vector3(0.3, 0.125, 0.1)
+	v.rotation_degrees.y = 8
+	r.add_child(v)
+	v.add_child(cilindro(0.008, 0.008, 0.5, Vector3(0, 0.02, 0), "legno_chiaro", Vector3(90, 0, 0), 6))
+	for k in 7:
+		v.add_child(cilindro(0.032, 0.032, 0.06, Vector3(0, 0.034, -0.18 + k * 0.06), "lino" if k % 2 == 0 else "bandiera_rossa", Vector3(90, 0, 0), 10))
+	for k in 4:
+		v.add_child(cilindro(0.035, 0.035, 0.008, Vector3(0, 0.034, -0.15 + k * 0.1), "corda", Vector3(90, 0, 0), 10))
+	# matassa di cima e un'ancora di ferro
+	r.add_child(cilindro(0.04, 0.04, 0.02, Vector3(0.2, 0.135, -0.48), "corda", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.02, 0.02, 0.022, Vector3(0.2, 0.136, -0.48), "legno_scuro", Vector3.ZERO, 8))
+	var an := _ancora_nave(Vector3(0.88, 0.12, pz), 90)
+	an.scale = Vector3.ONE * 0.6
+	r.add_child(an)
+	# stendardo con il colore del giocatore
+	r.add_child(cilindro(0.01, 0.008, 0.46, Vector3(0.52, 0.355, 0.5), "legno_scuro", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.006, 0.08, 0.12), Vector3(0.52, 0.53, 0.44), "giocatore"))
+	r.add_child(sfera(0.013, Vector3(0.52, 0.59, 0.5), "moneta"))
+	return r
+
+
+## Nave mercantile antica: scafo panciuto, vela quadra a strisce, due remi-timone a poppa,
+## anfore sul ponte e un marinaio al timone. La prua guarda verso +z.
+static func nave() -> Node3D:
+	var r := Node3D.new()
+	var b := Node3D.new()
+	b.name = "scafo"
+	r.add_child(b)
+	# scafo: una ciotola allungata, la murata scura e il ponte chiaro
+	var mi := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.15
+	sm.height = 0.15
+	sm.is_hemisphere = true
+	sm.radial_segments = 20
+	sm.rings = 8
+	mi.mesh = sm
+	mi.rotation_degrees.x = 180
+	mi.position = Vector3(0, 0.06, 0)
+	mi.scale = Vector3(0.95, 0.75, 2.6)
+	mi.material_override = materiale("legno")
+	b.add_child(mi)
+	var murata := cilindro(0.15, 0.15, 0.04, Vector3(0, 0.075, 0), "legno_scuro", Vector3.ZERO, 20)
+	murata.scale = Vector3(0.95, 1, 2.6)
+	b.add_child(murata)
+	var fascia := cilindro(0.152, 0.152, 0.012, Vector3(0, 0.062, 0), "pece", Vector3.ZERO, 20)
+	fascia.scale = Vector3(0.95, 1, 2.6)
+	b.add_child(fascia)
+	var ponte := cilindro(0.135, 0.135, 0.006, Vector3(0, 0.096, 0), "legno_chiaro", Vector3.ZERO, 20)
+	ponte.scale = Vector3(0.95, 1, 2.6)
+	b.add_child(ponte)
+	for k in 5:
+		b.add_child(scatola(Vector3(0.006, 0.002, 0.62), Vector3(-0.08 + k * 0.04, 0.1, 0), "legno_vecchio"))
+	# dritto di prua con lo sperone e gli occhi dipinti
+	ramo(b, Vector3(0, 0.05, 0.37), Vector3(0, 0.17, 0.41), 0.014, "legno_scuro")
+	b.add_child(sfera(0.012, Vector3(0, 0.18, 0.412), "giocatore"))
+	b.add_child(scatola(Vector3(0.02, 0.025, 0.08), Vector3(0, 0.02, 0.4), "legno_scuro", Vector3(-15, 0, 0)))
+	for s in [-1, 1]:
+		b.add_child(sfera(0.016, Vector3(s * 0.06, 0.075, 0.33), "intonaco_bianco", Vector3(0.4, 1, 1.4)))
+		b.add_child(sfera(0.008, Vector3(s * 0.067, 0.075, 0.335), "buio", Vector3(0.5, 1, 1)))
+	# poppa alta e ricurva a collo di cigno
+	var punti := [Vector3(0, 0.07, -0.36), Vector3(0, 0.14, -0.41), Vector3(0, 0.22, -0.42), Vector3(0, 0.27, -0.39), Vector3(0, 0.28, -0.35)]
+	for k in punti.size() - 1:
+		ramo(b, punti[k], punti[k + 1], 0.018 - k * 0.003, "legno_scuro")
+	b.add_child(sfera(0.014, Vector3(0, 0.275, -0.345), "moneta"))
+	# piccola tolda di poppa
+	b.add_child(scatola(Vector3(0.18, 0.02, 0.1), Vector3(0, 0.11, -0.28), "legno"))
+	# due remi-timone ai lati della poppa
+	for s in [-1, 1]:
+		ramo(b, Vector3(s * 0.12, 0.17, -0.25), Vector3(s * 0.16, -0.04, -0.4), 0.008, "legno_chiaro")
+		b.add_child(scatola(Vector3(0.012, 0.09, 0.05), Vector3(s * 0.163, -0.03, -0.405), "legno_chiaro", Vector3(-35, 0, 0)))
+		b.add_child(scatola(Vector3(0.03, 0.03, 0.03), Vector3(s * 0.13, 0.11, -0.27), "legno_scuro"))
+	# carico sul ponte: anfore in file e casse a prua
+	for i in 6:
+		b.add_child(anfora(Vector3(-0.05 + (i % 3) * 0.05, 0.096, -0.14 + (i / 3) * 0.06), 0.62))
+	b.add_child(cassa(Vector3(-0.04, 0.096, 0.2), 10, 0.07))
+	b.add_child(cassa(Vector3(0.05, 0.096, 0.22), -12, 0.07))
+	b.add_child(sacco(Vector3(0.0, 0.08, 0.28), 0.4))
+	# albero, pennone e stralli
+	b.add_child(cilindro(0.013, 0.01, 0.56, Vector3(0, 0.37, 0.05), "legno_scuro", Vector3.ZERO, 8))
+	b.add_child(cilindro(0.008, 0.006, 0.52, Vector3(0, 0.6, 0.06), "legno_chiaro", Vector3(0, 0, 90), 6))
+	ramo(b, Vector3(0, 0.64, 0.05), Vector3(0, 0.17, 0.4), 0.003, "corda")
+	ramo(b, Vector3(0, 0.64, 0.05), Vector3(0, 0.27, -0.37), 0.003, "corda")
+	for s in [-1, 1]:
+		ramo(b, Vector3(0, 0.6, 0.05), Vector3(s * 0.13, 0.1, 0.0), 0.0025, "corda")
+	var pennello := Node3D.new()
+	pennello.name = "pennello"
+	pennello.position = Vector3(0, 0.64, 0.05)
+	b.add_child(pennello)
+	pennello.add_child(scatola(Vector3(0.004, 0.025, 0.07), Vector3(0, 0, -0.035), "giocatore"))
+	# vela quadra a strisce verticali bianche e rosse, gonfiata in avanti
+	var vela := Node3D.new()
+	vela.name = "vela"
+	vela.position = Vector3(0, 0.595, 0.075)
+	b.add_child(vela)
+	var colonne := 7
+	var righe := 6
+	var larg := 0.48
+	var alt := 0.36
+	for j in colonne:
+		var xn := (j + 0.5) / colonne * 2.0 - 1.0
+		for k in righe:
+			var yn := (k + 0.5) / righe
+			var gonfio := 0.06 * (1.0 - xn * xn * 0.7) * sin(PI * (0.25 + yn * 0.75))
+			var pezzo := scatola(Vector3(larg / colonne + 0.003, alt / righe + 0.003, 0.006), Vector3(xn * larg * 0.5, -yn * alt, gonfio), "lino" if j % 2 == 0 else "bandiera_rossa", Vector3(0, -xn * 25, 0))
+			vela.add_child(pezzo)
+	# scotte dagli angoli bassi della vela ai fianchi
+	for s in [-1, 1]:
+		ramo(b, Vector3(s * 0.24, 0.24, 0.09), Vector3(s * 0.13, 0.1, -0.12), 0.0025, "corda")
+	# il marinaio al timone
+	var uomo := portatore("")
+	uomo.scale = Vector3.ONE * 0.66
+	uomo.position = Vector3(0, 0.12, -0.27)
+	b.add_child(uomo)
+	r.set_meta("carico", "nave")
+	return r
+
+
+## Navigazione a vela: la nave rolla e beccheggia piano, la vela si gonfia, il pennello sventola.
+static func posa_vela(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale * TAU
+	var b: Node3D = modello.get_node("scafo")
+	b.rotation.z = 0.05 * sin(t)
+	b.rotation.x = 0.025 * cos(t)
+	b.position.y = 0.008 * sin(t * 2.0)
+	var vela: Node3D = b.get_node("vela")
+	vela.scale.z = 1.0 + 0.35 * (0.5 + 0.5 * sin(t))
+	var pennello: Node3D = b.get_node("pennello")
+	pennello.rotation.y = 0.35 * sin(t * 2.0)
+	var corpo: Node3D = (b.get_child(b.get_child_count() - 1) as Node3D).get_node("corpo")
+	corpo.get_node("braccio_d").rotation = Vector3(-0.6 + 0.15 * sin(t), 0, 0.3)
+	corpo.get_node("braccio_s").rotation = Vector3(-0.6 + 0.15 * sin(t), 0, -0.3)
 
 
 # =================================================================== METALLO (step 07)

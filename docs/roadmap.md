@@ -64,7 +64,7 @@ Piano: vedi [`storia.md`](storia.md), «Il seguito in Sicilia».
 | 25 | Mappa della Sicilia con la forma reale: mappa di gioco «Zancle e l'Etna» (Milazzo, Messina, lo Stretto con la punta della Calabria, Taormina, l'Etna, Catania) | fatto (v0.30.0); Siracusa, Palermo ed Eolie sulla mappa della campagna con lo step 27 |
 | 26 | Nuovi popoli dell'isola: Siculi (vasaio e ceramiche, pastori) e Sicani (ossidiana, montanari), giocabili (vedi [`siculi_sicani.md`](siculi_sicani.md)) | fatto (v0.31.0) |
 | 27 | Campagna «Il fuoco sotto la montagna» (6 missioni a Zancle con il popolo della Soglia, cenere dell'Etna, due finali; vedi [`fuoco.md`](fuoco.md)) | fatto (v0.32.0) |
-| 28 | Lo Stretto: navi, porti e traversate tra Calabria e Sicilia | |
+| 28 | Lo Stretto: porto, nave a vela che attraversa lo Stretto fino a un altro porto o va al largo, commercio delle anfore (vedi [`stretto.md`](stretto.md)) | fatto (v0.33.0) |
 | 29 | Finale nuovo: il Mercante senza Volto e l'ultimo segreto del Sigillo | |
 
 ## Fase 5 — Idee per le versioni future

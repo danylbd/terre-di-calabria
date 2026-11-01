@@ -164,3 +164,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Piano in docs/fuoco.md. Sei missioni a Zancle con il popolo della Soglia: la traversata, Zancle, i vasai di Pantalica, la neve dell'Etna (la cenere brucia i campi), il vento delle Eolie, il cuore del fuoco (finale secondo la scelta della Soglia).
 - `Missione.CAMPAGNE`: Greci → Soglia → Sicilia, ognuna si apre finita la precedente. Il bot di test_campagna ora traccia strade e costruisce più edifici uguali: gioca «La traversata» e «Il naufragio» fino in fondo.
 - Nuovo test `test_fuoco`; tutti i 28 test OK. Versione 0.32.0. Prossimo: step 28, navi e porti sullo Stretto.
+
+## 2026-11-02 — step 28 lo Stretto: navi e porti (Fase 6)
+- Porto per tutti i popoli: riceve anfore, una nave a vela salpa e va fino a un altro porto del giocatore (rotta sul mare casella per casella, attraverso lo Stretto) o al largo, e torna con i ducati.
+- Modelli `porto` e `nave` (8 direzioni × 8 fotogrammi) fatti da un subagente. Trovato nel test: un porto fuori dai confini viene perso, come ogni edificio (corretto).
+- Nuovo test `test_stretto`; tutti i 29 test OK. Versione 0.33.0. Prossimo: step 29, finale nuovo.

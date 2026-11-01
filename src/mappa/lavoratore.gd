@@ -5,7 +5,7 @@ extends Colono
 ## e la posa alla bandierina; oppure (segheria, mulino, forno, pozzo) la fa dentro l'edificio,
 ## consumando le merci che gli arrivano, ed esce a posare il prodotto.
 
-enum Stato { ARRIVO, DENTRO, ANDATA, LAVORO, RITORNO, ESCE_CON_MERCE }
+enum Stato { ARRIVO, DENTRO, ANDATA, LAVORO, RITORNO, ESCE_CON_MERCE, NAVIGA }
 
 const RAGGIO := 7
 const PAUSA := 3.5
@@ -36,6 +36,11 @@ var _semina := false                 # il contadino sta seminando (non mietendo)
 var _turno := 0                      # per chi produce più merci a turno (ovile: latte e lana)
 var _coltura := ""                   # per i contadini: grano, vite, orto, agrumi
 var _foglio_terra := ""              # foglio da usare a terra (la barca lo cambia sull'acqua)
+var _partenza_nave := Vector2.ZERO   # il porto: casella di mare da cui la nave parte e a cui torna
+var _rotta_nave: Array[Vector2] = []  # il porto: le tappe sul mare dell'andata
+const VELOCITA_NAVE := 2.2
+var _velocita_terra := 1.15
+const RAGGIO_ROTTA := 26
 var _attrezzo_scelto := ""           # quello che il fabbro sta forgiando
 var entrato := false                 # è già arrivato all'edificio almeno una volta
 var _attesa := 0.0
@@ -67,11 +72,11 @@ func _porta() -> Vector2:
 	return Vector2(edificio.bandiera) + Vector2(0.5, 0.5)
 
 
-## La barca del pesce spada: sull'acqua il pescatore rema, a terra cammina.
+## La barca del pesce spada e la nave del porto: sull'acqua navigano, a terra si cammina.
 func imposta_foglio(foglio: String) -> void:
 	_foglio_terra = foglio
-	if mestiere == "pesca_spada" and dati and dati.tipo(int(pos.x), int(pos.y)) == DatiMappa.Terreno.ACQUA:
-		foglio = "barca_remi"
+	if mestiere in ["pesca_spada", "porto"] and dati and dati.tipo(int(pos.x), int(pos.y)) == DatiMappa.Terreno.ACQUA:
+		foglio = "nave" if mestiere == "porto" and ResourceLoader.exists("res://assets/grafica/nave.png") else "barca_remi"
 	super.imposta_foglio(foglio)
 
 
@@ -80,7 +85,7 @@ func _process(delta: float) -> void:
 	if not is_instance_valid(edificio) or edificio.is_queued_for_deletion():
 		queue_free()
 		return
-	if mestiere == "pesca_spada" and visible:
+	if mestiere in ["pesca_spada", "porto"] and visible:
 		imposta_foglio(_foglio_terra)
 	match stato:
 		Stato.DENTRO:
@@ -107,7 +112,16 @@ func _on_arrivato(_c: Colono) -> void:
 			if _foglio_lavoro != "":
 				imposta_foglio(_foglio_lavoro)
 				_anim.play()
+		Stato.NAVIGA:
+			# il porto: arrivata alla meta, la nave torna indietro con il guadagno
+			stato = Stato.ESCE_CON_MERCE
+			var ritorno: Array[Vector2] = _rotta_nave.duplicate()
+			ritorno.reverse()
+			ritorno.append_array([_partenza_nave, _porta()] as Array[Vector2])
+			percorri(ritorno)
 		Stato.RITORNO, Stato.ESCE_CON_MERCE:
+			if mestiere == "porto":
+				velocita = _velocita_terra
 			logistica.produci(_merce_prodotta(), edificio)
 			_turno += 1
 			imposta_foglio(_foglio_cammino)
@@ -239,6 +253,8 @@ func _fine_lavoro() -> void:
 				_torna(Merce.FOGLI["pesce_spada"])
 			else:
 				_rientra_vuoto()
+		"porto":
+			_salpa()
 		"pescatore":
 			if risorse.pesca(_acqua):
 				Suono.suona_in("tuffo", global_position, -4.0)
@@ -365,3 +381,105 @@ func _segnala(testo: String) -> void:
 	if not _avvisato:
 		_avvisato = true
 		edificio.villaggio.messaggio.emit(testo, true)
+
+
+## Il porto: la nave parte con le anfore, attraversa il mare fino a un altro porto (lo Stretto) o al largo,
+## e torna con il guadagno. Senza mare libero si commercia sulla riva.
+func _salpa() -> void:
+	var partenza := _acqua_vicina(Vector2i(edificio.centro()), 4)
+	_rotta_nave = rotta_nave(partenza) if partenza.x >= 0 else ([] as Array[Vector2])
+	if _rotta_nave.is_empty():
+		_torna(Merce.FOGLI.get(_merce_prodotta(), "portatore_nessuno"))
+		return
+	visible = true
+	_partenza_nave = Vector2(partenza) + Vector2(0.5, 0.5)
+	pos = _partenza_nave
+	stato = Stato.NAVIGA
+	_velocita_terra = velocita
+	velocita = VELOCITA_NAVE
+	imposta_foglio(_foglio_cammino)
+	percorri(_rotta_nave.duplicate())
+
+
+## Le tappe della nave: fino al porto più vicino raggiungibile per mare (la traversata dello Stretto),
+## altrimenti dritta al largo, il più lontano possibile. Vuota se non c'è mare libero.
+func rotta_nave(da: Vector2i) -> Array[Vector2]:
+	var migliore: Array[Vector2] = []
+	for e in edificio.villaggio.edifici.values():
+		if e == edificio or e.tipo != "porto" or not e.finito:
+			continue
+		var w := _acqua_vicina(Vector2i(e.centro()), 4)
+		if w.x < 0:
+			continue
+		var r := _rotta_sul_mare(da, w)
+		if not r.is_empty() and (migliore.is_empty() or r.size() < migliore.size()):
+			migliore = r
+	if not migliore.is_empty():
+		return migliore
+	var meta := _meta_al_largo(da)
+	if meta.x >= 0:
+		migliore.append(Vector2(meta) + Vector2(0.5, 0.5))
+	return migliore
+
+
+## Il percorso più breve sul mare da una casella d'acqua all'altra (le tappe, senza la partenza).
+func _rotta_sul_mare(da: Vector2i, a: Vector2i) -> Array[Vector2]:
+	var da_dove := {da: da}
+	var coda: Array[Vector2i] = [da]
+	var i := 0
+	while i < coda.size():
+		var c: Vector2i = coda[i]
+		i += 1
+		if c == a:
+			break
+		for dy in range(-1, 2):
+			for dx in range(-1, 2):
+				var n := c + Vector2i(dx, dy)
+				if not da_dove.has(n) and dati.dentro(n.x, n.y) and dati.tipo(n.x, n.y) == DatiMappa.Terreno.ACQUA:
+					da_dove[n] = c
+					coda.append(n)
+	var rotta: Array[Vector2] = []
+	if not da_dove.has(a):
+		return rotta
+	var c := a
+	while c != da:
+		rotta.push_front(Vector2(c) + Vector2(0.5, 0.5))
+		c = da_dove[c]
+	return rotta
+
+
+## Al largo, dritto e il più lontano possibile.
+func _meta_al_largo(da: Vector2i) -> Vector2i:
+	var migliore := Vector2i(-1, -1)
+	var lontano := 0.0
+	for y in range(da.y - RAGGIO_ROTTA, da.y + RAGGIO_ROTTA + 1, 2):
+		for x in range(da.x - RAGGIO_ROTTA, da.x + RAGGIO_ROTTA + 1, 2):
+			var c := Vector2i(x, y)
+			var d := Vector2(c - da).length()
+			if d > RAGGIO_ROTTA or d <= lontano or not risorse._al_largo(c) or not _rotta_libera(da, c):
+				continue
+			lontano = d
+			migliore = c
+	return migliore
+
+
+func _acqua_vicina(c: Vector2i, raggio: int) -> Vector2i:
+	var migliore := Vector2i(-1, -1)
+	var meglio := INF
+	for y in range(c.y - raggio, c.y + raggio + 1):
+		for x in range(c.x - raggio, c.x + raggio + 1):
+			var d := Vector2(x - c.x, y - c.y).length()
+			if d < meglio and dati.dentro(x, y) and dati.tipo(x, y) == DatiMappa.Terreno.ACQUA:
+				meglio = d
+				migliore = Vector2i(x, y)
+	return migliore
+
+
+## Una rotta dritta che passa solo sul mare.
+func _rotta_libera(a: Vector2i, b: Vector2i) -> bool:
+	var passi := int(Vector2(b - a).length() * 3.0) + 1
+	for k in passi + 1:
+		var p := (Vector2(a) + Vector2(0.5, 0.5)).lerp(Vector2(b) + Vector2(0.5, 0.5), float(k) / passi)
+		if not dati.dentro(int(p.x), int(p.y)) or dati.tipo(int(p.x), int(p.y)) != DatiMappa.Terreno.ACQUA:
+			return false
+	return true
