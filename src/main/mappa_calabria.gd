@@ -25,6 +25,12 @@ const COSTA := [
 	Vector2(1024, 180), Vector2(1035, 157), Vector2(1060, 94), Vector2(1067, 48), Vector2(1074, -16),
 ]
 ## la punta nord-orientale della Sicilia: Capo d'Orlando, Milazzo, Capo Peloro, Messina, Taormina, Catania
+## le isole Eolie (coordinate vere): centro e raggio in pixel del foglio
+const EOLIE := [
+	["Stromboli", Vector2(560, 649), 9.0], ["Panarea", Vector2(522, 726), 4.0], ["Salina", Vector2(430, 753), 9.0],
+	["Lipari", Vector2(466, 790), 11.0], ["Vulcano", Vector2(470, 826), 8.0], ["Alicudi", Vector2(310, 771), 4.0],
+	["Filicudi", Vector2(352, 766), 5.0],
+]
 const SICILIA := [
 	Vector2(340, 894), Vector2(394, 935), Vector2(484, 926), Vector2(570, 899), Vector2(628, 899), Vector2(682, 881),
 	Vector2(718, 885), Vector2(689, 922), Vector2(664, 986), Vector2(628, 1031), Vector2(588, 1076), Vector2(556, 1145),
@@ -75,7 +81,7 @@ const ZANCLE := Vector2(600, 860)
 var _zancle: Button                   # partita libera in Sicilia, oltre lo Stretto
 var _fuoco: Button                    # la campagna in Sicilia (docs/fuoco.md)
 var _canto: Button                    # l'epilogo «L'ultimo canto»
-const CANTO := Vector2(1000, 660)
+const CANTO := Vector2(1160, 650)
 const FUOCO := Vector2(470, 1040)
 const MONTELEONE := Vector2(880, 735)
 var _fatte := []
@@ -261,6 +267,9 @@ func _draw() -> void:
 	var interno := PackedVector2Array(COSTA.map(func(v): return _p(v.lerp(Vector2(980, 560), 0.05))))
 	draw_colored_polygon(interno, Palette.VERDE_ULIVO)
 	draw_colored_polygon(PackedVector2Array(SICILIA.map(func(v): return _p(v))), Palette.ARGILLA.darkened(0.08))
+	for isola in EOLIE:
+		_ellisse(isola[1], Vector2(isola[2], isola[2] * 0.8), Palette.ARGILLA.darkened(0.08))
+	draw_circle(_p(Vector2(560, 645)), 2.5 * _scala(), Color("c8442a"))      # il fuoco di Stromboli
 	costa.append(costa[0])
 	draw_polyline(costa, Palette.INCHIOSTRO, 3.0 * s, true)
 	# montagne: macchie scure con piccole cime, la Sila coperta di boschi
@@ -299,6 +308,7 @@ func _draw() -> void:
 	_scritta("Mar Tirreno", Vector2(480, 520), 40, Color(Palette.CALCE, 0.85))
 	_scritta("Mar Ionio", Vector2(1440, 820), 40, Color(Palette.CALCE, 0.85))
 	_scritta("Sicilia", Vector2(470, 1010), 26, Palette.INCHIOSTRO)
+	_scritta("Isole Eolie", Vector2(440, 700), 16, Color(Palette.CALCE, 0.9))
 	_scritta("lo Stretto", Vector2(640, 960), 16, Color(Palette.CALCE, 0.9))
 	# il cammino della campagna dei Greci
 	var cammino := PackedVector2Array()
