@@ -51,7 +51,7 @@ func imposta_modalita(m: String) -> void:
 func dichiara_guerra() -> void:
 	guerra_dichiarata = true
 	tregua = tempo + PREAVVISO
-	messaggio.emit("I Brettii dichiarano guerra! Fra due minuti attaccheranno: prepara i forti", true)
+	messaggio.emit(Popoli.testo("I Brettii dichiarano guerra! Fra due minuti attaccheranno: prepara i forti"), true)
 	Suono.suona("errore")
 
 
@@ -99,7 +99,7 @@ func espandi() -> Edificio:
 				migliore = c
 	if migliore.x < 0:
 		return null
-	return villaggio.metti_nemico("torre_brettia", migliore, POPOLO, 1)
+	return villaggio.metti_nemico(Popoli.torre_nemica(), migliore, POPOLO, 1)
 
 
 func _posto_libero(c: Vector2i) -> bool:

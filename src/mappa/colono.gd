@@ -7,6 +7,7 @@ signal arrivato(c: Colono)
 
 var dati: DatiMappa
 var velocita := 1.15                     # caselle al secondo
+var agile := false                       # Brettii: più veloce nei boschi e in montagna
 var pos := Vector2.ZERO                  # posizione attuale in coordinate di mappa
 var _punti: Array[Vector2] = []
 var _foglio := ""
@@ -51,6 +52,8 @@ func _process(delta: float) -> void:
 	if _punti.is_empty():
 		return
 	var passo := velocita * delta
+	if agile and _in_montagna():
+		passo *= Popoli.AGILITA
 	while passo > 0.0 and _punti.size() > 0:
 		var meta: Vector2 = _punti[0]
 		var verso := meta - pos
@@ -79,3 +82,8 @@ func _process(delta: float) -> void:
 func _ferma() -> void:
 	_anim.pause()
 	_anim.frame = 0
+
+
+func _in_montagna() -> bool:
+	var c := Vector2i(floori(pos.x), floori(pos.y))
+	return dati.dentro(c.x, c.y) and (dati.tipo(c.x, c.y) == DatiMappa.Terreno.BOSCO or dati.quota(pos.x, pos.y) > Popoli.QUOTA_MONTAGNA)

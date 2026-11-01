@@ -36,13 +36,16 @@ var _casella_mouse := Vector2i(-1, -1)
 var _evidenziato: Edificio
 var _ascolto_mare := 0.0
 var monumenti: Monumenti
-var mappa := "costa_ionica"   # quale mappa si gioca (GeneratoreMappa.MAPPE)
+var mappa := "costa_ionica"
+var popolo := "greci"         # il popolo del giocatore (Popoli.DATI)   # quale mappa si gioca (GeneratoreMappa.MAPPE)
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
 
 
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(Color("16384f"))
 	mappa = _mappa_da_usare()
+	popolo = _popolo_da_usare()
+	Popoli.giocatore = popolo
 	dati = GeneratoreMappa.crea(mappa, SEME)
 
 	terreno = Terreno.new()
@@ -323,7 +326,7 @@ func _scegli_edificio(tipo: String) -> void:
 		_fantasma = Sprite2D.new()
 		_fantasma.centered = false
 		oggetti.add_child(_fantasma)
-	_fantasma.texture = Sprites.texture(tipo)
+	_fantasma.texture = Sprites.texture(Popoli.sprite(tipo, Popoli.giocatore))
 	_fantasma.offset = -Sprites.ancora(tipo)
 	_fantasma.visible = true
 	_casella_mouse = Vector2i(-99, -99)
@@ -599,6 +602,15 @@ func _metti_nomi_luoghi() -> void:
 		l.position = dati.a_schermo(c.x + 0.5, c.y + 0.5) - l.get_combined_minimum_size() * 0.5 - Vector2(0, 40)
 
 
+## Il popolo del salvataggio da caricare; la campagna è dei Greci; altrimenti quello scelto nel menu.
+func _popolo_da_usare() -> String:
+	if Salvataggio.da_caricare != "":
+		return Salvataggio.popolo_di(Salvataggio.da_caricare)
+	if Impostazioni.missione != "":
+		return "greci"
+	return Impostazioni.popolo if Popoli.DATI.has(Impostazioni.popolo) else "greci"
+
+
 ## La mappa del salvataggio da caricare, quella della missione o quella scelta nel menu.
 func _mappa_da_usare() -> String:
 	if Salvataggio.da_caricare != "":
@@ -633,7 +645,7 @@ func _metti_brettii() -> void:
 					migliore = c
 		if migliore.x >= 0:
 			presi.append(migliore)
-			villaggio.metti_nemico("torre_brettia", migliore, 2, 4 if Impostazioni.modalita == "guerra" else 3)
+			villaggio.metti_nemico(Popoli.torre_nemica(), migliore, 2, 4 if Impostazioni.modalita == "guerra" else 3)
 
 
 func _posto_libero(c: Vector2i, taglia: int) -> bool:

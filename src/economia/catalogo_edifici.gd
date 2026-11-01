@@ -64,7 +64,7 @@ const EDIFICI := {
 	"tessitura": {"nome": "Tessitura", "taglia": 2, "costo": {"assi": 3, "pietra": 1}, "categoria": "Cibo",
 		"tempo": 20.0, "lavoratore": "portatore_nessuno", "ingressi": {"lana": 4}, "produce": "stoffa", "durata": 8.0,
 		"descrizione": "Fila e tesse la lana: la stoffa è un lusso che fa crescere il villaggio."},
-	"agora": {"nome": "Agorà", "taglia": 3, "costo": {"assi": 6, "pietra": 8}, "categoria": "Base",
+	"agora": {"nome": "Agorà", "popolo": "greci", "taglia": 3, "costo": {"assi": 6, "pietra": 8}, "categoria": "Base",
 		"tempo": 45.0, "lavoratore": "portatore_nessuno", "vende": 8, "produce": "", "durata": 6.0,
 		"descrizione": "La piazza del mercato dei Greci: vende olio, vino, anfore, stoffa e altro in cambio di ducati, e con i ducati compra quello che scegli."},
 	"pescatore": {"nome": "Pescatore", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
@@ -105,6 +105,9 @@ const EDIFICI := {
 	"armaiolo": {"nome": "Armaiolo", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Metallo",
 		"tempo": 26.0, "attrezzo": "martello", "lavoratore": "portatore_nessuno", "ingressi": {"lingotti": 4, "assi": 2},
 		"produce": "armi", "durata": 9.0, "descrizione": "Forgia lance, scudi ed elmi per gli opliti."},
+	"pecificio": {"nome": "Pecificio", "popolo": "brettii", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Base",
+		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 2}, "produce": "pece", "durata": 8.0,
+		"descrizione": "Cuoce la resina dei pini della Sila e ne ricava la pece: un lusso dei Brettii che fa crescere le case."},
 	"carbonaia": {"nome": "Carbonaia", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Metallo",
 		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "carbone", "durata": 9.0,
 		"descrizione": "Cuoce lentamente i tronchi sotto la terra e ne ricava carbone."},
@@ -133,7 +136,7 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"farina": "Farina", "acqua": "Acqua", "pane": "Pane", "pesce": "Pesce", "maiale": "Maiali", "carne": "Carne",
 	"latte": "Latte", "lana": "Lana", "formaggio": "Formaggio", "miele": "Miele", "olive": "Olive", "olio": "Olio",
 	"uva": "Uva", "vino": "Vino", "ortaggi": "Ortaggi", "cipolle": "Cipolle", "agrumi": "Agrumi",
-	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "lingotti": "Lingotti",
+	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
 	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
 	"ducati": "Ducati", "stoffa": "Stoffa", "armi": "Armi"}
@@ -150,7 +153,7 @@ const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "un
 ## cibo che i minatori accettano (uno qualsiasi per ogni turno di lavoro)
 const CIBI := ["pane", "pesce", "carne", "formaggio", "ortaggi", "cipolle"]
 ## merci di lusso: fanno nascere i coloni più in fretta
-const LUSSO := ["vino", "agrumi", "miele", "stoffa"]
+const LUSSO := ["vino", "agrumi", "miele", "stoffa", "pece"]
 ## merci sempre visibili nella barra delle scorte (le altre compaiono quando ce ne sono)
 const RISORSE_BASE := ["tronchi", "assi", "pietra"]
 
@@ -159,9 +162,12 @@ static func dati(tipo: String) -> Dictionary:
 	return EDIFICI[tipo]
 
 
-static func della_categoria(cat: String) -> Array:
+## Gli edifici di una categoria; con un popolo, senza gli edifici unici degli altri popoli.
+static func della_categoria(cat: String, popolo := "") -> Array:
 	var r := []
 	for k in EDIFICI:
+		if popolo != "" and EDIFICI[k].get("popolo", popolo) != popolo:
+			continue
 		if EDIFICI[k]["categoria"] == cat:
 			r.append(k)
 	return r
