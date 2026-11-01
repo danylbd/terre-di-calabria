@@ -10,7 +10,7 @@ const COLORI := {"tronchi": Color("8a5a32"), "assi": Color("d8b07a"), "pietra": 
 	"cipolle": Color("a8304a"), "agrumi": Color("f0a020"), "pesce_spada": Color("5a7a9a"), "ferro": Color("8a4a3a"),
 	"carbone": Color("2a2624"), "lingotti": Color("7a8088"), "attrezzi": Color("a0a8b0"), "argilla": Color("b0603a"),
 	"anfore": Color("c8703a"), "sale": Color("f0f0f0"), "argento": Color("c8ccd4"), "ducati": Color("e8c040"),
-	"stoffa": Color("8a3a8a"), "armi": Color("b0802a"), "pece": Color("1e1a16"), "tegole": Color("b8482e")}
+	"stoffa": Color("8a3a8a"), "armi": Color("b0802a"), "pece": Color("1e1a16"), "tegole": Color("b8482e"), "bozzoli": Color("f4f0e0"), "seta": Color("2a9a6a")}
 
 var _etichette := {}
 var _scatole := {}
