@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.41.0** (sfide). Tutti i test automatici passano (32 script in `tools/test/`).
+Ultima release: **v0.42.0** (bilanciamento). Tutti i test automatici passano (32 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.41.0** (sfide). Tutti i test automatici passano (32 script 
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (sfide): tre sfide senza sconfitta con il record del tempo (`Missione.SFIDE`, `docs/sfide.md`), voce «Sfide» nel menu e «Campagne» al posto di «Campagna dei Greci»; test `test_sfide`. Prima: rifinitura grafica G6 finita (v0.40.0).
+Ultime modifiche significative (bilanciamento): `test_durata` accetta `POPOLO`; misure per i sette popoli in `docs/bilanciamento.md` (catena di base quasi uguale per tutti, partite stabili). Prima: sfide (v0.41.0).
 
 ## In sviluppo
 
@@ -40,6 +40,5 @@ Ultime modifiche significative (sfide): tre sfide senza sconfitta con il record 
 ## Prossima attività consigliata
 
 Tutto il piano possibile senza il proprietario è fatto (rifinitura G6 compresa). Lavori utili che non dipendono da nessuno:
-1. **Bilanciamento**: test di durata per ogni popolo (estendere `test_durata` con `POPOLO`).
-2. Colori dei frombolieri brettii giocabili (oggi rossi da nemici).
+1. Colori dei frombolieri brettii giocabili (oggi rossi da nemici).
 In attesa del proprietario: Fase 5, musica vera, iPhone, chi è Rocco.
