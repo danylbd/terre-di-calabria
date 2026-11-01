@@ -622,10 +622,13 @@ func _popolo_da_usare() -> String:
 	if Salvataggio.da_caricare != "":
 		return Salvataggio.popolo_di(Salvataggio.da_caricare)
 	if Impostazioni.missione != "":
-		if Missione.MISSIONI[Impostazioni.missione].get("popolo", "greci") == "scelto":
-			var p := Missione.popolo_soglia()
-			return p if Popoli.DATI.has(p) else "greci"
-		return "greci"
+		var pm: String = Missione.MISSIONI[Impostazioni.missione].get("popolo", "greci")
+		match pm:
+			"scelto":
+				pm = Missione.popolo_soglia()
+			"libero":
+				pm = Impostazioni.popolo
+		return pm if Popoli.DATI.has(pm) else "greci"
 	return Impostazioni.popolo if Popoli.DATI.has(Impostazioni.popolo) else "greci"
 
 

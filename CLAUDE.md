@@ -73,4 +73,4 @@ godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCa
 
 ## Stato
 
-Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve (release v0.40.0): Fasi 1, 2, 3, 4 e 6 fatte, più Monteleone (V1–V3) e la rifinitura grafica G6 (sette popoli giocabili, ognuno con tutti gli edifici nel suo stile; tre mappe; quattro campagne). Restano: esportazione iPhone (serve un Mac, domanda aperta), Fase 5 (idee da Coral Island: **prima di progettarla aspetta le risposte del proprietario**, domande già scritte), bilanciamento e sfide.
+Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve (release v0.41.0): Fasi 1, 2, 3, 4 e 6 fatte, più Monteleone (V1–V3), la rifinitura grafica G6 e le sfide (sette popoli giocabili, ognuno con tutti gli edifici nel suo stile; tre mappe; quattro campagne). Restano: esportazione iPhone (serve un Mac, domanda aperta), Fase 5 (idee da Coral Island: **prima di progettarla aspetta le risposte del proprietario**, domande già scritte), bilanciamento.

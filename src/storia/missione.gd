@@ -18,8 +18,43 @@ const CAMPAGNA_FUOCO := ["fuoco_traversata", "fuoco_zancle", "fuoco_vasai", "fuo
 ## l'epilogo (docs/ultimo_canto.md): il Sigillo intero torna sulla Soglia, e Rocco si svela
 const CAMPAGNA_FINALE := ["ultimo_canto"]
 const CAMPAGNE := [CAMPAGNA_GRECI, CAMPAGNA_SOGLIA, CAMPAGNA_FUOCO, CAMPAGNA_FINALE]
+## le sfide (docs/sfide.md): sempre aperte, senza sconfitta; il cronometro segna il record
+const SFIDE := ["sfida_200", "sfida_seta", "sfida_alluvione"]
 
 const MISSIONI := {
+	"sfida_200": {
+		"titolo": "Nutri 200 abitanti",
+		"sfida": true, "popolo": "libero", "mappa": "costa_ionica", "villaggio": "pieno", "coloni": 40,
+		"scorte": {"tronchi": 30, "assi": 60, "pietra": 60, "grano": 10, "pesce": 10},
+		"inizio": [["Rocco della Lira", "Una sfida, ragazzi: quanto ci mettete a far vivere duecento persone in questo villaggio? Il tempo corre, ma nessuno vi caccia: si può giocare con calma, il record aspetta."]],
+		"obiettivi": [
+			{"testo": "Fai crescere il villaggio fino a 200 coloni", "aiuto": "Abitazioni, tanto cibo e il lusso del tuo popolo: le case con il lusso fanno nascere i coloni più in fretta.", "prova": "popolazione", "n": 200},
+		],
+		"fine": [["Rocco della Lira", "Duecento! Ho contato i comignoli due volte. Il tempo è scritto nel libro dei record."]],
+	},
+	"sfida_seta": {
+		"titolo": "La seta da un mare all'altro",
+		"sfida": true, "popolo": "saraceni", "mappa": "zancle", "villaggio": "pieno", "coloni": 40,
+		"scorte": {"tronchi": 30, "assi": 50, "pietra": 50, "grano": 8, "pesce": 8, "anfore": 6},
+		"inizio": [["Rocco della Lira", "Una sfida per i Saraceni di Zancle: filare la seta e mandare le navi sui due mari. Quanto ci mettete?"]],
+		"obiettivi": [
+			{"testo": "Fila 6 matasse di seta", "aiuto": "Bachicoltura per i bozzoli, filanda per la seta.", "prova": "prodotti", "tipo": "filanda", "n": 6},
+			{"testo": "Fai fare 3 viaggi alla nave di un porto", "aiuto": "Il porto vuole anfore: costruiscilo vicino al mare.", "prova": "prodotti", "tipo": "porto", "n": 3},
+		],
+		"fine": [["Rocco della Lira", "Le vele sono tornate, la seta è stesa al sole. Il record è vostro... finché qualcuno non fa meglio."]],
+	},
+	"sfida_alluvione": {
+		"titolo": "Sopravvivi all'alluvione",
+		"sfida": true, "popolo": "libero", "mappa": "costa_ionica", "villaggio": "pieno", "coloni": 40,
+		"scorte": {"tronchi": 24, "assi": 40, "pietra": 40, "grano": 6, "pesce": 10},
+		"inizio": [["Rocco della Lira", "Le fiumare sono gonfie: semina, e preparati a ricominciare. Quanto ci metti a rimettere in piedi i campi?"]],
+		"obiettivi": [
+			{"testo": "Semina 8 campi di grano", "aiuto": "Costruisci una o più fattorie.", "prova": "campi", "coltura": "grano", "n": 8, "evento": "alluvione",
+				"dopo": [["Rocco della Lira", "Ed ecco l'acqua! Dei campi non resta niente. Coraggio: si risemina."]]},
+			{"testo": "Raccogli 10 covoni dopo l'alluvione", "aiuto": "Il contadino risemina da solo.", "prova": "prodotti", "tipo": "fattoria", "n": 10},
+		],
+		"fine": [["Rocco della Lira", "Il grano è di nuovo alto. L'acqua passa, la gente resta."]],
+	},
 	"ultimo_canto": {
 		"titolo": "L'ultimo canto",
 		"popolo": "scelto", "mappa": "monteleone", "villaggio": "pieno", "costa": true, "coloni": 60,
@@ -353,6 +388,8 @@ var dati: Dictionary
 var indice := 0                      # obiettivo corrente (== numero obiettivi: missione compiuta)
 var partita: Node2D
 var _nemici_iniziali := 0
+var tempo := 0.0                     # secondi di gioco dall'inizio della missione (il cronometro delle sfide)
+var _secondo := 0.0
 var _strade_iniziali := 0
 var _controllo := 0.0
 
@@ -384,6 +421,12 @@ func comincia() -> void:
 func _process(delta: float) -> void:
 	if finita():
 		return
+	tempo += delta
+	if dati.get("sfida", false):
+		_secondo += delta
+		if _secondo >= 1.0:
+			_secondo = 0.0
+			obiettivo_cambiato.emit()          # il pannello aggiorna il cronometro
 	_controllo -= delta
 	if _controllo > 0.0:
 		return
@@ -399,6 +442,8 @@ func _process(delta: float) -> void:
 		obiettivo_cambiato.emit()
 		if finita():
 			segna_compiuta(id)
+			if dati.get("sfida", false):
+				segna_record(id, tempo)
 			compiuta.emit()
 			dialogo.emit(racconto_finale())
 
@@ -491,6 +536,24 @@ static func segna_compiuta(missione: String) -> void:
 	_scrivi(d)
 
 
+## Il miglior tempo di una sfida in secondi (-1 se non è mai stata compiuta).
+static func record(sfida: String) -> float:
+	return float(_leggi().get("record", {}).get(sfida, -1.0))
+
+
+static func segna_record(sfida: String, secondi: float) -> void:
+	var d := _leggi()
+	var rec: Dictionary = d.get("record", {})
+	if not rec.has(sfida) or secondi < float(rec[sfida]):
+		rec[sfida] = secondi
+		d["record"] = rec
+		_scrivi(d)
+
+
+static func testo_tempo(secondi: float) -> String:
+	return "%d:%02d" % [int(secondi) / 60, int(secondi) % 60]
+
+
 ## Il popolo scelto per la campagna finale («» finché non si sceglie).
 static func popolo_soglia() -> String:
 	return _leggi().get("popolo_soglia", "")
@@ -529,6 +592,8 @@ static func prossima(campagna: Array) -> String:
 ## Una missione si può giocare se quella prima nella sua campagna è stata compiuta; la prima missione di
 ## una campagna si apre finita l'ultima della campagna precedente (Greci → Soglia → Sicilia).
 static func sbloccata(missione: String) -> bool:
+	if missione in SFIDE:
+		return true
 	for k in CAMPAGNE.size():
 		var campagna: Array = CAMPAGNE[k]
 		var i := campagna.find(missione)

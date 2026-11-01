@@ -79,6 +79,10 @@ func aggiorna() -> void:
 			righe.append("[i][font_size=15]%s[/font_size][/i]" % ob[k]["aiuto"])
 		else:
 			righe.append("[color=#8a7a66]• %s[/color]" % ob[k]["testo"])
+	if missione.dati.get("sfida", false):
+		var rec := Missione.record(missione.id)
+		righe.append("[color=#7f3420]Tempo %s[/color]%s" % [Missione.testo_tempo(missione.tempo),
+			"   ·   record %s" % Missione.testo_tempo(rec) if rec >= 0.0 else ""])
 	if missione.finita():
 		righe.append("[b][color=#4f7a2a]Missione compiuta![/color][/b]")
 	_obiettivi.text = "\n".join(righe)
