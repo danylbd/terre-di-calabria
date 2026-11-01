@@ -16,8 +16,8 @@ Ultime modifiche significative (step 18): mappa della campagna dalla geografia r
 
 ## In sviluppo
 
-- **Step V1 — mappa di Monteleone (Vibo Valentia)**: non ancora iniziato nel codice (ramo previsto `step-v1-monteleone`). Piano in [`monteleone.md`](monteleone.md).
-- **Sistema di memoria del progetto** (questi documenti): ramo `memoria-progetto`.
+- **Step V1 — mappa di Monteleone (Vibo Valentia)**: ramo `step-v1-monteleone`, piano dettagliato in [`SESSION_HANDOFF.md`](SESSION_HANDOFF.md); codice non ancora scritto.
+- Sistema di memoria del progetto: fatto e unito a `main`.
 
 ## Da fare (in ordine)
 
