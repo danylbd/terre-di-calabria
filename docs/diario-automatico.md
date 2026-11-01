@@ -116,3 +116,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - `Monumenti` (src/storia/monumenti.gd): 11 monumenti in ordine storico, ognuno sbloccato da un traguardo (fondazione, coloni, pescatore, agorà e ducati, castello, mestieri, ducati coniati, pesci spada, un anno senza perdere forti), posato su 2×2 caselle libere vicino al luogo vero; vantaggi in `Villaggio.vantaggi` (confini, nascite, lavoro, duelli) e doni a ogni stagione.
 - 11 modelli 3D nuovi (fatti da un subagente in tools/studio/modelli.gd). Monumenti nel salvataggio e nel pannello del villaggio; tabella aggiornata in monteleone.md.
 - Nuovo test `test_monumenti`; tutti i 18 test OK. Versione 0.22.0. Prossimo: V3 partite senza fine.
+
+## 2026-11-01 12:00 — step V3 partite senza fine
+- Nuovo test `test_durata` (estende test_catena): su Monteleone costruisce legno, pietra, pozzo e abitazioni e gioca 2 ore a velocità ×16 misurando nodi, oggetti, memoria, merci e registro della produzione: tutto stabile, la produzione continua.
+- Trovato nel test: con il guardaboschi lontano dai boscaioli il legno finisce dopo 20 minuti (comportamento voluto, annotato nei limiti noti). Nessuna schermata di fine obbligata: missioni e monumenti finiti lasciano continuare la partita.
+- Versione 0.23.0. Codice del gioco invariato rispetto alla v0.22.0 (tutti i 18 test già verdi lì). Prossimo: Fase 4, step 19 Brettii giocabili.

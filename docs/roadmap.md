@@ -40,7 +40,7 @@ Ogni step ha un suo ramo `step-XX-nome`, lavorato in un worktree separato. Quand
 | 18 | Mappa della Calabria con la forma reale | fatto |
 | V1 | Mappa di Monteleone (Vibo Valentia): mappa di gioco con Monteleone sul colle, Vibo Marina, Pizzo, Bivona, Tropea, Capo Vaticano, Monte Poro, valle del Mesima, Serre; costa rifatta simile a quella vera (vedi [`monteleone.md`](monteleone.md)) | fatto (v0.21.0) |
 | V2 | Monumenti di Monteleone: monumenti tipici sbloccati a ogni traguardo e posati al loro posto sulla mappa (mura greche, tempio, castello normanno-svevo, Duomo, Valentianum, Bivona, Pizzo, Tropea...) | fatto (v0.22.0) |
-| V3 | Partite senza fine: campagne e missioni senza limite di tempo: dopo l'ultima missione si continua; prestazioni per partite di ore | |
+| V3 | Partite senza fine: campagne e missioni senza limite di tempo: dopo l'ultima missione si continua; prestazioni per partite di ore | fatto (v0.23.0) |
 
 ## Fase 4 — Gli altri popoli e il finale
 

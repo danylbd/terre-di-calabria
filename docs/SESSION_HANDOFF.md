@@ -2,26 +2,24 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-01, step V2 chiuso (release v0.22.0 in `main`).
+**Aggiornato:** 2026-11-01, step V3 chiuso (release v0.23.0 in `main`). Le richieste del proprietario su Monteleone (mappa, monumenti, ducati, partite senza limite) sono tutte fatte.
 
-## Ultimo obiettivo affrontato
+## Ultimi step
 
-**Step V2 — monumenti di Monteleone**: fatto e unito a `main`.
-- `src/storia/monumenti.gd`: `CATALOGO` (id = nome dello sprite, casella, traguardo, vantaggio, effetto), `traguardo_raggiunto()`, `sblocca(id, in_silenzio, posto)`, `_doni()` a ogni cambio di stagione, `posti`, `prodotti` (ducati e pesce spada di tutta la partita), `tempo_senza_perdite`.
-- `Villaggio.vantaggi`: "confini" (+raggio), "nascita" e "lavoro" (moltiplicano i tempi), "duelli" (+probabilità in `Guerra._fine_duello`). Segnali nuovi `Logistica.prodotta(tipo)` e `Guerra.forte_perso`.
-- Salvataggio: chiave `"monumenti"` (ottenuti con la casella, prodotti, senza_perdite). Pannello del villaggio: elenco dei monumenti e prossimo traguardo.
-- 11 modelli 3D in `tools/studio/modelli.gd` (mura_greche, tempio_proserpina, porto_santa_venere, foro_valentia, castello_normanno, duomo, chiesa_rosario, valentianum, tonnara_bivona, castello_pizzo, santa_maria_isola).
-- Test `tools/test/test_monumenti.gd`. Tutti i 18 test OK.
+- **V1** mappa di Monteleone (`GeneratoreMappa.genera_monteleone`, `Impostazioni.mappa`, `Salvataggio.mappa_di`).
+- **V2** monumenti (`src/storia/monumenti.gd`, `Villaggio.vantaggi`, segnali `Logistica.prodotta` e `Guerra.forte_perso`, 11 modelli 3D).
+- **V3** partite senza fine: `tools/test/test_durata.gd` (2 ore di gioco stabili). Nessun cambio al codice del gioco.
 
-## Prossimo: step V3 — partite senza fine
+## Prossimo: Fase 4, step 19 — Brettii giocabili
 
-Verificare che si possa giocare per ore: test lungo accelerato su Monteleone (molti edifici, molte merci) che misuri nodi, merci in viaggio, tempo per fotogramma e memoria; correggere quello che cresce senza limite (per esempio `logistica.storia`, sprite di decori, colonni in cammino). Controllare che dopo l'ultima missione della campagna e dopo l'ultimo monumento la partita continui (niente schermata di fine obbligata).
+Da progettare: villaggio dei Brettii (edifici con aspetto proprio, economia simile ai Greci con differenze), scelta del popolo nella partita libera, colori e confini, modelli 3D (subagente). Leggere prima le parti di `docs/design.md` e `docs/storia.md` sui Brettii; scrivere il piano in `docs/` prima del codice.
 
 ## Problemi irrisolti
 
 - Musica ancora segnaposto (domanda aperta al proprietario).
 - Esito delle GitHub Actions non verificabile da qui (`gh` assente).
+- Sulla mappa di Monteleone i Brettii mettono entrambi gli avamposti sul Poro.
 
 ## Da dove riprendere
 
-Aprire il ramo `step-v3-senza-fine` in un worktree e scrivere il test di durata.
+Aprire il ramo `step-19-brettii` in un worktree e cominciare dal piano.
