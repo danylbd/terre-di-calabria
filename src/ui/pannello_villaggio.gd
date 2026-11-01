@@ -18,6 +18,7 @@ var rete: ReteStrade
 var stagioni: Stagioni
 var avversario: Avversario
 var monumenti: Monumenti
+var schiere: Schiere
 var _testo: RichTextLabel
 var _aggiorna := 0.0
 
@@ -84,6 +85,10 @@ func _riempi() -> void:
 	for e in v.edifici.values():
 		nei_forti += e.soldati
 	righe.append("Soldati: %d nei forti, %d di riserva" % [nei_forti, v.soldati])
+	if schiere and schiere.esiste():
+		var sc: Dictionary = schiere.schiera
+		righe.append("Schiera di %s (livello %d): %d soldati, razioni %d, morale %d" % [Schiere.nome_condottiero(), schiere.livello(),
+			schiere.soldati(), sc["razioni"], sc["morale"]])
 	var senza := rete.tratti_senza_portatore()
 	if senza > 0:
 		righe.append("[color=#a8321e]%d strade aspettano un portatore[/color]" % senza)

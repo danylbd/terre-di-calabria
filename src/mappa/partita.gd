@@ -831,6 +831,7 @@ func _crea_interfaccia() -> void:
 	pannello_villaggio.stagioni = stagioni
 	pannello_villaggio.avversario = avversario
 	pannello_villaggio.monumenti = monumenti
+	pannello_villaggio.schiere = schiere
 	strato.add_child(pannello_villaggio)
 	pannello_villaggio.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 70)
 	pannello_villaggio.grow_horizontal = Control.GROW_DIRECTION_BEGIN

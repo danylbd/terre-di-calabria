@@ -226,3 +226,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - `Schiere`: il condottiero del popolo esce con fino a 12 soldati di riserva; si comanda con il clic (muovi, attacca torri nemiche e villaggi indigeni); duelli con le regole della guerra; cerchio di selezione e barra della forza. Solo partita libera, non in pace.
 - Sette condottieri (Eudora, Tauro, Gaio Settimio, Zahra, Osmund, Duketio, Kokalo) disegnati da un subagente. Trovato nel test: la torre conquistata viene liberata, il bersaglio va controllato con `is_instance_valid`.
 - Nuovo test `test_schiere`; tutti i 34 test OK. Versione 0.46.0. Prossimo: step 32.
+
+## 2026-11-02 — step 32 cibo, morale ed esperienza (Fase 7)
+- Le schiere prendono 20 razioni dal magazzino e le consumano; senza cibo perdono soldati e morale; vicino al magazzino si riforniscono e si rinforzano. Morale e livello del condottiero (1–5) cambiano i duelli; barre e livello disegnati sopra il condottiero; esperienza nel salvataggio.
+- Nuovo test `test_morale`; `test_schiere` ora dà il pane alla schiera. Tutti i 35 test OK. Versione 0.47.0. Prossimo: step 33 tipi di unità.
