@@ -9,6 +9,7 @@ var altezza: int
 var tipi := PackedByteArray()        # larghezza * altezza
 var quote := PackedFloat32Array()    # (larghezza + 1) * (altezza + 1), in pixel verso l'alto
 var villaggio := Vector2i.ZERO       # casella del centro del villaggio iniziale
+var luoghi := {}                     # nome -> casella dei luoghi con un nome (solo su alcune mappe)
 var occupazione := PackedInt32Array() # 0 libero, 1 natura (alberi, rocce), >=2 id di un edificio
 var territorio := PackedByteArray()   # proprietario di ogni casella: 0 nessuno, 1 il giocatore, 2.. gli avversari
 

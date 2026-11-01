@@ -1,23 +1,21 @@
 # Passaggio di consegne tra sessioni
 
-*Si aggiorna a ogni passaggio importante (fine di uno step, prima di una pausa o di una compattazione). Sovrascrivere questa pagina: lo storico è in [`diario-automatico.md`](diario-automatico.md).*
+*Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-01, dopo lo step 18 (release v0.20.0).
+**Aggiornato:** 2026-11-01, step V1 chiuso (release v0.21.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-1. Step 18: mappa della Calabria con la forma reale (`src/main/mappa_calabria.gd`), ducati, piani per Monteleone e Sicilia. **Chiuso e unito a `main`.**
-2. Richiesta del proprietario: sistema di memoria persistente del progetto. **In corso** sul ramo `memoria-progetto` (worktree `C:\Users\User\Projects\tdc-wt\memoria-progetto`).
+**Step V1 — mappa di Monteleone**: fatto e unito a `main`.
+- `src/mappa/generatore_mappa.gd`: `MAPPE`, `crea(mappa, seme)`, `genera_monteleone()` con `COSTA_MONTELEONE`, `LUOGHI_MONTELEONE`, `COLLI_MONTELEONE`, lago; `_radura()` e `_mare_piatto()` in comune.
+- `src/mappa/dati_mappa.gd`: `luoghi` (nome → casella). `src/mappa/partita.gd`: `mappa`, `_mappa_da_usare()`, `_metti_nomi_luoghi()`, direzioni dei Brettii per mappa.
+- `src/core/impostazioni.gd`: `mappa`. `src/core/salvataggio.gd`: chiave `"mappa"`, `mappa_di()`.
+- `src/main/title_screen.gd`: scelta della mappa in «Nuova partita». `src/main/mappa_calabria.gd`: pulsante «Gioca a Monteleone».
+- Test nuovo `tools/test/test_monteleone.gd` (estende test_catena). Tutti i 17 test OK.
 
-## File modificati (ramo `memoria-progetto`)
+## Prossimo: step V2 — monumenti di Monteleone
 
-- Nuovi: `docs/PROJECT_MEMORY.md`, `docs/DEVELOPMENT_STATUS.md`, `docs/DECISIONS.md`, `docs/SESSION_HANDOFF.md`.
-- `CLAUDE.md` riordinato: istruzioni permanenti e regole di continuità; le note tecniche per step sono state spostate (complete) in `PROJECT_MEMORY.md`.
-- Nessuna modifica al comportamento del gioco.
-
-## Test
-
-Ultima esecuzione completa (step 18, `main` 364ecd3): **16 test su 16 OK** (catena, audio, cibo, allevamenti, colture, metallo, popolazione, salvataggio, stagioni, greci, territorio, guerra, avversario, modalità, missione, campagna).
+Tabella degli 11 monumenti, traguardi e vantaggi in `docs/monteleone.md`; caselle dei luoghi in `GeneratoreMappa.LUOGHI_MONTELEONE`. Idea: un catalogo dei monumenti (traguardo → monumento, casella, vantaggio), un controllo dei traguardi nella partita su Monteleone, posa dell'edificio-monumento (modello 3D nuovo per ognuno in `tools/studio/modelli.gd`, rendering con lo studio e poi `--import`), salvataggio dei monumenti ottenuti, avviso e pannello «Monumenti».
 
 ## Problemi irrisolti
 
@@ -26,5 +24,4 @@ Ultima esecuzione completa (step 18, `main` 364ecd3): **16 test su 16 OK** (cate
 
 ## Da dove riprendere
 
-1. Se il ramo `memoria-progetto` non è ancora unito: verificare i link dei documenti, commit, merge `--no-ff` in `main`, push.
-2. Poi **step V1 — mappa di Monteleone**: creare il ramo `step-v1-monteleone` (worktree in `C:\Users\User\Projects\tdc-wt\`), leggere [`monteleone.md`](monteleone.md), scrivere la variante «monteleone» del generatore di mappa (`src/mappa/generatore_mappa.gd`), aggiungerla al menu «Nuova partita», test e screenshot.
+Aprire il ramo `step-v2-monumenti` in un worktree e cominciare dal catalogo dei monumenti.

@@ -35,12 +35,14 @@ var _fantasma: Sprite2D
 var _casella_mouse := Vector2i(-1, -1)
 var _evidenziato: Edificio
 var _ascolto_mare := 0.0
+var mappa := "costa_ionica"   # quale mappa si gioca (GeneratoreMappa.MAPPE)
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
 
 
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(Color("16384f"))
-	dati = GeneratoreMappa.genera(SEME)
+	mappa = _mappa_da_usare()
+	dati = GeneratoreMappa.crea(mappa, SEME)
 
 	terreno = Terreno.new()
 	add_child(terreno)
@@ -55,6 +57,8 @@ func _ready() -> void:
 	oggetti = Node2D.new()
 	oggetti.y_sort_enabled = true
 	add_child(oggetti)
+
+	_metti_nomi_luoghi()
 
 	villaggio = Villaggio.new(dati, oggetti)
 	add_child(villaggio)
@@ -571,13 +575,43 @@ func avvia_missione(id: String, indice: int) -> void:
 	missione.compiuta.connect(func(): _mostra_avviso("Missione compiuta: %s" % missione.titolo(), false))
 
 
+## I nomi dei luoghi scritti leggeri sulla mappa (Tropea, Pizzo, il Poro...): non quello del villaggio.
+func _metti_nomi_luoghi() -> void:
+	var nomi := Node2D.new()
+	nomi.z_index = 40
+	add_child(nomi)
+	for nome in dati.luoghi:
+		var c: Vector2i = dati.luoghi[nome]
+		if c == dati.villaggio:
+			continue
+		var l := Label.new()
+		l.text = nome
+		l.add_theme_font_size_override("font_size", 30)
+		l.add_theme_color_override("font_color", Color(Palette.PERGAMENA_CHIARA, 0.85))
+		l.add_theme_color_override("font_outline_color", Color(Palette.INCHIOSTRO, 0.6))
+		l.add_theme_constant_override("outline_size", 8)
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		nomi.add_child(l)
+		l.position = dati.a_schermo(c.x + 0.5, c.y + 0.5) - l.get_combined_minimum_size() * 0.5 - Vector2(0, 40)
+
+
+## La mappa del salvataggio da caricare, quella della missione o quella scelta nel menu.
+func _mappa_da_usare() -> String:
+	if Salvataggio.da_caricare != "":
+		return Salvataggio.mappa_di(Salvataggio.da_caricare)
+	if Impostazioni.missione != "":
+		return Missione.MISSIONI[Impostazioni.missione].get("mappa", "costa_ionica")
+	return Impostazioni.mappa if GeneratoreMappa.MAPPE.has(Impostazioni.mappa) else "costa_ionica"
+
+
 # --------------------------------------------------------------- i Brettii
 
 ## Due avamposti dei Brettii, il popolo delle montagne, a una ventina di caselle dal villaggio.
 func _metti_brettii() -> void:
 	var centro := dati.villaggio
 	var presi: Array[Vector2i] = []
-	for verso in [Vector2(-1, -0.4), Vector2(-0.3, 1)]:
+	var versi := [Vector2(-0.4, 1), Vector2(1, 0.6)] if mappa == "monteleone" else [Vector2(-1, -0.4), Vector2(-0.3, 1)]
+	for verso in versi:
 		var migliore := Vector2i(-1, -1)
 		var punteggio := -INF
 		for y in dati.altezza:

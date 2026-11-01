@@ -171,7 +171,7 @@ func _crea_pannello_crediti() -> PanelContainer:
 	return pannello
 
 
-## Nuova partita: si sceglie se giocare in pace, in guerra o prima in pace e poi in guerra.
+## Nuova partita: si sceglie la mappa e se giocare in pace, in guerra o prima in pace e poi in guerra.
 func _crea_pannello_modalita() -> PanelContainer:
 	var pannello := PanelContainer.new()
 	pannello.custom_minimum_size = Vector2(860, 0)
@@ -179,6 +179,26 @@ func _crea_pannello_modalita() -> PanelContainer:
 	colonna.add_theme_constant_override("separation", 16)
 	pannello.add_child(colonna)
 	colonna.add_child(_etichetta("Nuova partita", 48, Palette.TERRACOTTA_SCURA))
+	colonna.add_child(_etichetta("Dove?", 26, Palette.INCHIOSTRO))
+	var riga := HBoxContainer.new()
+	riga.alignment = BoxContainer.ALIGNMENT_CENTER
+	riga.add_theme_constant_override("separation", 16)
+	colonna.add_child(riga)
+	var spiega_mappa := _etichetta(GeneratoreMappa.MAPPE[Impostazioni.mappa][1], 20, Color(Palette.INCHIOSTRO, 0.8))
+	spiega_mappa.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var gruppo := ButtonGroup.new()
+	for id in GeneratoreMappa.MAPPE:
+		var b := Button.new()
+		b.text = GeneratoreMappa.MAPPE[id][0]
+		b.toggle_mode = true
+		b.button_group = gruppo
+		b.button_pressed = id == Impostazioni.mappa
+		b.custom_minimum_size = Vector2(250, 0)
+		b.pressed.connect(func():
+			Impostazioni.mappa = id
+			spiega_mappa.text = GeneratoreMappa.MAPPE[id][1])
+		riga.add_child(b)
+	colonna.add_child(spiega_mappa)
 	colonna.add_child(_etichetta("Come vuoi giocare?", 26, Palette.INCHIOSTRO))
 	for m in ["pace", "pace_poi_guerra", "guerra"]:
 		var b := Button.new()

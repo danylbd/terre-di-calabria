@@ -67,6 +67,8 @@ const LUOGHI := {
 }
 
 var _segnaposti := {}                # id missione -> Button
+var _monteleone: Button               # partita libera sulla mappa di Monteleone
+const MONTELEONE := Vector2(880, 735)
 var _fatte := []
 var _carattere: Font
 
@@ -88,6 +90,15 @@ func _ready() -> void:
 		b.pressed.connect(_gioca.bind(id))
 		add_child(b)
 		_segnaposti[id] = b
+	_monteleone = Button.new()
+	_monteleone.text = "Gioca a Monteleone"
+	_monteleone.tooltip_text = "Partita libera nel Vibonese, senza limiti di tempo"
+	_monteleone.add_theme_font_size_override("font_size", 16)
+	_monteleone.pressed.connect(func():
+		Impostazioni.missione = ""
+		Impostazioni.mappa = "monteleone"
+		get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
+	add_child(_monteleone)
 	var indietro := Button.new()
 	indietro.text = "Indietro"
 	indietro.custom_minimum_size = Vector2(220, 46)
@@ -129,6 +140,7 @@ func _disponi() -> void:
 	for id in _segnaposti:
 		var b: Button = _segnaposti[id]
 		b.position = _p(LUOGHI[id]) - b.custom_minimum_size * 0.5
+	_monteleone.position = _p(MONTELEONE) - Vector2(_monteleone.get_combined_minimum_size().x * 0.5, 0)
 	queue_redraw()
 
 

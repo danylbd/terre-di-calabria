@@ -10,3 +10,5 @@ const MODALITA := {
 static var modalita := "pace_poi_guerra"
 ## missione della campagna da giocare ("" = partita libera)
 static var missione := ""
+## mappa della partita libera (una chiave di GeneratoreMappa.MAPPE)
+static var mappa := "costa_ionica"
