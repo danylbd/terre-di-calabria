@@ -17,6 +17,7 @@ var logistica: Logistica
 var rete: ReteStrade
 var stagioni: Stagioni
 var avversario: Avversario
+var monumenti: Monumenti
 var _testo: RichTextLabel
 var _aggiorna := 0.0
 
@@ -86,6 +87,17 @@ func _riempi() -> void:
 	var senza := rete.tratti_senza_portatore()
 	if senza > 0:
 		righe.append("[color=#a8321e]%d strade aspettano un portatore[/color]" % senza)
+	if monumenti and monumenti.attivi:
+		righe.append("")
+		righe.append("[b]Monumenti di Monteleone: %d di %d[/b]" % [monumenti.ottenuti.size(), Monumenti.CATALOGO.size()])
+		for id in monumenti.ottenuti:
+			var m := Monumenti.voce(id)
+			righe.append("[color=#3d6b2a]✔[/color] %s  —  %s" % [m["nome"], m["vantaggio"].to_lower()])
+		var prossimo := monumenti.prossimo_monumento()
+		if prossimo.is_empty():
+			righe.append("Monteleone ha tutti i suoi monumenti!")
+		else:
+			righe.append("Prossimo: [b]%s[/b]  —  traguardo: %s" % [prossimo["nome"], prossimo["traguardo"].to_lower()])
 	righe.append("")
 	var prod := logistica.produzione_recente()
 	righe.append("[b]Prodotto negli ultimi 5 minuti[/b]")

@@ -73,4 +73,4 @@ godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCa
 
 ## Stato
 
-Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1 (mappa di Monteleone) fatti (release v0.21.0); prossimo lo step **V2 – monumenti di Monteleone** (`docs/monteleone.md`). Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.
+Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1–V2 (mappa e monumenti di Monteleone) fatti (release v0.22.0); prossimo lo step **V3 – partite senza fine**. Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.

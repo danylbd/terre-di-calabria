@@ -6,6 +6,7 @@ extends Node
 ## Vale per tutti e due i lati: anche i Brettii (vedi avversario.gd) attaccano i nostri forti così.
 
 signal messaggio(testo: String, errore: bool)
+signal forte_perso
 
 const RAGGIO_ATTACCO := 18.0         # quanto lontano può attaccare un forte (caselle)
 const DURATA_DUELLO := 2.6
@@ -194,7 +195,13 @@ func _fine_duello(id: int) -> void:
 	var bersaglio = s["destinazione"]
 	if not s in _soldati:
 		return
-	if _rng.randf() < VITTORIA_ATTACCANTE:
+	# i monumenti (il Valentianum) danno ai nostri soldati più probabilità di vincere
+	var vittoria := VITTORIA_ATTACCANTE
+	if s["lato"] == 1:
+		vittoria += villaggio.vantaggi.get("duelli", 0.0)
+	elif is_instance_valid(bersaglio) and bersaglio.proprietario == 1:
+		vittoria -= villaggio.vantaggi.get("duelli", 0.0)
+	if _rng.randf() < vittoria:
 		if is_instance_valid(bersaglio):
 			bersaglio.soldati -= 1
 			if bersaglio.proprietario == 1:
@@ -232,4 +239,5 @@ func _conquista(bersaglio: Edificio, lato: int) -> void:
 		Suono.suona("completato")
 	else:
 		messaggio.emit("I Brettii hanno preso %s: abbiamo perso i confini intorno" % nome.to_lower(), true)
+		forte_perso.emit()
 		Suono.suona("errore")

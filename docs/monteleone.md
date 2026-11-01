@@ -29,19 +29,21 @@ Una mappa di gioco ambientata a **Monteleone** (l'antica *Hipponion* dei Greci, 
 
 Ogni volta che il villaggio fa un passo avanti (traguardi di crescita), si sblocca un monumento tipico del luogo. Compare sulla mappa **al suo posto** (posti riservati sulla mappa di Monteleone), con un breve canto di Rocco della Lira, e dà un piccolo vantaggio. L'ordine segue la storia della città, dai Greci in poi.
 
-| # | Traguardo | Monumento | Dove | Vantaggio |
+| # | Traguardo | Monumento | Dove | Vantaggio (come è nel gioco) |
 |---|---|---|---|---|
-| 1 | Fondazione: magazzino e 2 strade | **Mura greche di Hipponion** | sul bordo del colle | i confini partono più larghi |
-| 2 | 50 coloni | **Tempio di Proserpina** (area del Cofino) | sul colle, fuori le mura | i coloni nascono più in fretta |
-| 3 | Primo pescatore o barca | **Porto di Santa Venere** | Vibo Marina | pesce e pesce spada più abbondanti |
-| 4 | Prima agorà e 30 ducati | **Foro di Valentia** (i resti romani) | in città | l'agorà vende meglio |
-| 5 | Primo castello | **Castello normanno-svevo** | in cima al colle | le torri ospitano più soldati |
-| 6 | 100 coloni | **Duomo di Santa Maria Maggiore e San Leoluca** | in città | lusso: più crescita |
-| 7 | 10 mestieri diversi | **Chiesa del Rosario** | in città | i lavoratori lavorano un po' più in fretta |
-| 8 | 200 ducati guadagnati | **Valentianum** (il convento dei Domenicani) | in città | sapere: i soldati vincono più duelli |
-| 9 | Tonnara: 30 pesci spada | **Tonnara e castello di Bivona** | costa, Bivona | pesce in più ogni stagione |
-| 10 | 150 coloni | **Castello di Pizzo** e **Chiesetta di Piedigrotta** | Pizzo | i confini sulla costa si allargano |
-| 11 | Un anno senza perdere un forte | **Santa Maria dell'Isola** | Tropea, sullo scoglio | la fama della città: ducati ogni stagione |
+| 1 | Fondazione: magazzino e 2 strade | **Mura greche di Hipponion** | sul bordo del colle | confini +2 caselle |
+| 2 | 50 coloni | **Tempio di Proserpina** (area del Cofino) | sul colle, fuori le mura | nascite più rapide (×0,8 sul tempo) |
+| 3 | Un pescatore o una barca del pesce spada | **Porto di Santa Venere** | Vibo Marina | 4 pesci ogni stagione |
+| 4 | Un'agorà e 30 ducati | **Foro di Valentia** (i resti romani) | in città | 5 ducati ogni stagione |
+| 5 | Un castello | **Castello normanno-svevo** | in cima al colle | 3 soldati di rinforzo |
+| 6 | 100 coloni | **Duomo di Santa Maria Maggiore e San Leoluca** | in città | nascite ancora più rapide (×0,8) |
+| 7 | 10 mestieri diversi al lavoro | **Chiesa del Rosario** | in città | lavoro più rapido (×0,85 sul tempo) |
+| 8 | 200 ducati coniati in tutta la partita | **Valentianum** (il convento dei Domenicani) | in città | +12% di duelli vinti dai nostri soldati |
+| 9 | 30 pesci spada pescati | **Tonnara e castello di Bivona** | costa, Bivona | 6 pesci ogni stagione |
+| 10 | 150 coloni | **Castello di Pizzo** e **Chiesetta di Piedigrotta** | Pizzo | confini +1 casella |
+| 11 | Un anno (4 stagioni) senza perdere un forte | **Santa Maria dell'Isola** | Tropea, sullo scoglio | 10 ducati ogni stagione |
+
+Si ottengono in quest'ordine, uno alla volta: il traguardo di un monumento conta solo dopo che è arrivato il precedente. Codice: `src/storia/monumenti.gd` (catalogo, traguardi, posa), vantaggi in `Villaggio.vantaggi`; si vedono nel pannello del villaggio (tasto I).
 
 I monumenti sono originali nell'aspetto (modelli 3D del gioco ispirati alla forma dei luoghi veri), mai copiati da altri giochi.
 

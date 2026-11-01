@@ -2,20 +2,20 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-01, step V1 chiuso (release v0.21.0 in `main`).
+**Aggiornato:** 2026-11-01, step V2 chiuso (release v0.22.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-**Step V1 — mappa di Monteleone**: fatto e unito a `main`.
-- `src/mappa/generatore_mappa.gd`: `MAPPE`, `crea(mappa, seme)`, `genera_monteleone()` con `COSTA_MONTELEONE`, `LUOGHI_MONTELEONE`, `COLLI_MONTELEONE`, lago; `_radura()` e `_mare_piatto()` in comune.
-- `src/mappa/dati_mappa.gd`: `luoghi` (nome → casella). `src/mappa/partita.gd`: `mappa`, `_mappa_da_usare()`, `_metti_nomi_luoghi()`, direzioni dei Brettii per mappa.
-- `src/core/impostazioni.gd`: `mappa`. `src/core/salvataggio.gd`: chiave `"mappa"`, `mappa_di()`.
-- `src/main/title_screen.gd`: scelta della mappa in «Nuova partita». `src/main/mappa_calabria.gd`: pulsante «Gioca a Monteleone».
-- Test nuovo `tools/test/test_monteleone.gd` (estende test_catena). Tutti i 17 test OK.
+**Step V2 — monumenti di Monteleone**: fatto e unito a `main`.
+- `src/storia/monumenti.gd`: `CATALOGO` (id = nome dello sprite, casella, traguardo, vantaggio, effetto), `traguardo_raggiunto()`, `sblocca(id, in_silenzio, posto)`, `_doni()` a ogni cambio di stagione, `posti`, `prodotti` (ducati e pesce spada di tutta la partita), `tempo_senza_perdite`.
+- `Villaggio.vantaggi`: "confini" (+raggio), "nascita" e "lavoro" (moltiplicano i tempi), "duelli" (+probabilità in `Guerra._fine_duello`). Segnali nuovi `Logistica.prodotta(tipo)` e `Guerra.forte_perso`.
+- Salvataggio: chiave `"monumenti"` (ottenuti con la casella, prodotti, senza_perdite). Pannello del villaggio: elenco dei monumenti e prossimo traguardo.
+- 11 modelli 3D in `tools/studio/modelli.gd` (mura_greche, tempio_proserpina, porto_santa_venere, foro_valentia, castello_normanno, duomo, chiesa_rosario, valentianum, tonnara_bivona, castello_pizzo, santa_maria_isola).
+- Test `tools/test/test_monumenti.gd`. Tutti i 18 test OK.
 
-## Prossimo: step V2 — monumenti di Monteleone
+## Prossimo: step V3 — partite senza fine
 
-Tabella degli 11 monumenti, traguardi e vantaggi in `docs/monteleone.md`; caselle dei luoghi in `GeneratoreMappa.LUOGHI_MONTELEONE`. Idea: un catalogo dei monumenti (traguardo → monumento, casella, vantaggio), un controllo dei traguardi nella partita su Monteleone, posa dell'edificio-monumento (modello 3D nuovo per ognuno in `tools/studio/modelli.gd`, rendering con lo studio e poi `--import`), salvataggio dei monumenti ottenuti, avviso e pannello «Monumenti».
+Verificare che si possa giocare per ore: test lungo accelerato su Monteleone (molti edifici, molte merci) che misuri nodi, merci in viaggio, tempo per fotogramma e memoria; correggere quello che cresce senza limite (per esempio `logistica.storia`, sprite di decori, colonni in cammino). Controllare che dopo l'ultima missione della campagna e dopo l'ultimo monumento la partita continui (niente schermata di fine obbligata).
 
 ## Problemi irrisolti
 
@@ -24,4 +24,4 @@ Tabella degli 11 monumenti, traguardi e vantaggi in `docs/monteleone.md`; casell
 
 ## Da dove riprendere
 
-Aprire il ramo `step-v2-monumenti` in un worktree e cominciare dal catalogo dei monumenti.
+Aprire il ramo `step-v3-senza-fine` in un worktree e scrivere il test di durata.

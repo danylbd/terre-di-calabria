@@ -110,6 +110,9 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 		p.avversario.modalita, p.avversario.tregua, p.avversario.guerra_dichiarata]
 	# i soldati in marcia tornano nella riserva (quelli all'attacco ricominceranno da capo)
 	d["soldati"] = v.soldati + p.guerra.in_marcia()
+	var mon: Monumenti = p.monumenti
+	d["monumenti"] = {"ottenuti": mon.ottenuti.map(func(id): return [id, mon.posti[id].x, mon.posti[id].y]),
+		"prodotti": mon.prodotti, "senza_perdite": mon.tempo_senza_perdite}
 	var bandiere := []
 	for c in rete.bandiere:
 		bandiere.append([c.x, c.y, rete.bandiere[c]["protetta"]])
@@ -227,6 +230,11 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 			v.metti_lavoratore(e)
 	if d.has("missione") and p.missione == null:
 		p.avvia_missione(d["missione"][0], int(d["missione"][1]))
+	var mon: Dictionary = d.get("monumenti", {})
+	for o in mon.get("ottenuti", []):
+		p.monumenti.sblocca(o[0], true, Vector2i(int(o[1]), int(o[2])))
+	p.monumenti.prodotti = _interi(mon.get("prodotti", {}))
+	p.monumenti.tempo_senza_perdite = float(mon.get("senza_perdite", 0.0))
 	v.caricamento = false
 	v._ricalcola_territorio()
 	p.camera.position = Vector2(d["camera"][0], d["camera"][1])
