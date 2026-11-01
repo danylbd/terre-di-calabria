@@ -2,27 +2,27 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 22 chiuso (release v0.27.0 in `main`). Tutti e cinque i popoli sono giocabili nella partita libera.
+**Aggiornato:** 2026-11-02, step 23 chiuso (release v0.28.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-**Step 22 — Normanni giocabili** (Fase 4), fatto e unito a `main`. Piano in `docs/normanni.md`.
-- `Popoli.DATI["normanni"]` (nemici saraceni, `cavaliere_pesante`, `"confini": 2`), `Popoli.confini()` in `Villaggio._ricalcola_territorio()`.
-- Catalogo: `allevamento_cavalli`, `mastio` (costa cavalli), merce `cavalli`. `Lavoratore`: la guardia prende il soldato del proprio popolo.
-- Modelli nella sezione NORMANNI di `tools/studio/modelli.gd`. Test `tools/test/test_normanni.gd`. Tutti i 23 test OK.
-- Coppie di nemici: Greci ↔ Brettii, Romani → Brettii, Saraceni → Romani, Normanni → Saraceni.
+**Step 23 — campagna finale «La Soglia»**, fatto e unito a `main`. Piano in `docs/soglia.md`.
+- `src/storia/missione.gd`: `CAMPAGNA_SOGLIA` (soglia_velo, soglia_frammenti, soglia_scelta, soglia_sigillo), prove `lusso`, `conquiste`, `forti`, `una_tra`; progressi `popolo_soglia` e `finale`; `prossima_soglia()`, `racconto_finale()`.
+- `partita._popolo_da_usare()`: missioni con `"popolo": "scelto"`. `mappa_calabria.gd`: pulsante «La Soglia» e pannello di scelta del popolo.
+- Test `tools/test/test_soglia.gd`; `test_campagna` (bot) ora costruisce tutte le case che servono. Tutti i 24 test OK.
 
-## Prossimo: step 23 — campagna finale «La Soglia»
+## Prossimo: step 24 — iPhone (prima parte, senza Mac)
 
-Da progettare in `docs/` (piano delle missioni) partendo da `docs/storia.md`. Probabilmente servirà che una missione possa scegliere il popolo del giocatore (`"popolo"` nei dati della missione, usato da `partita._popolo_da_usare()`).
+Comandi touch e interfaccia per schermi piccoli; l'esportazione iOS aspetta la risposta del proprietario (domanda del 2026-11-02). Se lo step si blocca, Fase 6 (Sicilia).
 
 ## Problemi irrisolti
 
 - Musica ancora segnaposto (domanda aperta al proprietario).
+- Chi è Rocco della Lira (domanda aperta; nel finale ora è solo suggerito che sia Italo).
+- Versione iPhone: serve un Mac (domanda aperta).
 - Esito delle GitHub Actions non verificabile da qui (`gh` assente).
 - Frombolieri dei Brettii giocabili ancora con i colori rossi da nemici.
-- Step 24 (versione iPhone) richiede un Mac con Xcode: da chiedere al proprietario quando ci si arriva.
 
 ## Da dove riprendere
 
-Leggere in `docs/storia.md` la parte sulla Soglia e sul Sigillo e scrivere il piano dello step 23.
+Aprire il ramo `step-24-touch` e leggere `src/mappa/camera_mappa.gd` e `_unhandled_input` di `partita.gd` per i comandi touch.

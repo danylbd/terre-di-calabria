@@ -16,3 +16,20 @@ Raccomandazione: **1** per i primi 3 brani (poi si può sostituire con l'opzione
 Nel frattempo (stesso giorno): ci sono 3 brani segnaposto sintetizzati in Python (`tools/suoni/musica.py`: mattino, lavoro, sera) con zampogna, lira, chitarra battente, tamburello e archi imitati. Funzionano nel gioco, ma la qualità è da segnaposto. La domanda resta aperta.
 
 Risposta:
+
+## 2026-11-02 — Step 23 (campagna finale): chi è Rocco della Lira?
+
+In `storia.md` c'è scritto «Chi è Rocco? Lo decidiamo insieme. Un'idea: è Italo stesso». Nel finale dell'Unione della campagna «La Soglia» Rocco ora lo lascia solo intuire («Un re, a volte, deve solo aspettare che i suoi figli imparino»), senza dirlo. Va bene così, o preferisci un'altra identità (o nessuna rivelazione)? Il testo si cambia in un attimo (`src/storia/missione.gd`, missione `soglia_sigillo`).
+
+Risposta:
+
+## 2026-11-02 — Step 24 (versione iPhone): serve un Mac
+
+Per esportare il gioco per iPhone, Godot ha bisogno di un **Mac con Xcode** e di un **account Apple Developer** (99 $ l'anno) per installarlo sul telefono o pubblicarlo. Da questo PC Windows non si può fare. Opzioni:
+1. Hai (o puoi usare) un Mac: preparo qui tutto quello che serve (comandi touch, interfaccia per schermi piccoli, preset di esportazione iOS) e tu fai l'ultimo passo sul Mac.
+2. Un servizio di compilazione in cloud con Mac (a pagamento).
+3. Rimandare l'iPhone e fare prima la Fase 6 (Sicilia).
+
+Nel frattempo, senza aspettare la risposta, comincio dalla parte che non dipende dal Mac: comandi touch e interfaccia adatta agli schermi piccoli.
+
+Risposta:

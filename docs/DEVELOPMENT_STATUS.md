@@ -4,25 +4,25 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.27.0** (step 22). Tutti i test automatici passano (23 script in `tools/test/`).
+Ultima release: **v0.28.0** (step 23). Tutti i test automatici passano (24 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
 | 1 — Il villaggio vive | 00, G1, 01–05, M1, G2, 06–11 | fondamenta e installer, studio grafico, mappa, costruzione, strade, trasporto, prima catena, audio (musica segnaposto), grafica livello 2, cibo (campi, allevamenti, pesca), metallo e attrezzi, popolazione e pannelli, salvataggio, stagioni, Greci completi (36 edifici, agorà) |
 | 2 — Guerra e avversario | 12–15 | territorio per proprietario, torri e castello presidiati, soldati e conquista, i Brettii controllati dal computer, scelta della modalità (pace / pace poi guerra / guerra) |
 | 3 — La storia | 16–18 | tutorial «Il naufragio», campagna dei Greci (6 missioni, sblocco progressivo), mappa della Calabria con la forma reale |
-| 4 — Gli altri popoli | 19–22 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2) |
+| 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 22): Normanni in `Popoli.DATI` (contro i Saraceni, cavalieri pesanti, `"confini": 2` usato da `Villaggio._ricalcola_territorio()`), `allevamento_cavalli` (grano e acqua → cavalli) e `mastio` (costa 2 cavalli, raggio 13, 10 soldati); le guardie dei forti hanno l'aspetto del soldato del proprio popolo (`Lavoratore`); 20 modelli nuovi; test `test_normanni`.
+Ultime modifiche significative (step 23): campagna finale «La Soglia» in `Missione` (`CAMPAGNA_SOGLIA`, missioni con `"popolo": "scelto"` e `"mappa": "monteleone"`, prove nuove `lusso`, `conquiste`, `forti`, `una_tra` con `scelta`, progressi con `popolo_soglia` e `finale`, `racconto_finale()`), pulsante «La Soglia» e scelta del popolo sulla mappa della Calabria; il bot di `test_campagna` costruisce le case che servono; test `test_soglia`.
 
 ## In sviluppo
 
-- **Step 23 — campagna finale «La Soglia»** (Fase 4): da progettare.
+- **Step 24 — versione iPhone** (Fase 4): domanda al proprietario (serve un Mac); intanto comandi touch e interfaccia per schermi piccoli.
 
 ## Da fare (in ordine)
 
-1. **Fase 4**: campagna finale «La Soglia» (i cinque popoli giocabili sono fatti), poi versione iPhone, campagna finale «La Soglia», versione iPhone.
+1. **Fase 4**: versione iPhone (in attesa della risposta sul Mac: prima la parte touch), campagna finale «La Soglia», versione iPhone.
 2. **Fase 6**: la Sicilia (mappa reale, Siculi e Sicani, campagna «Il fuoco sotto la montagna», navi sullo Stretto).
 3. **Fase 5** (Coral Island): solo dopo le domande al proprietario.
 
@@ -44,4 +44,4 @@ Ultime modifiche significative (step 22): Normanni in `Popoli.DATI` (contro i Sa
 
 ## Prossima attività consigliata
 
-Progettare lo **step 23 — campagna finale «La Soglia»**: rileggere `docs/storia.md` (il Sigillo, i cinque frammenti, il Mercante, la Soglia) e scrivere il piano delle missioni in `docs/`. Le missioni usano `Missione.MISSIONI` (obiettivi generici) e la mappa della Calabria; serve probabilmente poter giocare una missione con un popolo diverso dai Greci (`Impostazioni.popolo` oggi è forzato ai Greci per la campagna).
+**Step 24 — iPhone, prima parte senza Mac**: comandi touch (trascinare per muovere la mappa, pizzicare per lo zoom, tocco lungo al posto del tasto destro), interfaccia leggibile su schermi piccoli (pulsanti più grandi, menu di costruzione compatto), impostazione «schermo piccolo» provabile su Windows con una finestra 1170×2532 ridotta. L'esportazione iOS aspetta la risposta in `domande-per-il-proprietario.md`. Se si blocca, passare alla **Fase 6 (Sicilia)**.

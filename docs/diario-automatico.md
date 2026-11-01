@@ -140,3 +140,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step 22 Normanni giocabili (Fase 4)
 - Piano in docs/normanni.md. Normanni in `Popoli.DATI` (contro i Saraceni, cavalieri pesanti, confini +2 per torri e castelli); allevamento di cavalli (grano e acqua → cavalli) e mastio (costa cavalli, raggio 13). Le guardie dei forti ora hanno l'aspetto del soldato del proprio popolo.
 - 20 modelli nuovi (subagente). Nuovo test `test_normanni`; tutti i 23 test OK. Versione 0.27.0. I cinque popoli sono tutti giocabili. Prossimo: step 23 campagna finale.
+
+## 2026-11-02 — step 23 campagna finale «La Soglia» (Fase 4)
+- Piano in docs/soglia.md. Quattro missioni sulla mappa di Monteleone con il popolo scelto all'inizio (pulsante «La Soglia» sulla mappa della Calabria, aperto dopo la campagna dei Greci); la terza missione è la scelta «unire» (12 merci di lusso) o «conquistare» (una torre nemica), che decide il finale dell'ultima.
+- Testi originali: il Mercante senza Volto, Rocco della Lira, i due finali. Domande nuove al proprietario: chi è Rocco; il Mac per l'iPhone.
+- Nuovo test `test_soglia`; il bot di test_campagna gioca «Il velo sulla Soglia» fino in fondo. Tutti i 24 test OK. Versione 0.28.0.

@@ -11,8 +11,88 @@ signal compiuta
 ## file dei progressi della campagna (i test ne usano un altro)
 static var progressi := "user://campagna.json"
 const CAMPAGNA_GRECI := ["naufragio", "pane_straniero", "uliveto", "citta_sorelle", "ira_del_fiume", "voce_del_mare"]
+## la campagna finale (docs/soglia.md): si apre finita quella dei Greci, con il popolo scelto all'inizio
+const CAMPAGNA_SOGLIA := ["soglia_velo", "soglia_frammenti", "soglia_scelta", "soglia_sigillo"]
 
 const MISSIONI := {
+	"soglia_velo": {
+		"titolo": "Il velo sulla Soglia",
+		"popolo": "scelto", "mappa": "monteleone", "villaggio": "pieno", "coloni": 40,
+		"scorte": {"tronchi": 24, "assi": 40, "pietra": 40, "grano": 6, "pesce": 6},
+		"inizio": [
+			["Rocco della Lira", "Ascoltate, ascoltate... Cinque popoli, cinque frammenti, una sola terra. E in mezzo, dove i due mari quasi si toccano, una striscia di colline che tutti chiamano la Soglia."],
+			["Rocco della Lira", "Il nostro popolo è arrivato fin qui, sul colle che guarda il golfo. Di là il Tirreno, di là, oltre le Serre, lo Ionio. Chi tiene questo colle, tiene la porta della Calabria."],
+			["Il Mercante senza Volto", "Benvenuti, viaggiatori. Io vendo di tutto: ferro, sale, notizie. E compro una cosa sola... ma di questo parleremo quando sarete più grandi."],
+		],
+		"obiettivi": [
+			{"testo": "Fai crescere il villaggio fino a 60 coloni", "aiuto": "Abitazioni collegate e cibo: le case fanno nascere i coloni, il lusso del tuo popolo le fa crescere più in fretta.", "prova": "popolazione", "n": 60},
+			{"testo": "Presidia una torre", "aiuto": "Nel menu «Difesa». Una guardia la presidia e allarga i confini.", "prova": "presidiata",
+				"dopo": [["Il Mercante senza Volto", "Una torre! Bene, bene. Chi alza torri ha qualcosa da difendere. E chi ha qualcosa da difendere, prima o poi, ha bisogno di me."]]},
+		],
+		"fine": [
+			["Rocco della Lira", "Il Mercante se ne andò per la strada di Pizzo, senza voltarsi. Ma il suo velo restò negli occhi di tutti, come una nuvola sul sole."],
+		],
+	},
+	"soglia_frammenti": {
+		"titolo": "Cinque frammenti, cinque popoli",
+		"popolo": "scelto", "mappa": "monteleone", "villaggio": "pieno", "brettii": true, "coloni": 40,
+		"scorte": {"tronchi": 24, "assi": 50, "pietra": 60, "grano": 8, "pesce": 8, "armi": 4},
+		"inizio": [
+			["Rocco della Lira", "I frammenti del Sigillo sono ormai nelle mani di cinque popoli diversi. Ognuno crede di essere l'unico degno di riunirli."],
+			["Il Mercante senza Volto", "I vostri vicini hanno alzato torri sul Poro. Io gli ho venduto le pietre, naturalmente. A voi posso vendere le notizie: vi stanno guardando."],
+		],
+		"obiettivi": [
+			{"testo": "Costruisci un castello (o il mastio) e presidialo", "aiuto": "Nel menu «Difesa». Servono molte assi e pietre; una guardia lo presidia.", "prova": "forti", "n": 1},
+			{"testo": "Fai crescere il villaggio fino a 100 coloni", "aiuto": "Più abitazioni, più cibo, più lusso.", "prova": "popolazione", "n": 100},
+		],
+		"fine": [
+			["Rocco della Lira", "Dall'alto del castello si vedevano entrambi i mari. E si vedeva anche il fumo dei fuochi nemici sul Poro. La pace, quella notte, sembrò più sottile di un velo."],
+		],
+	},
+	"soglia_scelta": {
+		"titolo": "Unire o conquistare",
+		"popolo": "scelto", "mappa": "monteleone", "villaggio": "pieno", "brettii": true, "coloni": 50,
+		"scorte": {"tronchi": 24, "assi": 50, "pietra": 50, "grano": 8, "pesce": 8, "armi": 6},
+		"inizio": [
+			["Rocco della Lira", "Viene un giorno, nella vita di ogni popolo, in cui bisogna scegliere che cosa si vuole essere."],
+			["Il Mercante senza Volto", "Il frammento dei vostri vicini si può avere in due modi. Con i doni: tanti, preziosi, e pazienza. Oppure con le spade: in fretta, e senza pazienza. Io, per me, vendo a tutti e due."],
+		],
+		"obiettivi": [
+			{"testo": "Scegli: metti da parte 12 merci di lusso da donare ai vicini, oppure conquista una loro torre",
+				"aiuto": "Unire: il lusso del tuo popolo (olio, vino, pece, tegole, seta, cavalli...) resta in magazzino come dono. Conquistare: addestra soldati e attacca una torre nemica.",
+				"prova": "una_tra", "prove": [
+					{"prova": "lusso", "n": 12, "scelta": "unione"},
+					{"prova": "conquiste", "n": 1, "scelta": "conquista"},
+				]},
+		],
+		"fine": [
+			["Rocco della Lira", "E la scelta fu fatta. Da quel giorno, sulla Soglia, non si parlò d'altro."],
+		],
+	},
+	"soglia_sigillo": {
+		"titolo": "Il Sigillo ricomposto",
+		"popolo": "scelto", "mappa": "monteleone", "villaggio": "pieno", "brettii": true, "coloni": 60,
+		"scorte": {"tronchi": 30, "assi": 60, "pietra": 70, "grano": 10, "pesce": 10, "armi": 6},
+		"inizio": [
+			["Rocco della Lira", "I cinque frammenti, finalmente, sono sulla Soglia. Manca solo un luogo degno, e un popolo abbastanza grande da custodirli."],
+			["Il Mercante senza Volto", "Lo sapete chi sono? No. Nessuno lo sa. Ma quando il Sigillo sarà intero, forse, potrò finalmente riposare."],
+		],
+		"obiettivi": [
+			{"testo": "Fai crescere il villaggio fino a 120 coloni", "aiuto": "Il Sigillo chiede un popolo grande e sazio.", "prova": "popolazione", "n": 120},
+			{"testo": "Presidia due forti (torri, castelli o il mastio) per custodire il Sigillo", "aiuto": "Nel menu «Difesa».", "prova": "forti", "n": 2},
+		],
+		"fine_unione": [
+			["Rocco della Lira", "I cinque popoli salirono insieme sulla Soglia, ognuno con il suo frammento. Nessuno parlava. Le mani tremavano un poco."],
+			["Rocco della Lira", "Il Sigillo si ricompose, e disse una cosa sola: la terra non appartiene a chi la conquista, ma a chi la lavora."],
+			["Il Mercante senza Volto", "Finalmente... Mio padre aveva ragione, sapete? Io non ero degno. Ma voi sì."],
+			["Rocco della Lira", "Il Mercante si tolse il velo: aveva il viso di un ragazzo stanco. Camminò verso il mare, e il mare lo prese con dolcezza. Quanto a me... io ho aspettato tanto, tanto tempo di vedere questo giorno. Un re, a volte, deve solo aspettare che i suoi figli imparino. Fine."],
+		],
+		"fine_conquista": [
+			["Rocco della Lira", "Un solo popolo salì sulla Soglia, con cinque frammenti presi uno a uno. Il Sigillo si ricompose, e pesava come una montagna."],
+			["Il Mercante senza Volto", "Ecco fatto. Avete vinto. Tenete pure il Sigillo: è vostro, e voi siete suoi."],
+			["Rocco della Lira", "Il Mercante se ne andò, ma il suo velo restò per terra. Qualcuno lo raccolse, e se lo mise sul viso. E io... io ricomincio il canto dall'inizio. Ascoltate, ascoltate..."],
+		],
+	},
 	"naufragio": {
 		"titolo": "Il naufragio",
 		"villaggio": "relitto", "scorte": {"tronchi": 12, "assi": 18, "pietra": 14}, "coloni": 20,
@@ -134,6 +214,7 @@ var id := ""
 var dati: Dictionary
 var indice := 0                      # obiettivo corrente (== numero obiettivi: missione compiuta)
 var partita: Node2D
+var _nemici_iniziali := 0
 var _strade_iniziali := 0
 var _controllo := 0.0
 
@@ -143,6 +224,7 @@ func prepara(p: Node2D, missione: String) -> void:
 	id = missione
 	dati = MISSIONI[missione]
 	_strade_iniziali = p.rete.tratti.size()
+	_nemici_iniziali = p.villaggio.nemici.size()
 
 
 func titolo() -> String:
@@ -180,7 +262,12 @@ func _process(delta: float) -> void:
 		if finita():
 			segna_compiuta(id)
 			compiuta.emit()
-			dialogo.emit(dati["fine"])
+			dialogo.emit(racconto_finale())
+
+
+## Il racconto di chiusura; nell'ultima missione della Soglia dipende dal finale scelto.
+func racconto_finale() -> Array:
+	return dati.get("fine_" + finale(), dati.get("fine", []))
 
 
 ## Verifica un obiettivo sullo stato della partita.
@@ -204,6 +291,19 @@ func raggiunto(ob: Dictionary) -> bool:
 			return v.edifici.values().any(func(e): return e.tipo in ["torre", "castello"] and e.presidiata and e.collegato)
 		"guadagno":
 			return v.edifici.values().filter(func(e): return e.tipo == "agora").reduce(func(t, e): return t + e.guadagno, 0) >= n
+		"lusso":
+			return (CatalogoEdifici.LUSSO + ["olio", "cavalli"]).reduce(func(t, m): return t + v.scorte.get(m, 0), 0) >= n
+		"conquiste":
+			return _nemici_iniziali - v.nemici.size() >= n
+		"forti":
+			return v.edifici.values().filter(func(e): return CatalogoEdifici.dati(e.tipo).has("presidio") and e.presidiata and e.collegato).size() >= n
+		"una_tra":
+			for altra in ob["prove"]:
+				if raggiunto(altra):
+					if altra.has("scelta"):
+						scegli_finale(altra["scelta"])
+					return true
+			return false
 	return false
 
 
@@ -221,25 +321,70 @@ func _evento(nome: String) -> void:
 
 # ------------------------------------------------------------------ progressi della campagna
 
-static func completate() -> Array:
+## Il file dei progressi: {"completate": [...], "popolo_soglia": "...", "finale": "unione" | "conquista"}.
+static func _leggi() -> Dictionary:
 	var f := FileAccess.open(progressi, FileAccess.READ)
 	if f == null:
-		return []
+		return {}
 	var d = JSON.parse_string(f.get_as_text())
-	return d.get("completate", []) if d is Dictionary else []
+	return d if d is Dictionary else {}
+
+
+static func _scrivi(d: Dictionary) -> void:
+	var f := FileAccess.open(progressi, FileAccess.WRITE)
+	if f:
+		f.store_string(JSON.stringify(d))
+
+
+static func completate() -> Array:
+	return _leggi().get("completate", [])
 
 
 static func segna_compiuta(missione: String) -> void:
-	var c := completate()
+	var d := _leggi()
+	var c: Array = d.get("completate", [])
 	if missione in c:
 		return
 	c.append(missione)
-	var f := FileAccess.open(progressi, FileAccess.WRITE)
-	if f:
-		f.store_string(JSON.stringify({"completate": c}))
+	d["completate"] = c
+	_scrivi(d)
 
 
-## Una missione si può giocare se è la prima o se quella prima è stata compiuta.
+## Il popolo scelto per la campagna finale («» finché non si sceglie).
+static func popolo_soglia() -> String:
+	return _leggi().get("popolo_soglia", "")
+
+
+static func scegli_popolo_soglia(popolo: String) -> void:
+	var d := _leggi()
+	d["popolo_soglia"] = popolo
+	_scrivi(d)
+
+
+## Il finale della campagna della Soglia: «unione» (di serie) o «conquista».
+static func finale() -> String:
+	return _leggi().get("finale", "unione")
+
+
+static func scegli_finale(quale: String) -> void:
+	var d := _leggi()
+	d["finale"] = quale
+	_scrivi(d)
+
+
+## La prossima missione da giocare della campagna finale ("" se è tutta compiuta).
+static func prossima_soglia() -> String:
+	for m in CAMPAGNA_SOGLIA:
+		if not m in completate():
+			return m
+	return ""
+
+
+## Una missione si può giocare se è la prima della sua campagna o se quella prima è stata compiuta;
+## la campagna finale si apre dopo l'ultima missione dei Greci.
 static func sbloccata(missione: String) -> bool:
-	var i := CAMPAGNA_GRECI.find(missione)
-	return i <= 0 or CAMPAGNA_GRECI[i - 1] in completate()
+	var campagna := CAMPAGNA_SOGLIA if missione in CAMPAGNA_SOGLIA else CAMPAGNA_GRECI
+	var i := campagna.find(missione)
+	if campagna == CAMPAGNA_SOGLIA and i == 0:
+		return CAMPAGNA_GRECI[-1] in completate()
+	return i <= 0 or campagna[i - 1] in completate()

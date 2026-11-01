@@ -117,8 +117,10 @@ func _gioca(ob: Dictionary) -> void:
 			elif ob["merce"] == "ducati":
 				_una_volta("agora", vicino)
 		"popolazione":
-			_una_volta("casa_greca", vicino)
-			_una_volta("casa_greca2", vicino)
+			# abitazioni finché i posti bastano per la popolazione chiesta (8 posti l'una)
+			var mancano := maxi(0, ob.get("n", 1) - p.villaggio.capacita())
+			for k in ceili(mancano / 8.0) + 2:
+				_una_volta("casa_greca#%d" % k, vicino)
 		"presidiata":
 			_una_volta("torre", func(f): return Vector2(f - mag.bandiera).length() if Vector2(f - mag.bandiera).length() < 9 else -99.0)
 
@@ -127,7 +129,7 @@ func _una_volta(chiave: String, punteggio: Callable) -> void:
 	if _fatti.has(chiave):
 		return
 	_fatti[chiave] = true
-	var tipo := chiave.trim_suffix("2")
+	var tipo := chiave.trim_suffix("2").get_slice("#", 0)
 	var e := _piazza(tipo, punteggio)
 	if e == null:
 		print("  (non riesco a piazzare %s)" % tipo)
