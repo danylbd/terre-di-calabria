@@ -13,8 +13,117 @@ static var progressi := "user://campagna.json"
 const CAMPAGNA_GRECI := ["naufragio", "pane_straniero", "uliveto", "citta_sorelle", "ira_del_fiume", "voce_del_mare"]
 ## la campagna finale (docs/soglia.md): si apre finita quella dei Greci, con il popolo scelto all'inizio
 const CAMPAGNA_SOGLIA := ["soglia_velo", "soglia_frammenti", "soglia_scelta", "soglia_sigillo"]
+## il seguito in Sicilia (docs/fuoco.md): si apre finita la Soglia, con lo stesso popolo
+const CAMPAGNA_FUOCO := ["fuoco_traversata", "fuoco_zancle", "fuoco_vasai", "fuoco_etna", "fuoco_eolie", "fuoco_cuore"]
+const CAMPAGNE := [CAMPAGNA_GRECI, CAMPAGNA_SOGLIA, CAMPAGNA_FUOCO]
 
 const MISSIONI := {
+	"fuoco_traversata": {
+		"titolo": "La traversata",
+		"popolo": "scelto", "mappa": "zancle", "villaggio": "relitto", "coloni": 30,
+		"scorte": {"tronchi": 20, "assi": 30, "pietra": 24, "pesce": 6},
+		"inizio": [
+			["Rocco della Lira", "Ascoltate, ascoltate... Sulla Soglia il Sigillo si era ricomposto, ma al centro restava un buco, piccolo come un occhio. E io mi ricordai l'ultimo verso del canto, quello che nessuno ascoltava più: «e il cuore del Sigillo lo tenne il fuoco, oltre lo Stretto»."],
+			["Rocco della Lira", "Così il nostro popolo caricò le barche e passò tra Scilla e Cariddi, dove l'acqua gira come in una pentola. Arrivarono in pochi, sulla falce di sabbia di Zancle."],
+		],
+		"obiettivi": [
+			{"testo": "Traccia una strada dal magazzino", "aiuto": "Premi «Strada» e collega la bandierina davanti al magazzino.", "prova": "strada"},
+			{"testo": "Costruisci un pescatore sullo Stretto", "aiuto": "Nel menu «Cibo». Il mare è a due passi, da tutte e due le parti.", "prova": "edificio", "tipo": "pescatore"},
+			{"testo": "Pesca 6 pesci", "aiuto": "I pescatori dello Stretto conoscono le correnti: lascia lavorare.", "prova": "prodotti", "tipo": "pescatore", "n": 6},
+			{"testo": "Costruisci due abitazioni", "aiuto": "Assi e pietra: i superstiti della traversata hanno freddo.", "prova": "edificio", "tipo": "casa_greca", "n": 2},
+		],
+		"fine": [
+			["Rocco della Lira", "La prima notte in Sicilia, dalla spiaggia, si vedeva la Calabria: i fuochi di Scilla, così vicini che sembrava di poterli toccare. E a ovest, lontano, una montagna che fumava."],
+		],
+	},
+	"fuoco_zancle": {
+		"titolo": "Zancle",
+		"popolo": "scelto", "mappa": "zancle", "villaggio": "pieno", "coloni": 40,
+		"scorte": {"tronchi": 24, "assi": 40, "pietra": 40, "grano": 6, "pesce": 6},
+		"inizio": [
+			["Rocco della Lira", "Zancle, la chiamavano: la falce. Il porto è curvo come una lama, e protegge le barche dalle correnti."],
+			["Rocco della Lira", "Ma una falce sola non fa una città. Servono case, magazzini, gente."],
+		],
+		"obiettivi": [
+			{"testo": "Fai crescere il villaggio fino a 60 coloni", "aiuto": "Abitazioni collegate e cibo.", "prova": "popolazione", "n": 60},
+			{"testo": "Costruisci un secondo magazzino", "aiuto": "Un magazzino più lontano accorcia le strade dei portatori.", "prova": "edificio", "tipo": "magazzino", "n": 2},
+		],
+		"fine": [
+			["Rocco della Lira", "Zancle crebbe sulla sua falce. E un giorno, dalle colline, scesero due uomini con vasi dipinti sulle spalle: i Siculi volevano conoscere i nuovi vicini."],
+		],
+	},
+	"fuoco_vasai": {
+		"titolo": "I vasai di Pantalica",
+		"popolo": "scelto", "mappa": "zancle", "villaggio": "pieno", "coloni": 50,
+		"scorte": {"tronchi": 24, "assi": 40, "pietra": 40, "grano": 8, "pesce": 8},
+		"inizio": [
+			["Un vasaio siculo", "Noi scaviamo le case dei morti nella roccia di Pantalica, e quelle dei vivi le facciamo d'argilla. Voi che cosa sapete fare?"],
+			["Rocco della Lira", "I Siculi non vendono le loro giare a chiunque: vogliono vedere che cosa sa fare un popolo prima di fidarsi."],
+		],
+		"obiettivi": [
+			{"testo": "Metti da parte 8 merci di lusso da scambiare con i Siculi", "aiuto": "Il lusso del tuo popolo (olio, vino, pece, tegole, seta, cavalli, ceramiche...) resta in magazzino.", "prova": "lusso", "n": 8},
+			{"testo": "Fai crescere il villaggio fino a 80 coloni", "aiuto": "I Siculi rispettano chi ha un villaggio grande.", "prova": "popolazione", "n": 80},
+		],
+		"fine": [
+			["Un vasaio siculo", "Bene. Allora vi diciamo una cosa che sanno solo i vecchi: sotto la neve dell'Etna c'è un fuoco che non si spegne mai. E nel fuoco, qualcosa che brilla."],
+		],
+	},
+	"fuoco_etna": {
+		"titolo": "La neve dell'Etna",
+		"popolo": "scelto", "mappa": "zancle", "villaggio": "pieno", "brettii": true, "coloni": 50,
+		"scorte": {"tronchi": 24, "assi": 40, "pietra": 40, "grano": 8, "pesce": 8, "armi": 4},
+		"inizio": [
+			["Rocco della Lira", "Sui fianchi del vulcano la terra è nera e ricchissima. Il grano cresce alto, la vite dà un vino che sa di fumo. Ma la montagna brontola."],
+		],
+		"obiettivi": [
+			{"testo": "Semina 8 campi di grano", "aiuto": "Costruisci una o più fattorie: il contadino semina da solo intorno.", "prova": "campi", "coltura": "grano", "n": 8, "evento": "lava",
+				"dopo": [["Rocco della Lira", "Poi l'Etna tossì. Una nuvola di cenere coprì il cielo, e quando la pioggia nera finì, dei campi non restava niente."],
+					["Rocco della Lira", "Ma la cenere, l'anno dopo, fa la terra ancora più grassa. Si semina di nuovo."]]},
+			{"testo": "Raccogli 6 covoni di grano dopo la cenere", "aiuto": "Il contadino risemina da solo.", "prova": "prodotti", "tipo": "fattoria", "n": 6},
+		],
+		"fine": [
+			["Rocco della Lira", "Il vulcano si calmò. E nella notte, dalla cima, si vide una luce che non era quella della lava: una luce ferma, come una stella caduta."],
+		],
+	},
+	"fuoco_eolie": {
+		"titolo": "Il vento delle Eolie",
+		"popolo": "scelto", "mappa": "zancle", "villaggio": "pieno", "brettii": true, "coloni": 60,
+		"scorte": {"tronchi": 24, "assi": 50, "pietra": 60, "grano": 8, "pesce": 8, "armi": 6},
+		"inizio": [
+			["Rocco della Lira", "A nord, nel mare, ci sono le isole dei venti: pomice, ossidiana, sale. E dietro una di quelle isole il Mercante senza Volto nascondeva una flotta."],
+			["Il Mercante senza Volto", "Siete venuti fin qui? Testardi. I vostri vicini, però, lavorano per me adesso: e le loro torri vi chiudono la strada per il vulcano."],
+		],
+		"obiettivi": [
+			{"testo": "Presidia due forti", "aiuto": "Nel menu «Difesa»: torri, castelli o il mastio.", "prova": "forti", "n": 2},
+			{"testo": "Conquista una torre nemica", "aiuto": "Addestra soldati alla caserma e attacca una torre: la strada per l'Etna si apre.", "prova": "conquiste", "n": 1},
+		],
+		"fine": [
+			["Rocco della Lira", "La torre cadde, e dalla sua cima si vedeva il sentiero che sale al vulcano. Il Mercante non c'era già più: era andato avanti, verso il fuoco."],
+		],
+	},
+	"fuoco_cuore": {
+		"titolo": "Il cuore del fuoco",
+		"popolo": "scelto", "mappa": "zancle", "villaggio": "pieno", "brettii": true, "coloni": 60,
+		"scorte": {"tronchi": 30, "assi": 60, "pietra": 70, "grano": 10, "pesce": 10, "armi": 6},
+		"inizio": [
+			["Rocco della Lira", "Il cuore del Sigillo è lassù, nella bocca dell'Etna. Per arrivarci serve un popolo grande, e forti che proteggano la strada."],
+			["Il Mercante senza Volto", "Io lo so che cosa c'è nel cratere. Lo so da tremila anni. Ma da solo non posso prenderlo: il fuoco brucia solo chi è solo."],
+		],
+		"obiettivi": [
+			{"testo": "Fai crescere il villaggio fino a 120 coloni", "aiuto": "Il cuore del Sigillo chiede un popolo grande.", "prova": "popolazione", "n": 120},
+			{"testo": "Presidia tre forti lungo la strada del vulcano", "aiuto": "Nel menu «Difesa».", "prova": "forti", "n": 3},
+		],
+		"fine_unione": [
+			["Rocco della Lira", "Salirono in tanti, di tutti i popoli, fino all'orlo del cratere. Il cuore del Sigillo brillava nel fuoco come un seme."],
+			["Il Mercante senza Volto", "Sono tornato dal mare per vederlo. Non per prenderlo: solo per vederlo. Mettetelo al suo posto."],
+			["Rocco della Lira", "Il Sigillo fu intero, finalmente. Non disse niente: cominciò a battere, piano, come un cuore. E la montagna, per la prima volta da secoli, smise di brontolare. Fine del canto."],
+		],
+		"fine_conquista": [
+			["Rocco della Lira", "Il nostro popolo salì da solo fino al cratere, con le spade ancora sporche. Il cuore del Sigillo brillava nel fuoco."],
+			["Il Mercante senza Volto", "Prendetelo, prendetelo. Ma sappiate che il fuoco ricorda chi lo tocca."],
+			["Rocco della Lira", "Il Sigillo fu intero, e battè forte, come un tamburo di guerra. La montagna rispose con un boato. Chi regna sulla terra tra due mari, adesso, regna anche sul fuoco... e il fuoco non è un suddito tranquillo. Ricomincio il canto."],
+		],
+	},
 	"soglia_velo": {
 		"titolo": "Il velo sulla Soglia",
 		"popolo": "scelto", "mappa": "monteleone", "villaggio": "pieno", "coloni": 40,
@@ -309,6 +418,9 @@ func raggiunto(ob: Dictionary) -> bool:
 
 func _evento(nome: String) -> void:
 	match nome:
+		"lava":
+			# la cenere dell'Etna brucia i campi seminati
+			_evento("alluvione")
 		"alluvione":
 			# l'acqua porta via tutti i campi seminati
 			var ris: RisorseNaturali = partita.risorse
@@ -374,17 +486,26 @@ static func scegli_finale(quale: String) -> void:
 
 ## La prossima missione da giocare della campagna finale ("" se è tutta compiuta).
 static func prossima_soglia() -> String:
-	for m in CAMPAGNA_SOGLIA:
+	return prossima(CAMPAGNA_SOGLIA)
+
+
+## La prossima missione da giocare di una campagna ("" se è tutta compiuta).
+static func prossima(campagna: Array) -> String:
+	for m in campagna:
 		if not m in completate():
 			return m
 	return ""
 
 
-## Una missione si può giocare se è la prima della sua campagna o se quella prima è stata compiuta;
-## la campagna finale si apre dopo l'ultima missione dei Greci.
+## Una missione si può giocare se quella prima nella sua campagna è stata compiuta; la prima missione di
+## una campagna si apre finita l'ultima della campagna precedente (Greci → Soglia → Sicilia).
 static func sbloccata(missione: String) -> bool:
-	var campagna := CAMPAGNA_SOGLIA if missione in CAMPAGNA_SOGLIA else CAMPAGNA_GRECI
-	var i := campagna.find(missione)
-	if campagna == CAMPAGNA_SOGLIA and i == 0:
-		return CAMPAGNA_GRECI[-1] in completate()
-	return i <= 0 or campagna[i - 1] in completate()
+	for k in CAMPAGNE.size():
+		var campagna: Array = CAMPAGNE[k]
+		var i := campagna.find(missione)
+		if i < 0:
+			continue
+		if i > 0:
+			return campagna[i - 1] in completate()
+		return k == 0 or CAMPAGNE[k - 1][-1] in completate()
+	return false
