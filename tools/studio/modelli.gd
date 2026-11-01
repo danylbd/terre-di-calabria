@@ -284,6 +284,30 @@ static func catalogo() -> Dictionary:
 		"castello_siculi": {"crea": castello_siculi},
 		"torre_siculi": {"crea": torre_siculi},
 		"vasaio": {"crea": vasaio},
+		"porcile_siculi": {"crea": porcile_siculi},
+		"macelleria_siculi": {"crea": macelleria_siculi},
+		"apiario_siculi": {"crea": apiario_siculi},
+		"caseificio_siculi": {"crea": caseificio_siculi},
+		"argillaio_siculi": {"crea": argillaio_siculi},
+		"fornace_siculi": {"crea": fornace_siculi},
+		"saline_siculi": {"crea": saline_siculi},
+		"tessitura_siculi": {"crea": tessitura_siculi},
+		"pescatore_siculi": {"crea": capanna_pescatore_siculi},
+		"frantoio_siculi": {"crea": frantoio_siculi},
+		"uliveto_siculi": {"crea": uliveto_siculi},
+		"vigneto_siculi": {"crea": vigneto_siculi},
+		"cantina_siculi": {"crea": cantina_siculi},
+		"ortolano_siculi": {"crea": ortolano_siculi},
+		"agrumeto_siculi": {"crea": agrumeto_siculi},
+		"pesca_spada_siculi": {"crea": pesca_spada_siculi},
+		"miniera_ferro_siculi": {"crea": miniera_ferro_siculi},
+		"miniera_argento_siculi": {"crea": miniera_ferro_siculi.bind("argento_grezzo")},
+		"zecca_siculi": {"crea": zecca_siculi},
+		"armaiolo_siculi": {"crea": armaiolo_siculi},
+		"porto_siculi": {"crea": porto_siculi},
+		"carbonaia_siculi": {"crea": carbonaia_siculi},
+		"fonderia_siculi": {"crea": fonderia_siculi},
+		"fabbro_siculi": {"crea": fabbro_siculi},
 		"casa_greca_sicani": {"crea": casa_greca_sicani.bind(1)},
 		"magazzino_sicani": {"crea": magazzino_sicani},
 		"boscaiolo_sicani": {"crea": boscaiolo_sicani},
@@ -14330,6 +14354,732 @@ static func guerriero_siculo() -> Node3D:
 	bd.add_child(cilindro(0.016, 0.0, 0.06, Vector3(0, 0.34, 0.02), "bronzo", Vector3.ZERO, 6))
 	bd.add_child(cilindro(0.009, 0.009, 0.018, Vector3(0, 0.3, 0.02), "ocra_rossa", Vector3.ZERO, 6))
 	r.set_meta("carico", "lancia")
+	return r
+
+
+# ------------------------------------------------------------------ altri edifici dei Siculi (step G6e)
+# Stesso ingombro e stessa disposizione del corrispondente greco (stesso nome senza "_siculi"): la casa diventa
+# la capanna ovale con la cupola di canne, botti e anfore diventano giare dipinte, i recinti muretti a secco.
+
+## Barca scavata in un tronco (monossile) dei Siculi: scafo di legno vecchio con la fascia d'ocra rossa,
+## l'occhio dipinto a prua, panche e remo. pos = centro a terra, la prua verso +X locale.
+static func _barca_sic(r: Node3D, pos: Vector3, rot_y := 0.0, lung := 1.0) -> Node3D:
+	var b := Node3D.new()
+	b.position = pos
+	b.rotation_degrees.y = rot_y
+	b.scale = Vector3(lung, 1, 1)
+	r.add_child(b)
+	b.add_child(sfera(0.13, Vector3(0, 0.07, 0), "legno_vecchio", Vector3(2.6, 0.7, 0.95)))
+	b.add_child(sfera(0.115, Vector3(0, 0.1, 0), "corteccia", Vector3(2.45, 0.35, 0.82)))
+	for lato: int in [-1, 1]:
+		b.add_child(scatola(Vector3(0.56, 0.022, 0.012), Vector3(0, 0.115, lato * 0.112), "ocra_rossa", Vector3(0, 0, 0)))
+		b.add_child(scatola(Vector3(0.56, 0.006, 0.013), Vector3(0, 0.1, lato * 0.112), "vernice_nera"))
+		# occhio dipinto a prua
+		b.add_child(cilindro(0.022, 0.022, 0.006, Vector3(0.24, 0.098, lato * 0.098), "ceramica", Vector3(90, 0, 0), 10))
+		b.add_child(cilindro(0.01, 0.01, 0.008, Vector3(0.245, 0.098, lato * 0.1), "vernice_nera", Vector3(90, 0, 0), 8))
+	for x: float in [-0.12, 0.1]:
+		b.add_child(scatola(Vector3(0.03, 0.012, 0.2), Vector3(x, 0.115, 0), "legno"))
+	b.add_child(scatola(Vector3(0.48, 0.008, 0.022), Vector3(0.02, 0.135, 0.05), "legno_chiaro", Vector3(0, 10, 6)))
+	b.add_child(scatola(Vector3(0.07, 0.006, 0.035), Vector3(-0.22, 0.13, 0.09), "legno_chiaro", Vector3(0, 10, 6)))
+	return b
+
+
+## Lastra di pietra chiara appoggiata su due sassi (bancone o mensola dei Siculi).
+static func _lastra_sic(r: Node3D, pos: Vector3, larg := 0.3, prof := 0.14, h := 0.1, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(scatola(Vector3(larg, 0.03, prof), Vector3(0, h, 0), "roccia_chiara"))
+	for lato: int in [-1, 1]:
+		n.add_child(sfera(0.05, Vector3(lato * (larg * 0.5 - 0.05), (h - 0.015) * 0.5, 0), "pietra_secca", Vector3(1, h / 0.09, prof / 0.11)))
+
+
+## Graticcio di canne su quattro pali (per seccare formaggi, mattoni o pesci). pos = centro a terra.
+static func _graticcio_sic(r: Node3D, pos: Vector3, lx: float, lz: float, h: float) -> void:
+	for x: float in [-lx * 0.4, lx * 0.4]:
+		for z: float in [-lz * 0.4, lz * 0.4]:
+			r.add_child(cilindro(0.008, 0.009, h, pos + Vector3(x, h * 0.5, z), "corteccia", Vector3.ZERO, 5))
+	r.add_child(scatola(Vector3(lx, 0.012, lz), pos + Vector3(0, h, 0), "canne_sic"))
+	for z: float in [-lz * 0.45, lz * 0.45]:
+		r.add_child(cilindro(0.006, 0.006, lx + 0.02, pos + Vector3(0, h + 0.008, z), "corda", Vector3(0, 0, 90), 4))
+
+
+## Vasca tonda di pietra a secco con l'acqua (abbeveratoio o cisterna).
+static func _vasca_sic(r: Node3D, pos: Vector3, rg := 0.1, h := 0.06, mat := "acqua_pozzo") -> void:
+	r.add_child(cilindro(rg + 0.025, rg + 0.03, h, pos + Vector3(0, h * 0.5, 0), "pietra_secca", Vector3.ZERO, 14))
+	r.add_child(cilindro(rg, rg, 0.004, pos + Vector3(0, h + 0.001, 0), mat, Vector3.ZERO, 14))
+	for k in 6:
+		var a := k * TAU / 6 + 0.3
+		r.add_child(sfera(0.022, pos + Vector3(cos(a), 0, sin(a)) * (rg + 0.02) + Vector3(0, h, 0), "roccia_chiara" if k % 2 == 0 else "pietra_secca", Vector3(1.2, 0.6, 1.0)))
+
+
+## Mantice di pelle con l'ugello di canna (per fucine e fonderie). pos = a terra, l'ugello verso +X locale.
+static func _mantice_sic(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	for z: float in [-0.045, 0.045]:
+		n.add_child(sfera(0.05, Vector3(0, 0.04, z), "pelle_scura", Vector3(1.3, 0.6, 0.9)))
+		n.add_child(cilindro(0.004, 0.004, 0.07, Vector3(-0.03, 0.08, z), "legno_vecchio", Vector3(0, 0, 30), 4))
+	n.add_child(cilindro(0.008, 0.01, 0.16, Vector3(0.12, 0.035, 0), "terracotta", Vector3(0, 0, 90), 6))
+
+
+## Porcile dei Siculi: capanna ovale, recinto di muretti a secco con il cancello di canne, truogolo di pietra,
+## maiali nel fango sotto la quercia delle ghiande, sacco e giara.
+static func porcile_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.3, 0, -0.3), 0.3, 0.23, 0.28, 201)
+	var a := Vector3(0.05, 0, 0.0)
+	r.add_child(scatola(Vector3(0.8, 0.012, 0.75), a + Vector3(0.12, 0.006, 0.12), "terra"))
+	_muretto_secco(r, a + Vector3(-0.28, 0, 0.5), a + Vector3(0.28, 0, 0.5), 0.08, 0.07)
+	_graticcio(r, a + Vector3(0.3, 0, 0.5), a + Vector3(0.5, 0, 0.5), 0.08)
+	_muretto_secco(r, a + Vector3(0.52, 0, -0.26), a + Vector3(0.52, 0, 0.53), 0.08, 0.07)
+	_muretto_secco(r, a + Vector3(0.15, 0, -0.26), a + Vector3(0.55, 0, -0.26), 0.08, 0.07)
+	r.add_child(sfera(0.14, a + Vector3(0.28, 0.0, 0.05), "fuliggine", Vector3(1.4, 0.1, 1.0)))
+	# truogolo di pietra con il grano
+	r.add_child(scatola(Vector3(0.24, 0.05, 0.08), a + Vector3(0.0, 0.025, 0.4), "roccia_chiara"))
+	r.add_child(scatola(Vector3(0.2, 0.008, 0.05), a + Vector3(0.0, 0.051, 0.4), "grano"))
+	for p: Array in [[Vector3(0.25, 0, 0.3), 20], [Vector3(0.38, 0, -0.05), 130], [Vector3(0.05, 0, 0.18), -60], [Vector3(0.4, 0, 0.32), 200]]:
+		r.add_child(maiale(a + (p[0] as Vector3), p[1]))
+	r.add_child(scatola(Vector3(0.16, 0.04, 0.06), a + Vector3(-0.15, 0.02, 0.1), "pietra_secca"))
+	r.add_child(scatola(Vector3(0.13, 0.004, 0.04), a + Vector3(-0.15, 0.041, 0.1), "acqua_pozzo"))
+	r.add_child(sacco(Vector3(-0.62, 0, 0.3), 0.3))
+	r.add_child(_giara(Vector3(-0.48, 0, 0.42), 0.9, 0))
+	_quercia_n(r, Vector3(-0.7, 0, -0.1), 0.45, 202)
+	for k in 6:
+		r.add_child(sfera(0.012, Vector3(-0.6 + k * 0.04, 0.008, 0.05 + (k % 2) * 0.05), "corteccia"))
+	return r
+
+
+## Macelleria dei Siculi: capanna ovale grande, tettoia di canne e frasche con la carne appesa, bancone di pietra
+## su due sassi, ceppo, giare e insegna d'ocra.
+static func macelleria_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.25), 0.37, 0.28, 0.4, 211)
+	_tettoia_sic(r, Vector3(0.45, 0, 0.42), 0.6, 0.26, 0.42, 0.34, 212)
+	r.add_child(cilindro(0.01, 0.01, 0.56, Vector3(0.45, 0.3, 0.52), "corteccia", Vector3(0, 0, 90), 5))
+	for k in 5:
+		var x := 0.25 + k * 0.1
+		r.add_child(cilindro(0.003, 0.003, 0.05, Vector3(x, 0.275, 0.52), "corda", Vector3.ZERO, 3))
+		if k % 2 == 0:
+			r.add_child(sfera(0.035, Vector3(x, 0.215, 0.52), "carne", Vector3(0.9, 1.4, 0.8)))
+		else:
+			r.add_child(cilindro(0.016, 0.016, 0.1, Vector3(x, 0.205, 0.52), "carne", Vector3.ZERO, 8))
+	var b := Vector3(-0.35, 0, 0.55)
+	_lastra_sic(r, b, 0.32, 0.15, 0.1)
+	r.add_child(sfera(0.04, b + Vector3(-0.05, 0.135, 0), "carne", Vector3(1.2, 0.5, 0.9)))
+	r.add_child(scatola(Vector3(0.07, 0.004, 0.02), b + Vector3(0.08, 0.12, 0.02), "bronzo", Vector3(0, 30, 0)))
+	r.add_child(cilindro(0.07, 0.075, 0.1, Vector3(-0.65, 0.05, 0.4), "corteccia", Vector3.ZERO, 12))
+	r.add_child(_giara(Vector3(0.65, 0, 0.0), 1.1, 0))
+	r.add_child(_giara(Vector3(0.68, 0, 0.16), 0.9, 1))
+	r.add_child(maiale(Vector3(-0.6, 0, 0.0), 60))
+	_insegna_sic(r, Vector3(0.12, 0, 0.12), 0.55)
+	return r
+
+
+## Apiario dei Siculi: capanna ovale, arnie a tubo di canne e ferula intonacate d'argilla, coricate a file
+## su muretti a secco, fiori tutto intorno, quercia, vasetti di miele.
+static func apiario_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.35, 0, -0.35), 0.25, 0.2, 0.26, 221)
+	for f in 2:
+		var z := 0.15 + f * 0.25
+		_muretto_secco(r, Vector3(-0.22, 0, z), Vector3(0.52, 0, z), 0.06, 0.12)
+		for liv in 2:
+			for k in 5 - liv:
+				var x := -0.15 + k * 0.15 + liv * 0.075
+				var p := Vector3(x, 0.105 + liv * 0.07, z)
+				r.add_child(cilindro(0.035, 0.035, 0.16, p, "canne_sic", Vector3(90, 0, 0), 10))
+				for dz: float in [-0.05, 0.05]:
+					r.add_child(_toro(0.033, 0.039, p + Vector3(0, 0, dz), "corda", Vector3(90, 0, 0)))
+				r.add_child(cilindro(0.032, 0.032, 0.01, p + Vector3(0, 0, 0.078), "argilla_sic", Vector3(90, 0, 0), 10))
+				r.add_child(scatola(Vector3(0.016, 0.01, 0.006), p + Vector3(0, -0.012, 0.084), "buio"))
+	var rng := _rng(222)
+	for k in 30:
+		var p := Vector3(rng.randf_range(-0.7, 0.7), 0.0, rng.randf_range(0.6, 0.75))
+		if k % 2 == 0:
+			p = Vector3(rng.randf_range(0.58, 0.75), 0.0, rng.randf_range(-0.3, 0.6))
+		r.add_child(sfera(0.018, p + Vector3(0, 0.02, 0), "orto"))
+		r.add_child(sfera(0.012, p + Vector3(0, 0.04, 0), ["fiore", "geranio", "miele"][k % 3]))
+	_quercia_n(r, Vector3(0.55, 0, -0.42), 0.45, 223)
+	r.add_child(_vaso_sic(Vector3(-0.62, 0, 0.2), 1.1, 2))
+	r.add_child(_vaso_sic(Vector3(-0.52, 0, 0.3), 1.0, 1))
+	r.add_child(_giara(Vector3(-0.66, 0, 0.36), 0.8, 1))
+	return r
+
+
+## Caseificio dei Siculi: capanna ovale grande, olla di ceramica col latte sul fuoco fra tre pali, graticci di canne
+## con le forme di formaggio sotto la tettoia e accanto alla capanna, giare del latte.
+static func caseificio_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.25), 0.37, 0.28, 0.4, 231)
+	var f := Vector3(0.45, 0, 0.45)
+	_fuoco(r, f, 1.0)
+	r.add_child(sfera(0.085, f + Vector3(0, 0.14, 0), "ceramica", Vector3(1, 0.85, 1)))
+	r.add_child(cilindro(0.086, 0.086, 0.02, f + Vector3(0, 0.14, 0), "vernice_rossa", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.06, 0.06, 0.01, f + Vector3(0, 0.205, 0), "latte", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.062, 0.062, 0.012, f + Vector3(0, 0.2, 0), "vernice_nera", Vector3.ZERO, 14))
+	for k in 3:
+		var a := k * TAU / 3 + 0.5
+		ramo(r, f + Vector3(cos(a) * 0.15, 0, sin(a) * 0.15), f + Vector3(0, 0.34, 0), 0.008, "corteccia")
+	r.add_child(cilindro(0.004, 0.004, 0.12, f + Vector3(0, 0.27, 0), "corda", Vector3.ZERO, 3))
+	_fumo(r, f + Vector3(0, 0.26, 0), 2, 0.6)
+	_tettoia_sic(r, Vector3(-0.3, 0, 0.5), 0.4, 0.2, 0.38, 0.32, 232)
+	for p: Vector3 in [Vector3(-0.3, 0, 0.5), Vector3(0.7, 0, -0.05)]:
+		var lungo_x := p.x < 0
+		for liv in 3:
+			r.add_child(scatola(Vector3(0.28 if lungo_x else 0.08, 0.012, 0.08 if lungo_x else 0.28), p + Vector3(0, 0.05 + liv * 0.08, 0), "canne_sic"))
+			for k in 3:
+				var o := Vector3((k - 1) * 0.085, 0, 0) if lungo_x else Vector3(0, 0, (k - 1) * 0.085)
+				r.add_child(cilindro(0.033, 0.033, 0.035, p + o + Vector3(0, 0.074 + liv * 0.08, 0), "formaggio", Vector3.ZERO, 12))
+		for s: int in [-1, 1]:
+			var o2 := Vector3(s * 0.15, 0, 0) if lungo_x else Vector3(0, 0, s * 0.15)
+			r.add_child(cilindro(0.008, 0.009, 0.24, p + o2 + Vector3(0, 0.12, 0), "corteccia", Vector3.ZERO, 5))
+	r.add_child(_giara(Vector3(0.1, 0, 0.62), 0.85, 0))
+	r.add_child(_giara(Vector3(0.24, 0, 0.6), 1.0, 1))
+	return r
+
+
+## Argillaio dei Siculi: capanna ovale piccola, mattoni crudi che seccano sulla stuoia di canne, fossa d'argilla,
+## stampo di legno, pala e vasca d'acqua di pietra a secco.
+static func argillaio_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.32, 0, -0.32), 0.24, 0.18, 0.24, 241)
+	r.add_child(scatola(Vector3(0.44, 0.008, 0.18), Vector3(-0.41, 0.004, 0.45), "canne_sic"))
+	r.add_child(sfera(0.3, Vector3(0.3, -0.02, 0.25), "argilla", Vector3(1.3, 0.12, 1.0)))
+	r.add_child(sfera(0.22, Vector3(0.3, 0.0, 0.25), "argilla_cruda", Vector3(1.3, 0.08, 1.0)))
+	for k in 6:
+		var a := deg_to_rad(-20.0 + k * 40.0)
+		r.add_child(sfera(0.03, Vector3(0.3 + cos(a) * 0.37, 0.01, 0.25 + sin(a) * 0.29), "pietra_secca", Vector3(1.2, 0.6, 1.0)))
+	for k in 12:
+		r.add_child(scatola(Vector3(0.07, 0.03, 0.04), Vector3(-0.55 + (k % 4) * 0.09, 0.024 + (k / 4) * 0.032, 0.45), "argilla" if k % 3 else "argilla_cruda", Vector3(0, (k % 2) * 5, 0)))
+	r.add_child(scatola(Vector3(0.1, 0.02, 0.06), Vector3(-0.12, 0.01, 0.6), "legno_vecchio"))
+	r.add_child(scatola(Vector3(0.07, 0.006, 0.04), Vector3(-0.12, 0.023, 0.6), "buio"))
+	var a := attrezzo("pala")
+	a.position = Vector3(0.62, 0.02, 0.05)
+	a.rotation_degrees = Vector3(0, 40, 10)
+	r.add_child(a)
+	_vasca_sic(r, Vector3(0.04, 0, 0.62), 0.07, 0.05)
+	r.add_child(_giara(Vector3(-0.02, 0, 0.0), 0.9, 1))
+	return r
+
+
+## Fornace dei Siculi: capanna ovale, forno a cupola d'argilla con la fascia rossa, la bocca accesa e il fumo,
+## file di vasi dipinti ad asciugare, mucchio d'argilla, legna e fascine.
+static func fornace_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.25, 0, -0.3), 0.3, 0.23, 0.32, 251)
+	_forno_sic(r, Vector3(0.42, 0, 0.3), 1.05)
+	for k in 7:
+		var p := Vector3(-0.6 + (k % 4) * 0.1, 0, 0.42 + (k / 4) * 0.12)
+		if k % 3 == 1:
+			r.add_child(_giara(p, 0.65, k))
+		else:
+			r.add_child(_vaso_sic(p, 1.0, k % 3))
+	r.add_child(mucchio(Vector3(0.68, 0, -0.18), "argilla_cruda", 8, 9))
+	legnaia(r, Vector3(0.68, 0, 0.12), 0.2, 3)
+	_fascina(r, Vector3(0.1, 0, 0.62), 80.0)
+	return r
+
+
+## Saline dei Siculi: vasche di evaporazione bordate di pietra a secco, canaletta, cumuli di sale,
+## capannuccia ovale, pala, sacco e giara.
+static func saline_siculi() -> Node3D:
+	var r := Node3D.new()
+	for i in 3:
+		for j in 2:
+			var p := Vector3(-0.45 + i * 0.42, 0, -0.25 + j * 0.5)
+			r.add_child(scatola(Vector3(0.4, 0.04, 0.46), p + Vector3(0, 0.02, 0), "pietra_secca"))
+			var mat := "acqua_chiara" if (i + j) % 3 != 0 else "sale"
+			r.add_child(scatola(Vector3(0.34, 0.005, 0.4), p + Vector3(0, 0.042, 0), mat))
+			r.add_child(scatola(Vector3(0.05, 0.008, 0.04), p + Vector3(0, 0.04, -0.21), "acqua_chiara"))
+			for k in 4:
+				var q := p + Vector3(-0.17 + (k % 2) * 0.34, 0.04, -0.2 + (k / 2) * 0.4)
+				r.add_child(sfera(0.024, q, "roccia_chiara", Vector3(1.2, 0.6, 1.0)))
+	var cz := -0.53
+	r.add_child(scatola(Vector3(1.1, 0.024, 0.07), Vector3(-0.13, 0.012, cz), "pietra_secca"))
+	r.add_child(scatola(Vector3(1.1, 0.004, 0.035), Vector3(-0.13, 0.026, cz), "acqua_chiara"))
+	for p: Vector3 in [Vector3(0.62, 0, 0.55), Vector3(0.42, 0, 0.62), Vector3(-0.6, 0, 0.6)]:
+		r.add_child(sfera(0.1, p, "sale", Vector3(1, 0.9, 1)))
+	_capanna_sic(r, Vector3(0.68, 0, -0.66), 0.16, 0.13, 0.2, 261, 0.0, true, 1.35)
+	var a := attrezzo("pala")
+	a.position = Vector3(0.25, 0.02, 0.45)
+	a.rotation_degrees = Vector3(0, -30, 5)
+	r.add_child(a)
+	r.add_child(sacco(Vector3(0.0, 0, 0.62), 0.3))
+	r.add_child(_giara(Vector3(0.32, 0, -0.74), 0.8, 0))
+	return r
+
+
+## Tessitura dei Siculi: capanna ovale grande, telaio verticale a pesi d'argilla con la tela a fasce d'ocra rossa,
+## nere e chiare, matasse di lana, drappi dipinti stesi su una pertica, cesta di lana.
+static func tessitura_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.28), 0.36, 0.26, 0.4, 271)
+	var t := Vector3(0.0, 0, 0.5)
+	for x: float in [-0.18, 0.18]:
+		r.add_child(cilindro(0.012, 0.014, 0.44, t + Vector3(x, 0.21, -0.02), "corteccia", Vector3(-6, 0, 0), 6))
+	r.add_child(cilindro(0.012, 0.012, 0.42, t + Vector3(0, 0.4, -0.04), "legno_vecchio", Vector3(0, 0, 90), 6))
+	var fili := ["ocra_rossa", "vernice_nera", "lino", "ocra_rossa", "lino", "vernice_nera"]
+	for k in 6:
+		r.add_child(scatola(Vector3(0.34, 0.03, 0.006), t + Vector3(0, 0.37 - k * 0.03, -0.035 + k * 0.003), fili[k]))
+	for k in 12:
+		r.add_child(scatola(Vector3(0.004, 0.13, 0.004), t + Vector3(-0.155 + k * 0.028, 0.15, -0.012), "lino"))
+	# pesi da telaio d'argilla appesi ai fili
+	for k in 8:
+		r.add_child(cilindro(0.012, 0.022, 0.04, t + Vector3(-0.14 + k * 0.04, 0.07, -0.01 + (k % 2) * 0.012), "argilla_sic", Vector3.ZERO, 4))
+	r.add_child(cilindro(0.006, 0.006, 0.36, t + Vector3(0, 0.1, -0.01), "legno_vecchio", Vector3(0, 0, 90), 5))
+	var colori := ["lana", "ocra_rossa", "vernice_nera"]
+	for i in 3:
+		var p := Vector3(0.52 + (i % 2) * 0.06, 0, 0.05 + i * 0.1)
+		r.add_child(sfera(0.045, p + Vector3(0, 0.035, 0), colori[i], Vector3(1.2, 0.8, 1)))
+	r.add_child(cesta(Vector3(0.66, 0, 0.42), "lana"))
+	for x: float in [0.36, 0.86]:
+		r.add_child(cilindro(0.009, 0.01, 0.36, Vector3(x, 0.18, -0.35), "corteccia", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.008, 0.008, 0.54, Vector3(0.61, 0.36, -0.35), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for k in 2:
+		var x := 0.49 + k * 0.24
+		r.add_child(scatola(Vector3(0.2, 0.24, 0.006), Vector3(x, 0.24, -0.345), "ocra_rossa" if k == 0 else "lino"))
+		for y: float in [0.3, 0.2]:
+			r.add_child(scatola(Vector3(0.202, 0.02, 0.008), Vector3(x, y, -0.345), "vernice_nera" if k == 0 else "vernice_rossa"))
+		r.add_child(scatola(Vector3(0.05, 0.05, 0.009), Vector3(x, 0.25, -0.345), "ceramica" if k == 0 else "vernice_nera", Vector3(0, 0, 45)))
+	return r
+
+
+## Pescatore dei Siculi: capanna ovale, reti stese su pali di corteccia, barca scavata nel tronco con l'occhio dipinto
+## tirata a secco, ceste di pesce, giara e quercia.
+static func capanna_pescatore_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.22, 0, -0.25), 0.33, 0.25, 0.36, 281)
+	for x: float in [0.35, 0.75]:
+		r.add_child(cilindro(0.012, 0.014, 0.36, Vector3(x, 0.18, -0.35), "corteccia", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(0.4, 0.26, 0.006), Vector3(0.55, 0.2, -0.35), "rete"))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.004, 0.26, 0.008), Vector3(0.37 + k * 0.07, 0.2, -0.345), "corda"))
+	for k in 4:
+		r.add_child(scatola(Vector3(0.4, 0.004, 0.008), Vector3(0.55, 0.1 + k * 0.065, -0.345), "corda"))
+	for k in 4:
+		r.add_child(cilindro(0.012, 0.012, 0.02, Vector3(0.4 + k * 0.1, 0.07, -0.34), "argilla_sic", Vector3(90, 0, 0), 6))
+	_barca_sic(r, Vector3(0.35, 0, 0.45), -25.0)
+	r.add_child(cesta(Vector3(-0.45, 0, 0.45), "pesce"))
+	r.add_child(cesta(Vector3(-0.3, 0, 0.58), "pesce"))
+	r.add_child(_giara(Vector3(-0.62, 0, 0.25), 1.0, 0))
+	_quercia_n(r, Vector3(-0.66, 0, -0.05), 0.42, 282)
+	return r
+
+
+## Frantoio dei Siculi: capanna ovale grande, macina di pietra chiara nella vasca di pietra a secco girata a mano,
+## giare dell'olio, fiscoli di paglia con la pasta d'olive, grande giara, ulivo e insegna d'ocra.
+static func frantoio_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.22), 0.41, 0.31, 0.42, 291)
+	var m := Vector3(-0.35, 0, 0.55)
+	r.add_child(cilindro(0.26, 0.28, 0.1, m + Vector3(0, 0.05, 0), "pietra_secca", Vector3.ZERO, 24))
+	r.add_child(cilindro(0.27, 0.27, 0.012, m + Vector3(0, 0.104, 0), "roccia_chiara", Vector3.ZERO, 24))
+	r.add_child(cilindro(0.21, 0.21, 0.01, m + Vector3(0, 0.106, 0), "foglie_ulivo", Vector3.ZERO, 24))
+	r.add_child(cilindro(0.03, 0.03, 0.22, m + Vector3(0, 0.2, 0), "legno_vecchio", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.12, 0.12, 0.08, m + Vector3(0.1, 0.22, 0), "roccia_chiara", Vector3(0, 0, 90), 18))
+	r.add_child(scatola(Vector3(0.6, 0.03, 0.03), m + Vector3(0.2, 0.26, 0), "legno_vecchio"))
+	for i in 6:
+		var p := Vector3(0.25 + (i % 3) * 0.1, 0.0, 0.42 + (i / 3) * 0.11)
+		if i % 2 == 0:
+			r.add_child(_giara(p, 0.7, i))
+		else:
+			r.add_child(_vaso_sic(p, 1.15, 2))
+	for i in 3:
+		r.add_child(cilindro(0.06, 0.05, 0.06, Vector3(0.62, 0.03, -0.3 + i * 0.16), "paglia", Vector3.ZERO, 12))
+		r.add_child(sfera(0.05, Vector3(0.62, 0.06, -0.3 + i * 0.16), "foglie_ulivo", Vector3(1, 0.4, 1)))
+	r.add_child(_giara(Vector3(0.62, 0.0, 0.25), 1.45, 1))
+	var u := ulivo(292)
+	u.position = Vector3(-0.72, 0, -0.45)
+	u.scale = Vector3.ONE * 0.8
+	r.add_child(u)
+	_insegna_sic(r, Vector3(0.3, 0, 0.18), 0.55)
+	return r
+
+
+## Uliveto dei Siculi: capanna ovale, teli stesi sotto l'ulivo, ceste di olive, scala a pioli,
+## giara e muretto a secco.
+static func uliveto_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.3, 0, -0.3), 0.29, 0.23, 0.3, 301)
+	var u := ulivo(302)
+	u.position = Vector3(0.35, 0, 0.3)
+	u.scale = Vector3.ONE * 0.8
+	r.add_child(u)
+	r.add_child(scatola(Vector3(0.5, 0.004, 0.45), Vector3(0.35, 0.004, 0.3), "lino", Vector3(0, 12, 0)))
+	for k in 12:
+		r.add_child(sfera(0.012, Vector3(0.2 + (k % 4) * 0.08, 0.012, 0.18 + (k / 4) * 0.1), "oliva"))
+	_muretto_secco(r, Vector3(0.72, 0, -0.3), Vector3(0.72, 0, 0.5), 0.07, 0.07)
+	for p: Vector3 in [Vector3(-0.45, 0, 0.45), Vector3(-0.25, 0, 0.55), Vector3(0.58, 0, -0.2)]:
+		r.add_child(cesta(p, "olive"))
+	for z: float in [0.12, 0.2]:
+		r.add_child(cilindro(0.012, 0.012, 0.45, Vector3(0.12, 0.22, z), "corteccia", Vector3(0, 0, -18), 5))
+	for k in 5:
+		r.add_child(scatola(Vector3(0.012, 0.012, 0.08), Vector3(0.05 + k * 0.03, 0.03 + k * 0.08, 0.16), "legno_vecchio"))
+	r.add_child(_giara(Vector3(-0.62, 0, 0.2), 1.0, 0))
+	return r
+
+
+## Vigneto dei Siculi: capanna ovale, pergolato d'uva su pali forcuti di corteccia con le traverse di canna,
+## palmento scavato nella roccia per pigiare con la vaschetta del mosto, ceste di grappoli.
+static func vigneto_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.25, 0, -0.32), 0.33, 0.24, 0.34, 311)
+	for p: Vector3 in [Vector3(-0.35, 0, 0.15), Vector3(0.25, 0, 0.15), Vector3(-0.35, 0, 0.55), Vector3(0.25, 0, 0.55)]:
+		r.add_child(cilindro(0.016, 0.02, 0.36, p + Vector3(0, 0.18, 0), "corteccia", Vector3.ZERO, 6))
+		r.add_child(sfera(0.035, p + Vector3(0, 0.015, 0), "pietra_secca", Vector3(1.2, 0.6, 1.0)))
+	for z: float in [0.15, 0.55]:
+		r.add_child(cilindro(0.011, 0.011, 0.68, Vector3(-0.05, 0.355, z), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for k in 6:
+		r.add_child(cilindro(0.006, 0.006, 0.44, Vector3(-0.35 + k * 0.12, 0.368, 0.35), "canne_sic", Vector3(90, 0, 0), 4))
+	var rng := _rng(312)
+	for k in 26:
+		r.add_child(sfera(0.045, Vector3(rng.randf_range(-0.38, 0.28), 0.38, rng.randf_range(0.12, 0.58)), "foglie" if k % 3 else "foglie_chiare", Vector3(1, 0.5, 1)))
+	for k in 6:
+		r.add_child(sfera(0.022, Vector3(-0.3 + k * 0.1, 0.33, 0.35 + (k % 2) * 0.1), "uva", Vector3(1, 1.5, 1)))
+	# palmento: vasca scavata in un masso piatto, beccuccio e vaschetta del mosto
+	var v := Vector3(0.55, 0, 0.38)
+	r.add_child(sfera(0.16, v + Vector3(0, 0.0, 0), "roccia_chiara", Vector3(1.0, 0.5, 0.9)))
+	r.add_child(cilindro(0.11, 0.1, 0.01, v + Vector3(0, 0.075, 0), "vino", Vector3.ZERO, 14))
+	r.add_child(sfera(0.022, v + Vector3(0.0, 0.085, 0.0), "uva", Vector3(1.6, 0.5, 1.4)))
+	r.add_child(scatola(Vector3(0.03, 0.012, 0.06), v + Vector3(0, 0.05, 0.15), "roccia_chiara", Vector3(-20, 0, 0)))
+	r.add_child(cilindro(0.05, 0.045, 0.04, v + Vector3(0, 0.02, 0.22), "pietra_secca", Vector3.ZERO, 10))
+	r.add_child(cilindro(0.038, 0.038, 0.004, v + Vector3(0, 0.041, 0.22), "vino", Vector3.ZERO, 10))
+	r.add_child(cesta(Vector3(0.62, 0, 0.0), "uva"))
+	r.add_child(cesta(Vector3(0.45, 0, -0.2), "uva"))
+	return r
+
+
+## Cantina dei Siculi: capanna ovale grande, grandi giare del vino interrate a metà in un letto di sassi,
+## giare minori in fila, palmento di pietra con il torchio a leva appesantito da un masso, cesta d'uva, insegna.
+static func cantina_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.25), 0.38, 0.28, 0.38, 321)
+	r.add_child(scatola(Vector3(0.22, 0.04, 0.66), Vector3(0.62, 0.02, -0.1), "pietra_secca"))
+	for k in 3:
+		var p := Vector3(0.62, 0.0, -0.32 + k * 0.21)
+		r.add_child(_giara(p + Vector3(0, -0.03, 0), 1.35, k))
+		r.add_child(cilindro(0.09, 0.095, 0.03, p + Vector3(0, 0.035, 0), "pietra_secca", Vector3.ZERO, 12))
+	for k in 5:
+		r.add_child(_giara(Vector3(-0.6 + (k % 3) * 0.1, 0, 0.42 + (k / 3) * 0.12), 0.75, k))
+	var t := Vector3(0.2, 0, 0.55)
+	r.add_child(scatola(Vector3(0.36, 0.06, 0.28), t + Vector3(0, 0.03, 0), "pietra_secca"))
+	r.add_child(scatola(Vector3(0.3, 0.01, 0.22), t + Vector3(0, 0.065, 0), "vino"))
+	r.add_child(scatola(Vector3(0.22, 0.03, 0.16), t + Vector3(0, 0.085, 0), "canne_sic"))
+	# torchio a leva: palo forcuto, trave lunga, masso appeso
+	r.add_child(cilindro(0.02, 0.024, 0.3, t + Vector3(-0.2, 0.15, 0), "corteccia", Vector3.ZERO, 6))
+	r.add_child(cilindro(0.016, 0.016, 0.5, t + Vector3(0.02, 0.17, 0), "legno_vecchio", Vector3(0, 0, 80), 6))
+	r.add_child(cilindro(0.004, 0.004, 0.08, t + Vector3(0.24, 0.12, 0), "corda", Vector3.ZERO, 3))
+	r.add_child(sfera(0.05, t + Vector3(0.25, 0.06, 0), "roccia_massi", Vector3(1.1, 0.9, 1.0)))
+	r.add_child(cesta(Vector3(-0.15, 0, 0.62), "uva"))
+	_insegna_sic(r, Vector3(0.28, 0, 0.12), 0.5)
+	return r
+
+
+## Ortolano dei Siculi: capanna ovale, orto chiuso dal muretto a secco e bagnato dalla canaletta di pietra,
+## trecce di cipolle appese a una pertica, ceste di verdura e giara dell'acqua.
+static func ortolano_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.3, 0, -0.32), 0.29, 0.22, 0.32, 331)
+	orto(r, Vector3(0.45, 0, 0.0), 0.36, 0.6, 332)
+	r.add_child(scatola(Vector3(0.05, 0.02, 0.64), Vector3(0.45, 0.01, 0.0), "pietra_secca"))
+	r.add_child(scatola(Vector3(0.025, 0.004, 0.64), Vector3(0.45, 0.021, 0.0), "acqua_chiara"))
+	_muretto_secco(r, Vector3(0.68, 0, -0.34), Vector3(0.68, 0, 0.34), 0.08, 0.07)
+	for x: float in [-0.56, -0.2]:
+		r.add_child(cilindro(0.01, 0.012, 0.34, Vector3(x, 0.17, 0.14), "corteccia", Vector3.ZERO, 5))
+	r.add_child(cilindro(0.008, 0.008, 0.38, Vector3(-0.38, 0.33, 0.14), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for k in 4:
+		for i in 4:
+			r.add_child(sfera(0.02, Vector3(-0.5 + k * 0.08, 0.3 - i * 0.04, 0.14), "cipolla"))
+	for p: Vector3 in [Vector3(-0.4, 0, 0.45), Vector3(-0.2, 0, 0.55)]:
+		r.add_child(cesta(p, "ortaggi"))
+	r.add_child(cesta(Vector3(0.05, 0, 0.6), "cipolle"))
+	r.add_child(_giara(Vector3(0.12, 0, 0.42), 0.85, 1))
+	return r
+
+
+## Agrumeto dei Siculi: capanna ovale, grande albero di agrumi nell'aiuola bordata di sassi, vasca di pietra a secco
+## con la canaletta, ceste di arance e limoni, giara.
+static func agrumeto_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.3, 0, -0.3), 0.3, 0.23, 0.3, 341)
+	var a := agrumi(3)
+	var terra := a.get_child(0)
+	a.remove_child(terra)
+	terra.free()
+	a.position = Vector3(0.3, 0, 0.25)
+	a.scale = Vector3.ONE * 1.1
+	r.add_child(a)
+	r.add_child(cilindro(0.18, 0.18, 0.006, Vector3(0.3, 0.003, 0.25), "terra", Vector3.ZERO, 16))
+	for k in 12:
+		var an := k * TAU / 12
+		r.add_child(sfera(0.03, Vector3(0.3 + cos(an) * 0.2, 0.012, 0.25 + sin(an) * 0.2), "pietra_secca" if k % 2 else "roccia_chiara", Vector3(1.2, 0.65, 1.0)))
+	_vasca_sic(r, Vector3(-0.02, 0, 0.6), 0.07, 0.08)
+	r.add_child(scatola(Vector3(0.2, 0.02, 0.045), Vector3(0.145, 0.01, 0.51), "pietra_secca", Vector3(0, 50, 0)))
+	r.add_child(scatola(Vector3(0.2, 0.004, 0.022), Vector3(0.145, 0.021, 0.51), "acqua_chiara", Vector3(0, 50, 0)))
+	for p: Vector3 in [Vector3(-0.45, 0, 0.45), Vector3(-0.28, 0, 0.6), Vector3(0.7, 0, -0.25)]:
+		r.add_child(cesta(p, "agrumi"))
+	r.add_child(_giara(Vector3(0.65, 0, 0.08), 0.9, 0))
+	return r
+
+
+## Pesca del pesce spada dei Siculi: capanna ovale, grande barca scavata con l'albero di vedetta e il drappo d'ocra,
+## la passerella dell'arpioniere, l'arpione con la punta di bronzo, il pesce spada e la giara.
+static func pesca_spada_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.3, 0, -0.3), 0.3, 0.23, 0.3, 351)
+	var b := _barca_sic(r, Vector3(0.3, 0, 0.35), -30.0, 1.15)
+	b.add_child(cilindro(0.01, 0.008, 0.6, Vector3(0.0, 0.42, 0), "corteccia", Vector3.ZERO, 6))
+	for k in 5:
+		b.add_child(scatola(Vector3(0.07, 0.006, 0.01), Vector3(0.0, 0.2 + k * 0.08, 0.0), "legno_vecchio"))
+	b.add_child(scatola(Vector3(0.006, 0.06, 0.09), Vector3(0.0, 0.67, 0.045), "ocra_rossa"))
+	b.add_child(scatola(Vector3(0.008, 0.012, 0.09), Vector3(0.0, 0.67, 0.045), "vernice_nera"))
+	b.add_child(scatola(Vector3(0.4, 0.012, 0.02), Vector3(0.5, 0.13, 0), "legno_chiaro"))
+	r.add_child(cilindro(0.006, 0.006, 0.5, Vector3(-0.6, 0.15, 0.4), "legno", Vector3(90, 0, 4), 5))
+	r.add_child(cilindro(0.014, 0.0, 0.05, Vector3(-0.6, 0.15, 0.67), "bronzo", Vector3(90, 0, 0), 6))
+	var sp := pesce_spada_modello()
+	sp.position = Vector3(-0.35, 0.02, 0.55)
+	r.add_child(sp)
+	r.add_child(_giara(Vector3(-0.66, 0, 0.1), 0.95, 1))
+	return r
+
+
+## Miniera dei Siculi: fianco della montagna con l'imbocco fra due lastroni di pietra chiara sotto la tettoia di canne,
+## gerla e slitta di legno con il minerale, mucchio, puntelli, lucerna di ceramica, insegna d'ocra e giara.
+static func miniera_ferro_siculi(minerale := "minerale") -> Node3D:
+	var r := Node3D.new()
+	r.add_child(sfera(0.6, Vector3(-0.25, 0.0, -0.3), "roccia_massi", Vector3(1.2, 0.75, 1.0)))
+	r.add_child(sfera(0.35, Vector3(0.35, 0.0, -0.45), "roccia_massi", Vector3(1.1, 0.8, 1.0)))
+	r.add_child(sfera(0.3, Vector3(-0.65, 0.0, 0.15), "roccia_massi", Vector3(1.0, 0.7, 1.0)))
+	var imb := Vector3(-0.05, 0, 0.18)
+	r.add_child(scatola(Vector3(0.42, 0.3, 0.12), imb + Vector3(0, 0.15, -0.04), "pietra_secca"))
+	r.add_child(scatola(Vector3(0.2, 0.25, 0.1), imb + Vector3(0, 0.125, 0.06), "buio"))
+	_porta_sic(r, imb + Vector3(0, 0, 0.12), 0.0, 0.18, 0.24, false)
+	for lato: int in [-1, 1]:
+		r.add_child(cilindro(0.014, 0.016, 0.24, imb + Vector3(lato * 0.15, 0.12, 0.16), "corteccia", Vector3.ZERO, 6))
+	r.add_child(cilindro(0.014, 0.014, 0.36, imb + Vector3(0, 0.25, 0.16), "legno_vecchio", Vector3(0, 0, 90), 6))
+	# slitta di legno con il minerale e gerla
+	var carr := Vector3(-0.05, 0, 0.5)
+	for lato: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.016, 0.02, 0.24), carr + Vector3(lato * 0.065, 0.01, 0), "legno_vecchio"))
+	r.add_child(scatola(Vector3(0.15, 0.06, 0.18), carr + Vector3(0, 0.05, 0), "canne_sic"))
+	r.add_child(mucchio(carr + Vector3(0, 0.08, 0), minerale, 6, 3, 0.03))
+	r.add_child(cilindro(0.004, 0.004, 0.2, carr + Vector3(0, 0.03, 0.2), "corda", Vector3(90, 0, 0), 3))
+	r.add_child(cilindro(0.05, 0.035, 0.11, Vector3(-0.3, 0.055, 0.42), "paglia", Vector3(0, 0, 8), 10))
+	r.add_child(mucchio(Vector3(-0.3, 0.1, 0.42), minerale, 4, 4, 0.025))
+	r.add_child(mucchio(Vector3(0.45, 0, 0.35), minerale, 14, 4))
+	# lucerna di ceramica su un palo
+	r.add_child(cilindro(0.01, 0.012, 0.3, Vector3(0.22, 0.15, 0.3), "corteccia", Vector3.ZERO, 5))
+	r.add_child(_vaso_sic(Vector3(0.22, 0.29, 0.3), 0.6, 0))
+	r.add_child(sfera(0.014, Vector3(0.22, 0.35, 0.3), "brace"))
+	for k in 4:
+		r.add_child(cilindro(0.018, 0.018, 0.4, Vector3(-0.55 + k * 0.045, 0.02 + (k % 2) * 0.03, 0.55), "corteccia", Vector3(0, 70, 90), 6))
+	r.add_child(_giara(Vector3(0.3, 0, 0.55), 0.85, 0))
+	_insegna_sic(r, Vector3(0.62, 0, 0.08), 0.5)
+	return r
+
+
+## Zecca dei Siculi: capanna ovale grande con lo scudo dipinto sulla porta, torretta tonda di pietra a secco del tesoro
+## col tettuccio di canne e l'insegna, coppe colme di monete, incudine di pietra per coniare, argento grezzo
+## e il guerriero siculo di guardia.
+static func zecca_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.12, 0, -0.2), 0.37, 0.28, 0.42, 371)
+	r.add_child(_scudo_sic(Vector3(-0.12, 0.3, 0.135), 0.0, 0.85))
+	# torretta del tesoro
+	var tp := Vector3(-0.55, 0, -0.5)
+	var ht := 0.44
+	r.add_child(cilindro(0.15, 0.18, ht, tp + Vector3(0, ht * 0.5, 0), "pietra_secca", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.155, 0.155, 0.03, tp + Vector3(0, ht - 0.08, 0), "vernice_rossa", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.2, 0.03, 0.22, tp + Vector3(0, ht + 0.1, 0), "canne_sic", Vector3.ZERO, 16))
+	r.add_child(_toro(0.13, 0.145, tp + Vector3(0, ht + 0.08, 0), "corda"))
+	r.add_child(scatola(Vector3(0.04, 0.08, 0.03), tp + Vector3(0.1, ht * 0.6, 0.12), "buio", Vector3(0, 40, 0)))
+	_insegna_sic(r, Vector3(0.32, 0, 0.12), 0.6)
+	# coppe di monete sulla lastra
+	_lastra_sic(r, Vector3(0.55, 0, 0.4), 0.38, 0.14, 0.08)
+	for k in 3:
+		var p := Vector3(0.43 + k * 0.12, 0.095, 0.4)
+		r.add_child(_vaso_sic(p, 0.9, 0))
+		r.add_child(cilindro(0.04, 0.04, 0.012, p + Vector3(0, 0.08, 0), "moneta", Vector3.ZERO, 10))
+	r.add_child(_giara(Vector3(0.66, 0, 0.12), 1.0, 1))
+	r.add_child(cilindro(0.04, 0.05, 0.08, Vector3(-0.35, 0.04, 0.5), "corteccia", Vector3.ZERO, 10))
+	r.add_child(sfera(0.05, Vector3(-0.35, 0.1, 0.5), "roccia_chiara", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(cilindro(0.012, 0.012, 0.06, Vector3(-0.32, 0.15, 0.5), "bronzo", Vector3.ZERO, 6))
+	r.add_child(mucchio(Vector3(-0.62, 0, 0.25), "argento_grezzo", 8, 10))
+	var g := guerriero_siculo()
+	g.position = Vector3(0.18, 0, 0.5)
+	g.scale = Vector3.ONE * 0.9
+	r.add_child(g)
+	return r
+
+
+## Porto dei Siculi: banchina di pietra a secco, pontile di legno sul mare, bitte di pietra chiara, capanna ovale
+## con la tettoia di canne sul davanti, giare dipinte, ceste e sacchi, gru di tronchi con la giara nella rete,
+## vela d'ocra rossa arrotolata, ancora di pietra forata e insegna.
+static func porto_siculi() -> Node3D:
+	var r := Node3D.new()
+	var rng := _rng(381)
+	r.add_child(scatola(Vector3(0.42, 0.1, 1.08), Vector3(0.36, 0.05, 0.02), "pietra_secca"))
+	r.add_child(scatola(Vector3(0.46, 0.025, 1.12), Vector3(0.36, 0.112, 0.02), "pietra_secca"))
+	for k in 18:
+		r.add_child(sfera(rng.randf_range(0.026, 0.034), Vector3(0.58, 0.11, -0.5 + k * 0.06), "pietra_secca" if k % 3 else "roccia_chiara", Vector3(0.7, 0.6, 1.2)))
+	var pz := 0.26
+	for k in 4:
+		var x := 0.66 + k * 0.13
+		for s: int in [-1, 1]:
+			r.add_child(cilindro(0.017, 0.019, 0.26, Vector3(x, -0.01, pz + s * 0.12), "corteccia", Vector3.ZERO, 7))
+			r.add_child(cilindro(0.02, 0.02, 0.012, Vector3(x, 0.01, pz + s * 0.12), "foglie_scure", Vector3.ZERO, 7))
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.5, 0.025, 0.02), Vector3(0.82, 0.095, pz + s * 0.12), "legno_vecchio"))
+	for k in 13:
+		var x := 0.59 + k * 0.038
+		r.add_child(scatola(Vector3(0.034, 0.014, 0.28), Vector3(x, 0.112 + rng.randf_range(-0.003, 0.003), pz), "legno_vecchio" if k % 3 else "legno", Vector3(0, rng.randf_range(-2, 2), 0)))
+	for z: float in [-0.42, -0.08, 0.5]:
+		r.add_child(sfera(0.034, Vector3(0.5, 0.15, z), "roccia_chiara", Vector3(1, 1.4, 1)))
+	for x: float in [0.72, 1.02]:
+		for s: int in [-1, 1]:
+			r.add_child(cilindro(0.014, 0.016, 0.07, Vector3(x, 0.155, pz + s * 0.125), "corteccia", Vector3.ZERO, 7))
+	r.add_child(cilindro(0.036, 0.036, 0.014, Vector3(0.5, 0.17, -0.08), "corda", Vector3.ZERO, 10))
+	ramo(r, Vector3(0.5, 0.17, -0.08), Vector3(0.66, 0.02, -0.02), 0.005, "corda")
+	ramo(r, Vector3(1.02, 0.17, pz + 0.125), Vector3(1.1, 0.03, pz + 0.2), 0.005, "corda")
+	# capanna del porto con la tettoia sul davanti
+	_capanna_sic(r, Vector3(-0.28, 0, -0.32), 0.33, 0.24, 0.38, 382)
+	_tettoia_sic(r, Vector3(-0.28, 0, 0.08), 0.62, 0.22, 0.36, 0.3, 383)
+	for i in 3:
+		r.add_child(_giara(Vector3(-0.2 + i * 0.1, 0, 0.06), 0.7, i))
+	r.add_child(sacco(Vector3(-0.5, 0, 0.06), 0.3))
+	r.add_child(scatola(Vector3(0.62, 0.012, 0.5), Vector3(-0.12, 0.006, 0.36), "terra"))
+	# fila di giare grandi sulle pietre
+	var ra := Vector3(-0.42, 0, 0.4)
+	r.add_child(scatola(Vector3(0.32, 0.03, 0.12), ra + Vector3(0, 0.015, -0.06), "pietra_secca"))
+	for k in 3:
+		r.add_child(_giara(ra + Vector3(-0.1 + k * 0.1, 0.03, -0.06), 0.85, k))
+	for k in 2:
+		r.add_child(_vaso_sic(ra + Vector3(-0.06 + k * 0.12, 0, 0.1), 1.0, k + 1))
+	r.add_child(cesta(Vector3(0.06, 0, 0.42), "pesce"))
+	r.add_child(sacco(Vector3(0.18, 0, 0.44), -0.4))
+	r.add_child(cesta(Vector3(0.28, 0.125, 0.4), "pesce", 0.8))
+	# vela d'ocra arrotolata
+	r.add_child(cilindro(0.028, 0.028, 0.18, Vector3(-0.05, 0.03, 0.58), "ocra_rossa", Vector3(0, 70, 90), 10))
+	for k in 3:
+		r.add_child(cilindro(0.03, 0.03, 0.012, Vector3(-0.05 + (k - 1) * 0.06 * cos(deg_to_rad(70.0)), 0.03, 0.58 - (k - 1) * 0.06 * sin(deg_to_rad(70.0))), "vernice_nera", Vector3(0, 70, 90), 10))
+	# gru di tronchi con la giara nella rete
+	var g := Node3D.new()
+	g.position = Vector3(0.42, 0.125, -0.28)
+	r.add_child(g)
+	var gc := Vector3(0.36, 0.62, 0.0)
+	for s: int in [-1, 1]:
+		ramo(g, Vector3(-0.04, 0, s * 0.12), gc, 0.016, "corteccia")
+	ramo(g, Vector3(-0.22, 0, 0), gc + Vector3(-0.02, -0.02, 0), 0.012, "legno_vecchio")
+	g.add_child(cilindro(0.03, 0.03, 0.2, Vector3(0.0, 0.1, 0), "legno_vecchio", Vector3(90, 0, 0), 10))
+	g.add_child(cilindro(0.032, 0.032, 0.06, Vector3(0.0, 0.1, 0), "corda", Vector3(90, 0, 0), 10))
+	g.add_child(_toro(0.02, 0.035, gc, "corda", Vector3(90, 0, 0)))
+	ramo(g, Vector3(0.0, 0.12, 0), gc, 0.004, "corda")
+	ramo(g, gc, gc + Vector3(0, -0.3, 0), 0.004, "corda")
+	var gr := _giara(gc + Vector3(0, -0.5, 0), 0.9, 0)
+	g.add_child(gr)
+	g.add_child(sfera(0.062, gc + Vector3(0, -0.42, 0), "rete", Vector3(1, 1.3, 1)))
+	# ancora di pietra forata
+	r.add_child(scatola(Vector3(0.1, 0.03, 0.12), Vector3(0.22, 0.14, -0.5), "roccia_chiara", Vector3(0, 20, 0)))
+	r.add_child(cilindro(0.016, 0.016, 0.032, Vector3(0.22, 0.14, -0.49), "buio", Vector3.ZERO, 8))
+	ramo(r, Vector3(0.22, 0.156, -0.49), Vector3(0.36, 0.13, -0.42), 0.004, "corda")
+	_insegna_sic(r, Vector3(0.48, 0.125, 0.42), 0.5)
+	return r
+
+
+## Carbonaia dei Siculi: capannuccia ovale, cupola di legna coperta di terra che fuma, legna, carbone pronto,
+## sacchi e giara.
+static func carbonaia_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.38, 0, -0.38), 0.21, 0.16, 0.22, 391, 0.0, true, 1.35)
+	var m := Vector3(0.22, 0, 0.2)
+	r.add_child(sfera(0.36, m, "terra", Vector3(1, 0.7, 1)))
+	r.add_child(sfera(0.3, m + Vector3(0, 0.03, 0), "fuliggine", Vector3(1, 0.7, 1)))
+	r.add_child(sfera(0.37, m + Vector3(0, -0.01, 0), "terra", Vector3(1, 0.68, 1)))
+	for k in 9:
+		var a := k * TAU / 9
+		r.add_child(sfera(0.04, m + Vector3(cos(a) * 0.3, 0.12, sin(a) * 0.3), "frasche", Vector3(1.2, 0.5, 1.0)))
+	for k in 5:
+		r.add_child(sfera(0.05 + k * 0.012, m + Vector3(0.02 * k, 0.28 + k * 0.07, -0.01 * k), "fumo", Vector3(1, 0.8, 1)))
+	r.add_child(scatola(Vector3(0.06, 0.04, 0.04), m + Vector3(0.0, 0.12, 0.33), "buio"))
+	legnaia(r, Vector3(-0.55, 0, 0.35), 0.35, 4)
+	r.add_child(mucchio(Vector3(0.62, 0, -0.25), "carbone", 12, 5))
+	r.add_child(sacco(Vector3(0.6, 0, 0.55), 0.4))
+	r.add_child(_giara(Vector3(-0.1, 0, 0.0), 0.8, 1))
+	_fascina(r, Vector3(-0.1, 0, 0.62), 70.0)
+	return r
+
+
+## Fonderia dei Siculi: capanna ovale, forno a tino d'argilla sulla base di pietra a secco con la fascia rossa,
+## la bocca accesa e il fumo, due mantici di pelle, lingotti, carbone e minerale.
+static func fonderia_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.25, 0, -0.27), 0.33, 0.25, 0.36, 401)
+	var f := Vector3(0.42, 0, 0.36)
+	r.add_child(cilindro(0.22, 0.24, 0.1, f + Vector3(0, 0.05, 0), "pietra_secca", Vector3.ZERO, 18))
+	r.add_child(cilindro(0.13, 0.2, 0.42, f + Vector3(0, 0.31, 0), "argilla_sic", Vector3.ZERO, 18))
+	r.add_child(cilindro(0.17, 0.175, 0.03, f + Vector3(0, 0.25, 0), "vernice_rossa", Vector3.ZERO, 18))
+	r.add_child(cilindro(0.16, 0.165, 0.008, f + Vector3(0, 0.275, 0), "vernice_nera", Vector3.ZERO, 18))
+	r.add_child(cilindro(0.135, 0.14, 0.06, f + Vector3(0, 0.5, 0), "fuliggine", Vector3.ZERO, 18))
+	r.add_child(cilindro(0.1, 0.1, 0.004, f + Vector3(0, 0.531, 0), "brace", Vector3.ZERO, 14))
+	r.add_child(scatola(Vector3(0.1, 0.09, 0.05), f + Vector3(-0.05, 0.15, 0.2), "brace", Vector3(0, 25, 0)))
+	r.add_child(scatola(Vector3(0.13, 0.03, 0.05), f + Vector3(-0.05, 0.21, 0.2), "roccia_chiara", Vector3(0, 25, 0)))
+	_fumo(r, f + Vector3(0, 0.6, 0), 4, 1.1)
+	_mantice_sic(r, f + Vector3(-0.38, 0, 0.0), 0.0)
+	_mantice_sic(r, f + Vector3(0.0, 0, -0.36), 90.0)
+	for k in 6:
+		r.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(-0.45 + (k % 3) * 0.1, 0.013 + (k / 3) * 0.026, 0.55), "lingotto"))
+	r.add_child(mucchio(Vector3(-0.64, 0, 0.25), "carbone", 9, 6))
+	r.add_child(mucchio(Vector3(0.7, 0, -0.12), "minerale", 9, 7))
+	r.add_child(_giara(Vector3(0.08, 0, 0.62), 0.8, 0))
+	return r
+
+
+## Fabbro dei Siculi: capanna ovale grande, fucina di pietra a secco sotto la tettoia di canne e frasche, mantice di pelle,
+## incudine sul ceppo, attrezzi appesi alla trave, vasca dell'acqua di pietra, lingotti.
+static func fabbro_siculi() -> Node3D:
+	var r := Node3D.new()
+	_capanna_sic(r, Vector3(-0.2, 0, -0.32), 0.36, 0.25, 0.38, 411)
+	_tettoia_sic(r, Vector3(-0.2, 0, 0.43), 0.66, 0.32, 0.4, 0.32, 412)
+	r.add_child(cilindro(0.11, 0.12, 0.12, Vector3(-0.38, 0.06, 0.42), "pietra_secca", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.1, 0.1, 0.012, Vector3(-0.38, 0.126, 0.42), "roccia_chiara", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.07, 0.07, 0.01, Vector3(-0.38, 0.134, 0.42), "brace", Vector3.ZERO, 12))
+	r.add_child(sfera(0.025, Vector3(-0.38, 0.145, 0.42), "brace", Vector3(1.2, 0.6, 1)))
+	_mantice_sic(r, Vector3(-0.6, 0, 0.42), 0.0)
+	r.add_child(cilindro(0.04, 0.05, 0.08, Vector3(-0.05, 0.04, 0.45), "corteccia", Vector3.ZERO, 10))
+	r.add_child(scatola(Vector3(0.12, 0.04, 0.05), Vector3(-0.05, 0.1, 0.45), "ferro"))
+	r.add_child(scatola(Vector3(0.04, 0.025, 0.035), Vector3(0.03, 0.1, 0.45), "ferro"))
+	r.add_child(cilindro(0.008, 0.008, 0.6, Vector3(-0.2, 0.3, 0.3), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for k in 4:
+		var a := attrezzo(ATTREZZI_FABBRO[k])
+		a.position = Vector3(-0.42 + k * 0.1, 0.22, 0.31)
+		a.rotation_degrees = Vector3(90, 0, 90)
+		r.add_child(a)
+	_vasca_sic(r, Vector3(0.62, 0, 0.1), 0.07, 0.07)
+	for k in 3:
+		r.add_child(scatola(Vector3(0.09, 0.025, 0.035), Vector3(0.45, 0.013 + k * 0.026, 0.45), "lingotto"))
+	legnaia(r, Vector3(0.62, 0, -0.18), 0.2, 3)
+	_fumo(r, Vector3(-0.36, 0.46, 0.44), 3, 0.8)
+	return r
+
+
+## Armaiolo dei Siculi: la bottega del fabbro con la rastrelliera di lance dai nastri d'ocra, scudi rotondi dipinti
+## appoggiati, punte di lancia di bronzo sul ceppo e l'elmo di cuoio.
+static func armaiolo_siculi() -> Node3D:
+	var r := fabbro_siculi()
+	_rastrelliera_sic(r, Vector3(0.45, 0, 0.32), 0.0)
+	for k in 2:
+		var sc := _scudo_sic(Vector3(0.72 + k * 0.02, 0.085, 0.24 + k * 0.17), 80.0 - k * 10.0, 1.05)
+		sc.rotation_degrees.x = -12
+		r.add_child(sc)
+	r.add_child(cilindro(0.06, 0.065, 0.11, Vector3(0.3, 0.055, 0.6), "corteccia", Vector3.ZERO, 12))
+	for k in 3:
+		r.add_child(cilindro(0.012, 0.0, 0.06, Vector3(0.27 + k * 0.03, 0.118, 0.6), "bronzo", Vector3(0, 0, 90), 6))
+	r.add_child(sfera(0.04, Vector3(0.5, 0.03, 0.64), "cuoio", Vector3(1, 0.75, 1.05)))
+	r.add_child(cilindro(0.041, 0.042, 0.01, Vector3(0.5, 0.012, 0.64), "pelle_scura", Vector3.ZERO, 12))
 	return r
 
 
