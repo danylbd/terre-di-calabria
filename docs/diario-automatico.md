@@ -126,3 +126,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Piano in docs/brettii.md. Nuova classe `Popoli`; scelta «Con chi?» nella nuova partita; edifici, soldati, torri nemiche e messaggi secondo il popolo; pecificio e pece (lusso) solo per i Brettii, agorà solo per i Greci; portatori brettii più veloci nei boschi e in montagna; popolo nel salvataggio.
 - 16 modelli 3D brettii (subagente): pietra grezza, paglia, scandole, recinti, pelli, pali intagliati, verde bosco.
 - Nuovo test `test_brettii`; tutti i 20 test OK. Versione 0.24.0. Prossimo: step 20 Romani.
+
+## 2026-11-02 — step 20 Romani giocabili (Fase 4)
+- Piano in docs/romani.md. Romani in `Popoli.DATI` (contro i Brettii, legionari, portatori +15% sulle strade lastricate); `Popoli.sprite()` generale per ogni popolo; fornace dei laterizi (argilla e tronchi → tegole, lusso).
+- 19 modelli nuovi (subagente, interrotto una volta dal limite di utilizzo e ripreso): edifici romani, fornace, tegole, legionario.
+- Nuovo test `test_romani`; tutti i 21 test OK. Versione 0.25.0. Prossimo: step 21 Saraceni.

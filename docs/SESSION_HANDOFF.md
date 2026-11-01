@@ -2,21 +2,19 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-01, step 19 chiuso (release v0.24.0 in `main`).
+**Aggiornato:** 2026-11-02, step 20 chiuso (release v0.25.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-**Step 19 — Brettii giocabili** (Fase 4), fatto e unito a `main`. Piano e scelte in `docs/brettii.md`.
-- `src/core/popoli.gd`: dati dei popoli, `Popoli.giocatore` (lo fissa `partita._popolo_da_usare()`), `sprite()`, `soldati()`, `torre_nemica()`, `testo()`.
-- Catalogo: chiave `"popolo"` (agora: greci, pecificio: brettii), merce `pece` in `LUSSO`; `della_categoria(cat, popolo)`.
-- `Edificio._finisci`, `Guerra` (fogli dei soldati), `Avversario`, `partita._metti_brettii`, menu, pannelli: secondo il popolo. `Colono.agile` per i portatori brettii.
-- Salvataggio: `"popolo"`, `Salvataggio.popolo_di()`. Menu: «Con chi?» (`_scelta()` in title_screen.gd, riusabile).
-- 16 modelli `<tipo>_brettii` + `pecificio` + `merce_pece` in `tools/studio/modelli.gd` (sezione BRETTII).
-- Test `tools/test/test_brettii.gd`. Tutti i 20 test OK.
+**Step 20 — Romani giocabili** (Fase 4), fatto e unito a `main`. Piano in `docs/romani.md`.
+- `Popoli.DATI["romani"]` (nemici brettii, soldati legionario, `passo` 1,15), `Popoli.passo()`, `Popoli.sprite()` valido per ogni popolo.
+- Catalogo: `laterizi` (popolo romani), merce `tegole` in `LUSSO`; `ReteStrade._manda_portatore` moltiplica la velocità per `Popoli.passo()`.
+- Modelli in `tools/studio/modelli.gd` (sezione ROMANI): 15 edifici `<tipo>_romani`, `laterizi`, `merce_tegole`, `legionario` e `legionario_lotta`.
+- Test `tools/test/test_romani.gd`. Tutti i 21 test OK.
 
-## Prossimo: step 20 — Romani
+## Prossimo: step 21 — Saraceni
 
-Stesso schema dei Brettii. Da decidere nel piano (`docs/romani.md`): nemici di chi gioca i Romani (oggi le coppie sono Greci ↔ Brettii: serve un nemico per popolo in `Popoli.DATI`, per esempio Romani contro Brettii), catena dei laterizi (argilla → mattoni → tegole: argillaio e fornace esistono già), cantiere stradale, legionario (modello nuovo), abilità sulle strade.
+Stesso schema (piano in `docs/saraceni.md`). Da `design.md`: catena della seta (gelso → bachi → filanda), edificio unico Noria, cavaliere leggero, abilità «campi irrigati più produttivi vicino ai fiumi»; aspetto in `grafica.md` (cupole e archi).
 
 ## Problemi irrisolti
 
@@ -26,4 +24,4 @@ Stesso schema dei Brettii. Da decidere nel piano (`docs/romani.md`): nemici di c
 
 ## Da dove riprendere
 
-Aprire il ramo `step-20-romani` in un worktree e scrivere `docs/romani.md`.
+Aprire il ramo `step-21-saraceni` in un worktree e scrivere `docs/saraceni.md`.

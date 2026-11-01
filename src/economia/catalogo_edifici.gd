@@ -108,6 +108,9 @@ const EDIFICI := {
 	"pecificio": {"nome": "Pecificio", "popolo": "brettii", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Base",
 		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 2}, "produce": "pece", "durata": 8.0,
 		"descrizione": "Cuoce la resina dei pini della Sila e ne ricava la pece: un lusso dei Brettii che fa crescere le case."},
+	"laterizi": {"nome": "Fornace dei laterizi", "popolo": "romani", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Base",
+		"tempo": 20.0, "lavoratore": "portatore_nessuno", "ingressi": {"argilla": 2, "tronchi": 1}, "produce": "tegole", "durata": 8.0,
+		"descrizione": "Cuoce l'argilla in mattoni e tegole: con un tetto di tegole le case dei Romani crescono più in fretta."},
 	"carbonaia": {"nome": "Carbonaia", "taglia": 2, "costo": {"assi": 2, "pietra": 1}, "categoria": "Metallo",
 		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"tronchi": 4}, "produce": "carbone", "durata": 9.0,
 		"descrizione": "Cuoce lentamente i tronchi sotto la terra e ne ricava carbone."},
@@ -136,7 +139,7 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"farina": "Farina", "acqua": "Acqua", "pane": "Pane", "pesce": "Pesce", "maiale": "Maiali", "carne": "Carne",
 	"latte": "Latte", "lana": "Lana", "formaggio": "Formaggio", "miele": "Miele", "olive": "Olive", "olio": "Olio",
 	"uva": "Uva", "vino": "Vino", "ortaggi": "Ortaggi", "cipolle": "Cipolle", "agrumi": "Agrumi",
-	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "lingotti": "Lingotti",
+	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "tegole": "Tegole", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
 	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
 	"ducati": "Ducati", "stoffa": "Stoffa", "armi": "Armi"}
@@ -153,7 +156,7 @@ const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "un
 ## cibo che i minatori accettano (uno qualsiasi per ogni turno di lavoro)
 const CIBI := ["pane", "pesce", "carne", "formaggio", "ortaggi", "cipolle"]
 ## merci di lusso: fanno nascere i coloni più in fretta
-const LUSSO := ["vino", "agrumi", "miele", "stoffa", "pece"]
+const LUSSO := ["vino", "agrumi", "miele", "stoffa", "pece", "tegole"]
 ## merci sempre visibili nella barra delle scorte (le altre compaiono quando ce ne sono)
 const RISORSE_BASE := ["tronchi", "assi", "pietra"]
 

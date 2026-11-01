@@ -392,6 +392,7 @@ func _manda_portatore(t: Tratto, adiacenti: Dictionary) -> void:
 				break
 	var nuovo := Portatore.new()
 	nuovo.agile = Popoli.giocatore == "brettii"
+	nuovo.velocita *= Popoli.passo()
 	nuovo.tratto = t
 	oggetti.add_child(nuovo)
 	var meta_punti := t.percorso.size() / 2
