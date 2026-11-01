@@ -15,9 +15,38 @@ const CAMPAGNA_GRECI := ["naufragio", "pane_straniero", "uliveto", "citta_sorell
 const CAMPAGNA_SOGLIA := ["soglia_velo", "soglia_frammenti", "soglia_scelta", "soglia_sigillo"]
 ## il seguito in Sicilia (docs/fuoco.md): si apre finita la Soglia, con lo stesso popolo
 const CAMPAGNA_FUOCO := ["fuoco_traversata", "fuoco_zancle", "fuoco_vasai", "fuoco_etna", "fuoco_eolie", "fuoco_cuore"]
-const CAMPAGNE := [CAMPAGNA_GRECI, CAMPAGNA_SOGLIA, CAMPAGNA_FUOCO]
+## l'epilogo (docs/ultimo_canto.md): il Sigillo intero torna sulla Soglia, e Rocco si svela
+const CAMPAGNA_FINALE := ["ultimo_canto"]
+const CAMPAGNE := [CAMPAGNA_GRECI, CAMPAGNA_SOGLIA, CAMPAGNA_FUOCO, CAMPAGNA_FINALE]
 
 const MISSIONI := {
+	"ultimo_canto": {
+		"titolo": "L'ultimo canto",
+		"popolo": "scelto", "mappa": "monteleone", "villaggio": "pieno", "costa": true, "coloni": 60,
+		"scorte": {"tronchi": 30, "assi": 60, "pietra": 60, "grano": 10, "pesce": 10, "anfore": 8},
+		"inizio": [
+			["Rocco della Lira", "Ascoltate, ascoltate... per l'ultima volta. Il Sigillo è intero, e batte come un cuore. Ma non è il suo posto, la Sicilia: deve tornare sulla Soglia, dove i due mari quasi si toccano."],
+			["Rocco della Lira", "Una nave lo porterà dallo Stretto fino al golfo. E il nostro popolo, sul colle di Monteleone, gli preparerà una casa degna."],
+		],
+		"obiettivi": [
+			{"testo": "Costruisci un porto sul golfo", "aiuto": "Nel menu «Base», vicino al mare. La nave del Sigillo ha bisogno di un approdo.", "prova": "edificio", "tipo": "porto"},
+			{"testo": "Fai fare tre viaggi alla nave del porto", "aiuto": "Il porto vuole anfore (fornace e argillaio): ogni viaggio porta a casa un pezzo di storia.", "prova": "prodotti", "tipo": "porto", "n": 3},
+			{"testo": "Fai crescere Monteleone fino a 150 coloni", "aiuto": "Tutti i popoli vogliono esserci, il giorno del ritorno.", "prova": "popolazione", "n": 150},
+		],
+		"fine_unione": [
+			["Rocco della Lira", "La nave entrò nel golfo all'alba. Sulla spiaggia c'erano Greci e Brettii, Romani e Saraceni, Normanni, Siculi e Sicani: nessuno aveva un'arma in mano."],
+			["Il Mercante senza Volto", "Padre."],
+			["Rocco della Lira", "Sì, figlio mio. Io sono Italo. Ho spezzato il Sigillo tremila anni fa, e da allora canto per i popoli che passano, aspettando che imparassero da soli quello che io non sono riuscito a insegnarti."],
+			["Rocco della Lira", "Il Sigillo non serve a regnare. Serve a ricordare che questa terra è di chi la lavora insieme. Adesso lo sapete. E io posso posare la lira."],
+			["Rocco della Lira", "...ma la lira, ragazzi, lasciatela a qualcuno che sappia suonarla. Le storie non finiscono: cambiano solo chi le canta. Fine."],
+		],
+		"fine_conquista": [
+			["Rocco della Lira", "La nave entrò nel golfo all'alba, scortata da navi da guerra. Sulla spiaggia c'era un solo popolo, e tutti gli altri guardavano da lontano."],
+			["Il Mercante senza Volto", "Padre. Hai visto? È andata come con me."],
+			["Rocco della Lira", "Sì, figlio mio. Io sono Italo, e ho visto. Il Sigillo è intero, ma pesa come una corona di pietra. Chi lo tiene da solo non riposa mai: tu lo sai meglio di tutti."],
+			["Rocco della Lira", "Allora canterò ancora. Canterò finché qualcuno, un giorno, salirà sulla Soglia con gli altri invece che contro. Ascoltate, ascoltate..."],
+		],
+	},
 	"fuoco_traversata": {
 		"titolo": "La traversata",
 		"popolo": "scelto", "mappa": "zancle", "villaggio": "relitto", "coloni": 30,

@@ -33,3 +33,8 @@
 | Monumenti | Man mano che il giocatore avanza ottiene i **monumenti tipici di Monteleone**, che compaiono sulla mappa al loro posto, uno dopo l'altro |
 | Sicilia | Pianificare un **prolungamento della storia in Sicilia** |
 
+## Decisioni provvisorie (prese in automatico, in attesa del proprietario)
+
+| Argomento | Scelta provvisoria |
+|---|---|
+| Chi è Rocco della Lira | **È re Italo**, che ha aspettato secoli di vedere i popoli scegliere (l'idea scritta in `storia.md`). Si svela nell'epilogo «L'ultimo canto» (step 29). Domanda aperta in `domande-per-il-proprietario.md`: se il proprietario sceglie altro, si cambiano solo i testi di `ultimo_canto` e di `soglia_sigillo` in `src/storia/missione.gd`. |

@@ -65,7 +65,7 @@ Piano: vedi [`storia.md`](storia.md), «Il seguito in Sicilia».
 | 26 | Nuovi popoli dell'isola: Siculi (vasaio e ceramiche, pastori) e Sicani (ossidiana, montanari), giocabili (vedi [`siculi_sicani.md`](siculi_sicani.md)) | fatto (v0.31.0) |
 | 27 | Campagna «Il fuoco sotto la montagna» (6 missioni a Zancle con il popolo della Soglia, cenere dell'Etna, due finali; vedi [`fuoco.md`](fuoco.md)) | fatto (v0.32.0) |
 | 28 | Lo Stretto: porto, nave a vela che attraversa lo Stretto fino a un altro porto o va al largo, commercio delle anfore (vedi [`stretto.md`](stretto.md)) | fatto (v0.33.0) |
-| 29 | Finale nuovo: il Mercante senza Volto e l'ultimo segreto del Sigillo | |
+| 29 | Finale nuovo: epilogo «L'ultimo canto» (il Sigillo torna per mare sulla Soglia, il Mercante chiama Rocco «padre»: Rocco è Italo, scelta provvisoria) (vedi [`ultimo_canto.md`](ultimo_canto.md)) | fatto (v0.34.0) |
 
 ## Fase 5 — Idee per le versioni future
 

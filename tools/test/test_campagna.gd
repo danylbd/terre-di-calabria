@@ -132,6 +132,9 @@ func _gioca(ob: Dictionary) -> void:
 			_una_volta("torre", func(f): return Vector2(f - mag.bandiera).length() if Vector2(f - mag.bandiera).length() < 9 else -99.0)
 
 
+var _falliti := {}
+
+
 func _una_volta(chiave: String, punteggio: Callable) -> void:
 	if _fatti.has(chiave):
 		return
@@ -139,7 +142,11 @@ func _una_volta(chiave: String, punteggio: Callable) -> void:
 	var tipo := chiave.trim_suffix("2").get_slice("#", 0)
 	var e := _piazza(tipo, punteggio)
 	if e == null:
-		print("  (non riesco a piazzare %s)" % tipo)
+		# si riprova più tardi (per esempio quando i confini arrivano al mare)
+		_fatti.erase(chiave)
+		if not _falliti.has(chiave):
+			_falliti[chiave] = true
+			print("  (non riesco a piazzare %s, riprovo)" % tipo)
 
 
 func _conta(dove: Dictionary, f: Vector2i, raggio: int) -> float:
