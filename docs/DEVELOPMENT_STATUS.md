@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.32.0** (step 27). Tutti i test automatici passano (28 script in `tools/test/`).
+Ultima release: **v0.33.0** (step 28). Tutti i test automatici passano (29 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,11 +14,11 @@ Ultima release: **v0.32.0** (step 27). Tutti i test automatici passano (28 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 27, Fase 6): campagna «Il fuoco sotto la montagna» (`Missione.CAMPAGNA_FUOCO`, 6 missioni a Zancle con il popolo della Soglia, evento `lava`, finali secondo la scelta della Soglia), `Missione.CAMPAGNE` e `prossima(campagna)` (ogni campagna si apre finita la precedente), pulsante sulla mappa della Calabria; il bot di `test_campagna` sa tracciare strade e costruire più edifici dello stesso tipo; test `test_fuoco`.
+Ultime modifiche significative (step 28, Fase 6): porto e nave a vela (`Lavoratore` con lo stato `NAVIGA`, rotta sul mare casella per casella fino a un altro porto, altrimenti al largo; commercio delle anfore in ducati), modelli `porto` e `nave`; test `test_stretto`. Prima: campagna «Il fuoco sotto la montagna» (step 27).
 
 ## In sviluppo
 
-- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25–27 fatti (mappa di Zancle, Siculi e Sicani, campagna siciliana), prossimo lo step 28 (lo Stretto: navi e porti).
+- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25–28 fatti (mappa di Zancle, Siculi e Sicani, campagna siciliana, navi e porti), prossimo lo step 29 (finale nuovo).
 
 ## Da fare (in ordine)
 
@@ -44,4 +44,4 @@ Ultime modifiche significative (step 27, Fase 6): campagna «Il fuoco sotto la m
 
 ## Prossima attività consigliata
 
-**Step 28 — lo Stretto: navi, porti e traversate** (Fase 6): un edificio «porto» sulla costa e una nave che porta merci da un porto all'altro attraverso il mare (sulla mappa di Zancle, tra la Sicilia e la punta della Calabria). Esiste già `barca_remi` (sprite e animazione) usata dalla barca del pesce spada: partire da lì. Piano in `docs/stretto.md`.
+**Step 29 — finale nuovo: il Mercante senza Volto e l'ultimo segreto del Sigillo** (Fase 6). Dipende dalla risposta del proprietario su chi è Rocco della Lira (domanda aperta): intanto si può preparare la parte che non dipende da quella risposta (una missione epilogo dopo «Il cuore del fuoco», per esempio il ritorno del Sigillo intero sulla Soglia). Se la risposta non arriva, scegliere l'idea già scritta in `storia.md` (Rocco è Italo) segnandola come provvisoria in `decisioni.md`.
