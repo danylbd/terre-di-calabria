@@ -102,3 +102,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Mappa della campagna con la forma reale della Calabria (costa dalle coordinate geografiche), Sicilia nord-orientale, montagne, fiumi, città; missioni come segnaposti sbloccati in ordine; frammenti del Sigillo.
 - Richieste del proprietario applicate: monete → **ducati** (chiave interna inclusa, vecchi salvataggi convertiti); nuove decisioni in decisioni.md; piano della mappa di Monteleone e dei suoi monumenti (docs/monteleone.md), step V1–V3 e Fase 6 (Sicilia) in roadmap, seguito della storia in Sicilia in storia.md. Partite senza limite di tempo.
 - Tutti i 16 test OK. Versione 0.20.0. Prossimo: step V1 mappa di Monteleone.
+
+## 2026-11-01 09:00 — sistema di memoria del progetto
+- Su richiesta del proprietario: CLAUDE.md riordinato (76 righe: regole permanenti, continuità tra sessioni, gestione del contesto, comandi) e quattro documenti nuovi: PROJECT_MEMORY (conoscenze stabili e mappa del codice), DEVELOPMENT_STATUS (stato), DECISIONS (decisioni tecniche con motivi), SESSION_HANDOFF (punto di ripresa). Nessuna informazione persa: le note per step sono confluite in PROJECT_MEMORY.
+- Il proprietario vuole «tutto automatico» (commit, merge, push compresi) e un contesto leggero. Nessuna modifica al gioco.
