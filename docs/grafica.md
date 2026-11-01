@@ -58,7 +58,7 @@ tools/studio/modelli.gd  ──▶  modello 3D (pietra, intonaco, coppi veri, le
 | G3 | Tutti gli edifici greci (≈ 20) con cantiere in 3 fasi | |
 | G4 | Mestieri: 12 lavoratori animati; soldati greci | |
 | G5 | Interfaccia: icone di tutte le merci, pulsanti, pannelli, cursori | |
-| G6 | Brettii, Romani, Saraceni, Normanni, Siculi, Sicani (edifici + persone) | in corso: Brettii completi (v0.35.0, step G6a); gli altri popoli hanno 15–16 edifici propri e 24 ancora con l'aspetto greco; Romani completi (v0.36.0, step G6b) |
+| G6 | Brettii, Romani, Saraceni, Normanni, Siculi, Sicani (edifici + persone) | in corso: Brettii completi (v0.35.0, step G6a); gli altri popoli hanno 15–16 edifici propri e 24 ancora con l'aspetto greco; Romani completi (v0.36.0, step G6b); Saraceni completi (v0.37.0, step G6c) |
 | G7 | Effetti: fumo, polvere, fuoco, onde, uccelli; luce del giorno e stagioni | |
 | G8 | Ritratti dei personaggi e illustrazioni della storia | |
 
