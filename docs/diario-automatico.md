@@ -174,3 +174,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Una missione dopo la Sicilia, a Monteleone: porto sul golfo, tre viaggi della nave, 150 coloni; il Mercante chiama Rocco «padre» e Rocco si svela: è Italo (scelta provvisoria, domanda aperta al proprietario; registrata in decisioni.md).
 - Per poter fare il porto vicino a Monteleone: approdo pianeggiante a Vibo Marina nel generatore (prima la costa era solo rupi e bosco), porto fino a 5 caselle dal mare. Il bot dei test ora riprova a piazzare gli edifici.
 - Nuovo test `test_finale`; tutti i 30 test OK. Versione 0.34.0. Prossimo: domande per la Fase 5 e rifinitura G6.
+
+## 2026-11-02 — step G6a: tutti gli edifici dei Brettii
+- Domande per la Fase 5 (Coral Island) scritte al proprietario.
+- 24 modelli brettii nuovi (subagente): miniere, zecca, fonderia, fabbro, armaiolo, vigneto, cantina, frantoio, porto e gli altri. Nuovo test `test_aspetto`.
+- Test toccati (aspetto, brettii, catena, metallo, guerra) OK; il codice del gioco non è cambiato. Versione 0.35.0. Prossimo: G6b Romani.

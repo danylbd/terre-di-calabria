@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 29 chiuso (release v0.34.0 in `main`). Fase 6 finita.
+**Aggiornato:** 2026-11-02, step G6a chiuso (release v0.35.0 in `main`): Brettii con tutti gli edifici nel loro stile. Fase 6 finita.
 
 ## Ultimo obiettivo affrontato
 
@@ -19,7 +19,7 @@ Fasi 1, 2, 3, 4 (tranne l'esportazione iPhone) e 6 fatte. Sette popoli giocabili
 ## Prossimo
 
 1. Scrivere in `domande-per-il-proprietario.md` le domande per la **Fase 5** (idee da Coral Island: cosa piace, cosa prendere).
-2. **Rifinitura grafica G6**: aspetto proprio per gli edifici che i popoli non greci ancora non hanno; colori dei frombolieri.
+2. **Rifinitura grafica G6**, un popolo per step con un subagente (24 edifici: porcile, macelleria, apiario, caseificio, argillaio, fornace, saline, tessitura, pescatore, frantoio, uliveto, vigneto, cantina, ortolano, agrumeto, pesca_spada, miniera_ferro, miniera_argento, zecca, armaiolo, porto, carbonaia, fonderia, fabbro): Brettii fatti (G6a); prossimo G6b Romani, poi Saraceni, Normanni, Siculi, Sicani. Dopo ognuno aggiungere il popolo a `COMPLETI` in `tools/test/test_aspetto.gd`.
 
 ## Problemi irrisolti
 
