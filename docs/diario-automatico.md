@@ -159,3 +159,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Piano in docs/siculi_sicani.md. Due popoli nuovi giocabili: Siculi (bottega del vasaio → ceramiche, pastori più svelti, guerrieri con lancia) e Sicani (laboratorio dell'ossidiana → lame, cave e miniere più svelte, arcieri), nemici l'uno dell'altro.
 - `Popoli.durata(mestiere)` usata dal lavoratore. Modelli dei due popoli fatti da due subagenti uno dopo l'altro.
 - Nuovo test `test_sicilia_popoli`; tutti i 27 test OK. Versione 0.31.0. Prossimo: step 27, campagna siciliana.
+
+## 2026-11-02 — step 27 campagna «Il fuoco sotto la montagna» (Fase 6)
+- Piano in docs/fuoco.md. Sei missioni a Zancle con il popolo della Soglia: la traversata, Zancle, i vasai di Pantalica, la neve dell'Etna (la cenere brucia i campi), il vento delle Eolie, il cuore del fuoco (finale secondo la scelta della Soglia).
+- `Missione.CAMPAGNE`: Greci → Soglia → Sicilia, ognuna si apre finita la precedente. Il bot di test_campagna ora traccia strade e costruisce più edifici uguali: gioca «La traversata» e «Il naufragio» fino in fondo.
+- Nuovo test `test_fuoco`; tutti i 28 test OK. Versione 0.32.0. Prossimo: step 28, navi e porti sullo Stretto.

@@ -73,6 +73,8 @@ var _scelta_popolo: PanelContainer    # la scelta del popolo per la campagna fin
 const SOGLIA := Vector2(1000, 600)
 const ZANCLE := Vector2(600, 860)
 var _zancle: Button                   # partita libera in Sicilia, oltre lo Stretto
+var _fuoco: Button                    # la campagna in Sicilia (docs/fuoco.md)
+const FUOCO := Vector2(470, 1040)
 const MONTELEONE := Vector2(880, 735)
 var _fatte := []
 var _carattere: Font
@@ -123,6 +125,18 @@ func _ready() -> void:
 	_soglia.add_theme_font_size_override("font_size", 18)
 	_soglia.pressed.connect(_apri_soglia)
 	add_child(_soglia)
+	_fuoco = Button.new()
+	var prossima_fuoco := Missione.prossima(Missione.CAMPAGNA_FUOCO)
+	_fuoco.disabled = not Missione.sbloccata(Missione.CAMPAGNA_FUOCO[0])
+	_fuoco.text = "Il fuoco sotto la montagna" if prossima_fuoco != "" else "Il fuoco sotto la montagna ✔"
+	_fuoco.tooltip_text = ("Il seguito in Sicilia: si apre finendo la campagna della Soglia" if _fuoco.disabled else
+		("%d. %s" % [Missione.CAMPAGNA_FUOCO.find(prossima_fuoco) + 1, Missione.MISSIONI[prossima_fuoco]["titolo"]] if prossima_fuoco != ""
+		else "Campagna compiuta"))
+	_fuoco.add_theme_font_size_override("font_size", 16)
+	_fuoco.pressed.connect(func():
+		var m := Missione.prossima(Missione.CAMPAGNA_FUOCO)
+		_gioca(m if m != "" else Missione.CAMPAGNA_FUOCO[-1]))
+	add_child(_fuoco)
 	_scelta_popolo = _crea_scelta_popolo()
 	add_child(_scelta_popolo)
 	var indietro := Button.new()
@@ -208,6 +222,7 @@ func _disponi() -> void:
 		b.position = _p(LUOGHI[id]) - b.custom_minimum_size * 0.5
 	_monteleone.position = _p(MONTELEONE) - Vector2(_monteleone.get_combined_minimum_size().x * 0.5, 0)
 	_zancle.position = _p(ZANCLE) - Vector2(_zancle.get_combined_minimum_size().x * 0.5, 0)
+	_fuoco.position = _p(FUOCO) - Vector2(_fuoco.get_combined_minimum_size().x * 0.5, 0)
 	_soglia.position = _p(SOGLIA) - _soglia.get_combined_minimum_size() * 0.5
 	queue_redraw()
 

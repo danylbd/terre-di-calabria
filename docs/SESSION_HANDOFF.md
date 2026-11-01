@@ -2,19 +2,18 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 26 chiuso (release v0.31.0 in `main`).
+**Aggiornato:** 2026-11-02, step 27 chiuso (release v0.32.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-**Step 26 — Siculi e Sicani** (Fase 6), fatto e unito a `main`. Piano in `docs/siculi_sicani.md`.
-- `Popoli.DATI["siculi"]` e `["sicani"]` (nemici l'uno dell'altro, `"svelti"`), `Popoli.durata()`, `SVELTEZZA`.
-- Catalogo: `vasaio` (→ ceramiche) e `ossidiana` (→ lame), merci di lusso.
-- Modelli nelle sezioni SICULI e SICANI di `tools/studio/modelli.gd`. Test `tools/test/test_sicilia_popoli.gd`. Tutti i 27 test OK.
-- Sette popoli giocabili nella partita libera.
+**Step 27 — campagna «Il fuoco sotto la montagna»** (Fase 6), fatto e unito a `main`. Piano in `docs/fuoco.md`.
+- `src/storia/missione.gd`: `CAMPAGNA_FUOCO`, `CAMPAGNE`, `prossima(campagna)`, `sbloccata()` generale, evento `lava`; sei missioni nuove.
+- `src/main/mappa_calabria.gd`: pulsante «Il fuoco sotto la montagna» (`_fuoco`, `FUOCO`).
+- `tools/test/test_campagna.gd` (bot): obiettivo `strada`, più edifici dello stesso tipo. Test nuovo `tools/test/test_fuoco.gd`. Tutti i 28 test OK.
 
-## Prossimo: step 27 — campagna «Il fuoco sotto la montagna»
+## Prossimo: step 28 — lo Stretto: navi, porti e traversate
 
-Sei missioni da `docs/storia.md` sulla mappa di Zancle, con il popolo della Soglia; evento «colata di lava»; si apre dopo la Soglia. Piano da scrivere in `docs/fuoco.md`.
+Piano da scrivere in `docs/stretto.md`: edificio porto, nave tra due porti che porta merci attraverso il mare; partire da `barca_remi` e dalla barca del pesce spada (`Lavoratore`, `RisorseNaturali.posto_al_largo`).
 
 ## Problemi irrisolti
 
@@ -26,4 +25,4 @@ Sei missioni da `docs/storia.md` sulla mappa di Zancle, con il popolo della Sogl
 
 ## Da dove riprendere
 
-Aprire il ramo `step-27-fuoco` e scrivere il piano della campagna.
+Aprire il ramo `step-28-stretto` e studiare come la barca del pesce spada va al largo.

@@ -84,6 +84,12 @@ func _gioca(ob: Dictionary) -> void:
 	var mag := v.magazzino()
 	var vicino := func(f): return -Vector2(f - mag.bandiera).length()
 	match ob["prova"]:
+		"strada":
+			# una strada dal magazzino verso una casella libera lì vicino
+			for verso in [Vector2i(4, 0), Vector2i(0, 4), Vector2i(-4, 0), Vector2i(0, -4), Vector2i(3, 3)]:
+				var perc: Array[Vector2i] = p.rete.trova_percorso(mag.bandiera, mag.bandiera + verso)
+				if not perc.is_empty() and p.rete.costruisci_strada(perc):
+					break
 		"edificio":
 			match ob["tipo"]:
 				"forno":
@@ -95,7 +101,8 @@ func _gioca(ob: Dictionary) -> void:
 				"pesca_spada":
 					_una_volta("pesca_spada", func(f): return -_distanza_acqua(f))
 				_:
-					_una_volta(ob["tipo"], vicino)
+					for k in ob.get("n", 1):
+						_una_volta("%s#%d" % [ob["tipo"], k], vicino)
 		"prodotti":
 			match ob["tipo"]:
 				"agora":
