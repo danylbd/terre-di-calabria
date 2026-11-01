@@ -1,6 +1,6 @@
 class_name Popoli
 ## I popoli giocabili (Fase 4): nome, nemici, soldati, passo dei portatori e aspetto degli edifici.
-## Vedi docs/brettii.md e docs/romani.md.
+## Vedi docs/brettii.md, docs/romani.md e docs/saraceni.md.
 
 const DATI := {
 	"greci": {"nome": "Greci", "descrizione": "Città sulla costa: olio, vino e commercio all'agorà.",
@@ -9,9 +9,13 @@ const DATI := {
 		"nemici": "greci", "soldati": ["brettio", "brettio_lotta"], "torre": "torre_brettia"},
 	"romani": {"nome": "Romani", "descrizione": "Agrimensori e legionari: laterizi, tegole e strade lastricate dove si corre.",
 		"nemici": "brettii", "soldati": ["legionario", "legionario_lotta"], "torre": "torre", "passo": 1.15},
+	"saraceni": {"nome": "Saraceni", "descrizione": "Venuti dal mare: giardini irrigati, gelsi e seta, cavalieri leggeri.",
+		"nemici": "romani", "soldati": ["cavaliere_leggero", "cavaliere_leggero_lotta"], "torre": "torre", "irriga": true},
 }
 const AGILITA := 1.25               # Brettii: portatori più veloci nei boschi e in montagna
 const QUOTA_MONTAGNA := 60.0
+const IRRIGAZIONE := 1.5            # Saraceni: i campi vicino all'acqua crescono così più in fretta
+const RAGGIO_IRRIGAZIONE := 4
 
 ## popolo del giocatore nella partita in corso (lo fissa la partita all'avvio)
 static var giocatore := "greci"
@@ -37,6 +41,11 @@ static func soldati(proprietario: int) -> Array:
 ## Quanto più svelti camminano i portatori del giocatore ovunque (Romani: strade lastricate).
 static func passo() -> float:
 	return DATI[giocatore].get("passo", 1.0)
+
+
+## Il giocatore irriga i campi vicino all'acqua (Saraceni).
+static func irriga() -> bool:
+	return DATI[giocatore].get("irriga", false)
 
 
 ## Il tipo di torre che alzano i nemici.

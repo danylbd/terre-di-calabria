@@ -131,3 +131,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Piano in docs/romani.md. Romani in `Popoli.DATI` (contro i Brettii, legionari, portatori +15% sulle strade lastricate); `Popoli.sprite()` generale per ogni popolo; fornace dei laterizi (argilla e tronchi → tegole, lusso).
 - 19 modelli nuovi (subagente, interrotto una volta dal limite di utilizzo e ripreso): edifici romani, fornace, tegole, legionario.
 - Nuovo test `test_romani`; tutti i 21 test OK. Versione 0.25.0. Prossimo: step 21 Saraceni.
+
+## 2026-11-02 — step 21 Saraceni giocabili (Fase 4)
+- Piano in docs/saraceni.md. Saraceni in `Popoli.DATI` (contro i Romani, cavalieri leggeri); campi irrigati (×1,5 vicino all'acqua); catena della seta: bachicoltura → bozzoli → filanda → seta (lusso).
+- 21 modelli nuovi (subagente): edifici saraceni, bachicoltura, filanda, bozzoli, seta, cavaliere leggero.
+- Nuovo test `test_saraceni`; tutti i 22 test OK. Versione 0.26.0. Prossimo: step 22 Normanni.

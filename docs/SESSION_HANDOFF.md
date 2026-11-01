@@ -2,19 +2,19 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 20 chiuso (release v0.25.0 in `main`).
+**Aggiornato:** 2026-11-02, step 21 chiuso (release v0.26.0 in `main`).
 
 ## Ultimo obiettivo affrontato
 
-**Step 20 — Romani giocabili** (Fase 4), fatto e unito a `main`. Piano in `docs/romani.md`.
-- `Popoli.DATI["romani"]` (nemici brettii, soldati legionario, `passo` 1,15), `Popoli.passo()`, `Popoli.sprite()` valido per ogni popolo.
-- Catalogo: `laterizi` (popolo romani), merce `tegole` in `LUSSO`; `ReteStrade._manda_portatore` moltiplica la velocità per `Popoli.passo()`.
-- Modelli in `tools/studio/modelli.gd` (sezione ROMANI): 15 edifici `<tipo>_romani`, `laterizi`, `merce_tegole`, `legionario` e `legionario_lotta`.
-- Test `tools/test/test_romani.gd`. Tutti i 21 test OK.
+**Step 21 — Saraceni giocabili** (Fase 4), fatto e unito a `main`. Piano in `docs/saraceni.md`.
+- `Popoli.DATI["saraceni"]` (nemici romani, `cavaliere_leggero`, `"irriga": true`), `Popoli.irriga()`, `IRRIGAZIONE`, `RAGGIO_IRRIGAZIONE`.
+- `RisorseNaturali.semina()` segna il campo `"irrigato"`; la crescita dei campi lo usa; `_acqua_entro()`.
+- Catalogo: `bachicoltura` (→ bozzoli) e `filanda` (bozzoli → seta), merce `seta` in `LUSSO`.
+- Modelli nella sezione SARACENI di `tools/studio/modelli.gd`. Test `tools/test/test_saraceni.gd`. Tutti i 22 test OK.
 
-## Prossimo: step 21 — Saraceni
+## Prossimo: step 22 — Normanni
 
-Stesso schema (piano in `docs/saraceni.md`). Da `design.md`: catena della seta (gelso → bachi → filanda), edificio unico Noria, cavaliere leggero, abilità «campi irrigati più produttivi vicino ai fiumi»; aspetto in `grafica.md` (cupole e archi).
+Stesso schema (piano in `docs/normanni.md`). Da `design.md`: allevamento dei cavalli, edificio unico Mastio, cavaliere pesante, torri e castelli che espandono il territorio più lontano; aspetto in `grafica.md` (torri squadrate). Nemici: i Saraceni.
 
 ## Problemi irrisolti
 
@@ -24,4 +24,4 @@ Stesso schema (piano in `docs/saraceni.md`). Da `design.md`: catena della seta (
 
 ## Da dove riprendere
 
-Aprire il ramo `step-21-saraceni` in un worktree e scrivere `docs/saraceni.md`.
+Aprire il ramo `step-22-normanni` in un worktree e scrivere `docs/normanni.md`.

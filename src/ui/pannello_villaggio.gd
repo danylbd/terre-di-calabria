@@ -6,7 +6,7 @@ const GRUPPI := [
 	["Costruzione", ["tronchi", "assi", "pietra"]],
 	["Cibo", ["grano", "farina", "acqua", "pane", "pesce", "pesce_spada", "maiale", "carne", "latte", "formaggio",
 		"ortaggi", "cipolle", "olive"]],
-	["Lusso", ["vino", "olio", "agrumi", "miele", "lana", "stoffa", "anfore", "pece", "tegole"]],
+	["Lusso", ["vino", "olio", "agrumi", "miele", "lana", "stoffa", "anfore", "pece", "tegole", "bozzoli", "seta"]],
 	["Metallo", ["ferro", "carbone", "lingotti", "argento", "ducati", "armi"]],
 	["Altro", ["argilla", "sale"]],
 	["Attrezzi", ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]],

@@ -341,7 +341,8 @@ func semina(c: Vector2i, coltura := "grano") -> void:
 	var s := Sprites.crea(SPRITE_COLTURA[coltura] + "_1")
 	s.position = dati.a_schermo(c.x + 0.5, c.y + 0.5)
 	oggetti.add_child(s)
-	campi[c] = {"sprite": s, "coltura": coltura, "crescita": 0.0, "prenotato": false}
+	campi[c] = {"sprite": s, "coltura": coltura, "crescita": 0.0, "prenotato": false,
+		"irrigato": Popoli.irriga() and _acqua_entro(c, Popoli.RAGGIO_IRRIGAZIONE)}
 	dati.occupa(c.x, c.y, DatiMappa.NATURA)
 
 
@@ -417,7 +418,8 @@ func _process(delta: float) -> void:
 		var campo: Dictionary = campi[c]
 		if campo["crescita"] < 3.0:
 			var prima := int(campo["crescita"])
-			campo["crescita"] = minf(3.0, campo["crescita"] + delta * _fattore(campo["coltura"]) / TEMPO_CAMPO)
+			var irrigato: float = Popoli.IRRIGAZIONE if campo.get("irrigato", false) else 1.0
+			campo["crescita"] = minf(3.0, campo["crescita"] + delta * _fattore(campo["coltura"]) * irrigato / TEMPO_CAMPO)
 			if int(campo["crescita"]) != prima:
 				_imposta_fase(campo)
 	for c in _olive_attesa.keys():
@@ -458,3 +460,12 @@ func _imposta_fase(campo: Dictionary) -> void:
 
 func _fattore(coltura: String) -> float:
 	return stagioni.crescita(coltura) if stagioni else 1.0
+
+
+## C'è acqua (mare, lago) entro il raggio: per i campi irrigati dei Saraceni.
+func _acqua_entro(c: Vector2i, raggio: int) -> bool:
+	for y in range(c.y - raggio, c.y + raggio + 1):
+		for x in range(c.x - raggio, c.x + raggio + 1):
+			if dati.dentro(x, y) and dati.tipo(x, y) == DatiMappa.Terreno.ACQUA:
+				return true
+	return false
