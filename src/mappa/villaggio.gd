@@ -30,6 +30,7 @@ var centri_esterni := []             # territori di altri popoli: [casella, ragg
 var nemici := {}                     # id -> Edificio di un altro popolo (torri con i loro difensori)
 var soldati := 0                     # soldati di riserva, pronti a raggiungere i forti
 var guerra: Guerra
+var centri_propri := []             # altri centri del nostro territorio: [casella, raggio, 1] (villaggi indigeni conquistati)
 var vantaggi := {}                   # dai monumenti: "confini" (+raggio), "nascita" e "lavoro" (×tempo), "duelli" (+probabilità)
 var caricamento := false             # si sta ricostruendo una partita salvata: niente costi né messaggi
 
@@ -332,6 +333,7 @@ func _ricalcola_territorio() -> void:
 			centri.append([Vector2i(e.centro()), RAGGIO_MAGAZZINO + vantaggi.get("confini", 0), 1])
 		elif CatalogoEdifici.dati(e.tipo).has("territorio") and e.presidiata:
 			centri.append([Vector2i(e.centro()), float(CatalogoEdifici.dati(e.tipo)["territorio"]) + vantaggi.get("confini", 0) + Popoli.confini(), 1])
+	centri.append_array(centri_propri)
 	for n in nemici.values():
 		centri.append([Vector2i(n.centro()), float(CatalogoEdifici.dati(n.tipo)["territorio"]), n.proprietario])
 	centri.append_array(centri_esterni)

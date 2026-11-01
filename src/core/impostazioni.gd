@@ -14,3 +14,5 @@ static var missione := ""
 static var mappa := "costa_ionica"
 ## popolo del giocatore nella partita libera (una chiave di Popoli.DATI); la campagna è dei Greci
 static var popolo := "greci"
+## villaggi indigeni da unire o conquistare nella partita libera (Fase 7, step 30)
+static var villaggi_indigeni := true

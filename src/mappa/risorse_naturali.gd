@@ -376,6 +376,19 @@ func solo_massi(c: Vector2i) -> bool:
 	return rocce.has(c) and not alberi.has(c) and not ulivi.has(c) and not campi.has(c)
 
 
+## Toglie tutta la natura da una casella (alberi, ulivi, massi): per far posto a un villaggio indigeno.
+func sgombra(c: Vector2i) -> void:
+	for s in alberi.get(c, []):
+		(s["sprite"] as Node).queue_free()
+	for s in ulivi.get(c, []):
+		(s as Node).queue_free()
+	alberi.erase(c)
+	ulivi.erase(c)
+	togli_massi(c)
+	if dati.occupante(c.x, c.y) == DatiMappa.NATURA and not campi.has(c):
+		dati.occupa(c.x, c.y, 0)
+
+
 func togli_massi(c: Vector2i) -> void:
 	if rocce.has(c):
 		(rocce[c]["sprite"] as Node).queue_free()

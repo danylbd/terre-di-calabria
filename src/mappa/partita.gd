@@ -36,6 +36,8 @@ var _casella_mouse := Vector2i(-1, -1)
 var _evidenziato: Edificio
 var _ascolto_mare := 0.0
 var monumenti: Monumenti
+var indigeni: VillaggiIndigeni
+var pannello_indigeno: PannelloIndigeno
 var mappa := "costa_ionica"
 var popolo := "greci"         # il popolo del giocatore (Popoli.DATI)   # quale mappa si gioca (GeneratoreMappa.MAPPE)
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
@@ -92,6 +94,9 @@ func _ready() -> void:
 	avversario.messaggio.connect(_mostra_avviso)
 	monumenti = Monumenti.new()
 	add_child(monumenti)
+	indigeni = VillaggiIndigeni.new()
+	add_child(indigeni)
+	indigeni.prepara(villaggio, dati, oggetti, risorse)
 	avversario.imposta_modalita("pace" if Impostazioni.missione != "" else Impostazioni.modalita)
 	villaggio.logistica = logistica
 	villaggio.territorio_cambiato.connect(segni.aggiorna)
@@ -115,6 +120,9 @@ func _ready() -> void:
 		_metti_villaggio()
 		if Impostazioni.modalita != "pace":
 			_metti_brettii()
+
+	if da_caricare == "":
+		indigeni.genera(mappa)
 
 	camera = CameraMappa.new()
 	camera.area = terreno.limiti()
@@ -274,8 +282,14 @@ func _clic(c: Vector2i) -> void:
 			var e := villaggio.edificio_in(c)
 			if e == null:
 				e = villaggio.nemico_in(c)
-			if e:
+			var ind := indigeni.villaggio_in(c)
+			if e == null and ind >= 0:
 				Suono.suona("clic")
+				pannello.chiudi_pannello()
+				pannello_indigeno.mostra(ind)
+			elif e:
+				Suono.suona("clic")
+				pannello_indigeno.visible = false
 				pannello.mostra(e)
 			elif rete.bandiera_in(c):
 				pannello.chiudi_pannello()
@@ -743,6 +757,13 @@ func _crea_interfaccia() -> void:
 	pannello = PannelloEdificio.new()
 	pannello.villaggio = villaggio
 	strato.add_child(pannello)
+	pannello_indigeno = PannelloIndigeno.new()
+	pannello_indigeno.indigeni = indigeni
+	strato.add_child(pannello_indigeno)
+	pannello_indigeno.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 14)
+	pannello_indigeno.offset_bottom = -46
+	pannello_indigeno.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	pannello_indigeno.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	# in basso a destra, sopra la riga d'aiuto (il pannello del villaggio sta in alto a destra)
 	pannello.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 14)
 	pannello.offset_bottom = -46

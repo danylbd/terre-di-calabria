@@ -79,7 +79,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 
 | Step | Nome | Stato |
 |---|---|---|
-| 30 | Villaggi indigeni da unire o conquistare | |
+| 30 | Villaggi indigeni da unire o conquistare | fatto (v0.45.0) |
 | 31 | Condottieri e schiere (controllo diretto) | |
 | 32 | Cibo, morale ed esperienza | |
 | 33 | Tipi di unità (fanteria, tiratori, cavalleria) | |

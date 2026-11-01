@@ -64,3 +64,7 @@ Ordine pensato per **non rompere nulla**: prima le cose che si aggiungono da sol
 4. Qualcosa di Imperivm che ti piaceva in modo particolare e che qui manca?
 
 Finché non arrivano le risposte si può cominciare dallo **step 30 (villaggi indigeni)**, che non dipende da nessuna di queste scelte.
+
+## Avanzamento
+
+- **Step 30 fatto (v0.45.0)**: `src/mappa/villaggi_indigeni.gd` (`VillaggiIndigeni`), `src/ui/pannello_indigeno.gd`; tre villaggi per mappa (Monteleone: Tropea, Pizzo, pastori delle Serre; Zancle: Milazzo, Taormina, Aci; Costa ionica: pastori, pescatori, Siris), solo nella partita libera (`Impostazioni.villaggi_indigeni`); doni → alleato (metà del raccolto ogni minuto), conquista con i soldati di riserva e un forte presidiato vicino (non in pace) → tutto il raccolto e confini (`Villaggio.centri_propri`); `RisorseNaturali.sgombra()`; salvataggio (`"indigeni"`). Per ora usano gli sprite degli edifici dei popoli; modelli propri con lo step 40. Test `test_indigeni`.
