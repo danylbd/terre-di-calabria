@@ -121,3 +121,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Nuovo test `test_durata` (estende test_catena): su Monteleone costruisce legno, pietra, pozzo e abitazioni e gioca 2 ore a velocità ×16 misurando nodi, oggetti, memoria, merci e registro della produzione: tutto stabile, la produzione continua.
 - Trovato nel test: con il guardaboschi lontano dai boscaioli il legno finisce dopo 20 minuti (comportamento voluto, annotato nei limiti noti). Nessuna schermata di fine obbligata: missioni e monumenti finiti lasciano continuare la partita.
 - Versione 0.23.0. Codice del gioco invariato rispetto alla v0.22.0 (tutti i 18 test già verdi lì). Prossimo: Fase 4, step 19 Brettii giocabili.
+
+## 2026-11-01 13:00 — step 19 Brettii giocabili (Fase 4)
+- Piano in docs/brettii.md. Nuova classe `Popoli`; scelta «Con chi?» nella nuova partita; edifici, soldati, torri nemiche e messaggi secondo il popolo; pecificio e pece (lusso) solo per i Brettii, agorà solo per i Greci; portatori brettii più veloci nei boschi e in montagna; popolo nel salvataggio.
+- 16 modelli 3D brettii (subagente): pietra grezza, paglia, scandole, recinti, pelli, pali intagliati, verde bosco.
+- Nuovo test `test_brettii`; tutti i 20 test OK. Versione 0.24.0. Prossimo: step 20 Romani.

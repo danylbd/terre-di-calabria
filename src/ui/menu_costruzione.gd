@@ -79,7 +79,7 @@ func _mostra_categoria(cat: String) -> void:
 	for c in _griglia.get_children():
 		c.queue_free()
 	_pulsanti.clear()
-	var tipi := CatalogoEdifici.della_categoria(cat)
+	var tipi := CatalogoEdifici.della_categoria(cat, Popoli.giocatore)
 	_nota.text = "" if tipi.size() > 0 else "Torri e soldati arriveranno con la guerra."
 	_nota.visible = tipi.is_empty()
 	for tipo in tipi:
@@ -89,7 +89,7 @@ func _mostra_categoria(cat: String) -> void:
 		b.button_group = _gruppo
 		b.custom_minimum_size = Vector2(96, 104)
 		b.text = d["nome"]
-		b.icon = Sprites.icona(tipo)
+		b.icon = Sprites.icona(Popoli.sprite(tipo, Popoli.giocatore))
 		b.expand_icon = true
 		b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP

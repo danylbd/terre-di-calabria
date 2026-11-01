@@ -171,7 +171,7 @@ func _crea_pannello_crediti() -> PanelContainer:
 	return pannello
 
 
-## Nuova partita: si sceglie la mappa e se giocare in pace, in guerra o prima in pace e poi in guerra.
+## Nuova partita: si sceglie il popolo, la mappa e se giocare in pace, in guerra o prima in pace e poi in guerra.
 func _crea_pannello_modalita() -> PanelContainer:
 	var pannello := PanelContainer.new()
 	pannello.custom_minimum_size = Vector2(860, 0)
@@ -179,6 +179,7 @@ func _crea_pannello_modalita() -> PanelContainer:
 	colonna.add_theme_constant_override("separation", 16)
 	pannello.add_child(colonna)
 	colonna.add_child(_etichetta("Nuova partita", 48, Palette.TERRACOTTA_SCURA))
+	colonna.add_child(_scelta("Con chi?", Popoli.DATI, Impostazioni.popolo, func(id): Impostazioni.popolo = id))
 	colonna.add_child(_etichetta("Dove?", 26, Palette.INCHIOSTRO))
 	var riga := HBoxContainer.new()
 	riga.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -215,6 +216,33 @@ func _crea_pannello_modalita() -> PanelContainer:
 		colonna.add_child(spiega)
 	colonna.add_child(_bottone_indietro())
 	return pannello
+
+
+## Una riga di pulsanti a scelta unica con la spiegazione sotto: voci è id -> {"nome", "descrizione"}.
+func _scelta(domanda: String, voci: Dictionary, attuale: String, scegli: Callable) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	box.add_child(_etichetta(domanda, 26, Palette.INCHIOSTRO))
+	var riga := HBoxContainer.new()
+	riga.alignment = BoxContainer.ALIGNMENT_CENTER
+	riga.add_theme_constant_override("separation", 16)
+	box.add_child(riga)
+	var spiega := _etichetta(voci[attuale]["descrizione"], 20, Color(Palette.INCHIOSTRO, 0.8))
+	spiega.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var gruppo := ButtonGroup.new()
+	for id in voci:
+		var b := Button.new()
+		b.text = voci[id]["nome"]
+		b.toggle_mode = true
+		b.button_group = gruppo
+		b.button_pressed = id == attuale
+		b.custom_minimum_size = Vector2(250, 0)
+		b.pressed.connect(func():
+			scegli.call(id)
+			spiega.text = voci[id]["descrizione"])
+		riga.add_child(b)
+	box.add_child(spiega)
+	return box
 
 
 func _crea_versione() -> void:

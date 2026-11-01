@@ -96,7 +96,7 @@ func _ready() -> void:
 func mostra(e: Edificio) -> void:
 	edificio = e
 	visible = true
-	_icona.texture = Sprites.icona(e.tipo)
+	_icona.texture = Sprites.icona(Popoli.sprite(e.tipo, Popoli.di(e.proprietario)))
 	_titolo.text = CatalogoEdifici.dati(e.tipo)["nome"]
 	_riga_compra.visible = e.tipo == "agora"
 	_pulsanti.visible = e.proprietario == 1

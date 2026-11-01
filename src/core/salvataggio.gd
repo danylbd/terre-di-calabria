@@ -54,12 +54,24 @@ static func mappa_di(percorso := PERCORSO) -> String:
 	return "costa_ionica"
 
 
+## Il popolo del giocatore nel salvataggio (i salvataggi vecchi sono tutti dei Greci).
+static func popolo_di(percorso := PERCORSO) -> String:
+	var f := FileAccess.open(percorso, FileAccess.READ)
+	if f == null:
+		return "greci"
+	var d = JSON.parse_string(f.get_as_text())
+	f.close()
+	if d is Dictionary and Popoli.DATI.has(str(d.get("popolo", ""))):
+		return d["popolo"]
+	return "greci"
+
+
 static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	var v: Villaggio = p.villaggio
 	var rete: ReteStrade = p.rete
 	var ris: RisorseNaturali = p.risorse
 	var log: Logistica = p.logistica
-	var d := {"versione": VERSIONE, "seme": p.SEME, "mappa": p.mappa, "tempo": log.tempo, "storia": log.storia, "calendario": p.stagioni.tempo,
+	var d := {"versione": VERSIONE, "seme": p.SEME, "mappa": p.mappa, "popolo": p.popolo, "tempo": log.tempo, "storia": log.storia, "calendario": p.stagioni.tempo,
 		"scorte": v.scorte, "coloni_liberi": v.coloni_liberi + v.in_cammino,
 		"camera": [p.camera.position.x, p.camera.position.y, p.camera.zoom.x]}
 	# natura

@@ -101,9 +101,10 @@ func _aggiorna_aspetto() -> void:
 
 func _finisci(avvisa: bool) -> void:
 	finito = true
-	_imposta_sprite(tipo)
+	var aspetto := Popoli.sprite(tipo, Popoli.di(proprietario))
+	_imposta_sprite(aspetto)
 	_sprite.scale = Vector2.ONE
-	_sprite.offset = -Sprites.ancora(tipo)
+	_sprite.offset = -Sprites.ancora(aspetto)
 	queue_redraw()
 	if avvisa:
 		Suono.suona_in("completato", global_position)

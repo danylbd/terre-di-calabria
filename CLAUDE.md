@@ -73,4 +73,4 @@ godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCa
 
 ## Stato
 
-Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1–V3 (Monteleone: mappa, monumenti, partite senza fine) fatti (release v0.23.0); prossima la **Fase 4**, step 19 – Brettii giocabili. Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.
+Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1–V3 (Monteleone: mappa, monumenti, partite senza fine) fatti (release v0.23.0); Fase 4: step 19 (Brettii giocabili, v0.24.0) fatto; prossimo lo step **20 – Romani**. Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.

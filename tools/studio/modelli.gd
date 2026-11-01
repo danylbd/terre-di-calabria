@@ -8,7 +8,7 @@ static var _rumore_rgb: ImageTexture
 const SHADER_VISSUTO := preload("res://tools/studio/vissuto.gdshader")
 
 # materiali che restano "semplici" (metallo, stoffa sottile, acqua)
-const MATERIALI_SEMPLICI := ["ferro", "stoffa", "acqua_pozzo", "buio", "mare"]
+const MATERIALI_SEMPLICI := ["ferro", "stoffa", "acqua_pozzo", "buio", "mare", "pece"]
 # regolazioni per materiale: [sporco, macchie, saturazione]
 const REGOLAZIONI := {
 	"aghi": [0.0, 0.0, 1.3], "foglie_ulivo": [0.0, 0.0, 1.2], "foglie": [0.0, 0.0, 1.15], "foglie_scure": [0.0, 0.0, 1.1],
@@ -29,6 +29,7 @@ const REGOLAZIONI := {
 	"stoffa_rossa": [0.0, 0.0, 1.15], "bronzo": [0.1, 0.1, 1.1], "pelliccia": [0.1, 0.2, 1.0],
 	"intonaco_bianco": [0.3, 0.35, 1.0], "intonaco_giallo": [0.4, 0.4, 1.1], "blocchi_greci": [0.35, 0.3, 1.05],
 	"roccia_chiara": [0.3, 0.4, 1.0], "sabbia": [0.1, 0.2, 1.05], "maiolica": [0.0, 0.1, 1.2], "piombo": [0.2, 0.2, 1.0],
+	"pietra_grezza": [0.5, 0.4, 1.05], "paglia_scura": [0.2, 0.3, 1.05], "paglia_tetto": [0.2, 0.35, 1.05], "stoffa_verde": [0.0, 0.0, 1.15], "osso": [0.1, 0.15, 1.0],
 }
 
 
@@ -85,6 +86,22 @@ static func catalogo() -> Dictionary:
 		"tonnara_bivona": {"crea": tonnara_bivona},
 		"castello_pizzo": {"crea": castello_pizzo},
 		"santa_maria_isola": {"crea": santa_maria_isola},
+		"casa_greca_brettii": {"crea": casa_greca_brettii.bind(1)},
+		"magazzino_brettii": {"crea": magazzino_brettii},
+		"boscaiolo_brettii": {"crea": boscaiolo_brettii},
+		"segheria_brettii": {"crea": segheria_brettii},
+		"cava_brettii": {"crea": cava_brettii},
+		"guardaboschi_brettii": {"crea": guardaboschi_brettii},
+		"pozzo_brettii": {"crea": pozzo_brettii},
+		"fattoria_brettii": {"crea": fattoria_brettii},
+		"mulino_brettii": {"crea": mulino_brettii},
+		"forno_brettii": {"crea": forno_brettii},
+		"ovile_brettii": {"crea": ovile_brettii},
+		"capraio_brettii": {"crea": capraio_brettii},
+		"caserma_brettii": {"crea": caserma_brettii},
+		"castello_brettii": {"crea": castello_brettii},
+		"pecificio": {"crea": pecificio},
+		"merce_pece": {"crea": merce.bind("pece")},
 		"merce_armi": {"crea": merce.bind("armi")},
 		"cantiere_0": {"crea": cantiere.bind(0)},
 		"cantiere_1": {"crea": cantiere.bind(1)},
@@ -212,6 +229,25 @@ static func _pietre_murate(seme: int, dim := 128, scuro := Color("9a8a74"), chia
 					img.set_pixel(xx, yy, Color(base.r + v, base.g + v, base.b + v) * bordo)
 			x += w
 		y += h
+	img.generate_mipmaps()
+	return ImageTexture.create_from_image(img)
+
+
+## Texture di paglia: fili verticali (lungo V) di tinte diverse, con fasce più chiare e più scure. Si ripete senza giunte.
+static func _paglia_fili(seme: int, scuro: Color, chiaro: Color, dim := 128) -> ImageTexture:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seme
+	var img := Image.create(dim, dim, false, Image.FORMAT_RGBA8)
+	var tono := PackedFloat32Array()
+	var fase := PackedFloat32Array()
+	for x in dim:
+		tono.append(rng.randf())
+		fase.append(rng.randf() * TAU)
+	for y in dim:
+		for x in dim:
+			var t := (tono[x] * 2.0 + tono[(x + 1) % dim] + tono[(x + dim - 1) % dim]) * 0.25
+			t = t * 0.75 + 0.25 * (0.5 + 0.5 * sin(fase[x] + y * TAU * 2.0 / dim))
+			img.set_pixel(x, y, scuro.lerp(chiaro, t))
 	img.generate_mipmaps()
 	return ImageTexture.create_from_image(img)
 
@@ -453,6 +489,25 @@ static func materiale(nome: String) -> Material:
 		"tufo":
 			m.albedo_texture = _rumore(68, 0.16, Color("a8834f"), Color("dcc08a"))
 			m.uv1_scale = Vector3(2, 2, 2)
+		# materiali dei Brettii
+		"pietra_grezza":
+			m.albedo_texture = _pietre_murate(70, 128, Color("5e574c"), Color("a09482"), Color("2e2a25"))
+			m.uv1_scale = Vector3(2.4, 2.4, 2.4)
+		"paglia_scura":
+			m.albedo_texture = _paglia_fili(71, Color("5e4824"), Color("a08349"))
+			m.uv1_scale = Vector3(1.2, 1.2, 1.2)
+		"paglia_tetto":
+			m.albedo_texture = _paglia_fili(72, Color("74592a"), Color("c9a65a"))
+			m.uv1_scale = Vector3(1.0, 1.0, 1.0)
+		"stoffa_verde":
+			m.albedo_color = Color("2f6b33")
+			m.cull_mode = BaseMaterial3D.CULL_DISABLED
+		"osso":
+			m.albedo_color = Color("ebe0c6")
+		"pece":
+			m.albedo_color = Color("16110d")
+			m.roughness = 0.18
+			m.metallic = 0.15
 	var finale: Material = m if nome in MATERIALI_SEMPLICI else _a_vissuto(m, nome)
 	_cache_mat[nome] = finale
 	return finale
@@ -898,6 +953,9 @@ static func merce(tipo: String) -> Node3D:
 		"miele":
 			r.add_child(cilindro(0.04, 0.035, 0.08, Vector3(0, 0.04, 0), "terracotta", Vector3.ZERO, 10))
 			r.add_child(cilindro(0.032, 0.032, 0.005, Vector3(0, 0.082, 0), "miele", Vector3.ZERO, 10))
+		"pece":
+			r.add_child(_vaso_pece(Vector3(-0.03, 0, 0), 1.15))
+			r.add_child(_vaso_pece(Vector3(0.055, 0, 0.035), 0.95))
 	r.scale = Vector3.ONE * 1.25
 	return r
 
@@ -4171,4 +4229,1085 @@ static func santa_maria_isola() -> Node3D:
 	r.add_child(vaso_fiori(Vector3(0.2, top, 0.15)))
 	# barca ormeggiata ai piedi della scala
 	r.add_child(_barca(Vector3(-0.55, 0.0, 0.95), 15, "persiana", 1.0))
+	return r
+
+
+# =================================================================== BRETTII (step 19)
+# Lo stile dei Brettii: pietra grezza a secco, tronchi spaccati messi in piedi, tetti spessi di paglia o di scandole
+# tenute da sassi, corna di legno incrociate sui colmi, pali intagliati e dipinti, pelli stese, stoffe verde bosco.
+# Ogni modello ha lo stesso ingombro del corrispondente greco (stesso nome senza "_brettii").
+
+## Muri di pietra grezza a secco: sassi sporgenti, pali d'angolo e travi di gronda in vista. Base a quota 0.
+static func _muri_pietra_b(r: Node3D, lx: float, lz: float, h: float, seme: int) -> void:
+	var rng := _rng(seme)
+	r.add_child(scatola(Vector3(lx + 0.08, 0.05, lz + 0.08), Vector3(0, 0.025, 0), "roccia_massi"))
+	r.add_child(scatola(Vector3(lx, h, lz), Vector3(0, h * 0.5, 0), "pietra_grezza"))
+	for k in int(lx * 16):
+		var p := Vector3(rng.randf_range(-lx * 0.46, lx * 0.46), rng.randf_range(0.05, h - 0.04), lz * 0.5)
+		r.add_child(sfera(rng.randf_range(0.022, 0.038), p, "roccia_massi" if k % 3 != 0 else "pietra", Vector3(1.4, 0.75, 0.35)))
+	for k in int(lz * 16):
+		var p := Vector3(lx * 0.5, rng.randf_range(0.05, h - 0.04), rng.randf_range(-lz * 0.46, lz * 0.46))
+		r.add_child(sfera(rng.randf_range(0.022, 0.038), p, "roccia_massi" if k % 3 != 0 else "pietra", Vector3(0.35, 0.75, 1.4)))
+	for c: Vector3 in [Vector3(lx * 0.5, 0, lz * 0.5), Vector3(-lx * 0.5, 0, lz * 0.5), Vector3(lx * 0.5, 0, -lz * 0.5)]:
+		r.add_child(cilindro(0.03, 0.034, h + 0.02, c + Vector3(0, h * 0.5 + 0.01, 0), "corteccia", Vector3.ZERO, 7))
+	r.add_child(cilindro(0.026, 0.026, lx + 0.12, Vector3(0, h, lz * 0.5 + 0.012), "legno_vecchio", Vector3(0, 0, 90), 7))
+	r.add_child(cilindro(0.026, 0.026, lz + 0.12, Vector3(lx * 0.5 + 0.012, h, 0), "legno_vecchio", Vector3(90, 0, 0), 7))
+
+
+## Muri di tronchi spaccati messi in piedi, su uno zoccolo alto di pietra grezza, legati da due traverse.
+static func _muri_tavole_b(r: Node3D, lx: float, lz: float, h: float, seme: int) -> void:
+	var rng := _rng(seme)
+	var hp := h * 0.34
+	r.add_child(scatola(Vector3(lx + 0.06, hp, lz + 0.06), Vector3(0, hp * 0.5, 0), "pietra_grezza"))
+	for k in int(lx * 9):
+		r.add_child(sfera(rng.randf_range(0.02, 0.032), Vector3(rng.randf_range(-lx * 0.46, lx * 0.46), rng.randf_range(0.03, hp - 0.02), lz * 0.5 + 0.03), "roccia_massi", Vector3(1.4, 0.75, 0.35)))
+	for k in int(lz * 9):
+		r.add_child(sfera(rng.randf_range(0.02, 0.032), Vector3(lx * 0.5 + 0.03, rng.randf_range(0.03, hp - 0.02), rng.randf_range(-lz * 0.46, lz * 0.46)), "roccia_massi", Vector3(0.35, 0.75, 1.4)))
+	var hl := h - hp
+	r.add_child(scatola(Vector3(lx - 0.02, hl, lz - 0.02), Vector3(0, hp + hl * 0.5, 0), "legno_scuro"))
+	var nx := int(lx / 0.048)
+	for k in nx:
+		var hh := hl + rng.randf_range(-0.012, 0.012)
+		r.add_child(cilindro(0.025, 0.025, hh, Vector3(-lx * 0.5 + (k + 0.5) * lx / nx, hp + hh * 0.5, lz * 0.5 - 0.01), "legno" if k % 4 != 1 else "legno_vecchio", Vector3.ZERO, 7))
+	var nz := int(lz / 0.048)
+	for k in nz:
+		var hh := hl + rng.randf_range(-0.012, 0.012)
+		r.add_child(cilindro(0.025, 0.025, hh, Vector3(lx * 0.5 - 0.01, hp + hh * 0.5, -lz * 0.5 + (k + 0.5) * lz / nz), "legno" if k % 4 != 2 else "legno_vecchio", Vector3.ZERO, 7))
+	for y: float in [hp + hl * 0.3, hp + hl * 0.85]:
+		r.add_child(scatola(Vector3(lx + 0.06, 0.03, 0.025), Vector3(0, y, lz * 0.5 + 0.02), "legno_vecchio"))
+		r.add_child(scatola(Vector3(0.025, 0.03, lz + 0.06), Vector3(lx * 0.5 + 0.02, y, 0), "legno_vecchio"))
+
+
+## Tetto spesso di paglia a due falde (colmo lungo X) che scende basso sulle gronde: strati sfalsati,
+## gronda arrotondata, colmo legato, bastoni incrociati sul colmo e corna di legno dipinte sui timpani.
+## base_y è la cima dei muri, lz la loro profondità (il timpano si chiude con sottotetto(..., base_y, pendenza)).
+static func _tetto_paglia(r: Node3D, larg: float, lz: float, base_y: float, pendenza: float, seme: int, corna := true) -> void:
+	var rng := _rng(seme)
+	var sporto := 0.1
+	var meta := lz * 0.5 + sporto
+	var ang := deg_to_rad(pendenza)
+	var lung := meta / cos(ang)
+	var alt := meta * tan(ang)
+	var y0 := base_y - sporto * tan(ang)
+	for lato: int in [-1, 1]:
+		var f := Node3D.new()
+		f.position = Vector3(0, y0 + alt * 0.5, lato * meta * 0.5)
+		f.rotation.x = lato * ang
+		r.add_child(f)
+		f.add_child(scatola(Vector3(larg + 0.18, 0.06, lung), Vector3.ZERO, "paglia_scura"))
+		var file := maxi(3, int(lung / 0.075))
+		for k in file:
+			var z := lato * (lung * 0.5 - (k + 0.6) * lung / file)
+			var mat := "paglia_tetto" if rng.randf() < 0.75 else "paglia_scura"
+			f.add_child(scatola(Vector3(larg + 0.19 + rng.randf_range(-0.01, 0.02), 0.03, lung / file * 1.25), Vector3(rng.randf_range(-0.01, 0.01), 0.035, z), mat, Vector3(-9 * lato, 0, 0)))
+		# gronda sfrangiata: ciuffi di paglia
+		var nc := int((larg + 0.2) / 0.055)
+		for k in nc:
+			var x := -larg * 0.5 - 0.1 + (k + 0.5) * (larg + 0.2) / nc
+			f.add_child(sfera(rng.randf_range(0.036, 0.046), Vector3(x, 0.0, lato * (lung * 0.5 - 0.01)), "paglia_scura" if k % 3 == 0 else "paglia_tetto", Vector3(0.9, 0.55, 1.1)))
+		# bastoni incrociati che tengono la paglia del colmo
+		var nb := maxi(2, int(larg / 0.26))
+		for k in nb:
+			var x := -larg * 0.5 + (k + 0.5) * larg / nb
+			f.add_child(cilindro(0.008, 0.008, 0.2, Vector3(x, 0.06, -lato * (lung * 0.5 - 0.06)), "legno_scuro", Vector3(90, 0, 0), 5))
+		if corna:
+			for lc: int in [-1, 1]:
+				f.add_child(cilindro(0.014, 0.01, 0.36, Vector3(lc * (larg * 0.5 + 0.09), 0.05, -lato * (lung * 0.5 - 0.1)), "legno_vecchio", Vector3(90, 0, 0), 6))
+				f.add_child(sfera(0.017, Vector3(lc * (larg * 0.5 + 0.09), 0.05, -lato * (lung * 0.5 + 0.08)), "stoffa_verde"))
+	var yc := y0 + alt + 0.03
+	r.add_child(cilindro(0.058, 0.058, larg + 0.22, Vector3(0, yc, 0), "paglia_scura", Vector3(0, 0, 90), 10))
+	var nl := maxi(1, int(larg / 0.16))
+	for k in nl + 1:
+		r.add_child(cilindro(0.061, 0.061, 0.012, Vector3(-larg * 0.5 + k * larg / nl, yc, 0), "corda", Vector3(0, 0, 90), 10))
+
+
+## Tetto di scandole tenuto fermo da pertiche e grossi sassi (come nelle baite di montagna).
+static func _tetto_scandole_sassi(r: Node3D, larg: float, prof: float, base_y: float, pendenza: float, seme: int) -> void:
+	tetto_scandole(r, larg, prof, base_y, pendenza)
+	var rng := _rng(seme)
+	var meta := prof * 0.5 + 0.06
+	var ang := deg_to_rad(pendenza)
+	var lung := meta / cos(ang)
+	var alt := meta * tan(ang)
+	for lato: int in [-1, 1]:
+		var f := Node3D.new()
+		f.position = Vector3(0, base_y + alt * 0.5, lato * meta * 0.5)
+		f.rotation.x = lato * ang
+		r.add_child(f)
+		for t in 2:
+			var z := lato * (lung * 0.5 - 0.07 - t * lung * 0.42)
+			f.add_child(cilindro(0.016, 0.016, larg + 0.12, Vector3(0, 0.04, z), "corteccia", Vector3(0, 0, 90), 6))
+			for k in int(larg / 0.17):
+				var x := -larg * 0.5 + 0.09 + k * 0.17 + rng.randf_range(-0.025, 0.025)
+				f.add_child(sfera(rng.randf_range(0.03, 0.04), Vector3(x, 0.05, z - lato * 0.035), "roccia_massi", Vector3(1.2, 0.65, 1.0)))
+
+
+## Tettoia a una falda di paglia su pali: alta dietro (-Z), bassa davanti (+Z). pos = centro a terra.
+static func _tettoia_paglia(r: Node3D, pos: Vector3, larg: float, prof: float, h_alta: float, h_bassa: float, pali_dietro := true) -> void:
+	var dh := h_alta - h_bassa
+	var ang := atan2(dh, prof)
+	var lung := sqrt(prof * prof + dh * dh) + 0.12
+	var xs := [-larg * 0.5, larg * 0.5]
+	if larg > 0.7:
+		xs.append(0.0)
+	for x: float in xs:
+		r.add_child(cilindro(0.016, 0.019, h_bassa, pos + Vector3(x, h_bassa * 0.5, prof * 0.5), "corteccia", Vector3.ZERO, 6))
+		if pali_dietro:
+			r.add_child(cilindro(0.016, 0.019, h_alta, pos + Vector3(x, h_alta * 0.5, -prof * 0.5), "corteccia", Vector3.ZERO, 6))
+	r.add_child(scatola(Vector3(larg + 0.14, 0.05, lung), pos + Vector3(0, (h_alta + h_bassa) * 0.5 + 0.03, 0.0), "paglia_tetto", Vector3(rad_to_deg(ang), 0, 0)))
+	r.add_child(scatola(Vector3(larg + 0.15, 0.024, lung * 0.5), pos + Vector3(0, (h_alta + h_bassa) * 0.5 + 0.06 - dh * 0.25, prof * 0.25), "paglia_scura", Vector3(rad_to_deg(ang) - 3, 0, 0)))
+	r.add_child(cilindro(0.03, 0.03, larg + 0.16, pos + Vector3(0, h_bassa + 0.0, prof * 0.5 + 0.06), "paglia_scura", Vector3(0, 0, 90), 8))
+	r.add_child(cilindro(0.014, 0.014, larg + 0.08, pos + Vector3(0, h_bassa - 0.01, prof * 0.5), "legno_vecchio", Vector3(0, 0, 90), 6))
+
+
+## Capanna tonda dei pastori: muro basso di pietra grezza e alto cono di paglia a strati legati.
+## porta_ang: direzione della porta in gradi (0 = verso +Z, 90 = verso +X).
+static func _capanna_tonda(r: Node3D, pos: Vector3, rg: float, h: float, seme: int, porta_ang := 25.0) -> void:
+	var rng := _rng(seme)
+	r.add_child(cilindro(rg + 0.04, rg + 0.05, 0.04, pos + Vector3(0, 0.02, 0), "roccia_massi", Vector3.ZERO, 16))
+	r.add_child(cilindro(rg, rg + 0.01, h, pos + Vector3(0, h * 0.5, 0), "pietra_grezza", Vector3.ZERO, 20))
+	for k in int(rg * 44):
+		var a := deg_to_rad(rng.randf_range(-30.0, 120.0))
+		var d := Vector3(cos(a), 0, sin(a))
+		var s := sfera(rng.randf_range(0.022, 0.034), pos + d * (rg + 0.002) + Vector3(0, rng.randf_range(0.05, h - 0.03), 0), "roccia_massi" if k % 3 != 0 else "pietra", Vector3(1.3, 0.75, 0.4))
+		s.rotation.y = PI * 0.5 - a
+		r.add_child(s)
+	# cono di paglia a tre strati legati
+	var hc := rg * 1.75
+	var y1 := h - 0.02
+	r.add_child(cilindro(rg + 0.07, rg * 0.5, hc * 0.5, pos + Vector3(0, y1 + hc * 0.25, 0), "paglia_tetto", Vector3.ZERO, 20))
+	var nc := int(rg * 50)
+	for k in nc:
+		var a := k * TAU / nc
+		var ciuffo := sfera(0.035, pos + Vector3(cos(a) * (rg + 0.065), y1 + 0.01, sin(a) * (rg + 0.065)), "paglia_scura" if k % 3 == 0 else "paglia_tetto", Vector3(1.1, 0.55, 0.8))
+		ciuffo.rotation.y = PI * 0.5 - a
+		r.add_child(ciuffo)
+	var y2 := y1 + hc * 0.5 - 0.045
+	r.add_child(cilindro(rg * 0.6, rg * 0.2, hc * 0.32, pos + Vector3(0, y2 + hc * 0.16, 0), "paglia_scura", Vector3.ZERO, 18))
+	r.add_child(cilindro(rg * 0.56, rg * 0.56, 0.02, pos + Vector3(0, y2 + 0.02, 0), "legno_scuro", Vector3.ZERO, 18))
+	var y3 := y2 + hc * 0.32 - 0.035
+	r.add_child(cilindro(rg * 0.25, 0.015, hc * 0.24, pos + Vector3(0, y3 + hc * 0.12, 0), "paglia_tetto", Vector3.ZERO, 14))
+	r.add_child(cilindro(rg * 0.23, rg * 0.23, 0.016, pos + Vector3(0, y3 + 0.015, 0), "legno_scuro", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.011, 0.011, 0.2, pos + Vector3(0, y3 + hc * 0.24 + 0.04, 0), "legno_vecchio", Vector3.ZERO, 5))
+	_teschio(r, pos + Vector3(0, y3 + hc * 0.24 + 0.14, 0), 45.0, 1.1)
+	var t := deg_to_rad(porta_ang)
+	_porta_b(r, pos + Vector3(sin(t), 0, cos(t)) * (rg - 0.008), porta_ang, 0.12, 0.2)
+
+
+## Teschio di montone con le corna (sopra le porte e in cima ai pali).
+static func _teschio(r: Node3D, pos: Vector3, rot_y := 45.0, s := 1.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	n.scale = Vector3.ONE * s
+	r.add_child(n)
+	n.add_child(sfera(0.024, Vector3.ZERO, "osso", Vector3(1.0, 0.9, 0.8)))
+	n.add_child(sfera(0.014, Vector3(0, -0.022, 0.012), "osso", Vector3(0.9, 1.3, 0.8)))
+	for lato: int in [-1, 1]:
+		n.add_child(sfera(0.006, Vector3(lato * 0.01, 0.002, 0.018), "fuliggine"))
+		n.add_child(cilindro(0.009, 0.006, 0.05, Vector3(lato * 0.035, 0.012, 0), "osso", Vector3(0, 0, -70 * lato), 5))
+		n.add_child(cilindro(0.006, 0.002, 0.04, Vector3(lato * 0.068, 0.003, 0.006), "osso", Vector3(0, 0, -150 * lato), 5))
+
+
+## Porta dei Brettii (nel nodo locale guarda verso +Z): tavole scure o tenda verde, stipiti di tronco,
+## architrave, teschio sopra e soglia di pietra piatta. pos è il piede della porta sulla facciata.
+static func _porta_b(r: Node3D, pos: Vector3, rot_y: float, w := 0.13, h := 0.23, tenda := false) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(scatola(Vector3(w, h, 0.03), Vector3(0, h * 0.5, 0), "buio" if tenda else "legno_scuro"))
+	if tenda:
+		n.add_child(scatola(Vector3(w * 0.62, h - 0.01, 0.008), Vector3(-w * 0.2, h * 0.5, 0.02), "stoffa_verde", Vector3(0, 0, 3)))
+		n.add_child(scatola(Vector3(w * 0.25, h - 0.03, 0.008), Vector3(w * 0.36, h * 0.5 + 0.01, 0.02), "stoffa_verde", Vector3(0, 0, -4)))
+		n.add_child(scatola(Vector3(w * 0.9, 0.014, 0.01), Vector3(0, h * 0.62, 0.026), "tufo"))
+	else:
+		for k in 3:
+			n.add_child(scatola(Vector3(w * 0.28, h - 0.015, 0.008), Vector3(-w * 0.32 + k * w * 0.32, h * 0.5, 0.017), "legno_vecchio"))
+		for y: float in [h * 0.25, h * 0.7]:
+			n.add_child(scatola(Vector3(w * 0.9, 0.018, 0.012), Vector3(0, y, 0.024), "legno"))
+	for lato: int in [-1, 1]:
+		n.add_child(cilindro(0.018, 0.02, h + 0.04, Vector3(lato * (w * 0.5 + 0.016), h * 0.5 + 0.02, 0.018), "corteccia", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.022, 0.022, w + 0.14, Vector3(0, h + 0.035, 0.022), "legno_vecchio", Vector3(0, 0, 90), 7))
+	_teschio(n, Vector3(0, h + 0.085, 0.035), 0.0, 1.0)
+	n.add_child(sfera(0.075, Vector3(0, 0.0, 0.07), "roccia_massi", Vector3(1.3, 0.22, 0.8)))
+
+
+## Finestrella quadrata con telaio di legno e una pelle arrotolata sopra (nel nodo locale guarda verso +Z).
+static func _finestrella_b(r: Node3D, pos: Vector3, rot_y: float, w := 0.08, h := 0.08) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	n.add_child(scatola(Vector3(w, h, 0.02), Vector3.ZERO, "buio"))
+	for lato: int in [-1, 1]:
+		n.add_child(scatola(Vector3(0.016, h + 0.03, 0.02), Vector3(lato * (w * 0.5 + 0.008), 0, 0.01), "legno_scuro"))
+		n.add_child(scatola(Vector3(w + 0.04, 0.016, 0.02), Vector3(0, lato * (h * 0.5 + 0.008), 0.01), "legno_scuro"))
+	n.add_child(cilindro(0.017, 0.017, w + 0.03, Vector3(0, h * 0.5 + 0.03, 0.022), "pelliccia", Vector3(0, 0, 90), 7))
+
+
+## Palo intagliato: rocchi con occhi incisi, rombi e fasce dipinte (verde, rosso, ocra), testa di montone in cima.
+static func _totem(r: Node3D, pos: Vector3, h := 0.5, seme := 1) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = 45
+	r.add_child(n)
+	for k in 4:
+		var a := k * TAU / 4 + 0.4
+		n.add_child(sfera(0.035, Vector3(cos(a) * 0.055, 0.0, sin(a) * 0.055), "roccia_massi", Vector3(1.2, 0.8, 1.0)))
+	var seg := 4
+	var hs := h * 0.82 / seg
+	var colori := ["stoffa_verde", "bandiera_rossa", "tufo", "stoffa_verde"]
+	for k in seg:
+		var rr := 0.036 if k % 2 == 0 else 0.044
+		n.add_child(cilindro(rr, rr * 0.9, hs, Vector3(0, hs * (k + 0.5), 0), "legno" if k % 2 == 0 else "legno_vecchio", Vector3.ZERO, 9))
+		n.add_child(cilindro(rr * 0.92 + 0.004, rr * 0.92 + 0.004, 0.016, Vector3(0, hs * (k + 1) - 0.01, 0), colori[(k + seme) % 4], Vector3.ZERO, 9))
+		if k % 2 == 1:
+			for lato: int in [-1, 1]:
+				n.add_child(sfera(0.009, Vector3(lato * 0.017, hs * (k + 0.6), rr * 0.93), "fuliggine"))
+			n.add_child(scatola(Vector3(0.032, 0.008, 0.01), Vector3(0, hs * (k + 0.28), rr * 0.95), "fuliggine"))
+		else:
+			n.add_child(scatola(Vector3(0.024, 0.024, 0.01), Vector3(0, hs * (k + 0.45), rr * 0.97), colori[(k + seme + 1) % 4], Vector3(0, 0, 45)))
+	var top := h * 0.82
+	n.add_child(sfera(0.045, Vector3(0, top + 0.035, 0), "legno", Vector3(1.0, 1.0, 1.15)))
+	n.add_child(sfera(0.026, Vector3(0, top + 0.015, 0.045), "legno", Vector3(0.9, 1.0, 1.2)))
+	for lato: int in [-1, 1]:
+		n.add_child(sfera(0.009, Vector3(lato * 0.022, top + 0.05, 0.036), "fuliggine"))
+		n.add_child(cilindro(0.016, 0.008, 0.1, Vector3(lato * 0.06, top + 0.075, 0), "osso", Vector3(0, 0, -60 * lato), 6))
+		n.add_child(cilindro(0.009, 0.003, 0.07, Vector3(lato * 0.128, top + 0.075, 0.01), "osso", Vector3(0, 0, -135 * lato), 6))
+
+
+## Insegna dei Brettii: asta con traversa, drappo verde bosco con disco ocra e code, teschio in cima.
+static func _stendardo_b(r: Node3D, pos: Vector3, h := 0.6) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = 45
+	r.add_child(n)
+	n.add_child(cilindro(0.012, 0.015, h, Vector3(0, h * 0.5, 0), "corteccia", Vector3.ZERO, 6))
+	n.add_child(cilindro(0.008, 0.008, 0.2, Vector3(0, h - 0.05, 0.01), "legno_vecchio", Vector3(0, 0, 90), 5))
+	n.add_child(scatola(Vector3(0.17, 0.2, 0.006), Vector3(0, h - 0.155, 0.014), "stoffa_verde"))
+	for k in 5:
+		n.add_child(scatola(Vector3(0.026, 0.045, 0.006), Vector3(-0.068 + k * 0.034, h - 0.275, 0.014), "stoffa_verde" if k % 2 == 0 else "tufo"))
+	n.add_child(cilindro(0.04, 0.04, 0.004, Vector3(0, h - 0.15, 0.019), "tufo", Vector3(90, 0, 0), 14))
+	n.add_child(cilindro(0.02, 0.02, 0.005, Vector3(0, h - 0.15, 0.021), "bandiera_rossa", Vector3(90, 0, 0), 10))
+	_teschio(n, Vector3(0, h + 0.02, 0.0), 0.0, 1.1)
+
+
+## Rastrelliera con pelli messe ad asciugare a cavallo di una stanga.
+static func _pelli_stese(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees.y = rot_y
+	r.add_child(n)
+	for lato: int in [-1, 1]:
+		n.add_child(cilindro(0.011, 0.013, 0.3, Vector3(lato * 0.14, 0.15, 0), "corteccia", Vector3.ZERO, 5))
+	n.add_child(cilindro(0.01, 0.01, 0.34, Vector3(0, 0.29, 0), "legno_vecchio", Vector3(0, 0, 90), 5))
+	for p: Array in [["pelliccia", -0.065, 0.16], ["capra", 0.07, 0.13]]:
+		for lato: int in [-1, 1]:
+			n.add_child(scatola(Vector3(0.11, p[2], 0.006), Vector3(p[1], 0.29 - p[2] * 0.48, lato * 0.014), p[0], Vector3(-8 * lato, 0, 0)))
+		n.add_child(scatola(Vector3(0.018, 0.03, 0.006), Vector3(p[1] - 0.045, 0.29 - p[2] - 0.005, 0.02), p[0], Vector3(-8, 0, 15)))
+		n.add_child(scatola(Vector3(0.018, 0.03, 0.006), Vector3(p[1] + 0.045, 0.29 - p[2] - 0.005, 0.02), p[0], Vector3(-8, 0, -15)))
+
+
+## Pelle conciata tesa su un telaio di rami appoggiato a terra.
+static func _telaio_pelle(r: Node3D, pos: Vector3, rot_y := 0.0) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	n.rotation_degrees = Vector3(-14, rot_y, 0)
+	r.add_child(n)
+	var l := 0.24
+	for lato: int in [-1, 1]:
+		n.add_child(cilindro(0.009, 0.009, l + 0.06, Vector3(lato * l * 0.5, l * 0.5 + 0.01, 0), "corteccia", Vector3.ZERO, 5))
+		n.add_child(cilindro(0.009, 0.009, l + 0.06, Vector3(0, l * 0.5 + 0.01 + lato * l * 0.5, 0), "corteccia", Vector3(0, 0, 90), 5))
+	n.add_child(sfera(0.1, Vector3(0, l * 0.5 + 0.01, 0.004), "capra", Vector3(0.85, 1.05, 0.04)))
+	for sx: int in [-1, 1]:
+		for sy: int in [-1, 1]:
+			ramo(n, Vector3(sx * 0.07, l * 0.5 + 0.01 + sy * 0.075, 0.005), Vector3(sx * l * 0.5, l * 0.5 + 0.01 + sy * l * 0.5, 0.0), 0.003, "corda")
+
+
+## Palizzata di pali appuntiti con una traversa.
+static func _palizzata(r: Node3D, da: Vector3, a: Vector3, h := 0.3) -> void:
+	var lung := da.distance_to(a)
+	var n := maxi(1, int(lung / 0.046))
+	for k in n + 1:
+		var p := da.lerp(a, float(k) / n)
+		var hh := h * (0.9 + 0.05 * float((k * 7) % 3))
+		r.add_child(cilindro(0.023, 0.025, hh, p + Vector3(0, hh * 0.5, 0), "corteccia", Vector3.ZERO, 6))
+		r.add_child(cilindro(0.023, 0.0, 0.06, p + Vector3(0, hh + 0.03, 0), "legno_chiaro", Vector3.ZERO, 6))
+	var dir := (a - da).normalized()
+	var rot := rad_to_deg(atan2(dir.x, dir.z))
+	r.add_child(scatola(Vector3(0.065, 0.025, lung), (da + a) * 0.5 + Vector3(0, h * 0.62, 0), "legno_vecchio", Vector3(0, rot, 0)))
+
+
+## Recinto di graticcio: paletti e rami intrecciati.
+static func _graticcio(r: Node3D, da: Vector3, a: Vector3, h := 0.1) -> void:
+	var lung := da.distance_to(a)
+	var n := int(lung / 0.1) + 1
+	for k in n + 1:
+		var p := da.lerp(a, float(k) / n)
+		r.add_child(cilindro(0.009, 0.008, h + 0.025, p + Vector3(0, (h + 0.025) * 0.5, 0), "legno_vecchio", Vector3.ZERO, 5))
+	var dir := (a - da).normalized()
+	var rot := rad_to_deg(atan2(dir.x, dir.z))
+	for i in 4:
+		r.add_child(scatola(Vector3(0.017, 0.02, lung), (da + a) * 0.5 + Vector3(0, 0.02 + i * h * 0.26, 0), "paglia_scura" if i % 2 == 0 else "legno_vecchio", Vector3(0, rot, 0)))
+
+
+## Fuoco all'aperto: cerchio di sassi, ceppi incrociati, braci e fiamme.
+static func _fuoco(r: Node3D, pos: Vector3, s := 1.0) -> void:
+	for k in 8:
+		var a := k * TAU / 8
+		r.add_child(sfera(0.026 * s, pos + Vector3(cos(a), 0, sin(a)) * 0.075 * s + Vector3(0, 0.008, 0), "roccia_massi", Vector3(1.1, 0.7, 1.0)))
+	for k in 4:
+		r.add_child(cilindro(0.012 * s, 0.012 * s, 0.12 * s, pos + Vector3(0, 0.025 * s, 0), "corteccia", Vector3(0, k * 45, 78), 5))
+	r.add_child(sfera(0.04 * s, pos + Vector3(0, 0.02 * s, 0), "brace", Vector3(1, 0.5, 1)))
+	r.add_child(cilindro(0.032 * s, 0.0, 0.08 * s, pos + Vector3(0, 0.07 * s, 0), "brace", Vector3.ZERO, 7))
+	r.add_child(cilindro(0.018 * s, 0.0, 0.06 * s, pos + Vector3(0.025 * s, 0.06 * s, 0.01), "brace", Vector3(0, 0, -12), 6))
+
+
+## Colonna di fumo che sale e si allarga piegando verso destra.
+static func _fumo(r: Node3D, pos: Vector3, n := 4, s := 1.0) -> void:
+	for k in n:
+		var g := (0.024 + k * 0.011) * s
+		r.add_child(sfera(g, pos + Vector3(k * 0.035 * s, k * 0.075 * s, -k * 0.02 * s), "fumo", Vector3(1.1, 0.9, 1.0)))
+
+
+## Vaso di terracotta sigillato con la pece: tappo nero lucido, colature sui fianchi e legatura di corda.
+static func _vaso_pece(pos: Vector3, scala := 1.0) -> Node3D:
+	var n := Node3D.new()
+	n.position = pos
+	n.scale = Vector3.ONE * scala
+	n.add_child(sfera(0.05, Vector3(0, 0.052, 0), "terracotta", Vector3(1, 1.1, 1)))
+	n.add_child(cilindro(0.026, 0.032, 0.035, Vector3(0, 0.11, 0), "terracotta", Vector3.ZERO, 10))
+	n.add_child(sfera(0.047, Vector3(0, 0.088, 0), "pece", Vector3(1, 0.5, 1)))
+	n.add_child(cilindro(0.036, 0.036, 0.016, Vector3(0, 0.125, 0), "pece", Vector3.ZERO, 10))
+	n.add_child(sfera(0.037, Vector3(0, 0.133, 0), "pece", Vector3(1, 0.5, 1)))
+	for k in 6:
+		var a := k * TAU / 6 + 0.5
+		var lungo := 1.0 if k % 2 == 0 else 0.6
+		n.add_child(sfera(0.011, Vector3(cos(a) * 0.048, 0.068 - lungo * 0.012, sin(a) * 0.048), "pece", Vector3(1, 1.8 * lungo + 0.6, 1)))
+	n.add_child(cilindro(0.03, 0.03, 0.008, Vector3(0, 0.105, 0), "corda", Vector3.ZERO, 10))
+	return n
+
+
+## Calderone nero sul fuoco, appeso a un treppiede di pali, pieno di pece che bolle.
+static func _calderone(r: Node3D, pos: Vector3, s := 1.0) -> void:
+	_fuoco(r, pos, 1.6 * s)
+	var cima := pos + Vector3(0, 0.5 * s, 0)
+	for k in 3:
+		var a := k * TAU / 3 + 0.5
+		ramo(r, pos + Vector3(cos(a), 0, sin(a)) * 0.22 * s, cima + Vector3(cos(a), 0, sin(a)) * 0.015, 0.016 * s, "corteccia")
+	r.add_child(cilindro(0.004, 0.004, 0.2 * s, pos + Vector3(0, 0.39 * s, 0), "ferro", Vector3.ZERO, 4))
+	r.add_child(sfera(0.12 * s, pos + Vector3(0, 0.19 * s, 0), "fuliggine", Vector3(1, 0.85, 1)))
+	r.add_child(cilindro(0.1 * s, 0.1 * s, 0.03 * s, pos + Vector3(0, 0.27 * s, 0), "fuliggine", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.105 * s, 0.105 * s, 0.014 * s, pos + Vector3(0, 0.285 * s, 0), "ferro", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.094 * s, 0.094 * s, 0.006 * s, pos + Vector3(0, 0.288 * s, 0), "pece", Vector3.ZERO, 16))
+	for k in 4:
+		var a := k * 1.7
+		r.add_child(sfera(0.014 * s, pos + Vector3(cos(a) * 0.05 * s, 0.29 * s, sin(a) * 0.05 * s), "pece", Vector3(1, 0.6, 1)))
+	for lato: int in [-1, 1]:
+		r.add_child(cilindro(0.012 * s, 0.012 * s, 0.006 * s, pos + Vector3(lato * 0.11 * s, 0.27 * s, 0), "ferro", Vector3(90, 0, 0), 8))
+	# mestolo di legno appoggiato al bordo
+	ramo(r, pos + Vector3(-0.04 * s, 0.27 * s, 0.03 * s), pos + Vector3(-0.2 * s, 0.45 * s, 0.12 * s), 0.008 * s, "legno")
+	_fumo(r, pos + Vector3(0.03 * s, 0.42 * s, -0.03 * s), 4, 1.0 * s)
+
+
+## Granaio su pali con le pietre a fungo contro i topi, scaletta e tetto di paglia.
+static func _granaio(r: Node3D, pos: Vector3, lx := 0.36, lz := 0.34, seme := 1) -> void:
+	for x: float in [-lx * 0.4, lx * 0.4]:
+		for z: float in [-lz * 0.4, lz * 0.4]:
+			r.add_child(cilindro(0.022, 0.026, 0.14, pos + Vector3(x, 0.07, z), "corteccia", Vector3.ZERO, 6))
+			r.add_child(cilindro(0.048, 0.04, 0.026, pos + Vector3(x, 0.152, z), "roccia_massi", Vector3.ZERO, 9))
+	r.add_child(scatola(Vector3(lx + 0.06, 0.025, lz + 0.06), pos + Vector3(0, 0.177, 0), "legno_vecchio"))
+	var c := Node3D.new()
+	c.position = pos + Vector3(0, 0.19, 0)
+	r.add_child(c)
+	var h := 0.2
+	c.add_child(scatola(Vector3(lx, h, lz), Vector3(0, h * 0.5, 0), "legno_scuro"))
+	var nx := int(lx / 0.045)
+	for k in nx:
+		c.add_child(cilindro(0.022, 0.022, h, Vector3(-lx * 0.5 + (k + 0.5) * lx / nx, h * 0.5, lz * 0.5 - 0.01), "legno" if k % 3 != 1 else "legno_vecchio", Vector3.ZERO, 6))
+	var nz := int(lz / 0.045)
+	for k in nz:
+		c.add_child(cilindro(0.022, 0.022, h, Vector3(lx * 0.5 - 0.01, h * 0.5, -lz * 0.5 + (k + 0.5) * lz / nz), "legno" if k % 3 != 2 else "legno_vecchio", Vector3.ZERO, 6))
+	c.add_child(scatola(Vector3(0.08, 0.1, 0.02), Vector3(0.0, 0.1, lz * 0.5 + 0.012), "buio"))
+	c.add_child(scatola(Vector3(0.1, 0.016, 0.03), Vector3(0.0, 0.158, lz * 0.5 + 0.018), "legno_vecchio"))
+	sottotetto(c, lx, lz, h, 42.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 42.0, seme, false)
+	# scaletta a pioli
+	for lato: int in [-1, 1]:
+		ramo(r, pos + Vector3(lato * 0.035, 0, lz * 0.5 + 0.17), pos + Vector3(lato * 0.035, 0.2, lz * 0.5 + 0.03), 0.008, "legno_vecchio")
+	for k in 3:
+		var t := (k + 1) / 4.0
+		r.add_child(scatola(Vector3(0.08, 0.008, 0.008), pos + Vector3(0, 0.2 * t, lz * 0.5 + 0.17 - 0.14 * t), "legno"))
+
+
+## Ruota idraulica a pale (piano YZ, asse lungo X) con schiuma in basso.
+static func _ruota_mulino(r: Node3D, pos: Vector3, rg := 0.2) -> void:
+	var n := Node3D.new()
+	n.position = pos
+	r.add_child(n)
+	n.add_child(cilindro(0.028, 0.028, 0.16, Vector3.ZERO, "legno_scuro", Vector3(0, 0, 90), 8))
+	var np := 12
+	var corda := 2.0 * rg * 0.88 * sin(PI / np)
+	for k in np:
+		var a := k * TAU / np
+		n.add_child(scatola(Vector3(0.016, rg, 0.016), Vector3(0, cos(a) * rg * 0.5, sin(a) * rg * 0.5), "legno", Vector3(rad_to_deg(a), 0, 0)))
+		n.add_child(scatola(Vector3(0.11, 0.07, 0.014), Vector3(0, cos(a) * rg, sin(a) * rg), "legno_chiaro" if k % 2 == 0 else "legno", Vector3(rad_to_deg(a), 0, 0)))
+		var b := a + PI / np
+		for x: float in [-0.045, 0.045]:
+			n.add_child(scatola(Vector3(0.014, 0.016, corda + 0.01), Vector3(x, cos(b) * rg * 0.88, sin(b) * rg * 0.88), "legno_scuro", Vector3(rad_to_deg(b), 0, 0)))
+
+
+# ------------------------------------------------------------------ edifici dei Brettii
+
+## Casa dei Brettii: pietra grezza a secco, tetto alto di paglia con corna incrociate, orto di graticcio, palo intagliato.
+static func casa_greca_brettii(seme := 1) -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.12, 0, -0.15)
+	r.add_child(c)
+	var lx := 0.9
+	var lz := 0.66
+	var h := 0.36
+	_muri_pietra_b(c, lx, lz, h, seme)
+	_porta_b(c, Vector3(-0.16, 0, lz * 0.5), 0.0, 0.13, 0.23, true)
+	_finestrella_b(c, Vector3(0.2, 0.24, lz * 0.5 + 0.004), 0.0)
+	_finestrella_b(c, Vector3(lx * 0.5 + 0.004, 0.24, -0.02), 90.0)
+	sottotetto(c, lx, lz, h, 40.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 40.0, seme)
+	# foro del fumo nella paglia
+	c.add_child(scatola(Vector3(0.09, 0.04, 0.07), Vector3(0.22, h + 0.2, -0.04), "fuliggine", Vector3(40, 0, 0)))
+	_fumo(c, Vector3(0.24, h + 0.3, -0.05), 3, 0.9)
+	# davanti: panca, pelle tesa, palo intagliato, vasi e legna
+	c.add_child(panca(Vector3(0.18, 0, lz * 0.5 + 0.12), 0))
+	_telaio_pelle(r, Vector3(-0.42, 0, 0.42), 25.0)
+	_totem(r, Vector3(-0.72, 0, 0.5), 0.5, seme)
+	r.add_child(_vaso_pece(Vector3(0.1, 0, 0.42), 1.0))
+	r.add_child(anfora(Vector3(0.2, 0, 0.47), 1.05))
+	legnaia(c, Vector3(lx * 0.5 + 0.07, 0.0, -0.2), 0.24, 3)
+	# orto chiuso dal graticcio, con cavoli e fave
+	var o := Vector3(0.56, 0, 0.45)
+	r.add_child(scatola(Vector3(0.34, 0.012, 0.38), o + Vector3(0, 0.006, 0), "terra"))
+	var rng := _rng(seme + 9)
+	for f in 4:
+		for k in 5:
+			r.add_child(sfera(rng.randf_range(0.02, 0.028), o + Vector3(-0.14 + k * 0.07, 0.025, -0.14 + f * 0.093), "orto" if f % 2 == 0 else "foglie_chiare", Vector3(1, 0.8, 1)))
+	_graticcio(r, o + Vector3(-0.19, 0, 0.21), o + Vector3(0.19, 0, 0.21))
+	_graticcio(r, o + Vector3(0.19, 0, -0.21), o + Vector3(0.19, 0, 0.21))
+	return r
+
+
+## Magazzino dei Brettii: lunga casa di tronchi su zoccolo di pietra, tettoia di paglia, granaio su pali, insegna verde.
+static func magazzino_brettii() -> Node3D:
+	var r := Node3D.new()
+	r.position = Vector3(0, 0, -0.1)
+	r.add_child(scatola(Vector3(2.0, 0.03, 1.5), Vector3(0, 0.015, 0.05), "terra"))
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0.03, -0.3)
+	r.add_child(c)
+	var lx := 1.42
+	var lz := 0.8
+	var h := 0.5
+	_muri_tavole_b(c, lx, lz, h, 7)
+	_porta_b(c, Vector3(0.22, 0, lz * 0.5 + 0.02), 0.0, 0.24, 0.32)
+	_finestrella_b(c, Vector3(-0.45, 0.36, lz * 0.5 + 0.02), 0.0, 0.1, 0.08)
+	_finestrella_b(c, Vector3(lx * 0.5 + 0.02, 0.36, 0.0), 90.0, 0.1, 0.08)
+	sottotetto(c, lx, lz, h, 42.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 42.0, 7)
+	_teschio(c, Vector3(lx * 0.5 + 0.03, h + 0.18, 0), 90.0, 1.6)
+	# tettoia davanti al lato sinistro con le merci all'ombra
+	_tettoia_paglia(r, Vector3(-0.62, 0.03, 0.32), 0.62, 0.4, 0.5, 0.36, false)
+	for i in 3:
+		r.add_child(sacco(Vector3(-0.82 + i * 0.1, 0.03, 0.3), i * 0.6))
+	r.add_child(sacco(Vector3(-0.77, 0.1, 0.3), 1.2))
+	for i in 3:
+		r.add_child(_vaso_pece(Vector3(-0.5 + (i % 2) * 0.09, 0.03, 0.26 + (i / 2) * 0.1), 1.05))
+	r.add_child(cesta(Vector3(-0.38, 0.03, 0.42), "cipolle"))
+	# granaio su pali a destra
+	_granaio(r, Vector3(0.8, 0.03, -0.3), 0.38, 0.36, 8)
+	# merci e vita davanti: botti, casse, tronchi, carretto, insegna e palo intagliato
+	r.add_child(barile(Vector3(0.45, 0.03, 0.32), 1.2))
+	r.add_child(barile(Vector3(0.56, 0.03, 0.4), 1.2))
+	for i in 2:
+		r.add_child(cassa(Vector3(0.3 + i * 0.13, 0.03, 0.48), i * 15))
+	r.add_child(cesta(Vector3(0.2, 0.03, 0.42), "formaggio"))
+	catasta_tronchi(r, Vector3(0.85, 0.03, 0.2), 3, 0.36)
+	carretto(r, Vector3(-0.05, 0.03, 0.75), 20, "sacchi")
+	_stendardo_b(r, Vector3(0.62, 0.03, 0.72), 0.75)
+	_totem(r, Vector3(-0.9, 0.03, 0.62), 0.55, 3)
+	_pelli_stese(r, Vector3(-0.92, 0.03, -0.05), 90.0)
+	return r
+
+
+## Boscaiolo dei Brettii: capanna di tronchi spaccati con tetto di paglia, tettoia con la legna, grande catasta di pini.
+static func boscaiolo_brettii() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.17, 0, -0.2)
+	r.add_child(c)
+	var lx := 0.74
+	var lz := 0.58
+	var h := 0.36
+	_muri_tavole_b(c, lx, lz, h, 21)
+	_porta_b(c, Vector3(-0.14, 0, lz * 0.5 + 0.01), 0.0)
+	_finestrella_b(c, Vector3(0.18, 0.26, lz * 0.5 + 0.012), 0.0)
+	sottotetto(c, lx, lz, h, 42.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 42.0, 21)
+	# tettoia sul fianco con legna spaccata
+	_tettoia_paglia(c, Vector3(lx * 0.5 + 0.17, 0, 0.0), 0.5, 0.26, 0.34, 0.28, false)
+	legnaia(c, Vector3(lx * 0.5 + 0.17, 0.0, -0.02), 0.44, 5)
+	# grande catasta di pini, ceppo con l'ascia, ceppaie, pelli e palo intagliato
+	catasta_tronchi(r, Vector3(0.55, 0, 0.55), 4, 0.5)
+	r.add_child(cilindro(0.07, 0.075, 0.09, Vector3(-0.2, 0.045, 0.52), "corteccia", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.066, 0.066, 0.006, Vector3(-0.2, 0.092, 0.52), "legno_chiaro", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.008, 0.008, 0.22, Vector3(-0.2, 0.18, 0.52), "legno", Vector3(0, 0, 22), 6))
+	r.add_child(scatola(Vector3(0.055, 0.04, 0.012), Vector3(-0.245, 0.27, 0.52), "ferro", Vector3(0, 0, 22)))
+	for i in 6:
+		r.add_child(cilindro(0.02, 0.02, 0.06, Vector3(-0.36 + i * 0.06, 0.02, 0.66 + (i % 2) * 0.05), "legno_chiaro", Vector3(0, i * 37, 90), 6))
+	for pos: Vector3 in [Vector3(-0.72, 0, 0.62), Vector3(0.05, 0, 0.78)]:
+		r.add_child(cilindro(0.06, 0.07, 0.05, pos + Vector3(0, 0.025, 0), "corteccia", Vector3.ZERO, 10))
+		r.add_child(cilindro(0.056, 0.056, 0.005, pos + Vector3(0, 0.052, 0), "legno_chiaro", Vector3.ZERO, 10))
+	_pelli_stese(r, Vector3(-0.68, 0, 0.18), 80.0)
+	_totem(r, Vector3(-0.45, 0, 0.5), 0.46, 2)
+	var p := pino_laricio(44)
+	p.position = Vector3(0.52, 0, -0.62)
+	p.scale = Vector3.ONE * 0.7
+	r.add_child(p)
+	return r
+
+
+## Segheria dei Brettii: baita di tronchi con scandole e sassi, cavalletto alto con il tronco e la sega a telaio.
+static func segheria_brettii() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.22, 0, -0.28)
+	r.add_child(c)
+	var lx := 0.82
+	var lz := 0.6
+	var h := 0.42
+	_muri_tavole_b(c, lx, lz, h, 31)
+	_porta_b(c, Vector3(-0.2, 0, lz * 0.5 + 0.01), 0.0, 0.15, 0.25)
+	_finestrella_b(c, Vector3(0.16, 0.32, lz * 0.5 + 0.012), 0.0)
+	_finestrella_b(c, Vector3(lx * 0.5 + 0.012, 0.32, 0.0), 90.0)
+	sottotetto(c, lx, lz, h, 26.0, "legno_vecchio")
+	_tetto_scandole_sassi(c, lx + 0.06, lz, h, 26.0, 31)
+	# cavalletti a X con il tronco alzato e la grande sega a telaio
+	var t := Node3D.new()
+	t.position = Vector3(0.08, 0, 0.48)
+	r.add_child(t)
+	t.add_child(cilindro(0.2, 0.2, 0.006, Vector3(0.05, 0.003, 0.0), "legno_chiaro", Vector3.ZERO, 16))
+	for x: float in [-0.28, 0.28]:
+		ramo(t, Vector3(x, 0, -0.13), Vector3(x, 0.38, 0.1), 0.018, "corteccia")
+		ramo(t, Vector3(x, 0, 0.13), Vector3(x, 0.38, -0.1), 0.018, "corteccia")
+	t.add_child(cilindro(0.055, 0.055, 0.86, Vector3(0, 0.33, 0.0), "corteccia", Vector3(0, 0, 90), 9))
+	t.add_child(cilindro(0.047, 0.047, 0.865, Vector3(0, 0.33, 0.0), "legno_chiaro", Vector3(0, 0, 90), 9))
+	t.add_child(scatola(Vector3(0.3, 0.012, 0.1), Vector3(-0.27, 0.392, 0.0), "legno_chiaro"))
+	for z: float in [-0.08, 0.08]:
+		t.add_child(scatola(Vector3(0.014, 0.5, 0.014), Vector3(0.08, 0.3, z), "legno"))
+	for y: float in [0.06, 0.55]:
+		t.add_child(scatola(Vector3(0.014, 0.014, 0.2), Vector3(0.08, y, 0.0), "legno"))
+	t.add_child(scatola(Vector3(0.004, 0.5, 0.012), Vector3(0.08, 0.3, 0.0), "ferro"))
+	t.add_child(cilindro(0.004, 0.004, 0.18, Vector3(0.08, 0.6, 0.0), "corda", Vector3(90, 0, 0), 4))
+	# assi, tronchi in attesa, tettoia con le tavole e slitta da trascino
+	_tettoia_paglia(r, Vector3(0.66, 0, -0.18), 0.32, 0.5, 0.4, 0.32, true)
+	pila_assi(r, Vector3(0.66, 0, -0.3), 7, 90)
+	pila_assi(r, Vector3(0.66, 0, 0.02), 4, 90)
+	catasta_tronchi(r, Vector3(-0.66, 0, 0.5), 3, 0.42)
+	var s := Node3D.new()
+	s.position = Vector3(0.45, 0, 0.88)
+	s.rotation_degrees.y = -30
+	r.add_child(s)
+	for lato: int in [-1, 1]:
+		s.add_child(scatola(Vector3(0.36, 0.025, 0.025), Vector3(0, 0.0125, lato * 0.08), "legno_vecchio"))
+		s.add_child(scatola(Vector3(0.05, 0.025, 0.025), Vector3(0.19, 0.03, lato * 0.08), "legno_vecchio", Vector3(0, 0, 35)))
+	for i in 3:
+		s.add_child(cilindro(0.032, 0.032, 0.34, Vector3(0, 0.055 + (i / 2) * 0.05, -0.035 + (i % 2) * 0.07), "corteccia", Vector3(0, 0, 90), 7))
+	_stendardo_b(r, Vector3(-0.72, 0, 0.0), 0.55)
+	return r
+
+
+## Cava dei Brettii: capanna tonda di pietra, rupe scura, capra di legno per alzare i massi, cumuli di pietre grezze.
+static func cava_brettii() -> Node3D:
+	var r := Node3D.new()
+	_capanna_tonda(r, Vector3(-0.42, 0, -0.32), 0.24, 0.3, 17, 20.0)
+	# rupe gradonata di roccia scura
+	var rng := _rng(17)
+	for k in 9:
+		var p := Vector3(0.35 + rng.randf_range(-0.22, 0.22), 0.0, -0.4 + rng.randf_range(-0.15, 0.18))
+		var d := rng.randf_range(0.16, 0.3)
+		r.add_child(_masso(p, d, Vector3(1.0, rng.randf_range(1.4, 2.2), 0.9), "roccia_massi", rng.randf() * 90))
+	for k in 4:
+		r.add_child(sfera(rng.randf_range(0.03, 0.05), Vector3(0.1 + k * 0.1, 0.2 + rng.randf() * 0.15, -0.3 + rng.randf() * 0.1), "macchia"))
+	# capra di legno (treppiede) con carrucola e masso appeso
+	var cc := Vector3(0.1, 0, 0.05)
+	for k in 3:
+		var a := k * TAU / 3 + 0.3
+		ramo(r, cc + Vector3(cos(a), 0, sin(a)) * 0.2, cc + Vector3(0, 0.5, 0), 0.014, "corteccia")
+	r.add_child(cilindro(0.003, 0.003, 0.26, cc + Vector3(0, 0.37, 0), "corda", Vector3.ZERO, 4))
+	r.add_child(cilindro(0.02, 0.02, 0.012, cc + Vector3(0, 0.49, 0.0), "legno_scuro", Vector3(90, 0, 0), 8))
+	r.add_child(sfera(0.06, cc + Vector3(0, 0.22, 0), "pietra", Vector3(1.2, 0.8, 1.0)))
+	for k in 4:
+		ramo(r, cc + Vector3(0, 0.24, 0), cc + Vector3(cos(k * 1.57) * 0.05, 0.19, sin(k * 1.57) * 0.05), 0.003, "corda")
+	# cumuli di pietre grezze e cesta piena, piccone e slitta
+	for k in 12:
+		r.add_child(sfera(rng.randf_range(0.035, 0.055), Vector3(0.05 + rng.randf_range(-0.16, 0.16), 0.03 + (k / 6) * 0.04, 0.5 + rng.randf_range(-0.1, 0.1)), "pietra" if k % 2 == 0 else "blocco", Vector3(1.2, 0.8, 1.0)))
+	for k in 6:
+		r.add_child(sfera(rng.randf_range(0.03, 0.045), Vector3(0.5 + rng.randf_range(-0.08, 0.08), 0.03, 0.4 + rng.randf_range(-0.08, 0.08)), "pietra", Vector3(1.2, 0.8, 1.0)))
+	r.add_child(cilindro(0.008, 0.008, 0.22, Vector3(0.38, 0.11, 0.62), "legno", Vector3(0, 0, -25), 6))
+	r.add_child(scatola(Vector3(0.11, 0.014, 0.014), Vector3(0.43, 0.21, 0.62), "ferro", Vector3(0, 0, -25)))
+	var s := Node3D.new()
+	s.position = Vector3(-0.45, 0, 0.55)
+	s.rotation_degrees.y = 15
+	r.add_child(s)
+	for lato: int in [-1, 1]:
+		s.add_child(scatola(Vector3(0.32, 0.025, 0.025), Vector3(0, 0.0125, lato * 0.07), "legno_vecchio"))
+		s.add_child(scatola(Vector3(0.05, 0.025, 0.025), Vector3(0.17, 0.03, lato * 0.07), "legno_vecchio", Vector3(0, 0, 35)))
+	s.add_child(scatola(Vector3(0.28, 0.015, 0.16), Vector3(0, 0.032, 0), "legno"))
+	s.add_child(sfera(0.07, Vector3(0, 0.08, 0), "pietra", Vector3(1.3, 0.8, 1.0)))
+	_totem(r, Vector3(-0.1, 0, -0.62), 0.42, 1)
+	return r
+
+
+## Guardaboschi dei Brettii: capanna tonda di pietra e paglia, vivaio di pini chiuso dal graticcio, palo intagliato.
+static func guardaboschi_brettii() -> Node3D:
+	var r := Node3D.new()
+	_capanna_tonda(r, Vector3(-0.32, 0, -0.32), 0.26, 0.3, 41, 20.0)
+	# vivaio di pini in file, chiuso dal graticcio
+	for i in 4:
+		for j in 3:
+			var p := Vector3(-0.1 + i * 0.16, 0, 0.3 + j * 0.15)
+			r.add_child(scatola(Vector3(0.1, 0.012, 0.1), p + Vector3(0, 0.006, 0), "terra"))
+			r.add_child(cilindro(0.006, 0.006, 0.06 + j * 0.02, p + Vector3(0, 0.03, 0), "corteccia", Vector3.ZERO, 5))
+			r.add_child(cilindro(0.035 + j * 0.008, 0.0, 0.09 + j * 0.03, p + Vector3(0, 0.09 + j * 0.03, 0), "aghi", Vector3.ZERO, 7))
+	_graticcio(r, Vector3(-0.2, 0, 0.75), Vector3(0.52, 0, 0.75))
+	_graticcio(r, Vector3(0.52, 0, 0.2), Vector3(0.52, 0, 0.75))
+	# cesta di pigne, pala, sacchi di semi, palo intagliato e pino
+	r.add_child(cilindro(0.07, 0.055, 0.06, Vector3(0.3, 0.03, -0.12), "paglia", Vector3.ZERO, 12))
+	for k in 6:
+		r.add_child(sfera(0.02, Vector3(0.3 + cos(k * 1.1) * 0.035, 0.065 + (k % 2) * 0.012, -0.12 + sin(k * 1.1) * 0.035), "corteccia", Vector3(1, 1.3, 1)))
+	r.add_child(cilindro(0.007, 0.007, 0.22, Vector3(0.12, 0.11, -0.05), "legno", Vector3(12, 0, -15), 5))
+	r.add_child(sacco(Vector3(-0.58, 0, 0.3), 0.4))
+	r.add_child(sacco(Vector3(-0.62, 0, 0.42), -0.2))
+	_totem(r, Vector3(-0.32, 0, 0.42), 0.48, 4)
+	var p := pino_laricio(41)
+	p.position = Vector3(0.55, 0, -0.55)
+	p.scale = Vector3.ONE * 0.7
+	r.add_child(p)
+	return r
+
+
+## Pozzo dei Brettii: vera di pietre grezze e mazzacavallo (lunga pertica con il contrappeso di pietra).
+static func pozzo_brettii() -> Node3D:
+	var r := Node3D.new()
+	r.add_child(cilindro(0.19, 0.21, 0.18, Vector3(0, 0.09, 0), "pietra_grezza", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.125, 0.125, 0.005, Vector3(0, 0.184, 0), "buio", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.09, 0.09, 0.005, Vector3(0, 0.186, 0), "acqua_pozzo", Vector3.ZERO, 16))
+	var rng := _rng(23)
+	for k in 11:
+		var a := k * TAU / 11
+		r.add_child(sfera(rng.randf_range(0.045, 0.055), Vector3(cos(a) * 0.17, 0.185, sin(a) * 0.17), "roccia_massi", Vector3(1.2, 0.6, 1.0)))
+	for k in 9:
+		var a := k * TAU / 9 + 0.3
+		r.add_child(sfera(rng.randf_range(0.04, 0.05), Vector3(cos(a) * 0.21, 0.05 + (k % 2) * 0.06, sin(a) * 0.21), "roccia_massi" if k % 3 != 0 else "pietra_grezza", Vector3(1.0, 0.8, 0.7)))
+	# forcella, pertica, secchio e contrappeso
+	var cima := Vector3(0.0, 0.62, 0.05)
+	var fondo := Vector3(0.42, 0.22, -0.22)
+	var perno := cima.lerp(fondo, 0.5)
+	r.add_child(cilindro(0.022, 0.026, perno.y, Vector3(perno.x, perno.y * 0.5, perno.z), "corteccia", Vector3.ZERO, 7))
+	for lato: int in [-1, 1]:
+		ramo(r, Vector3(perno.x, perno.y - 0.03, perno.z), Vector3(perno.x + lato * 0.03, perno.y + 0.05, perno.z + lato * 0.03), 0.01, "corteccia")
+	ramo(r, fondo, cima, 0.016, "legno_vecchio")
+	r.add_child(cilindro(0.003, 0.003, 0.26, Vector3(0, 0.49, 0.05), "corda", Vector3.ZERO, 4))
+	r.add_child(cilindro(0.035, 0.03, 0.05, Vector3(0, 0.34, 0.05), "legno_scuro", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.036, 0.036, 0.006, Vector3(0, 0.35, 0.05), "ferro", Vector3.ZERO, 8))
+	r.add_child(sfera(0.065, fondo + Vector3(0, -0.04, 0), "roccia_massi", Vector3(1.1, 0.9, 1.0)))
+	r.add_child(cilindro(0.068, 0.068, 0.01, fondo + Vector3(0, -0.04, 0), "corda", Vector3.ZERO, 10))
+	r.add_child(scatola(Vector3(0.05, 0.035, 0.006), Vector3(perno.x + 0.02, perno.y - 0.06, perno.z + 0.03), "stoffa_verde", Vector3(0, 45, 0)))
+	# abbeveratoio di tronco scavato, vaso e lastra
+	var ab := Node3D.new()
+	ab.position = Vector3(-0.22, 0, 0.22)
+	ab.rotation_degrees.y = 40
+	r.add_child(ab)
+	ab.add_child(scatola(Vector3(0.26, 0.06, 0.08), Vector3(0, 0.03, 0), "corteccia"))
+	ab.add_child(scatola(Vector3(0.22, 0.006, 0.05), Vector3(0, 0.061, 0), "acqua_pozzo"))
+	r.add_child(anfora(Vector3(0.25, 0.0, 0.18), 1.0))
+	r.add_child(_masso(Vector3(0.1, 0, 0.26), 0.07, Vector3(1.4, 0.4, 1.0), "roccia_massi", 20))
+	r.scale = Vector3.ONE * 1.15
+	return r
+
+
+## Fattoria dei Brettii: casa di pietra e paglia, granaio su pali, pagliaio a cono, covoni, orto di graticcio e galline.
+static func fattoria_brettii() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.24)
+	r.add_child(c)
+	var lx := 0.76
+	var lz := 0.56
+	var h := 0.34
+	_muri_pietra_b(c, lx, lz, h, 41)
+	_porta_b(c, Vector3(-0.12, 0, lz * 0.5), 0.0, 0.13, 0.22, true)
+	_finestrella_b(c, Vector3(0.2, 0.23, lz * 0.5 + 0.004), 0.0)
+	_finestrella_b(c, Vector3(lx * 0.5 + 0.004, 0.23, 0.0), 90.0)
+	sottotetto(c, lx, lz, h, 40.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 40.0, 41)
+	# granaio su pali e pagliaio a cono intorno al palo
+	_granaio(r, Vector3(0.74, 0, -0.32), 0.34, 0.32, 42)
+	r.add_child(cilindro(0.15, 0.03, 0.34, Vector3(0.78, 0.17, 0.2), "paglia_tetto", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.155, 0.15, 0.06, Vector3(0.78, 0.03, 0.2), "paglia_scura", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.008, 0.008, 0.48, Vector3(0.78, 0.24, 0.2), "legno_vecchio", Vector3.ZERO, 5))
+	# aia con covoni, aratro di legno, orto e galline
+	for i in 4:
+		var cv := covone(1.2)
+		cv.position = Vector3(-0.55 + i * 0.13, 0.0, 0.55 + (i % 2) * 0.08)
+		cv.rotation_degrees.z = 8 * (i % 2 * 2 - 1)
+		r.add_child(cv)
+	ramo(r, Vector3(0.22, 0.0, 0.48), Vector3(0.52, 0.12, 0.66), 0.012, "legno_vecchio")
+	ramo(r, Vector3(0.24, 0.0, 0.48), Vector3(0.2, 0.18, 0.44), 0.01, "legno_vecchio")
+	r.add_child(scatola(Vector3(0.08, 0.012, 0.03), Vector3(0.2, 0.01, 0.5), "ferro", Vector3(0, 30, -20)))
+	var o := Vector3(-0.72, 0, -0.05)
+	r.add_child(scatola(Vector3(0.24, 0.012, 0.5), o + Vector3(0, 0.006, 0), "terra"))
+	for f in 6:
+		for k in 3:
+			r.add_child(sfera(0.022, o + Vector3(-0.08 + k * 0.08, 0.025, -0.2 + f * 0.08), "orto" if f % 2 == 0 else "foglie_chiare", Vector3(1, 0.8, 1)))
+	_graticcio(r, o + Vector3(-0.14, 0, 0.27), o + Vector3(0.14, 0, 0.27))
+	for i in 3:
+		r.add_child(sfera(0.025, Vector3(0.05 + i * 0.07, 0.03, 0.4 - i * 0.03), "intonaco", Vector3(1.3, 1, 1)))
+		r.add_child(sfera(0.008, Vector3(0.08 + i * 0.07, 0.05, 0.4 - i * 0.03), "geranio"))
+	_stendardo_b(r, Vector3(-0.68, 0, 0.42), 0.5)
+	return r
+
+
+## Mulino dei Brettii: casa di pietra grezza con la ruota a pale mossa dal ruscello, canale di legno, macine e sacchi.
+static func mulino_brettii() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.36, 0, -0.26)
+	r.add_child(c)
+	var lx := 0.66
+	var lz := 0.54
+	var h := 0.42
+	_muri_pietra_b(c, lx, lz, h, 51)
+	_porta_b(c, Vector3(-0.12, 0, lz * 0.5), 0.0, 0.14, 0.25)
+	_finestrella_b(c, Vector3(0.17, 0.3, lz * 0.5 + 0.004), 0.0)
+	sottotetto(c, lx, lz, h, 40.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 40.0, 51)
+	# ruscello con le sponde di sassi che passa accanto alla casa
+	var xr := 0.24
+	r.add_child(scatola(Vector3(0.2, 0.012, 1.5), Vector3(xr, 0.006, 0.0), "mare"))
+	var rng := _rng(52)
+	for k in 26:
+		var lato := -1 if k % 2 == 0 else 1
+		r.add_child(sfera(rng.randf_range(0.022, 0.036), Vector3(xr + lato * 0.11, 0.008, -0.72 + (k / 2) * 0.115 + rng.randf_range(-0.02, 0.02)), "roccia_massi" if k % 3 != 0 else "pietra", Vector3(1.2, 0.6, 1.0)))
+	# ruota a pale e canale di legno sui pali che porta l'acqua dall'alto
+	_ruota_mulino(r, Vector3(xr, 0.23, -0.02), 0.22)
+	r.add_child(cilindro(0.014, 0.014, 0.16, Vector3(xr - 0.12, 0.23, -0.02), "legno_scuro", Vector3(0, 0, 90), 6))
+	for k in 5:
+		r.add_child(sfera(rng.randf_range(0.02, 0.03), Vector3(xr + rng.randf_range(-0.06, 0.06), 0.02, -0.08 + rng.randf_range(-0.2, 0.2)), "latte", Vector3(1.3, 0.5, 1.0)))
+	var cz := -0.7
+	r.add_child(scatola(Vector3(0.09, 0.05, 0.52), Vector3(xr, 0.44, (cz - 0.12) * 0.5 - 0.02), "legno_vecchio"))
+	r.add_child(scatola(Vector3(0.06, 0.006, 0.52), Vector3(xr, 0.468, (cz - 0.12) * 0.5 - 0.02), "mare"))
+	for z: float in [cz + 0.05, -0.3]:
+		r.add_child(cilindro(0.014, 0.016, 0.42, Vector3(xr, 0.21, z), "corteccia", Vector3.ZERO, 6))
+	r.add_child(sfera(0.03, Vector3(xr, 0.43, -0.12), "latte", Vector3(1.2, 0.6, 1.0)))
+	# macine appoggiate, sacchi di farina e di grano, covone, insegna
+	r.add_child(cilindro(0.13, 0.13, 0.05, Vector3(-0.5, 0.025, 0.3), "blocco", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.11, 0.11, 0.045, Vector3(-0.5, 0.07, 0.3), "pietra", Vector3.ZERO, 16))
+	r.add_child(cilindro(0.025, 0.025, 0.052, Vector3(-0.5, 0.07, 0.3), "buio", Vector3.ZERO, 8))
+	r.add_child(cilindro(0.1, 0.1, 0.04, Vector3(-0.56, 0.1, -0.05), "pietra", Vector3(0, 0, 75), 16))
+	r.add_child(cilindro(0.022, 0.022, 0.042, Vector3(-0.56, 0.1, -0.05), "buio", Vector3(0, 0, 75), 8))
+	for i in 5:
+		r.add_child(sacco(Vector3(0.48 + (i % 3) * 0.12, 0.0, 0.0 + (i / 3) * 0.13), i * 0.7))
+	var cv := covone(1.1)
+	cv.position = Vector3(0.55, 0, 0.45)
+	r.add_child(cv)
+	r.add_child(cassa(Vector3(-0.25, 0, 0.55), 15))
+	_stendardo_b(r, Vector3(-0.72, 0, 0.0), 0.5)
+	return r
+
+
+## Forno dei Brettii: casa di tronchi su pietra, grande forno di argilla e sassi con la bocca annerita, pani sulla tavola.
+static func forno_brettii() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.2, 0, -0.25)
+	r.add_child(c)
+	var lx := 0.72
+	var lz := 0.54
+	var h := 0.38
+	_muri_tavole_b(c, lx, lz, h, 61)
+	_porta_b(c, Vector3(-0.15, 0, lz * 0.5 + 0.01), 0.0, 0.13, 0.24, true)
+	_finestrella_b(c, Vector3(0.18, 0.28, lz * 0.5 + 0.012), 0.0)
+	_finestrella_b(c, Vector3(lx * 0.5 + 0.012, 0.28, 0.0), 90.0)
+	sottotetto(c, lx, lz, h, 40.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 40.0, 61)
+	# grande forno a cupola di argilla con sassi murati, bocca annerita e fumo
+	var f := Vector3(0.45, 0, 0.4)
+	r.add_child(cilindro(0.26, 0.28, 0.12, f + Vector3(0, 0.06, 0), "pietra_grezza", Vector3.ZERO, 18))
+	r.add_child(sfera(0.24, f + Vector3(0, 0.12, 0), "argilla_cruda", Vector3(1, 0.85, 1)))
+	var rng := _rng(62)
+	for k in 14:
+		var a := rng.randf_range(-0.6, 2.2)
+		var e := rng.randf_range(0.15, 1.2)
+		r.add_child(sfera(rng.randf_range(0.02, 0.03), f + Vector3(cos(a) * cos(e) * 0.235, 0.12 + sin(e) * 0.2, sin(a) * cos(e) * 0.235), "roccia_massi", Vector3(1.2, 0.7, 1.0)))
+	r.add_child(scatola(Vector3(0.12, 0.1, 0.06), f + Vector3(-0.06, 0.18, 0.21), "fuliggine", Vector3(0, 30, 0)))
+	r.add_child(scatola(Vector3(0.1, 0.09, 0.03), f + Vector3(-0.065, 0.175, 0.235), "buio", Vector3(0, 30, 0)))
+	r.add_child(sfera(0.025, f + Vector3(-0.07, 0.15, 0.22), "brace", Vector3(1.4, 0.5, 1.0)))
+	r.add_child(cilindro(0.008, 0.008, 0.5, f + Vector3(-0.2, 0.06, 0.32), "legno", Vector3(-80, 30, 0), 5))
+	_fumo(r, f + Vector3(0.02, 0.38, -0.02), 4, 1.0)
+	legnaia(r, Vector3(0.66, 0, -0.1), 0.25, 3)
+	# tavola con pani, ceste, sacchi di farina e macina a mano
+	r.add_child(scatola(Vector3(0.3, 0.02, 0.14), Vector3(-0.3, 0.12, 0.55), "legno"))
+	for x: float in [-0.42, -0.18]:
+		r.add_child(cilindro(0.016, 0.016, 0.11, Vector3(x, 0.055, 0.55), "corteccia", Vector3.ZERO, 6))
+	for i in 5:
+		r.add_child(sfera(0.03, Vector3(-0.42 + i * 0.06, 0.145, 0.55 + (i % 2) * 0.03), "pane", Vector3(1, 0.6, 1)))
+	r.add_child(cesta(Vector3(-0.62, 0, 0.45), "pane"))
+	r.add_child(cesta(Vector3(0.05, 0, 0.66), "pane"))
+	r.add_child(sacco(Vector3(-0.68, 0, 0.15), 0.4))
+	r.add_child(cilindro(0.07, 0.07, 0.04, Vector3(0.15, 0.02, 0.5), "pietra", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.06, 0.06, 0.03, Vector3(0.15, 0.055, 0.5), "blocco", Vector3.ZERO, 12))
+	r.add_child(cilindro(0.006, 0.006, 0.06, Vector3(0.19, 0.09, 0.5), "legno", Vector3.ZERO, 5))
+	_totem(r, Vector3(-0.75, 0, -0.05), 0.42, 5)
+	return r
+
+
+## Ovile dei Brettii: capanna tonda dei pastori, stazzo di graticcio con le pecore, pelli, bastone e palo intagliato.
+static func ovile_brettii() -> Node3D:
+	var r := Node3D.new()
+	_capanna_tonda(r, Vector3(-0.36, 0, -0.36), 0.26, 0.3, 81, 30.0)
+	# stazzo di graticcio con le pecore
+	var a := Vector3(0.1, 0, 0.1)
+	_graticcio(r, a + Vector3(-0.36, 0, 0.47), a + Vector3(0.5, 0, 0.47))
+	_graticcio(r, a + Vector3(0.5, 0, -0.26), a + Vector3(0.5, 0, 0.47))
+	_graticcio(r, a + Vector3(-0.08, 0, -0.26), a + Vector3(0.5, 0, -0.26))
+	_graticcio(r, a + Vector3(-0.36, 0, 0.1), a + Vector3(-0.36, 0, 0.47))
+	for p: Array in [[Vector3(0.0, 0, 0.25), 30], [Vector3(0.2, 0, 0.05), 160], [Vector3(0.3, 0, 0.3), -40],
+			[Vector3(-0.15, 0, 0.32), 90], [Vector3(0.32, 0, -0.12), 210]]:
+		r.add_child(pecora(a + p[0], p[1]))
+	r.add_child(scatola(Vector3(0.22, 0.04, 0.06), a + Vector3(-0.2, 0.02, 0.05), "corteccia"))
+	# bastone del pastore appoggiato al recinto
+	ramo(r, a + Vector3(0.53, 0, 0.3), a + Vector3(0.58, 0.32, 0.2), 0.008, "legno_vecchio")
+	ramo(r, a + Vector3(0.58, 0.32, 0.2), a + Vector3(0.62, 0.34, 0.18), 0.007, "legno_vecchio")
+	ramo(r, a + Vector3(0.62, 0.34, 0.18), a + Vector3(0.63, 0.31, 0.17), 0.006, "legno_vecchio")
+	# vasca, lana, pelli e palo intagliato
+	r.add_child(cilindro(0.09, 0.08, 0.06, Vector3(-0.68, 0.03, 0.3), "legno", Vector3.ZERO, 14))
+	r.add_child(cilindro(0.08, 0.08, 0.005, Vector3(-0.68, 0.06, 0.3), "acqua_pozzo", Vector3.ZERO, 14))
+	r.add_child(sfera(0.06, Vector3(-0.55, 0.04, 0.6), "lana", Vector3(1.2, 0.6, 1.0)))
+	r.add_child(sfera(0.05, Vector3(-0.45, 0.035, 0.66), "lana", Vector3(1.2, 0.6, 1.0)))
+	_pelli_stese(r, Vector3(0.32, 0, -0.55), 0.0)
+	_totem(r, Vector3(-0.72, 0, -0.02), 0.46, 6)
+	return r
+
+
+## Capraio dei Brettii: baita di pietra con scandole e sassi, rupi con le capre, graticcio e rastrelliera dei formaggi.
+static func capraio_brettii() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.54
+	var lz := 0.42
+	var h := 0.27
+	_muri_pietra_b(c, lx, lz, h, 91)
+	_porta_b(c, Vector3(-0.08, 0, lz * 0.5), 0.0, 0.12, 0.19, true)
+	sottotetto(c, lx, lz, h, 30.0, "legno_vecchio")
+	_tetto_scandole_sassi(c, lx + 0.06, lz, h, 30.0, 91)
+	# rupi su cui le capre si arrampicano
+	var a := Vector3(0.15, 0, 0.15)
+	r.add_child(_masso(a + Vector3(0.22, 0.0, -0.12), 0.2, Vector3(1.1, 1.3, 1.0), "roccia_massi", 15))
+	r.add_child(_masso(a + Vector3(-0.05, 0.0, 0.3), 0.12, Vector3(1.3, 1.1, 1.0), "roccia_massi", 50))
+	r.add_child(_masso(a + Vector3(0.42, 0.0, 0.12), 0.1, Vector3(1.2, 1.0, 1.0), "roccia_massi", 80))
+	r.add_child(sfera(0.04, a + Vector3(0.3, 0.05, -0.25), "macchia"))
+	r.add_child(capra(a + Vector3(0.2, 0.23, -0.12), 40))
+	r.add_child(capra(a + Vector3(0.0, 0, 0.1), 200))
+	r.add_child(capra(a + Vector3(0.35, 0, 0.3), -30))
+	r.add_child(capra(a + Vector3(-0.06, 0.12, 0.3), 110))
+	_graticcio(r, a + Vector3(-0.4, 0, 0.5), a + Vector3(0.5, 0, 0.5))
+	# rastrelliera con i formaggi, vaso, teschio sul palo
+	var rs := Vector3(-0.62, 0, 0.3)
+	for x: float in [-0.1, 0.1]:
+		r.add_child(cilindro(0.01, 0.011, 0.24, rs + Vector3(x, 0.12, 0), "corteccia", Vector3.ZERO, 5))
+	for y: float in [0.1, 0.2]:
+		r.add_child(scatola(Vector3(0.24, 0.012, 0.08), rs + Vector3(0, y, 0), "legno_vecchio"))
+		for k in 3:
+			r.add_child(cilindro(0.028, 0.028, 0.025, rs + Vector3(-0.065 + k * 0.065, y + 0.019, 0), "formaggio", Vector3.ZERO, 10))
+	r.add_child(_vaso_pece(Vector3(-0.42, 0, 0.5), 0.9))
+	r.add_child(cilindro(0.01, 0.012, 0.36, Vector3(0.02, 0.18, -0.04), "corteccia", Vector3.ZERO, 5))
+	_teschio(r, Vector3(0.02, 0.38, -0.04), 45.0, 1.4)
+	r.add_child(scatola(Vector3(0.05, 0.08, 0.005), Vector3(0.035, 0.28, -0.03), "stoffa_verde", Vector3(0, 45, 0)))
+	return r
+
+
+## Caserma dei Brettii: casa lunga di tronchi con paglia, tratto di palizzata, campo dei frombolieri con i vasi bersaglio.
+static func caserma_brettii() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.3, 0, -0.3)
+	r.add_child(c)
+	var lx := 0.62
+	var lz := 0.5
+	var h := 0.36
+	_muri_tavole_b(c, lx, lz, h, 271)
+	_porta_b(c, Vector3(0.08, 0, lz * 0.5 + 0.01), 0.0, 0.15, 0.25, true)
+	_finestrella_b(c, Vector3(lx * 0.5 + 0.012, 0.27, 0.0), 90.0)
+	sottotetto(c, lx, lz, h, 42.0, "legno_vecchio")
+	_tetto_paglia(c, lx, lz, h, 42.0, 271)
+	_stendardo_b(c, Vector3(lx * 0.5 + 0.06, 0, lz * 0.5 + 0.06), 0.8)
+	_palizzata(r, Vector3(-0.78, 0, -0.62), Vector3(-0.78, 0, 0.2), 0.3)
+	# campo d'addestramento: pali con i vasi bersaglio, fantoccio di paglia, mucchio di sassi da fionda
+	r.add_child(scatola(Vector3(0.75, 0.01, 0.55), Vector3(0.25, 0.005, 0.4), "terra"))
+	for k in 3:
+		var p := Vector3(0.5 + k * 0.09, 0, 0.12 + k * 0.1)
+		r.add_child(cilindro(0.014, 0.016, 0.26 - k * 0.03, p + Vector3(0, 0.13 - k * 0.015, 0), "corteccia", Vector3.ZERO, 6))
+		r.add_child(anfora(p + Vector3(0, 0.26 - k * 0.03, 0), 0.75))
+	r.add_child(cilindro(0.016, 0.016, 0.34, Vector3(0.22, 0.17, 0.2), "legno_vecchio", Vector3.ZERO, 6))
+	r.add_child(cilindro(0.01, 0.01, 0.2, Vector3(0.22, 0.27, 0.2), "legno_vecchio", Vector3(0, 45, 90), 5))
+	r.add_child(sfera(0.06, Vector3(0.22, 0.22, 0.2), "paglia", Vector3(1, 1.4, 1)))
+	r.add_child(sfera(0.035, Vector3(0.22, 0.34, 0.2), "paglia"))
+	for k in 9:
+		r.add_child(sfera(0.016, Vector3(0.0 + (k % 3) * 0.025, 0.012 + (k / 3) * 0.012, 0.75 + (k % 2) * 0.02), "pietra"))
+	for k in 2:
+		var o := brettio()
+		o.position = Vector3(0.05 + k * 0.26, 0, 0.6 - k * 0.15)
+		o.rotation_degrees.y = 150 - k * 60
+		o.scale = Vector3.ONE * 0.95
+		r.add_child(o)
+	# rastrelliera con lance e scudi ovali dipinti
+	var rs := Vector3(-0.55, 0, 0.5)
+	r.add_child(scatola(Vector3(0.3, 0.02, 0.02), rs + Vector3(0, 0.22, 0), "legno_vecchio"))
+	for x: float in [-0.14, 0.14]:
+		r.add_child(cilindro(0.01, 0.01, 0.24, rs + Vector3(x, 0.12, 0), "corteccia", Vector3.ZERO, 5))
+	for k in 4:
+		r.add_child(cilindro(0.005, 0.005, 0.4, rs + Vector3(-0.1 + k * 0.06, 0.2, -0.02), "legno", Vector3(-10, 0, 0), 5))
+		r.add_child(cilindro(0.008, 0.0, 0.04, rs + Vector3(-0.1 + k * 0.06, 0.41, -0.055), "ferro", Vector3(-10, 0, 0), 5))
+	for k in 2:
+		var sc := rs + Vector3(-0.07 + k * 0.13, 0.11, 0.04)
+		r.add_child(sfera(0.08, sc, "legno", Vector3(0.8, 1.2, 0.18)))
+		r.add_child(sfera(0.05, sc + Vector3(0, 0, 0.008), "stoffa_verde", Vector3(0.8, 1.2, 0.18)))
+		r.add_child(sfera(0.018, sc + Vector3(0, 0, 0.016), "ferro"))
+	return r
+
+
+## Castello dei Brettii: rocca su un'altura con terrapieno di pietra a secco e palizzata, torri di legno con tetti
+## a piramide di paglia, porta con torretta e la grande casa del capo con corna, palo intagliato e insegne verdi.
+static func castello_brettii() -> Node3D:
+	var r := Node3D.new()
+	var lato := 2.3
+	var hm := 0.26
+	r.add_child(scatola(Vector3(lato + 0.34, 0.06, lato + 0.34), Vector3(0, 0.03, 0), "roccia_massi"))
+	r.add_child(scatola(Vector3(lato - 0.1, 0.012, lato - 0.1), Vector3(0, 0.066, 0), "terra"))
+	# terrapieno di pietra grezza con la palizzata sopra
+	var rng := _rng(301)
+	for i in 4:
+		var m := Node3D.new()
+		m.rotation_degrees.y = i * 90
+		r.add_child(m)
+		m.add_child(scatola(Vector3(lato, hm, 0.2), Vector3(0, 0.06 + hm * 0.5, lato * 0.5), "pietra_grezza"))
+		for k in 22:
+			m.add_child(sfera(rng.randf_range(0.03, 0.045), Vector3(rng.randf_range(-lato * 0.45, lato * 0.45), 0.06 + rng.randf_range(0.04, hm - 0.03), lato * 0.5 + 0.1), "roccia_massi" if k % 3 != 0 else "pietra", Vector3(1.4, 0.75, 0.35)))
+		if i == 0:
+			_palizzata(m, Vector3(-lato * 0.5 + 0.2, 0.06 + hm, lato * 0.5), Vector3(0.18, 0.06 + hm, lato * 0.5), 0.24)
+			_palizzata(m, Vector3(0.72, 0.06 + hm, lato * 0.5), Vector3(lato * 0.5 - 0.2, 0.06 + hm, lato * 0.5), 0.24)
+		else:
+			_palizzata(m, Vector3(-lato * 0.5 + 0.2, 0.06 + hm, lato * 0.5), Vector3(lato * 0.5 - 0.2, 0.06 + hm, lato * 0.5), 0.24)
+	# torri di legno agli angoli
+	for x: int in [-1, 1]:
+		for z: int in [-1, 1]:
+			var p := Vector3(x * lato * 0.5, 0.06, z * lato * 0.5)
+			var t := Node3D.new()
+			t.position = p
+			r.add_child(t)
+			t.add_child(scatola(Vector3(0.46, 0.34, 0.46), Vector3(0, 0.17, 0), "pietra_grezza"))
+			var su := Node3D.new()
+			su.position.y = 0.3
+			t.add_child(su)
+			_muri_tavole_b(su, 0.4, 0.4, 0.44, 320 + x * 3 + z)
+			su.add_child(scatola(Vector3(0.52, 0.03, 0.52), Vector3(0, 0.46, 0), "legno_vecchio"))
+			for k in 4:
+				su.add_child(cilindro(0.015, 0.015, 0.14, Vector3(-0.24 + k * 0.16, 0.53, 0.25), "corteccia", Vector3.ZERO, 5))
+				su.add_child(cilindro(0.015, 0.015, 0.14, Vector3(0.25, 0.53, -0.24 + k * 0.16), "corteccia", Vector3.ZERO, 5))
+			su.add_child(scatola(Vector3(0.025, 0.11, 0.02), Vector3(0, 0.25, 0.212), "buio"))
+			su.add_child(scatola(Vector3(0.02, 0.11, 0.025), Vector3(0.212, 0.25, 0), "buio"))
+			var tetto_t := cilindro(0.46, 0.0, 0.4, Vector3(0, 0.79, 0), "paglia_tetto", Vector3(0, 45, 0), 4)
+			su.add_child(tetto_t)
+			su.add_child(cilindro(0.47, 0.47, 0.03, Vector3(0, 0.6, 0), "paglia_scura", Vector3(0, 45, 0), 4))
+			su.add_child(cilindro(0.01, 0.01, 0.16, Vector3(0, 1.02, 0), "legno_vecchio", Vector3.ZERO, 5))
+			_teschio(su, Vector3(0, 1.08, 0), 45.0, 1.2)
+	# porta sul lato in vista con la torretta sopra
+	var g := Vector3(0.45, 0.06, lato * 0.5)
+	r.add_child(scatola(Vector3(0.36, 0.34, 0.06), g + Vector3(0, 0.17, 0.08), "legno_scuro"))
+	for k in 6:
+		r.add_child(scatola(Vector3(0.05, 0.32, 0.01), g + Vector3(-0.15 + k * 0.06, 0.17, 0.115), "legno_vecchio"))
+	for lx: int in [-1, 1]:
+		r.add_child(cilindro(0.045, 0.05, 0.7, g + Vector3(lx * 0.24, 0.35, 0.1), "corteccia", Vector3.ZERO, 8))
+		_teschio(r, g + Vector3(lx * 0.24, 0.74, 0.14), 0.0, 1.4)
+	r.add_child(scatola(Vector3(0.6, 0.04, 0.3), g + Vector3(0, 0.6, 0.06), "legno_vecchio"))
+	_palizzata(r, g + Vector3(-0.27, 0.62, 0.2), g + Vector3(0.27, 0.62, 0.2), 0.14)
+	_stendardo_b(r, g + Vector3(0.0, 0.62, 0.0), 0.45)
+	# grande casa del capo sull'altura
+	var c := Node3D.new()
+	r.add_child(c)
+	r.add_child(_masso(Vector3(-0.25, 0.06, -0.28), 0.7, Vector3(1.1, 0.18, 1.0), "roccia_massi", 0))
+	c.position = Vector3(-0.25, 0.11, -0.28)
+	_muri_tavole_b(c, 0.92, 0.62, 0.48, 330)
+	_porta_b(c, Vector3(0.12, 0, 0.32), 0.0, 0.17, 0.28, true)
+	_finestrella_b(c, Vector3(-0.25, 0.34, 0.322), 0.0, 0.09, 0.08)
+	_finestrella_b(c, Vector3(0.472, 0.34, 0.0), 90.0, 0.09, 0.08)
+	sottotetto(c, 0.92, 0.62, 0.48, 45.0, "legno_vecchio")
+	_tetto_paglia(c, 0.92, 0.62, 0.48, 45.0, 331)
+	_stendardo_b(c, Vector3(0.38, 0.0, 0.48), 1.0)
+	# cortile: palo intagliato, fuoco, granaio, capanna
+	_totem(r, Vector3(0.3, 0.07, 0.45), 0.6, 7)
+	_fuoco(r, Vector3(-0.3, 0.07, 0.55), 1.2)
+	_granaio(r, Vector3(0.62, 0.07, -0.5), 0.3, 0.3, 333)
+	_capanna_tonda(r, Vector3(-0.68, 0.07, 0.45), 0.18, 0.22, 334, 40.0)
+	for k in 3:
+		r.add_child(cassa(Vector3(0.6 + k * 0.12, 0.07, 0.35), k * 20))
+	r.add_child(barile(Vector3(0.75, 0.07, 0.55), 1.1))
+	return r
+
+
+## Pecificio (edificio unico dei Brettii): capanna di tronchi e pietra dove si cuoce la resina dei pini in un grande
+## calderone nero fumante; tronchi di pino accatastati e vasi sigillati di pece pronti da portare via.
+static func pecificio() -> Node3D:
+	var r := Node3D.new()
+	var c := Node3D.new()
+	c.position = Vector3(-0.28, 0, -0.32)
+	r.add_child(c)
+	var lx := 0.7
+	var lz := 0.52
+	var h := 0.38
+	_muri_tavole_b(c, lx, lz, h, 401)
+	_porta_b(c, Vector3(-0.12, 0, lz * 0.5 + 0.01), 0.0, 0.14, 0.24)
+	_finestrella_b(c, Vector3(0.18, 0.28, lz * 0.5 + 0.012), 0.0)
+	_finestrella_b(c, Vector3(lx * 0.5 + 0.012, 0.28, 0.0), 90.0)
+	# fuliggine sopra le aperture
+	c.add_child(scatola(Vector3(0.14, 0.06, 0.006), Vector3(0.18, 0.36, lz * 0.5 + 0.03), "fuliggine"))
+	c.add_child(scatola(Vector3(0.006, 0.06, 0.14), Vector3(lx * 0.5 + 0.03, 0.36, 0.0), "fuliggine"))
+	sottotetto(c, lx, lz, h, 28.0, "legno_vecchio")
+	_tetto_scandole_sassi(c, lx + 0.06, lz, h, 28.0, 401)
+	# calderone della pece sul fuoco
+	_calderone(r, Vector3(0.2, 0, 0.32), 1.25)
+	# vasca di legno dove la pece si raffredda
+	var v := Vector3(0.62, 0, 0.5)
+	r.add_child(scatola(Vector3(0.3, 0.07, 0.16), v + Vector3(0, 0.035, 0), "legno_vecchio", Vector3(0, -20, 0)))
+	r.add_child(scatola(Vector3(0.26, 0.006, 0.12), v + Vector3(0, 0.071, 0), "pece", Vector3(0, -20, 0)))
+	# tronchi di pino accatastati e legna per il fuoco
+	catasta_tronchi(r, Vector3(0.62, 0, -0.3), 3, 0.44)
+	legnaia(r, Vector3(-0.68, 0, 0.1), 0.24, 4)
+	# vasi sigillati di pece in file, pronti per i portatori
+	for i in 6:
+		r.add_child(_vaso_pece(Vector3(-0.5 + (i % 3) * 0.12, 0, 0.42 + (i / 3) * 0.13), 1.15))
+	r.add_child(_vaso_pece(Vector3(-0.15, 0, 0.62), 1.0))
+	# pino con le incisioni da cui cola la resina
+	var p := pino_laricio(43)
+	p.position = Vector3(-0.72, 0, -0.62)
+	p.scale = Vector3.ONE * 0.62
+	r.add_child(p)
+	for k in 3:
+		r.add_child(scatola(Vector3(0.022, 0.035, 0.01), Vector3(-0.72 + 0.02 * k, 0.1 + k * 0.05, -0.62 + 0.032), "legno_chiaro", Vector3(0, 45, 0)))
+	r.add_child(cilindro(0.02, 0.016, 0.03, Vector3(-0.7, 0.07, -0.58), "terracotta", Vector3.ZERO, 8))
+	_stendardo_b(r, Vector3(0.42, 0, -0.06), 0.6)
+	_totem(r, Vector3(0.78, 0, 0.12), 0.45, 8)
 	return r

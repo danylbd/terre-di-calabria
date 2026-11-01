@@ -37,7 +37,7 @@ func in_marcia() -> int:
 	return _soldati.filter(func(s): return s["lato"] == 1).size()
 
 
-const FOGLI := {1: ["guardia", "guardia_lotta"], 2: ["brettio", "brettio_lotta"]}
+## fogli dei soldati (camminata, lotta) secondo il popolo di ogni lato: vedi Popoli.soldati()
 
 
 ## Il forte o la torre sotto attacco esiste ancora (dalla sua parte)?
@@ -97,7 +97,7 @@ func _manda_rinforzi() -> void:
 func _nuovo_soldato(punti: Array[Vector2], scopo: String, dest: Edificio, lato := 1) -> Dictionary:
 	var c := Colono.new()
 	oggetti.add_child(c)
-	c.prepara(dati, punti[0], FOGLI[lato][0])
+	c.prepara(dati, punti[0], Popoli.soldati(lato)[0])
 	c.velocita = 1.4
 	var s := {"nodo": c, "scopo": scopo, "destinazione": dest, "stato": "marcia", "lato": lato}
 	c.arrivato.connect(func(_c): _arrivato(s))
@@ -164,7 +164,7 @@ func attacca(da: Edificio, bersaglio: Edificio) -> int:
 	if da.proprietario == 1:
 		messaggio.emit("%d soldati partono all'attacco" % n, false)
 	else:
-		messaggio.emit("I Brettii attaccano: %s!" % CatalogoEdifici.dati(bersaglio.tipo)["nome"].to_lower(), true)
+		messaggio.emit(Popoli.testo("I Brettii attaccano: %s!") % CatalogoEdifici.dati(bersaglio.tipo)["nome"].to_lower(), true)
 		Suono.suona("errore")
 	return n
 
@@ -178,8 +178,8 @@ func _combatti(s: Dictionary) -> void:
 	var difensore := Colono.new()
 	oggetti.add_child(difensore)
 	var c: Colono = s["nodo"]
-	difensore.prepara(dati, c.pos + Vector2(-0.45, -0.35), FOGLI[bersaglio.proprietario][1])
-	c.imposta_foglio(FOGLI[s["lato"]][1])
+	difensore.prepara(dati, c.pos + Vector2(-0.45, -0.35), Popoli.soldati(bersaglio.proprietario)[1])
+	c.imposta_foglio(Popoli.soldati(s["lato"])[1])
 	c._anim.play()
 	difensore._anim.play()
 	s["stato"] = "duello"
@@ -207,7 +207,7 @@ func _fine_duello(id: int) -> void:
 			if bersaglio.proprietario == 1:
 				messaggio.emit("Un nostro soldato è caduto difendendo il forte", true)
 		s["stato"] = "attesa"
-		(s["nodo"] as Colono).imposta_foglio(FOGLI[s["lato"]][0])
+		(s["nodo"] as Colono).imposta_foglio(Popoli.soldati(s["lato"])[0])
 	else:
 		_togli(s)
 		if s["lato"] == 1:
@@ -227,7 +227,7 @@ func _conquista(bersaglio: Edificio, lato: int) -> void:
 	else:
 		# i Brettii prendono il nostro forte: lo bruciano e alzano una loro torre
 		villaggio.demolisci(bersaglio, false)
-		nuova = villaggio.metti_nemico("torre_brettia", casella, lato, 0)
+		nuova = villaggio.metti_nemico(Popoli.torre_nemica(), casella, lato, 0)
 	for s in vincitori:
 		_togli(s)
 		if nuova:
@@ -238,6 +238,6 @@ func _conquista(bersaglio: Edificio, lato: int) -> void:
 		messaggio.emit("%s conquistata! I confini sono nostri" % nome, false)
 		Suono.suona("completato")
 	else:
-		messaggio.emit("I Brettii hanno preso %s: abbiamo perso i confini intorno" % nome.to_lower(), true)
+		messaggio.emit(Popoli.testo("I Brettii hanno preso %s: abbiamo perso i confini intorno") % nome.to_lower(), true)
 		forte_perso.emit()
 		Suono.suona("errore")
