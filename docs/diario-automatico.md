@@ -169,3 +169,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Porto per tutti i popoli: riceve anfore, una nave a vela salpa e va fino a un altro porto del giocatore (rotta sul mare casella per casella, attraverso lo Stretto) o al largo, e torna con i ducati.
 - Modelli `porto` e `nave` (8 direzioni × 8 fotogrammi) fatti da un subagente. Trovato nel test: un porto fuori dai confini viene perso, come ogni edificio (corretto).
 - Nuovo test `test_stretto`; tutti i 29 test OK. Versione 0.33.0. Prossimo: step 29, finale nuovo.
+
+## 2026-11-02 — step 29 epilogo «L'ultimo canto» (Fase 6 finita)
+- Una missione dopo la Sicilia, a Monteleone: porto sul golfo, tre viaggi della nave, 150 coloni; il Mercante chiama Rocco «padre» e Rocco si svela: è Italo (scelta provvisoria, domanda aperta al proprietario; registrata in decisioni.md).
+- Per poter fare il porto vicino a Monteleone: approdo pianeggiante a Vibo Marina nel generatore (prima la costa era solo rupi e bosco), porto fino a 5 caselle dal mare. Il bot dei test ora riprova a piazzare gli edifici.
+- Nuovo test `test_finale`; tutti i 30 test OK. Versione 0.34.0. Prossimo: domande per la Fase 5 e rifinitura G6.

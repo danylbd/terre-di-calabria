@@ -173,6 +173,7 @@ static func genera_monteleone(seme: int, w := 96, h := 96) -> DatiMappa:
 	for nome in LUOGHI_MONTELEONE:
 		d.luoghi[nome] = LUOGHI_MONTELEONE[nome]
 	_radura(d, LUOGHI_MONTELEONE["Monteleone"], 11)
+	_spiana(d, LUOGHI_MONTELEONE["Vibo Marina"] + Vector2i(-1, -2), 5, true)      # l'approdo di Vibo Marina, dove fare il porto
 	return d
 
 
@@ -310,7 +311,13 @@ static func _mare_piatto(d: DatiMappa) -> void:
 ## Radura pianeggiante per il villaggio.
 static func _radura(d: DatiMappa, centro: Vector2i, raggio := 8) -> void:
 	d.villaggio = centro
-	var q0 := d.quota(centro.x, centro.y)
+	_spiana(d, centro, raggio)
+
+
+## Spiana un tratto di terra intorno a una casella e lo libera da boschi e rocce. Con «riva» il mare e la
+## sua riga di bordo restano come sono, e anche la sabbia diventa prato (un approdo dove costruire).
+static func _spiana(d: DatiMappa, centro: Vector2i, raggio: int, riva := false) -> void:
+	var q0 := 7.0 if riva else d.quota(centro.x, centro.y)      # l'approdo sta appena sopra il mare
 	for j in range(centro.y - raggio, centro.y + raggio + 1):
 		for i in range(centro.x - raggio, centro.x + raggio + 1):
 			if i < 0 or j < 0 or i > d.larghezza or j > d.altezza:
@@ -318,9 +325,19 @@ static func _radura(d: DatiMappa, centro: Vector2i, raggio := 8) -> void:
 			var dist := Vector2(i - centro.x, j - centro.y).length() / raggio
 			if dist < 1.0:
 				var peso := smoothstep(1.0, 0.55, dist)
-				d.imposta_quota(i, j, lerpf(d.quota_vertice(i, j), q0, peso))
-				if dist < 0.8 and d.dentro(i, j) and d.tipo(i, j) in [T.BOSCO, T.SECCO, T.ROCCIA]:
+				if not (riva and _vertice_sul_mare(d, i, j)):
+					d.imposta_quota(i, j, lerpf(d.quota_vertice(i, j), q0, peso))
+				var adatti := [T.BOSCO, T.SECCO, T.ROCCIA, T.SABBIA] if riva else [T.BOSCO, T.SECCO, T.ROCCIA]
+				if dist < 0.8 and d.dentro(i, j) and d.tipo(i, j) in adatti:
 					d.imposta_tipo(i, j, T.PRATO)
+
+
+## Il vertice tocca una casella di mare.
+static func _vertice_sul_mare(d: DatiMappa, i: int, j: int) -> bool:
+	for c in [Vector2i(i - 1, j - 1), Vector2i(i, j - 1), Vector2i(i - 1, j), Vector2i(i, j)]:
+		if d.dentro(c.x, c.y) and d.tipo(c.x, c.y) == T.ACQUA:
+			return true
+	return false
 
 
 static func _rumore(seme: int, frequenza: float, ottave: int) -> FastNoiseLite:

@@ -74,6 +74,8 @@ const SOGLIA := Vector2(1000, 600)
 const ZANCLE := Vector2(600, 860)
 var _zancle: Button                   # partita libera in Sicilia, oltre lo Stretto
 var _fuoco: Button                    # la campagna in Sicilia (docs/fuoco.md)
+var _canto: Button                    # l'epilogo «L'ultimo canto»
+const CANTO := Vector2(1000, 660)
 const FUOCO := Vector2(470, 1040)
 const MONTELEONE := Vector2(880, 735)
 var _fatte := []
@@ -137,6 +139,14 @@ func _ready() -> void:
 		var m := Missione.prossima(Missione.CAMPAGNA_FUOCO)
 		_gioca(m if m != "" else Missione.CAMPAGNA_FUOCO[-1]))
 	add_child(_fuoco)
+	_canto = Button.new()
+	var fatto := "ultimo_canto" in Missione.completate()
+	_canto.disabled = not Missione.sbloccata("ultimo_canto")
+	_canto.text = "L'ultimo canto ✔" if fatto else "L'ultimo canto"
+	_canto.tooltip_text = "Epilogo: si apre finendo «Il cuore del fuoco»" if _canto.disabled else "Il Sigillo torna sulla Soglia"
+	_canto.add_theme_font_size_override("font_size", 16)
+	_canto.pressed.connect(_gioca.bind("ultimo_canto"))
+	add_child(_canto)
 	_scelta_popolo = _crea_scelta_popolo()
 	add_child(_scelta_popolo)
 	var indietro := Button.new()
@@ -223,6 +233,7 @@ func _disponi() -> void:
 	_monteleone.position = _p(MONTELEONE) - Vector2(_monteleone.get_combined_minimum_size().x * 0.5, 0)
 	_zancle.position = _p(ZANCLE) - Vector2(_zancle.get_combined_minimum_size().x * 0.5, 0)
 	_fuoco.position = _p(FUOCO) - Vector2(_fuoco.get_combined_minimum_size().x * 0.5, 0)
+	_canto.position = _p(CANTO) - Vector2(_canto.get_combined_minimum_size().x * 0.5, 0)
 	_soglia.position = _p(SOGLIA) - _soglia.get_combined_minimum_size() * 0.5
 	queue_redraw()
 

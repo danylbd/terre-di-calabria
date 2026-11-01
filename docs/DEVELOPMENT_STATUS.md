@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.33.0** (step 28). Tutti i test automatici passano (29 script in `tools/test/`).
+Ultima release: **v0.34.0** (step 29). Tutti i test automatici passano (30 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,11 +14,11 @@ Ultima release: **v0.33.0** (step 28). Tutti i test automatici passano (29 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 28, Fase 6): porto e nave a vela (`Lavoratore` con lo stato `NAVIGA`, rotta sul mare casella per casella fino a un altro porto, altrimenti al largo; commercio delle anfore in ducati), modelli `porto` e `nave`; test `test_stretto`. Prima: campagna «Il fuoco sotto la montagna» (step 27).
+Ultime modifiche significative (step 29, Fase 6 finita): epilogo «L'ultimo canto» (`Missione.CAMPAGNA_FINALE`, missione `ultimo_canto` a Monteleone con porto e nave, rivelazione di Rocco = Italo, scelta provvisoria in `decisioni.md`), pulsante sulla mappa della Calabria; sulla mappa di Monteleone un approdo pianeggiante a Vibo Marina (`GeneratoreMappa._spiana(..., riva)`); porto costruibile fino a 5 caselle dal mare; il bot di `test_campagna` riprova a piazzare gli edifici; test `test_finale`.
 
 ## In sviluppo
 
-- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25–28 fatti (mappa di Zancle, Siculi e Sicani, campagna siciliana, navi e porti), prossimo lo step 29 (finale nuovo).
+- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25–29 fatti (mappa di Zancle, Siculi e Sicani, campagna siciliana, navi e porti, epilogo): **Fase 6 finita**.
 
 ## Da fare (in ordine)
 
@@ -44,4 +44,7 @@ Ultime modifiche significative (step 28, Fase 6): porto e nave a vela (`Lavorato
 
 ## Prossima attività consigliata
 
-**Step 29 — finale nuovo: il Mercante senza Volto e l'ultimo segreto del Sigillo** (Fase 6). Dipende dalla risposta del proprietario su chi è Rocco della Lira (domanda aperta): intanto si può preparare la parte che non dipende da quella risposta (una missione epilogo dopo «Il cuore del fuoco», per esempio il ritorno del Sigillo intero sulla Soglia). Se la risposta non arriva, scegliere l'idea già scritta in `storia.md` (Rocco è Italo) segnandola come provvisoria in `decisioni.md`.
+Le fasi 1–4 e 6 sono fatte (tranne l'esportazione iPhone, in attesa del Mac). La **Fase 5** (idee da Coral Island) richiede prima le domande al proprietario: scriverle in `domande-per-il-proprietario.md`. Intanto, lavori utili che non dipendono da nessuno:
+1. **Rifinitura grafica G6**: gli edifici che hanno ancora l'aspetto greco per gli altri popoli (miniere, zecca, fonderia, fabbro, vigneto, cantina, agrumeto...), i colori dei frombolieri brettii.
+2. **Bilanciamento**: partite lunghe con ogni popolo (test di durata per popolo).
+3. **Sfide** da `storia.md` («nutri 200 abitanti in un'ora», «porta la seta da un mare all'altro», «sopravvivi all'alluvione»).

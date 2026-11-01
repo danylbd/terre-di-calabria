@@ -70,9 +70,9 @@ func _prova() -> void:
 	var altro := v.costruisci("porto", calabria, true, true)
 	_controlla(altro != null, "secondo porto sulla costa calabrese in %s" % calabria)
 	if l and altro:
-		var partenza: Vector2i = l._acqua_vicina(Vector2i(porto.centro()), 4)
+		var partenza: Vector2i = l._acqua_vicina(Vector2i(porto.centro()), 7)
 		var rotta: Array[Vector2] = l.rotta_nave(partenza)
-		var vicino_altro: Vector2i = l._acqua_vicina(Vector2i(altro.centro()), 4)
+		var vicino_altro: Vector2i = l._acqua_vicina(Vector2i(altro.centro()), 7)
 		_controlla(not rotta.is_empty() and Vector2i(rotta[-1].floor()) == vicino_altro,
 			"la nave attraversa lo Stretto fino all'altro porto (%s → %s, %d tappe)" % [partenza, vicino_altro, rotta.size()])
 		_controlla(rotta.all(func(t): return d.tipo(int(t.x), int(t.y)) == DatiMappa.Terreno.ACQUA), "la rotta passa solo sul mare")

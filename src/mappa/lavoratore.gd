@@ -386,7 +386,7 @@ func _segnala(testo: String) -> void:
 ## Il porto: la nave parte con le anfore, attraversa il mare fino a un altro porto (lo Stretto) o al largo,
 ## e torna con il guadagno. Senza mare libero si commercia sulla riva.
 func _salpa() -> void:
-	var partenza := _acqua_vicina(Vector2i(edificio.centro()), 4)
+	var partenza := _acqua_vicina(Vector2i(edificio.centro()), 7)
 	_rotta_nave = rotta_nave(partenza) if partenza.x >= 0 else ([] as Array[Vector2])
 	if _rotta_nave.is_empty():
 		_torna(Merce.FOGLI.get(_merce_prodotta(), "portatore_nessuno"))
@@ -408,7 +408,7 @@ func rotta_nave(da: Vector2i) -> Array[Vector2]:
 	for e in edificio.villaggio.edifici.values():
 		if e == edificio or e.tipo != "porto" or not e.finito:
 			continue
-		var w := _acqua_vicina(Vector2i(e.centro()), 4)
+		var w := _acqua_vicina(Vector2i(e.centro()), 7)
 		if w.x < 0:
 			continue
 		var r := _rotta_sul_mare(da, w)
