@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.38.0** (step G6d). Tutti i test automatici passano (31 script in `tools/test/`).
+Ultima release: **v0.39.0** (step G6e). Tutti i test automatici passano (31 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.38.0** (step G6d). Tutti i test automatici passano (31 scri
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step G6d): i Normanni hanno tutti gli edifici nel loro stile (24 modelli nuovi `<tipo>_normanni`, popolo aggiunto a `COMPLETI` in `test_aspetto`).
+Ultime modifiche significative (step G6e): i Siculi hanno tutti gli edifici nel loro stile (24 modelli nuovi `<tipo>_siculi`, popolo aggiunto a `COMPLETI` in `test_aspetto`).
 
 ## In sviluppo
 

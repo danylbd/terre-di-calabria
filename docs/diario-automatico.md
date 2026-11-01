@@ -191,3 +191,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step G6d: tutti gli edifici dei Normanni
 - 24 modelli nuovi `<tipo>_normanni` (subagente) per gli edifici che avevano ancora l'aspetto greco; popolo aggiunto a `COMPLETI` in `test_aspetto`.
 - Test toccati OK; il codice del gioco non è cambiato. Versione 0.38.0. Prossimo: G6e Siculi.
+
+## 2026-11-02 — step G6e: tutti gli edifici dei Siculi
+- 24 modelli nuovi `<tipo>_siculi` (subagente) per gli edifici che avevano ancora l'aspetto greco; popolo aggiunto a `COMPLETI` in `test_aspetto`.
+- Test toccati OK; il codice del gioco non è cambiato. Versione 0.39.0. Prossimo: G6f Sicani.

@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step G6d chiuso (release v0.38.0 in `main`): Normanni con tutti gli edifici nel loro stile. Prossimo: G6e Siculi.
+**Aggiornato:** 2026-11-02, step G6e chiuso (release v0.39.0 in `main`): Siculi con tutti gli edifici nel loro stile. Prossimo: G6f Sicani.
 
 ## Ultimo obiettivo affrontato
 
