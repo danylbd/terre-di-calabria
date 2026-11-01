@@ -48,7 +48,7 @@ Su Linux senza schermo serve `xvfb-run`. Su Windows con GPU lo studio può usare
 
 ## Stato
 
-Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1), Fase 2 (12–15) e lo step 16 (in `main`, release v0.18.0).
+Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1), Fase 2 (12–15) e gli step 16–17 (in `main`, release v0.19.0).
 
 - Step 05 (prima catena): `risorse_naturali.gd`, `lavoratore.gd` (boscaiolo, cava, guardaboschi, segheria), produzione in `logistica.gd`. Test: `tools/test/test_catena.gd`.
 - Step M1 (audio): autoload `Audio` (`src/audio/audio.gd`: canali Musica/Effetti/Ambiente, scaletta, ambiente con dissolvenza); negli script usare la classe statica `Suono` (`src/audio/suono.gd`), non `Audio`, perché con `--script` l'autoload non è visibile al compilatore. Suoni: `tools/suoni/suoni.py` → `assets/suoni`; brani: `tools/suoni/musica.py` → `assets/musica` (**segnaposto**: la domanda su come fare la musica vera è in `docs/domande-per-il-proprietario.md`). Test: `tools/test/test_audio.gd`.
@@ -76,7 +76,9 @@ Vedi `docs/roadmap.md`. Fatti: Fase 1 (00, G1, 01–11, G2, M1), Fase 2 (12–15
 
 - Step 16 (tutorial): `src/storia/missione.gd` (missioni definite in `Missione.MISSIONI`: racconto d'inizio e di fine, obiettivi con suggerimento e `prova`), `src/ui/pannello_missione.gd` (obiettivi in alto a sinistra, dialoghi a gioco fermo). Voce «Campagna dei Greci» nel menu; `Impostazioni.missione`. Missione salvata. Test: `tools/test/test_missione.gd`. Le assi non hanno più tetto di scorta (`Logistica.SEMPRE_UTILI`).
 
-**In corso: step 17 – campagna dei Greci** (ramo `step-17-campagna`): le altre 5 missioni de «Le Colonne dell'Alba» (vedi `docs/storia.md`), scelta della missione dal menu, missioni sbloccate una dopo l'altra.
+- Step 17 (campagna dei Greci): 6 missioni in `Missione.MISSIONI` (obiettivi generici: `edificio`, `prodotti`, `scorta`, `popolazione`, `campi`, `presidiata`, `guadagno`; eventi come `alluvione`; battute `dopo`), partenza «relitto» o «pieno», Brettii pacifici, torri verso la costa. Sblocco una dopo l'altra (`user://campagna.json`, `Missione.progressi`). Pannello «Le Colonne dell'Alba» nel menu. Test: `tools/test/test_campagna.gd` con un giocatore automatico (`MISSIONE=id`).
+
+**In corso: step 18 – mappa della Calabria stilizzata** (ramo `step-18-mappa`): una mappa grande della regione (Pollino, Sila, Serre, Aspromonte, Stretto, i due mari) da cui scegliere le terre; per ora le missioni greche sulla costa ionica.
 
 Idea futura (Fase 5): logiche ispirate a Coral Island — **prima di progettarla fai domande al proprietario**.
 
