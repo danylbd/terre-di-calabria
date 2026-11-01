@@ -91,8 +91,13 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 39 | Campagna «Annibale nel Bruzio» (dai due lati) | |
 | 40 | Rifinitura grafica di guerra | |
 
-## Fase 5 — Idee per le versioni future
+## Per finire il gioco (dopo la Fase 7)
 
-| Idea | Note |
+| Cosa | Stato |
 |---|---|
-| Ispirazione «Coral Island» | Integrare alcune logiche da gioco di vita e fattoria (da definire con domande al proprietario prima di iniziare): es. personaggi del villaggio con cui stringere rapporti, feste stagionali, cura del mare e della costa, raccolta e collezioni, mestieri più personali. Va adattato a un gioco di strategia/economia con tanti coloni. |
+| Musica nuova (FluidSynth + soundfont libero, brani originali) | |
+| Chiusura: prova completa, bilanciamento finale, versione 1.0 | |
+
+## Fase 5 — rimandata a una versione successiva
+
+La modalità «Vita del villaggio» (idee da Coral Island) e la versione iPhone non fanno parte di questa versione (decisione del 2026-11-02): sono in [`idee-future.md`](idee-future.md).

@@ -242,3 +242,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step 35 navi da guerra e traversate (Fase 7)
 - `Mare` (rotte sull'acqua), traversata delle schiere tra due nostri porti, `NaviGuerra` (armate al porto, bersagliano le torri nemiche sulla costa finché non hanno difensori). Bireme disegnata da un subagente; mentre lavorava, i test sono girati in una copia della cartella per non usare Godot in due nello stesso progetto.
 - Nuovo test `test_navi`; tutti i test OK (il test di durata non è stato rifatto: lo step non tocca le partite in pace). Versione 0.50.0. Lo script dei documenti era fallito dopo il merge del codice: versione e documenti aggiunti con un commit a parte. Prossimo: step 36 assedi.
+
+### 2026-11-02 — Fase 5 rimandata
+- Il proprietario: personaggi, feste, cura del mare, collezioni e museo «per ora no», in una versione successiva.
+- Nuovo `docs/idee-future.md` (con l'iPhone); roadmap, decisioni, stato, memoria e passaggio di consegne aggiornati.
+- Per finire il gioco restano: step 36–40, musica nuova, chiusura con la versione 1.0.

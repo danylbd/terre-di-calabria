@@ -13,7 +13,7 @@ Gioco di strategia ed economia **originale** in stile *The Settlers 3*, ambienta
 - **Qualità**: grafica con la ricchezza e i colori di Settlers 3, ma **tutto originale** (mai copiare sprite, personaggi, nomi, musiche).
 - **Piattaforma**: Windows 11 ARM64 (Samsung Galaxy Book5/6 Edge, Snapdragon); si compila anche x64. Mouse e tastiera.
 - **Decisioni di gioco fissate**: [`decisioni.md`](decisioni.md) (fonte ufficiale; qui non si ripetono). Le più recenti (2026-11-01): monete = **ducati**; partite e campagne **senza limite di tempo**; mappa della Calabria con la **forma reale**; mappa di **Monteleone (Vibo Valentia)** con i suoi monumenti sbloccati man mano ([`monteleone.md`](monteleone.md)); seguito della storia in **Sicilia** (piano in [`storia.md`](storia.md)).
-- **Fase 5** (idee ispirate a Coral Island): non iniziarla senza aver fatto domande al proprietario.
+- **Fase 5** (idee ispirate a Coral Island) e iPhone: **non in questa versione**, rimandati a una versione successiva ([`idee-future.md`](idee-future.md)).
 
 ## Informazioni tecniche
 

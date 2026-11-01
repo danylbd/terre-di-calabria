@@ -64,3 +64,9 @@
 | 13 | Dove | Modalità a parte «Vita del villaggio» |
 | 14 | Altro da Coral Island | Niente da aggiungere |
 | 15 | Ordine | Prima la Fase 7 (Annibale), poi la Fase 5 (Coral Island); la musica quando serve una pausa dal codice |
+
+## Decisione del 2026-11-02 (dopo le risposte)
+
+| Argomento | Decisione |
+|---|---|
+| Fase 5 «Vita del villaggio» | **Non in questa versione**: personaggi, feste, cura del mare, collezioni e museo si faranno in una versione successiva. Spostata in [`idee-future.md`](idee-future.md). Sostituisce l'ordine della risposta 15: dopo la Fase 7 vengono solo la musica e la chiusura del gioco. |
