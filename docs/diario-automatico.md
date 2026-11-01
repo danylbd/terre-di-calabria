@@ -199,3 +199,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step G6f: tutti gli edifici dei Sicani
 - 24 modelli nuovi `<tipo>_sicani` (subagente) per gli edifici che avevano ancora l'aspetto greco; popolo aggiunto a `COMPLETI` in `test_aspetto`.
 - Test toccati OK; il codice del gioco non è cambiato. Versione 0.40.0. Prossimo: bilanciamento e sfide.
+
+## 2026-11-02 — sfide
+- Tre sfide dalle «Modalità libere» di storia.md (nutri 200 abitanti, la seta da un mare all'altro, sopravvivi all'alluvione): senza sconfitta, perché il proprietario vuole partite senza limite di tempo; il cronometro segna il record, visibile nel menu e nel pannello.
+- Menu: «Campagne» e «Sfide». Nuovo test `test_sfide`; il bot gioca «Sopravvivi all'alluvione». Tutti i 32 test OK. Versione 0.41.0.

@@ -67,6 +67,12 @@ Piano: vedi [`storia.md`](storia.md), «Il seguito in Sicilia».
 | 28 | Lo Stretto: porto, nave a vela che attraversa lo Stretto fino a un altro porto o va al largo, commercio delle anfore (vedi [`stretto.md`](stretto.md)) | fatto (v0.33.0) |
 | 29 | Finale nuovo: epilogo «L'ultimo canto» (il Sigillo torna per mare sulla Soglia, il Mercante chiama Rocco «padre»: Rocco è Italo, scelta provvisoria) (vedi [`ultimo_canto.md`](ultimo_canto.md)) | fatto (v0.34.0) |
 
+## Extra
+
+| Step | Nome | Stato |
+|---|---|---|
+| Sfide | Tre sfide senza sconfitta, con il record del tempo (vedi [`sfide.md`](sfide.md)) | fatto (v0.41.0) |
+
 ## Fase 5 — Idee per le versioni future
 
 | Idea | Note |
