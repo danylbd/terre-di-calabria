@@ -179,3 +179,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Domande per la Fase 5 (Coral Island) scritte al proprietario.
 - 24 modelli brettii nuovi (subagente): miniere, zecca, fonderia, fabbro, armaiolo, vigneto, cantina, frantoio, porto e gli altri. Nuovo test `test_aspetto`.
 - Test toccati (aspetto, brettii, catena, metallo, guerra) OK; il codice del gioco non è cambiato. Versione 0.35.0. Prossimo: G6b Romani.
+
+## 2026-11-02 — step G6b: tutti gli edifici dei Romani
+- 24 modelli nuovi `<tipo>_romani` (subagente) per gli edifici che avevano ancora l'aspetto greco; popolo aggiunto a `COMPLETI` in `test_aspetto`.
+- Test toccati OK; il codice del gioco non è cambiato. Versione 0.36.0. Prossimo: G6c Saraceni.

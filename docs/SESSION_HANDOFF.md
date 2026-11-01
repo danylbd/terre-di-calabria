@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step G6a chiuso (release v0.35.0 in `main`): Brettii con tutti gli edifici nel loro stile. Fase 6 finita.
+**Aggiornato:** 2026-11-02, step G6b chiuso (release v0.36.0 in `main`): Romani con tutti gli edifici nel loro stile. Prossimo: G6c Saraceni.
 
 ## Ultimo obiettivo affrontato
 
