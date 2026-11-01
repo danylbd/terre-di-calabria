@@ -4,7 +4,7 @@ extends SceneTree
 ## Uso: godot --headless --path . --script tools/test/test_aspetto.gd
 
 ## popoli con tutti gli edifici rifatti nel loro stile (si allunga a ogni step G6)
-const COMPLETI := ["brettii", "romani", "saraceni"]
+const COMPLETI := ["brettii", "romani", "saraceni", "normanni"]
 
 var errori := 0
 
