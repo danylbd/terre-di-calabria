@@ -28,4 +28,3 @@ Fasi 1, 2, 3, 4 (tranne l'esportazione iPhone) e 6 fatte. Sette popoli giocabili
 - Chi è Rocco della Lira (domanda aperta; provvisorio: Italo).
 - iPhone: serve un Mac (domanda aperta).
 - Esito delle GitHub Actions non verificabile da qui (`gh` assente).
-- Frombolieri dei Brettii giocabili ancora con i colori rossi da nemici.
