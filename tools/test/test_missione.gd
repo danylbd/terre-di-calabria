@@ -13,6 +13,7 @@ var errori := 0
 
 
 func _initialize() -> void:
+	Missione.progressi = "user://test_campagna.json"
 	Impostazioni.missione = "naufragio"
 	p = load("res://src/mappa/partita.tscn").instantiate()
 	root.add_child(p)
@@ -79,6 +80,7 @@ func _prova() -> void:
 	await process_frame
 	_controlla(p.missione != null and p.missione.finita(), "la missione si salva")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(Missione.progressi))
 	_fine()
 
 

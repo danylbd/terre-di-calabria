@@ -92,11 +92,15 @@ func _ready() -> void:
 	var da_caricare := Salvataggio.da_caricare
 	Salvataggio.da_caricare = ""
 	if da_caricare == "" and Impostazioni.missione != "":
-		_metti_villaggio(true)
 		var d: Dictionary = Missione.MISSIONI[Impostazioni.missione]
+		_metti_villaggio(d["villaggio"] == "relitto")
+		if d.get("brettii", false):
+			_metti_brettii()
+		if d.get("costa", false):
+			_torri_verso_costa()
 		for r in d["scorte"]:
 			villaggio.scorte[r] = d["scorte"][r]
-		villaggio.coloni_liberi = d["coloni"] - rete.portatori()
+		villaggio.coloni_liberi = d["coloni"] - rete.portatori() - villaggio.lavoratori()
 	elif da_caricare == "":
 		_metti_villaggio()
 		if Impostazioni.modalita != "pace":
@@ -514,6 +518,47 @@ func _aggiorna_ambiente() -> void:
 
 
 # --------------------------------------------------------------- missioni
+
+## Missione sul mare: due torri già presidiate allargano i confini fino alla costa.
+func _torri_verso_costa() -> void:
+	for k in 2:
+		var migliore := Vector2i(-1, -1)
+		var dist := INF
+		for y in dati.altezza:
+			for x in dati.larghezza:
+				var c := Vector2i(x, y)
+				if not dati.nel_territorio(x, y) or not villaggio.puo_costruire("torre", c):
+					continue
+				var d := _distanza_mare(c)
+				if d < dist:
+					dist = d
+					migliore = c
+		if migliore.x >= 0:
+			var torre := villaggio.costruisci("torre", migliore, true)
+			if torre:
+				_collega(torre.bandiera)
+
+
+## Traccia una strada da una bandierina alla rete già collegata al magazzino (la più vicina possibile).
+func _collega(f: Vector2i) -> void:
+	var altre: Array = rete.bandiere.keys().filter(func(b): return b != f and rete.collegata(b))
+	altre.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())
+	for b in altre:
+		var perc := rete.trova_percorso(b, f)
+		if not perc.is_empty() and rete.costruisci_strada(perc):
+			for c in perc:
+				_togli_decori(c)
+			return
+
+
+func _distanza_mare(c: Vector2i) -> float:
+	var migliore := 99.0
+	for y in range(c.y - 16, c.y + 17, 2):
+		for x in range(c.x - 16, c.x + 17, 2):
+			if dati.dentro(x, y) and dati.tipo(x, y) == T.ACQUA:
+				migliore = minf(migliore, Vector2(x - c.x, y - c.y).length())
+	return migliore
+
 
 func avvia_missione(id: String, indice: int) -> void:
 	missione = Missione.new()

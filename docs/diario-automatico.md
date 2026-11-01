@@ -92,3 +92,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Sistema delle missioni: racconto di Rocco della Lira e di Eudora a gioco fermo, obiettivi in sequenza con suggerimenti (strada, boscaiolo, segheria, 6 assi, due abitazioni), racconto di chiusura. Si parte col solo magazzino (il relitto). Voce «Campagna dei Greci» nel menu.
 - Bug trovato: la segheria si fermava a 12 assi in magazzino (tetto delle scorte) e il tutorial non si poteva finire. Ora assi e monete servono sempre.
 - Tutti i 15 test OK (eseguiti in primo piano a gruppi). Versione 0.18.0. Prossimo: step 17 campagna dei Greci.
+
+## 2026-11-01 07:00 — step 17 campagna dei Greci
+- Le altre 5 missioni de «Le Colonne dell'Alba» (Pane straniero, L'uliveto del vecchio, Città sorelle, L'ira del fiume con l'alluvione, La voce del mare con il Frammento del Mare). Testi originali. Sblocco progressivo e pannello della campagna nel menu.
+- Un giocatore automatico nei test le completa tutte. Trovati e corretti: torri verso la costa non collegate alla rete; olio insufficiente in «Città sorelle» (le case consumano il vino come lusso).
+- Tutti i 16 test OK. Versione 0.19.0. Prossimo: step 18 mappa della Calabria stilizzata.
