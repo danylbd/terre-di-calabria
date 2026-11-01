@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.44.0** (frombolieri). Tutti i test automatici passano (32 script in `tools/test/`).
+Ultima release: **v0.45.0** (step 30). Tutti i test automatici passano (33 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.44.0** (frombolieri). Tutti i test automatici passano (32 s
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (v0.44.0): i Brettii del giocatore hanno i colori del giocatore (`brettio_giocatore`, `Popoli.DATI[...]["soldati_giocatore"]`); quelli nemici restano rossi. Prima: le Eolie sulla mappa della campagna (v0.43.0).
+Ultime modifiche significative (step 30, Fase 7): villaggi indigeni da unire con i doni o conquistare (`VillaggiIndigeni`, `PannelloIndigeno`, `Villaggio.centri_propri`, `RisorseNaturali.sgombra`), solo nella partita libera; test `test_indigeni`.
 
 ## In sviluppo
 
@@ -39,5 +39,4 @@ Ultime modifiche significative (v0.44.0): i Brettii del giocatore hanno i colori
 
 ## Prossima attività consigliata
 
-**Fase 7 — «Le guerre di Annibale»** (idee da Imperivm, richiesta del proprietario del 2026-11-02): piano in `docs/piano-imperivm.md`. Cominciare dallo **step 30 (villaggi indigeni)**, che non dipende dalle domande aperte; poi condottieri e schiere (step 31) quando il proprietario conferma il controllo diretto (o, se non risponde, con il controllo diretto come scelta provvisoria).
-Il proprietario ha risposto a tutte le domande (vedi `decisioni.md`): Fase 7 con controllo diretto e Cartaginesi con elefanti, poi Fase 5 come modalità «Vita del villaggio»; musica con FluidSynth; iPhone rimandato.
+**Step 31 — condottieri e schiere** (Fase 7, `docs/piano-imperivm.md`): controllo diretto confermato dal proprietario. Un condottiero per popolo (nome e aspetto originali) dalla caserma o dal castello, schiera fino a 12 soldati dalla riserva, selezione (clic sul condottiero) e ordini (clic su terra = muovi, su torre nemica o villaggio indigeno = attacca), barra della salute; riusare `Colono`, `Guerra._combatti/_fine_duello`, `Popoli.soldati()`. Interruttore in `Impostazioni`. Modelli dei condottieri con un subagente.

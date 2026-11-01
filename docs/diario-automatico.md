@@ -216,3 +216,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — piano dell'update «Le guerre di Annibale» (idee da Imperivm)
 - Richiesta del proprietario: unire le idee e la dinamica di Imperivm: le guerre puniche, con grafica nuova, senza rovinare il lavoro fatto. Ricerca sul gioco (villaggi da conquistare, popolazione che produce, eroi con eserciti, cibo che cura, morale, navi, assedi).
 - Piano in docs/piano-imperivm.md: Fase 7 (step 30–40), regola «niente si rompe», tema storico coerente (Annibale nel Bruzio con i Brettii). Quattro domande al proprietario; si comincia dai villaggi indigeni.
+
+## 2026-11-02 — risposte del proprietario e step 30 villaggi indigeni (Fase 7)
+- Il proprietario ha confermato tutte le scelte consigliate (decisioni.md): Rocco è Italo, iPhone rimandato, FluidSynth per la musica, controllo diretto delle schiere, Cartaginesi con elefanti, prima Fase 7 poi Fase 5 come modalità «Vita del villaggio».
+- Step 30: tre villaggi indigeni per mappa nella partita libera, che crescono; con i doni diventano alleati, fuori dalla pace si conquistano con soldati e un forte vicino. Trovato nel test: a Pizzo e sulle Serre non c'era posto per il bosco: ora il villaggio sgombera la natura.
+- Nuovo test `test_indigeni`; tutti i 33 test OK. Versione 0.45.0. Prossimo: step 31 condottieri e schiere.

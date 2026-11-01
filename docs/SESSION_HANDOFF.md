@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02 (release v0.44.0 in `main`). Il proprietario ha chiesto un update che unisca le idee di *Imperivm: le guerre puniche* senza rompere nulla: piano scritto in `docs/piano-imperivm.md` (Fase 7, step 30–40). Prossimo: step 30, villaggi indigeni.
+**Aggiornato:** 2026-11-02, step 30 chiuso (release v0.45.0 in `main`): villaggi indigeni. Tutte le domande hanno risposta (`decisioni.md`). Prossimo: step 31, condottieri e schiere (controllo diretto). Dettagli dell'avanzamento in fondo a `docs/piano-imperivm.md`.
 
 ## Ultimo obiettivo affrontato
 
