@@ -16,3 +16,5 @@ static var mappa := "costa_ionica"
 static var popolo := "greci"
 ## villaggi indigeni da unire o conquistare nella partita libera (Fase 7, step 30)
 static var villaggi_indigeni := true
+## condottieri e schiere comandati in modo diretto nella partita libera, non in pace (Fase 7, step 31)
+static var condottieri := true

@@ -121,7 +121,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	d["avversario"] = [p.avversario.tempo, p.avversario._espansione, p.avversario._attacco, p.avversario.attivo,
 		p.avversario.modalita, p.avversario.tregua, p.avversario.guerra_dichiarata]
 	# i soldati in marcia tornano nella riserva (quelli all'attacco ricominceranno da capo)
-	d["soldati"] = v.soldati + p.guerra.in_marcia()
+	d["soldati"] = v.soldati + p.guerra.in_marcia() + p.schiere.soldati()      # la schiera torna nella riserva
 	d["indigeni"] = p.indigeni.dati_salvataggio()
 	var mon: Monumenti = p.monumenti
 	d["monumenti"] = {"ottenuti": mon.ottenuti.map(func(id): return [id, mon.posti[id].x, mon.posti[id].y]),

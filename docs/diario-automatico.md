@@ -221,3 +221,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Il proprietario ha confermato tutte le scelte consigliate (decisioni.md): Rocco è Italo, iPhone rimandato, FluidSynth per la musica, controllo diretto delle schiere, Cartaginesi con elefanti, prima Fase 7 poi Fase 5 come modalità «Vita del villaggio».
 - Step 30: tre villaggi indigeni per mappa nella partita libera, che crescono; con i doni diventano alleati, fuori dalla pace si conquistano con soldati e un forte vicino. Trovato nel test: a Pizzo e sulle Serre non c'era posto per il bosco: ora il villaggio sgombera la natura.
 - Nuovo test `test_indigeni`; tutti i 33 test OK. Versione 0.45.0. Prossimo: step 31 condottieri e schiere.
+
+## 2026-11-02 — step 31 condottieri e schiere (Fase 7)
+- `Schiere`: il condottiero del popolo esce con fino a 12 soldati di riserva; si comanda con il clic (muovi, attacca torri nemiche e villaggi indigeni); duelli con le regole della guerra; cerchio di selezione e barra della forza. Solo partita libera, non in pace.
+- Sette condottieri (Eudora, Tauro, Gaio Settimio, Zahra, Osmund, Duketio, Kokalo) disegnati da un subagente. Trovato nel test: la torre conquistata viene liberata, il bersaglio va controllato con `is_instance_valid`.
+- Nuovo test `test_schiere`; tutti i 34 test OK. Versione 0.46.0. Prossimo: step 32.
