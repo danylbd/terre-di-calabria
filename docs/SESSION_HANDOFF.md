@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, step 34 chiuso (release v0.49.0 in `main`): abilità dei condottieri. Prossimo: step 35, navi da guerra e traversate delle schiere. Dettagli in fondo a `docs/piano-imperivm.md`.
+**Aggiornato:** 2026-11-02, step 35 chiuso (release v0.50.0 in `main`): navi da guerra e traversate. Fase 7 «Le guerre di Annibale» in corso (step 30–35 fatti). Prossimo: step 36, assedi (ariete e onagro), poi 37 Cartaginesi con elefanti, 38 mappa del Bruzio, 39 campagna di Annibale, 40 grafica di guerra. Ogni step: worktree in C:/Users/User/Projects/tdc-wt/step-NN-nome, modelli con un subagente, test nuovo, tutti i test a gruppi (sotto i 10 minuti l'uno), versione +0.01, documenti (roadmap, «Avanzamento» in fondo a piano-imperivm.md, DEVELOPMENT_STATUS, CLAUDE.md, diario), merge e push.
 
 ## Ultimo obiettivo affrontato
 
