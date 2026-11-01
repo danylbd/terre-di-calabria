@@ -3,7 +3,7 @@ extends "res://tools/test/test_catena.gd"
 ## del legno e della pietra più alcune abitazioni, poi fa correre il tempo molto in fretta (ore di gioco
 ## in pochi minuti) e controlla che niente cresca senza limite: nodi, oggetti, merci in viaggio,
 ## registro della produzione, memoria. Alla fine la partita deve ancora produrre.
-## Uso: godot --headless --path . --script tools/test/test_durata.gd  (ORE=n per la durata in ore di gioco, 1,5 di serie: circa 6 minuti)
+## Uso: godot --headless --path . --script tools/test/test_durata.gd  (ORE=n per la durata in ore di gioco, 1,5 di serie: circa 6 minuti; POPOLO=id per giocare con un altro popolo)
 
 const VELOCITA_DURATA := 16.0
 const CAMPIONE := 60.0              # secondi di gioco tra una misura e l'altra
@@ -15,6 +15,7 @@ func _initialize() -> void:
 	Impostazioni.mappa = "monteleone"
 	Impostazioni.modalita = "pace"
 	Impostazioni.missione = ""
+	Impostazioni.popolo = OS.get_environment("POPOLO") if OS.get_environment("POPOLO") != "" else "greci"
 	super._initialize()
 
 
