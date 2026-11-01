@@ -2,6 +2,7 @@ class_name GeneratoreMappa
 extends RefCounted
 ## Crea le mappe di gioco. "Costa ionica": monti e boschi a ovest, pianura con ulivi al centro,
 ## spiaggia e mare a est. "Monteleone": il Vibonese con la costa vera, da Pizzo a Nicotera.
+## "Zancle": la Sicilia nord-orientale con la costa vera (Milazzo, Messina, lo Stretto, Taormina, l'Etna, Catania).
 ## Stesso seme = stessa mappa.
 
 const T := DatiMappa.Terreno
@@ -11,6 +12,7 @@ const LIVELLO_MARE := 0.0
 const MAPPE := {
 	"costa_ionica": ["Costa ionica", "Monti a ovest, pianura di ulivi e il mare a est."],
 	"monteleone": ["Monteleone", "Il Vibonese: Monteleone sul colle, il golfo, Tropea, il Poro e le Serre."],
+	"zancle": ["Zancle e l'Etna", "Oltre lo Stretto: Messina, i Peloritani, Taormina e il vulcano fumante."],
 }
 
 ## Costa del Vibonese in caselle (da coordinate vere: x = (lon − 15,80)/0,50·96, y = (38,80 − lat)/0,36·96),
@@ -39,7 +41,12 @@ const LAGO_RAGGI := Vector2(4.0, 2.6)
 
 
 static func crea(mappa: String, seme: int) -> DatiMappa:
-	return genera_monteleone(seme) if mappa == "monteleone" else genera(seme)
+	match mappa:
+		"monteleone":
+			return genera_monteleone(seme)
+		"zancle":
+			return genera_zancle(seme)
+	return genera(seme)
 
 
 static func genera(seme: int, w := 72, h := 72) -> DatiMappa:
@@ -112,7 +119,7 @@ static func genera_monteleone(seme: int, w := 96, h := 96) -> DatiMappa:
 	for j in h + 1:
 		for i in w + 1:
 			var p := Vector2(i, j)
-			var s := _distanza_costa(p, terra) + frastaglio.get_noise_2d(i, j) * 1.3
+			var s := _distanza_costa(p, [COSTA_MONTELEONE], [terra]) + frastaglio.get_noise_2d(i, j) * 1.3
 			dist_v[j * (w + 1) + i] = s
 			var q := 0.0
 			if s > 0.0:
@@ -169,11 +176,121 @@ static func genera_monteleone(seme: int, w := 96, h := 96) -> DatiMappa:
 	return d
 
 
-static func _distanza_costa(p: Vector2, terra: PackedVector2Array) -> float:
+## Coste della Sicilia nord-orientale in caselle (da coordinate vere: x = (lon − 14,85)·83, y = (38,32 − lat)·104,7,
+## una casella ≈ 1 km): costa tirrenica da Patti a Capo Peloro (con la penisola di Milazzo), poi lo Stretto e la
+## costa ionica fino a Catania. A est, oltre lo Stretto, la punta della Calabria (Scilla, Villa, Reggio).
+const COSTA_SICILIA := [
+	Vector2(-1, 19.5), Vector2(10, 18.8), Vector2(16.6, 18.8), Vector2(22.4, 16.8), Vector2(29.5, 13.5),
+	Vector2(31.0, 8.0), Vector2(32.4, 5.2), Vector2(33.8, 8.0), Vector2(34.5, 12.5), Vector2(38.0, 12.0),
+	Vector2(44.0, 9.4), Vector2(55.0, 7.5), Vector2(63.0, 6.0), Vector2(66.4, 5.8), Vector2(64.0, 9.5),
+	Vector2(60.5, 12.0), Vector2(58.9, 13.6), Vector2(56.0, 19.0), Vector2(50.6, 28.3), Vector2(41.5, 41.9),
+	Vector2(37.4, 49.2), Vector2(35.3, 52.4), Vector2(29.9, 61.8), Vector2(26.6, 74.3), Vector2(24.9, 80.6),
+	Vector2(19.9, 85.9), Vector2(19.0, 97.0),
+]
+const COSTA_CALABRIA := [
+	Vector2(73.0, -1), Vector2(71.4, 7.3), Vector2(65.6, 11.5), Vector2(66.0, 22.0), Vector2(66.4, 34.5),
+	Vector2(68.9, 38.7), Vector2(77.0, 42.0), Vector2(97.0, 44.0),
+]
+const LUOGHI_ZANCLE := {
+	"Zancle": Vector2i(50, 16), "Capo Peloro": Vector2i(64, 7), "Milazzo": Vector2i(32, 9), "Tindari": Vector2i(17, 20),
+	"Peloritani": Vector2i(44, 24), "Taormina": Vector2i(36, 48), "Naxos": Vector2i(33, 53), "Etna": Vector2i(12, 60),
+	"Acireale": Vector2i(24, 74), "Catania": Vector2i(17, 87), "Scilla": Vector2i(74, 7), "Reggio": Vector2i(70, 22),
+}
+const ETNA := Vector2(11.6, 59.7)
+
+
+## La Sicilia nord-orientale: Zancle (Messina) sulla falce del porto davanti allo Stretto, i monti Peloritani alle
+## spalle, la penisola di Milazzo, Taormina sulla rupe, l'Etna innevato e la sua terra nera, Catania; oltre lo
+## Stretto la punta della Calabria. Il villaggio nasce a Zancle.
+static func genera_zancle(seme: int, w := 96, h := 96) -> DatiMappa:
+	var d := DatiMappa.new(w, h)
+	var frastaglio := _rumore(seme + 20, 0.12, 2)
+	var creste := _rumore(seme + 21, 0.08, 3)
+	var umido := _rumore(seme + 22, 0.06, 3)
+	var dettaglio := _rumore(seme + 23, 0.25, 2)
+	var sicilia := PackedVector2Array(COSTA_SICILIA)
+	sicilia.append_array([Vector2(19.0, 98), Vector2(-2, 98), Vector2(-2, 19.5)])
+	var calabria := PackedVector2Array(COSTA_CALABRIA)
+	calabria.append_array([Vector2(98, 44), Vector2(98, -2), Vector2(73.0, -2)])
+	var coste := [COSTA_SICILIA, COSTA_CALABRIA]
+	var terre := [sicilia, calabria]
+
+	# --- quote dei vertici
+	var dist_v := PackedFloat32Array()
+	dist_v.resize((w + 1) * (h + 1))
+	for j in h + 1:
+		for i in w + 1:
+			var p := Vector2(i, j)
+			var s := _distanza_costa(p, coste, terre) + frastaglio.get_noise_2d(i, j) * 1.1
+			dist_v[j * (w + 1) + i] = s
+			var q := 0.0
+			if s > 0.0:
+				q = 5.0 + minf(s, 6.0) * 2.5
+				var cresta := 1.0 - absf(creste.get_noise_2d(i, j))
+				# i Peloritani: una dorsale da Capo Peloro verso sud-ovest, tra i due mari
+				var dorsale := _distanza_segmento(p, Vector2(47, 5), Vector2(18, 33))
+				q += 125.0 * exp(-dorsale * dorsale / (2.0 * 5.0 * 5.0)) * (0.6 + 0.4 * cresta)
+				# i Nebrodi a ovest
+				q += smoothstep(26.0, 6.0, i) * smoothstep(18.0, 30.0, j) * smoothstep(58.0, 44.0, j) * 120.0 * (0.6 + 0.4 * cresta)
+				# l'Etna: base larga, cono alto con la neve, cratere in cima
+				var de := p.distance_to(ETNA)
+				q += 95.0 * exp(-de * de / (2.0 * 17.0 * 17.0)) + 200.0 * exp(-de * de / (2.0 * 7.0 * 7.0))
+				if de < 1.6:
+					q -= 30.0 * (1.0 - de / 1.6)
+				# la punta della Calabria: l'Aspromonte che sale verso est
+				if i > 64:
+					q += smoothstep(68.0, 95.0, i) * 130.0 * (0.6 + 0.4 * cresta)
+				q += dettaglio.get_noise_2d(i, j) * 3.0
+				q = maxf(q, 3.0)
+			d.imposta_quota(i, j, q)
+
+	# --- tipo di terreno per casella
+	for y in h:
+		for x in w:
+			var centro := Vector2(x + 0.5, y + 0.5)
+			var s := (dist_v[y * (w + 1) + x] + dist_v[y * (w + 1) + x + 1] + dist_v[(y + 1) * (w + 1) + x] + dist_v[(y + 1) * (w + 1) + x + 1]) * 0.25
+			var q := d.quota(centro.x, centro.y)
+			var de := centro.distance_to(ETNA)
+			var t := T.PRATO
+			if s <= 0.0:
+				t = T.ACQUA
+			elif s < 1.4 and q < 18.0:
+				t = T.SABBIA
+			elif q > 225.0:
+				t = T.NEVE
+			elif de < 15.0 and q > 60.0:
+				t = T.TERRA if de > 3.0 else T.ROCCIA     # la terra nera del vulcano, la lava vicino al cratere
+			elif q > 140.0:
+				t = T.ROCCIA
+			elif s < 2.0 and q > 30.0:
+				t = T.ROCCIA                  # le rupi sul mare (Taormina, Capo Sant'Alessio)
+			elif umido.get_noise_2d(x, y) > 0.05 and q > 25.0:
+				t = T.BOSCO
+			elif de < 22.0 and umido.get_noise_2d(x, y) < -0.3:
+				t = T.SECCO
+			d.imposta_tipo(x, y, t)
+
+	_mare_piatto(d)
+	for nome in LUOGHI_ZANCLE:
+		d.luoghi[nome] = LUOGHI_ZANCLE[nome]
+	_radura(d, LUOGHI_ZANCLE["Zancle"], 9)
+	return d
+
+
+static func _distanza_segmento(p: Vector2, a: Vector2, b: Vector2) -> float:
+	return p.distance_to(Geometry2D.get_closest_point_to_segment(p, a, b))
+
+
+## Distanza con segno dalla costa più vicina (positiva a terra): coste sono linee, terre i poligoni.
+static func _distanza_costa(p: Vector2, coste: Array, terre: Array) -> float:
 	var m := INF
-	for k in COSTA_MONTELEONE.size() - 1:
-		m = minf(m, p.distance_to(Geometry2D.get_closest_point_to_segment(p, COSTA_MONTELEONE[k], COSTA_MONTELEONE[k + 1])))
-	return m if Geometry2D.is_point_in_polygon(p, terra) else -m
+	for costa in coste:
+		for k in costa.size() - 1:
+			m = minf(m, p.distance_to(Geometry2D.get_closest_point_to_segment(p, costa[k], costa[k + 1])))
+	for terra in terre:
+		if Geometry2D.is_point_in_polygon(p, terra):
+			return m
+	return -m
 
 
 ## 0 al centro del lago dell'Angitola, 1 sulla riva.

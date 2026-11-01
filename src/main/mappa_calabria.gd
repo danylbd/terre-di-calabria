@@ -71,6 +71,8 @@ var _monteleone: Button               # partita libera sulla mappa di Monteleone
 var _soglia: Button                   # la campagna finale (docs/soglia.md)
 var _scelta_popolo: PanelContainer    # la scelta del popolo per la campagna finale
 const SOGLIA := Vector2(1000, 600)
+const ZANCLE := Vector2(600, 860)
+var _zancle: Button                   # partita libera in Sicilia, oltre lo Stretto
 const MONTELEONE := Vector2(880, 735)
 var _fatte := []
 var _carattere: Font
@@ -102,6 +104,15 @@ func _ready() -> void:
 		Impostazioni.mappa = "monteleone"
 		get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
 	add_child(_monteleone)
+	_zancle = Button.new()
+	_zancle.text = "Gioca a Zancle"
+	_zancle.tooltip_text = "Partita libera oltre lo Stretto: Messina, i Peloritani e l'Etna"
+	_zancle.add_theme_font_size_override("font_size", 16)
+	_zancle.pressed.connect(func():
+		Impostazioni.missione = ""
+		Impostazioni.mappa = "zancle"
+		get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
+	add_child(_zancle)
 	_soglia = Button.new()
 	var prossima := Missione.prossima_soglia()
 	_soglia.disabled = not Missione.sbloccata(Missione.CAMPAGNA_SOGLIA[0])
@@ -196,6 +207,7 @@ func _disponi() -> void:
 		var b: Button = _segnaposti[id]
 		b.position = _p(LUOGHI[id]) - b.custom_minimum_size * 0.5
 	_monteleone.position = _p(MONTELEONE) - Vector2(_monteleone.get_combined_minimum_size().x * 0.5, 0)
+	_zancle.position = _p(ZANCLE) - Vector2(_zancle.get_combined_minimum_size().x * 0.5, 0)
 	_soglia.position = _p(SOGLIA) - _soglia.get_combined_minimum_size() * 0.5
 	queue_redraw()
 
