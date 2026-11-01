@@ -136,3 +136,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Piano in docs/saraceni.md. Saraceni in `Popoli.DATI` (contro i Romani, cavalieri leggeri); campi irrigati (×1,5 vicino all'acqua); catena della seta: bachicoltura → bozzoli → filanda → seta (lusso).
 - 21 modelli nuovi (subagente): edifici saraceni, bachicoltura, filanda, bozzoli, seta, cavaliere leggero.
 - Nuovo test `test_saraceni`; tutti i 22 test OK. Versione 0.26.0. Prossimo: step 22 Normanni.
+
+## 2026-11-02 — step 22 Normanni giocabili (Fase 4)
+- Piano in docs/normanni.md. Normanni in `Popoli.DATI` (contro i Saraceni, cavalieri pesanti, confini +2 per torri e castelli); allevamento di cavalli (grano e acqua → cavalli) e mastio (costa cavalli, raggio 13). Le guardie dei forti ora hanno l'aspetto del soldato del proprio popolo.
+- 20 modelli nuovi (subagente). Nuovo test `test_normanni`; tutti i 23 test OK. Versione 0.27.0. I cinque popoli sono tutti giocabili. Prossimo: step 23 campagna finale.

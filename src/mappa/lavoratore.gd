@@ -53,6 +53,8 @@ func avvia(e: Edificio, r: RisorseNaturali, l: Logistica, rs: ReteStrade, parten
 	mestiere = e.tipo
 	var info := CatalogoEdifici.dati(e.tipo)
 	_foglio_cammino = info.get("lavoratore", "portatore_nessuno")
+	if _foglio_cammino == "guardia":
+		_foglio_cammino = Popoli.soldati(e.proprietario)[0]     # la guardia ha l'aspetto del suo popolo
 	_foglio_lavoro = _foglio_cammino + "_lavoro" if _foglio_cammino.begins_with("lavoratore") else ""
 	_coltura = info.get("coltura", "")
 	prepara(e.dati_mappa, partenza[0], _foglio_cammino)
