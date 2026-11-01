@@ -73,4 +73,4 @@ godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCa
 
 ## Stato
 
-Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1–V3 (Monteleone: mappa, monumenti, partite senza fine) fatti (release v0.23.0); Fase 4: step 19–22 (Brettii, Romani, Saraceni e Normanni giocabili, v0.27.0) fatti; prossimo lo step **23 – campagna finale «La Soglia»**. Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.
+Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve: Fasi 1–3 e step V1–V3 (Monteleone: mappa, monumenti, partite senza fine) fatti (release v0.23.0); Fase 4: step 19–23 (cinque popoli giocabili, campagna finale «La Soglia», v0.28.0) fatti; prossimo lo step **24 – iPhone** (prima la parte touch: il Mac è una domanda aperta). Fase 5 (idee da Coral Island): **prima di progettarla fai domande al proprietario**.

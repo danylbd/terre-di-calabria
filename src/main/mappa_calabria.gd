@@ -68,6 +68,9 @@ const LUOGHI := {
 
 var _segnaposti := {}                # id missione -> Button
 var _monteleone: Button               # partita libera sulla mappa di Monteleone
+var _soglia: Button                   # la campagna finale (docs/soglia.md)
+var _scelta_popolo: PanelContainer    # la scelta del popolo per la campagna finale
+const SOGLIA := Vector2(1000, 600)
 const MONTELEONE := Vector2(880, 735)
 var _fatte := []
 var _carattere: Font
@@ -99,6 +102,18 @@ func _ready() -> void:
 		Impostazioni.mappa = "monteleone"
 		get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
 	add_child(_monteleone)
+	_soglia = Button.new()
+	var prossima := Missione.prossima_soglia()
+	_soglia.disabled = not Missione.sbloccata(Missione.CAMPAGNA_SOGLIA[0])
+	_soglia.text = "La Soglia" if prossima != "" else "La Soglia ✔"
+	_soglia.tooltip_text = ("Campagna finale: si apre finendo «La voce del mare»" if _soglia.disabled else
+		("Campagna finale — %d. %s" % [Missione.CAMPAGNA_SOGLIA.find(prossima) + 1, Missione.MISSIONI[prossima]["titolo"]] if prossima != ""
+		else "Campagna finale compiuta"))
+	_soglia.add_theme_font_size_override("font_size", 18)
+	_soglia.pressed.connect(_apri_soglia)
+	add_child(_soglia)
+	_scelta_popolo = _crea_scelta_popolo()
+	add_child(_scelta_popolo)
 	var indietro := Button.new()
 	indietro.text = "Indietro"
 	indietro.custom_minimum_size = Vector2(220, 46)
@@ -115,6 +130,46 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_tree().change_scene_to_file("res://src/main/title_screen.tscn")
+
+
+## La campagna finale: alla prima missione si sceglie il popolo, poi si va avanti con quello.
+func _apri_soglia() -> void:
+	var prossima := Missione.prossima_soglia()
+	if prossima == "":
+		prossima = Missione.CAMPAGNA_SOGLIA[-1]      # finita: si può rigiocare l'ultima
+	if Missione.popolo_soglia() == "" or prossima == Missione.CAMPAGNA_SOGLIA[0]:
+		_scelta_popolo.visible = true
+		return
+	_gioca(prossima)
+
+
+func _crea_scelta_popolo() -> PanelContainer:
+	var pannello := PanelContainer.new()
+	pannello.visible = false
+	var colonna := VBoxContainer.new()
+	colonna.add_theme_constant_override("separation", 10)
+	pannello.add_child(colonna)
+	var titolo := Label.new()
+	titolo.text = "La Soglia — con quale popolo?"
+	titolo.add_theme_font_size_override("font_size", 26)
+	titolo.add_theme_color_override("font_color", Palette.TERRACOTTA_SCURA)
+	colonna.add_child(titolo)
+	for id in Popoli.DATI:
+		var b := Button.new()
+		b.text = "%s — %s" % [Popoli.DATI[id]["nome"], Popoli.DATI[id]["descrizione"]]
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.pressed.connect(func():
+			Missione.scegli_popolo_soglia(id)
+			_gioca(Missione.CAMPAGNA_SOGLIA[0]))
+		colonna.add_child(b)
+	var annulla := Button.new()
+	annulla.text = "Annulla"
+	annulla.pressed.connect(func(): pannello.visible = false)
+	colonna.add_child(annulla)
+	pannello.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
+	pannello.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	pannello.grow_vertical = Control.GROW_DIRECTION_BOTH
+	return pannello
 
 
 func _gioca(id: String) -> void:
@@ -141,6 +196,7 @@ func _disponi() -> void:
 		var b: Button = _segnaposti[id]
 		b.position = _p(LUOGHI[id]) - b.custom_minimum_size * 0.5
 	_monteleone.position = _p(MONTELEONE) - Vector2(_monteleone.get_combined_minimum_size().x * 0.5, 0)
+	_soglia.position = _p(SOGLIA) - _soglia.get_combined_minimum_size() * 0.5
 	queue_redraw()
 
 
