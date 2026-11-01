@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.34.0** (step 29). Tutti i test automatici passano (30 script in `tools/test/`).
+Ultima release: **v0.35.0** (step G6a). Tutti i test automatici passano (31 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.34.0** (step 29). Tutti i test automatici passano (30 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 29, Fase 6 finita): epilogo «L'ultimo canto» (`Missione.CAMPAGNA_FINALE`, missione `ultimo_canto` a Monteleone con porto e nave, rivelazione di Rocco = Italo, scelta provvisoria in `decisioni.md`), pulsante sulla mappa della Calabria; sulla mappa di Monteleone un approdo pianeggiante a Vibo Marina (`GeneratoreMappa._spiana(..., riva)`); porto costruibile fino a 5 caselle dal mare; il bot di `test_campagna` riprova a piazzare gli edifici; test `test_finale`.
+Ultime modifiche significative (step G6a): i Brettii hanno tutti gli edifici nel loro stile (24 modelli nuovi `<tipo>_brettii`); test `test_aspetto` (sprite di ogni edificio per ogni popolo; `COMPLETI` = popoli finiti). Prima: epilogo «L'ultimo canto» (step 29).
 
 ## In sviluppo
 
@@ -39,7 +39,7 @@ Ultime modifiche significative (step 29, Fase 6 finita): epilogo «L'ultimo cant
 - Normanni giocabili: 15 edifici con l'aspetto normanno, gli altri greco.
 - Saraceni giocabili: 15 edifici con l'aspetto saraceno, gli altri greco; la noria non c'è ancora (scelta provvisoria).
 - Romani giocabili: 15 edifici con l'aspetto romano, gli altri greco; il cantiere stradale non c'è ancora (scelta provvisoria).
-- I Brettii giocabili: 16 edifici hanno l'aspetto brettio, gli altri (miniere, zecca, fonderia, vigneto…) per ora quello greco; i frombolieri hanno ancora i colori rossi di quando erano solo nemici; la campagna resta dei Greci.
+- I Brettii giocabili hanno tutti gli edifici nel loro stile; i frombolieri hanno ancora i colori rossi di quando erano solo nemici; la campagna resta dei Greci.
 - Gli altri popoli hanno solo torri (non un villaggio completo): arriverà con la Fase 4.
 
 ## Prossima attività consigliata
