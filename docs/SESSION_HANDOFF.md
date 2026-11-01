@@ -6,25 +6,18 @@
 
 ## Ultimo obiettivo affrontato
 
-**Step 29 — epilogo «L'ultimo canto»**, fatto e unito a `main`. Note in `docs/ultimo_canto.md`.
-- `src/storia/missione.gd`: `CAMPAGNA_FINALE`, missione `ultimo_canto` (con `"costa": true`), finali con la rivelazione di Rocco.
-- `src/mappa/generatore_mappa.gd`: `_spiana(d, centro, raggio, riva)` e `_vertice_sul_mare()`; approdo a Vibo Marina.
-- Catalogo: porto con `vicino_mare` 5; `Lavoratore` cerca l'acqua entro 7 caselle.
-- `tools/test/test_campagna.gd`: il bot riprova a piazzare gli edifici (`_falliti`). Test `tools/test/test_finale.gd`. Tutti i 30 test OK.
+Il proprietario ha deciso che la Fase 5 «Vita del villaggio» **non** è in questa versione: spostata in [`idee-future.md`](idee-future.md) (con l'iPhone). Per finire il gioco restano: step 36–40, musica nuova, chiusura con la versione 1.0.
 
 ## Stato generale
 
-Fasi 1, 2, 3, 4 (tranne l'esportazione iPhone) e 6 fatte. Sette popoli giocabili, tre mappe (Costa ionica, Monteleone, Zancle), quattro campagne (Greci, Soglia, Sicilia, epilogo).
+Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 step 30–35 fatti. Sette popoli giocabili, tre mappe (Costa ionica, Monteleone, Zancle), quattro campagne (Greci, Soglia, Sicilia, epilogo), sfide.
 
 ## Prossimo
 
-1. Scrivere in `domande-per-il-proprietario.md` le domande per la **Fase 5** (idee da Coral Island: cosa piace, cosa prendere).
-2. **Rifinitura grafica G6**: fatta (G6a–G6f): ogni popolo ha tutti gli edifici nel suo stile; `tools/test/test_aspetto.gd` lo controlla.
-3. Sfide: fatte (`docs/sfide.md`). Poi: bilanciamento (vedi `DEVELOPMENT_STATUS.md`).
+1. **Step 36 — assedi** (ariete e onagro, mura dei castelli nemici): vedi `DEVELOPMENT_STATUS.md`.
+2. Step 37–40, poi la musica nuova, poi la chiusura (versione 1.0).
 
 ## Problemi irrisolti
 
-- Musica ancora segnaposto (domanda aperta).
-- Chi è Rocco della Lira (domanda aperta; provvisorio: Italo).
-- iPhone: serve un Mac (domanda aperta).
+- Musica ancora segnaposto (deciso come rifarla, da fare).
 - Esito delle GitHub Actions non verificabile da qui (`gh` assente).

@@ -18,13 +18,15 @@ Ultime modifiche significative (step 35, Fase 7): traversate delle schiere per m
 
 ## In sviluppo
 
-- **Step 24 — versione iPhone** (Fase 4): comandi touch fatti; esportazione iOS in attesa della risposta sul Mac. Si è passati alla **Fase 6 (Sicilia)**: step 25–29 fatti (mappa di Zancle, Siculi e Sicani, campagna siciliana, navi e porti, epilogo): **Fase 6 finita**.
+- **Fase 7 «Le guerre di Annibale»**: step 30–35 fatti (v0.50.0).
 
-## Da fare (in ordine)
+## Da fare (in ordine) per finire questa versione del gioco
 
-1. **Fase 4**: esportazione iPhone (in attesa della risposta sul Mac), campagna finale «La Soglia», versione iPhone.
-2. **Fase 6**: la Sicilia (mappa reale, Siculi e Sicani, campagna «Il fuoco sotto la montagna», navi sullo Stretto).
-3. **Fase 5** (Coral Island): solo dopo le domande al proprietario.
+1. **Fase 7**: step 36 assedi, 37 Cartaginesi con elefanti, 38 mappa del Bruzio, 39 campagna di Annibale, 40 grafica di guerra.
+2. **Musica nuova** (FluidSynth + soundfont libero, brani originali).
+3. **Chiusura**: prova completa, bilanciamento finale, versione 1.0.
+
+Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita del villaggio» e iPhone, in [`idee-future.md`](idee-future.md).
 
 ## Bug e limiti noti
 
