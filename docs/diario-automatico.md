@@ -238,3 +238,7 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 ## 2026-11-02 — step 34 abilità dei condottieri (Fase 7)
 - Due abilità per popolo (ai livelli 2 e 4, ricarica 60 s): falange e canto di Eudora, passo di montagna e imboscata, disciplina e testuggine, carica rapida e grido del deserto, giuramento e carica pesante, grido degli antenati e lance lunghe, rifugio sui monti e pioggia di frecce. Pannello della schiera in basso al centro, tasti 1 e 2.
 - Nuovo test `test_abilita`; tutti i 37 test OK. Versione 0.49.0. Prossimo: step 35 navi da guerra e traversate.
+
+## 2026-11-02 — step 35 navi da guerra e traversate (Fase 7)
+- `Mare` (rotte sull'acqua), traversata delle schiere tra due nostri porti, `NaviGuerra` (armate al porto, bersagliano le torri nemiche sulla costa finché non hanno difensori). Bireme disegnata da un subagente; mentre lavorava, i test sono girati in una copia della cartella per non usare Godot in due nello stesso progetto.
+- Nuovo test `test_navi`; tutti i test OK (il test di durata non è stato rifatto: lo step non tocca le partite in pace). Versione 0.50.0. Lo script dei documenti era fallito dopo il merge del codice: versione e documenti aggiunti con un commit a parte. Prossimo: step 36 assedi.

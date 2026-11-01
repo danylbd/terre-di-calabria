@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.49.0** (step 34). Tutti i test automatici passano (37 script in `tools/test/`).
+Ultima release: **v0.50.0** (step 35). Tutti i test automatici passano (38 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.49.0** (step 34). Tutti i test automatici passano (37 scrip
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (step 34, Fase 7): abilità dei condottieri (due per popolo, ai livelli 2 e 4, con ricarica), pannello della schiera e tasti 1/2; test `test_abilita`. Prima: tipi di unità (step 33).
+Ultime modifiche significative (step 35, Fase 7): traversate delle schiere per mare tra due nostri porti e navi da guerra che bersagliano le torri nemiche sulla costa (`Mare`, `NaviGuerra`), bireme disegnata; test `test_navi`. Prima: abilità dei condottieri (step 34).
 
 ## In sviluppo
 
@@ -39,4 +39,4 @@ Ultime modifiche significative (step 34, Fase 7): abilità dei condottieri (due 
 
 ## Prossima attività consigliata
 
-**Step 35 — navi da guerra e traversate delle schiere** (Fase 7): la nave del porto (step 28, `Lavoratore` stato `NAVIGA`, `rotta_nave`) porta una schiera da un porto a un altro (ordine: schiera scelta + clic su un nostro porto: sale a bordo, arriva all'altro porto, sbarca); una nave da guerra (edificio «cantiere navale» o il porto stesso) che tira sulle torri nemiche sulla costa. Modello della nave da guerra con un subagente.
+**Step 36 — assedi** (Fase 7, `docs/piano-imperivm.md`): ariete e onagro costruiti dall'armaiolo (o dal castello) come macchine che seguono la schiera; i castelli e i mastii nemici (e le torri) hanno più resistenza («mura»: punti che si abbattono prima dei duelli); l'onagro tira da lontano sulle mura, l'ariete sfonda da vicino. Modelli ariete e onagro con un subagente.

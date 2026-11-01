@@ -84,7 +84,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 32 | Cibo, morale ed esperienza | fatto (v0.47.0) |
 | 33 | Tipi di unità (fanteria, tiratori, cavalleria) | fatto (v0.48.0) |
 | 34 | Abilità dei condottieri | fatto (v0.49.0) |
-| 35 | Navi da guerra e traversate delle schiere | |
+| 35 | Navi da guerra e traversate delle schiere | fatto (v0.50.0) |
 | 36 | Assedi (ariete, onagro) | |
 | 37 | I Cartaginesi (ottavo popolo, elefanti) | |
 | 38 | Mappa «Il Bruzio di Annibale» | |
