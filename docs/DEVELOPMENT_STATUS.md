@@ -4,7 +4,7 @@
 
 ## Completato (in `main`)
 
-Ultima release: **v0.43.0** (Eolie). Tutti i test automatici passano (32 script in `tools/test/`).
+Ultima release: **v0.44.0** (frombolieri). Tutti i test automatici passano (32 script in `tools/test/`).
 
 | Fase | Step | Contenuto |
 |---|---|---|
@@ -14,7 +14,7 @@ Ultima release: **v0.43.0** (Eolie). Tutti i test automatici passano (32 script 
 | 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
 | Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
 
-Ultime modifiche significative (v0.43.0): le isole Eolie sulla mappa della campagna (coordinate vere, il fuoco di Stromboli); il pulsante «L'ultimo canto» spostato per non coprire Monteleone. Prima: bilanciamento (v0.42.0).
+Ultime modifiche significative (v0.44.0): i Brettii del giocatore hanno i colori del giocatore (`brettio_giocatore`, `Popoli.DATI[...]["soldati_giocatore"]`); quelli nemici restano rossi. Prima: le Eolie sulla mappa della campagna (v0.43.0).
 
 ## In sviluppo
 
@@ -40,5 +40,4 @@ Ultime modifiche significative (v0.43.0): le isole Eolie sulla mappa della campa
 ## Prossima attività consigliata
 
 Tutto il piano possibile senza il proprietario è fatto (rifinitura G6 compresa). Lavori utili che non dipendono da nessuno:
-1. Colori dei frombolieri brettii giocabili (oggi rossi da nemici).
 In attesa del proprietario: Fase 5, musica vera, iPhone, chi è Rocco.

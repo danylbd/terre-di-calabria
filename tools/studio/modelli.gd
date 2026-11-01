@@ -419,6 +419,11 @@ static func catalogo() -> Dictionary:
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["guardia_lotta"] = {"crea": guardia, "posa": posa_lotta,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	# i Brettii del giocatore, con il colore del giocatore (quelli nemici restano con la bandiera rossa)
+	c["brettio_giocatore"] = {"crea": brettio.bind("giocatore"), "posa": posa_cammino,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
+	c["brettio_giocatore_lotta"] = {"crea": brettio.bind("giocatore"), "posa": posa_lotta,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["brettio"] = {"crea": brettio, "posa": posa_cammino,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 	c["brettio_lotta"] = {"crea": brettio, "posa": posa_lotta,
@@ -3630,8 +3635,8 @@ static func castello() -> Node3D:
 # =================================================================== SOLDATI (step 13)
 
 ## Guerriero brettio: pelliccia, berretto di pelo, scudo di legno ovale e spada corta.
-static func brettio() -> Node3D:
-	var r := portatore("", "bandiera_rossa", "pelliccia")
+static func brettio(squadra := "bandiera_rossa") -> Node3D:
+	var r := portatore("", squadra, "pelliccia")
 	var corpo: Node3D = r.get_node("corpo")
 	var anca := 0.2
 	corpo.add_child(sfera(0.082, Vector3(0, anca + 0.29, -0.01), "pelliccia", Vector3(1, 0.6, 1)))

@@ -209,3 +209,6 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 
 ## 2026-11-02 — le Eolie sulla mappa della campagna
 - Promesse allo step 25 e poi dimenticate: le sette isole Eolie disegnate con le coordinate vere, con il fuoco di Stromboli; il pulsante dell'epilogo spostato sul mar Ionio. Test della campagna OK. Versione 0.43.0.
+
+## 2026-11-02 — colori dei Brettii del giocatore
+- `brettio(squadra)` e fogli `brettio_giocatore`: i guerrieri brettii del giocatore hanno le fasce del giocatore, i nemici quelle rosse. Test toccati OK. Versione 0.44.0.

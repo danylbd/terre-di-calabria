@@ -28,7 +28,7 @@ func _prova() -> void:
 	var torri := v.nemici.values()
 	_controlla(torri.size() == 2 and torri.all(func(n): return n.tipo == "torre" and n._sprite.texture.resource_path.ends_with("/torre.png")),
 		"i nemici sono greci: %d torri greche" % torri.size())
-	_controlla(Popoli.soldati(1)[0] == "brettio" and Popoli.soldati(2)[0] == "guardia", "i nostri soldati sono frombolieri, i loro opliti")
+	_controlla(Popoli.soldati(1)[0] == "brettio_giocatore" and Popoli.soldati(2)[0] == "guardia", "i nostri soldati sono frombolieri, i loro opliti")
 	_controlla(Popoli.testo("I Brettii attaccano") == "I Greci attaccano", "i messaggi nominano i Greci come nemici")
 
 	# passo svelto nel bosco

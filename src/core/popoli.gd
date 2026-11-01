@@ -6,7 +6,8 @@ const DATI := {
 	"greci": {"nome": "Greci", "descrizione": "Città sulla costa: olio, vino e commercio all'agorà.",
 		"nemici": "brettii", "soldati": ["guardia", "guardia_lotta"], "torre": "torre"},
 	"brettii": {"nome": "Brettii", "descrizione": "Pastori e guerrieri della Sila: pece, frombolieri e passo svelto nei boschi.",
-		"nemici": "greci", "soldati": ["brettio", "brettio_lotta"], "torre": "torre_brettia"},
+		"nemici": "greci", "soldati": ["brettio", "brettio_lotta"], "torre": "torre_brettia",
+		"soldati_giocatore": ["brettio_giocatore", "brettio_giocatore_lotta"]},
 	"romani": {"nome": "Romani", "descrizione": "Agrimensori e legionari: laterizi, tegole e strade lastricate dove si corre.",
 		"nemici": "brettii", "soldati": ["legionario", "legionario_lotta"], "torre": "torre", "passo": 1.15},
 	"saraceni": {"nome": "Saraceni", "descrizione": "Venuti dal mare: giardini irrigati, gelsi e seta, cavalieri leggeri.",
@@ -44,7 +45,8 @@ static func nome(popolo: String) -> String:
 
 
 static func soldati(proprietario: int) -> Array:
-	return DATI[di(proprietario)]["soldati"]
+	var d: Dictionary = DATI[di(proprietario)]
+	return d.get("soldati_giocatore", d["soldati"]) if proprietario == 1 else d["soldati"]
 
 
 ## Quanto più svelti camminano i portatori del giocatore ovunque (Romani: strade lastricate).
