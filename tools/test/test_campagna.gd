@@ -100,6 +100,15 @@ func _gioca(ob: Dictionary) -> void:
 					_una_volta("uliveto", func(f): return _conta(p.risorse.ulivi, f, 6) - Vector2(f - mag.bandiera).length() * 0.3)
 				"pesca_spada":
 					_una_volta("pesca_spada", func(f): return -_distanza_acqua(f))
+				"porto":
+					_una_volta("porto", func(f): return -_distanza_acqua(f) - Vector2(f - mag.bandiera).length() * 0.05)
+				"magazzino":
+					# un magazzino in più va lontano dal primo, dove c'è spazio
+					var lontano := func(f): return minf(Vector2(f - mag.bandiera).length(), 14.0)
+					for k in ob.get("n", 1):
+						_una_volta("magazzino#%d" % k, lontano)
+					# se il villaggio è già pieno, una torre allarga i confini e fa spazio
+					_una_volta("torre#spazio", func(f): return minf(Vector2(f - mag.bandiera).length(), 9.0))
 				_:
 					for k in ob.get("n", 1):
 						_una_volta("%s#%d" % [ob["tipo"], k], vicino)
@@ -128,6 +137,27 @@ func _gioca(ob: Dictionary) -> void:
 			var mancano := maxi(0, ob.get("n", 1) - p.villaggio.capacita())
 			for k in ceili(mancano / 8.0) + 2:
 				_una_volta("casa_greca#%d" % k, vicino)
+		"forti":
+			# castelli presidiati, sparsi nel territorio (allargano i confini); servono assi e pietre
+			_una_volta("cava", func(f): return _conta(p.risorse.rocce, f, 7))
+			_una_volta("segheria", vicino)
+			_una_volta("boscaiolo", func(f): return _conta(p.risorse.alberi, f, 7))
+			for k in ob.get("n", 1):
+				_una_volta("castello#%d" % k, func(f): return minf(Vector2(f - mag.bandiera).length(), 10.0 + k * 3))
+		"lusso":
+			# olio e vino: le merci di lusso più facili (i popoli scelti hanno anche le loro)
+			_una_volta("uliveto", func(f): return _conta(p.risorse.ulivi, f, 6) - Vector2(f - mag.bandiera).length() * 0.3)
+			_una_volta("frantoio", vicino)
+			_una_volta("vigneto", func(f): return _prato_libero(f, 4) - Vector2(f - mag.bandiera).length() * 0.3)
+			_una_volta("cantina", vicino)
+			for m in CatalogoEdifici.EDIFICI:
+				var d: Dictionary = CatalogoEdifici.EDIFICI[m]
+				if d.get("popolo", "") == Popoli.giocatore and d.get("produce", "") in CatalogoEdifici.LUSSO:
+					_una_volta(m, vicino)
+		"una_tra":
+			for altra in ob["prove"]:
+				if altra["prova"] == "lusso":
+					_gioca(altra)
 		"presidiata":
 			_una_volta("torre", func(f): return Vector2(f - mag.bandiera).length() if Vector2(f - mag.bandiera).length() < 9 else -99.0)
 

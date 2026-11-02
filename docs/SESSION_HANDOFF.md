@@ -2,11 +2,18 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, musica nuova (release v0.58.0 in `main`): quattro brani originali con FluidSynth e GeneralUser GS, la musica di guerra in battaglia. Fase 7 finita. Prima gli step 36a (costruttori al cantiere) e 36b (voce di re Italo), chiesti dal proprietario. Prossimo: chiusura con la versione 1.0. Ogni step: worktree in C:/Users/User/Projects/tdc-wt/step-NN-nome, modelli con un subagente, test nuovo, tutti i test a gruppi (sotto i 10 minuti l'uno), versione +0.01, documenti (roadmap, «Avanzamento» in fondo a piano-imperivm.md, DEVELOPMENT_STATUS, CLAUDE.md, diario), merge e push. Il proprietario: «continua, non ti fermare; se hai dubbi vai avanti con altro».
+**Aggiornato:** 2026-11-02, **versione 1.0.0** pubblicata in `main`: il gioco di questa versione è finito (Fasi 1, 2, 3, 4, 6 e 7, musica nuova, crediti). Per le versioni successive: `docs/idee-future.md`. Ogni lavoro nuovo: worktree in C:/Users/User/Projects/tdc-wt/<ramo>, test nuovo, tutti i test a gruppi, versione, documenti, merge e push; esito della compilazione dal ramo `ci-esito`.
 
 ## Ultimo obiettivo affrontato
 
-**Musica nuova** (v0.58.0): `tools/suoni/musica_fluid.py` scrive i brani come MIDI e li fa suonare a FluidSynth con GeneralUser GS (programmi in `C:\Users\User\Tools`, variabili `FLUIDSYNTH` e `SOUNDFONT`); `assets/musica/{mattino,lavoro,sera,guerra}.ogg` (i vecchi WAV segnaposto tolti); `Guerra.in_battaglia()`, `Partita._aggiorna_musica()` (musica di guerra in battaglia, poi 25 s di calma); test `test_musica`.
+**Chiusura — versione 1.0.0**: crediti completi nel menu (grafica, suoni, voce e musica originali; FluidSynth e GeneralUser GS; fatti storici), README della 1.0, prova completa di tutte le 28 missioni con il giocatore automatico di `test_campagna.gd` (riepilogo qui sotto).
+
+### Prova completa (giocatore automatico, 28 missioni)
+
+- Nessun errore di script in nessuna missione.
+- Compiute dal giocatore automatico: le 6 dei Greci; soglia_velo, soglia_frammenti, soglia_scelta; fuoco_traversata, fuoco_etna; sfida_alluvione; annibale_sbarco.
+- Trovato e corretto: nella mappa del Bruzio il porto di Crotone era fuori dai primi confini (prima missione di Annibale impossibile senza una torre): villaggio e approdo spostati, sperone di roccia dentro i confini.
+- Non compiute per limiti del giocatore automatico (non sa fare la guerra, i doni ai villaggi, né far crescere oltre 100 coloni in 20 minuti di gioco), con gli obiettivi raggiunti fin lì: soglia_sigillo, fuoco_zancle (il secondo magazzino non trova spazio perché il giocatore automatico riempie di case le zone piane), fuoco_vasai, fuoco_eolie, fuoco_cuore, ultimo_canto, sfida_200, sfida_seta e le missioni di guerra di Annibale (2–8; il lacinio arriva al lusso, il marchesato al castello). Queste parti sono coperte dai test dedicati (test_soglia, test_fuoco, test_finale, test_sfide, test_annibale, test_schiere, test_assedi).
 
 ## Stato generale
 
@@ -14,7 +21,7 @@ Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 finita (step 30�
 
 ## Prossimo
 
-1. **Chiusura — versione 1.0**: vedi `DEVELOPMENT_STATUS.md`.
+1. Versione 1.0.0 fatta. Si riparte da `docs/idee-future.md` quando il proprietario lo chiede.
 2. Dopo poi la musica nuova (con una musica di guerra), poi la chiusura (versione 1.0).
 
 ## Problemi irrisolti

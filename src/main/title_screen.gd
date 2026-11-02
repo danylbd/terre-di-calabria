@@ -145,6 +145,19 @@ func _crea_pannello_leggenda() -> PanelContainer:
 	return pannello
 
 
+## Chi ha fatto che cosa e con quali strumenti liberi (versione 1.0).
+const CREDITI := """Grafica: tutti gli edifici, le persone, gli animali, le navi e il paesaggio sono modelli 3D originali
+scritti in codice per questo gioco e fotografati in isometria.
+
+Suoni e voce: originali, sintetizzati in codice (anche la voce di re Italo, fatta di sillabe inventate).
+
+Musica: brani originali scritti in codice e suonati con FluidSynth (licenza LGPL, usato solo per
+registrarli) e con il soundfont «GeneralUser GS» di S. Christian Collins (uso libero, anche commerciale).
+
+Storia: liberamente ispirata alla Calabria antica e medievale e alla seconda guerra punica
+(Annibale nel Bruzio, 216–203 a.C.). Personaggi, dialoghi e leggende sono inventati."""
+
+
 func _crea_pannello_crediti() -> PanelContainer:
 	var pannello := PanelContainer.new()
 	pannello.custom_minimum_size = Vector2(980, 760)
@@ -155,14 +168,14 @@ func _crea_pannello_crediti() -> PanelContainer:
 	colonna.add_child(_etichetta("Crediti", 52, Palette.TERRACOTTA_SCURA))
 	colonna.add_child(_etichetta("Ideato da danylbd\nSviluppato insieme a Claude", 30, Palette.INCHIOSTRO))
 
-	var nota := _etichetta("Realizzato con il motore Godot Engine (licenza MIT):", 24, Palette.TERRACOTTA)
+	var nota := _etichetta("Come è fatto, e con quali strumenti liberi:", 24, Palette.TERRACOTTA)
 	colonna.add_child(nota)
 
 	var scorrimento := ScrollContainer.new()
 	scorrimento.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scorrimento.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	var licenza := Label.new()
-	licenza.text = Engine.get_license_text()
+	licenza.text = CREDITI + "\n\nGodot Engine\n" + Engine.get_license_text()
 	licenza.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	licenza.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	licenza.add_theme_font_size_override("font_size", 18)

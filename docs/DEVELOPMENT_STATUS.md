@@ -24,7 +24,7 @@ Ultime modifiche significative (step 35, Fase 7): traversate delle schiere per m
 
 1. **Fase 7**: 38 mappa del Bruzio, 39 campagna di Annibale, 40 grafica di guerra.
 2. ~~Musica nuova~~ fatta (v0.58.0).
-3. **Chiusura**: prova completa, bilanciamento finale, versione 1.0.
+3. ~~Chiusura~~ fatta: **versione 1.0.0**.
 
 Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita del villaggio» e iPhone, in [`idee-future.md`](idee-future.md).
 
@@ -40,4 +40,4 @@ Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita de
 
 ## Prossima attività consigliata
 
-**Chiusura — versione 1.0**: prova completa di tutte le campagne, bilanciamento finale, rifiniture (titolo, crediti con le licenze di FluidSynth e GeneralUser GS), versione 1.0.0.
+**Versione 1.0.0 pubblicata.** Il gioco di questa versione è finito. Le idee per le versioni successive sono in `docs/idee-future.md` (modalità «Vita del villaggio», iPhone): si parte da lì quando il proprietario lo chiede.
