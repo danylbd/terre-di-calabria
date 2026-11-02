@@ -27,6 +27,10 @@ func _initialize() -> void:
 func _esegui() -> void:
 	DirAccess.make_dir_recursive_absolute(_uscita)
 	var catalogo: Dictionary = Modelli.catalogo()
+	# altri file di modelli (per esempio quelli di un popolo): tools/studio/modelli_*.gd con catalogo_extra()
+	for f in DirAccess.get_files_at("res://tools/studio"):
+		if f.begins_with("modelli_") and f.ends_with(".gd"):
+			catalogo.merge(load("res://tools/studio/" + f).catalogo_extra())
 	var nomi: Array = _richiesti if _richiesti.size() > 0 else catalogo.keys()
 	for nome in nomi:
 		if not catalogo.has(nome):

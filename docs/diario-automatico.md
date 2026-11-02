@@ -263,3 +263,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Mura sulle torri nemiche (crescono col tempo, barra di pietre sopra la torre); prima delle mura niente duelli.
 - Ariete e onagro dall'armaiolo, seguono la schiera; modelli fatti da un subagente.
 - Corretto un errore vecchio (schiera sciolta durante l'ultimo duello). Test nuovo `test_assedi`; 41 test OK.
+
+### 2026-11-02 — Step 37: i Cartaginesi (v0.54.0)
+- Ottavo popolo: nemici i Romani, mercenari, porto che rende il doppio, tintoria della porpora, stalla degli elefanti, Annibale.
+- Elefante da guerra come unità speciale nella schiera (dalla stalla).
+- Modelli in tre file separati, fatti da tre subagenti in parallelo in tre worktree (nessun conflitto su `modelli.gd`).

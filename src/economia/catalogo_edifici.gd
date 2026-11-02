@@ -126,6 +126,12 @@ const EDIFICI := {
 	"ossidiana": {"nome": "Laboratorio dell'ossidiana", "popolo": "sicani", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Base",
 		"tempo": 18.0, "lavoratore": "portatore_nessuno", "ingressi": {"pietra": 2}, "produce": "lame", "durata": 8.0,
 		"descrizione": "Scheggia il vetro nero dei vulcani in lame taglienti e specchi: il lusso dei Sicani."},
+	"tintoria_porpora": {"nome": "Tintoria della porpora", "popolo": "cartaginesi", "taglia": 2, "costo": {"assi": 2, "pietra": 3}, "categoria": "Base",
+		"tempo": 20.0, "lavoratore": "portatore_nessuno", "ingressi": {"pesce": 2, "acqua": 1}, "produce": "porpora", "durata": 9.0,
+		"descrizione": "Dalle conchiglie del murice si ricava la porpora che tinge le stoffe: il lusso dei Cartaginesi."},
+	"stalla_elefanti": {"nome": "Stalla degli elefanti", "popolo": "cartaginesi", "taglia": 2, "costo": {"assi": 4, "pietra": 3}, "categoria": "Difesa",
+		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"grano": 3, "acqua": 2}, "produce": "elefanti", "durata": 16.0,
+		"descrizione": "Nutre gli elefanti di Annibale con grano e acqua: da qui escono gli elefanti da guerra che seguono la schiera."},
 	"porto": {"nome": "Porto", "taglia": 2, "costo": {"assi": 4, "pietra": 4}, "categoria": "Base",
 		"tempo": 24.0, "lavoratore": "portatore_nessuno", "ingressi": {"anfore": 2}, "produce": "ducati", "durata": 4.0,
 		"vicino_mare": 5, "descrizione": "Una nave carica le anfore e va a venderle oltre il mare (o fino a un altro tuo porto, attraverso lo Stretto) e torna con i ducati."},
@@ -160,7 +166,7 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"farina": "Farina", "acqua": "Acqua", "pane": "Pane", "pesce": "Pesce", "maiale": "Maiali", "carne": "Carne",
 	"latte": "Latte", "lana": "Lana", "formaggio": "Formaggio", "miele": "Miele", "olive": "Olive", "olio": "Olio",
 	"uva": "Uva", "vino": "Vino", "ortaggi": "Ortaggi", "cipolle": "Cipolle", "agrumi": "Agrumi",
-	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "tegole": "Tegole", "bozzoli": "Bozzoli", "seta": "Seta", "cavalli": "Cavalli", "ceramiche": "Ceramiche", "lame": "Lame di ossidiana", "lingotti": "Lingotti",
+	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "tegole": "Tegole", "bozzoli": "Bozzoli", "seta": "Seta", "cavalli": "Cavalli", "porpora": "Porpora", "elefanti": "Elefanti", "ceramiche": "Ceramiche", "lame": "Lame di ossidiana", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
 	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
 	"ducati": "Ducati", "stoffa": "Stoffa", "armi": "Armi"}
@@ -177,7 +183,7 @@ const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "un
 ## cibo che i minatori accettano (uno qualsiasi per ogni turno di lavoro)
 const CIBI := ["pane", "pesce", "carne", "formaggio", "ortaggi", "cipolle"]
 ## merci di lusso: fanno nascere i coloni più in fretta
-const LUSSO := ["vino", "agrumi", "miele", "stoffa", "pece", "tegole", "seta", "ceramiche", "lame"]
+const LUSSO := ["vino", "agrumi", "miele", "stoffa", "pece", "tegole", "seta", "ceramiche", "lame", "porpora"]
 ## merci sempre visibili nella barra delle scorte (le altre compaiono quando ce ne sono)
 const RISORSE_BASE := ["tronchi", "assi", "pietra"]
 
