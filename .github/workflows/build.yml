@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 env:
   GODOT_VERSION: "4.7.2"
@@ -82,3 +83,30 @@ jobs:
             Installa con **TerreDiCalabria-Setup-${{ steps.wizard.outputs.versione }}.exe** (Windows ARM64 nativo, oppure x64).
             Novità: vedi docs/roadmap.md.
           files: installer/Output/*.exe
+
+  # Scrive l'esito (e, se fallisce, le righe d'errore) nel ramo ci-esito: così si legge con git, senza aprire GitHub.
+  esito:
+    name: Scrive l'esito nel ramo ci-esito
+    needs: compila
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Esito e righe d'errore
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir esito && cd esito
+          git init -q -b ci-esito
+          {
+            echo "esito: ${{ needs.compila.result }}"
+            echo "commit: ${{ github.sha }}"
+            echo "esecuzione: ${{ github.run_number }} (${{ github.event_name }})"
+            echo "data: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            if [ "${{ needs.compila.result }}" != "success" ]; then
+              gh run view ${{ github.run_id }} --repo ${{ github.repository }} --log-failed 2>&1 | tail -n 150 || true
+            fi
+          } > esito.txt
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com add esito.txt
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -q -m "Esito della compilazione ${{ github.run_number }}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" ci-esito
