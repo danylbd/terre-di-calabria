@@ -145,7 +145,7 @@ func parla(voce: String, testo: String) -> void:
 					alt *= 0.88
 					pausa = 0.45
 				elif fine == "?":
-					alt *= 1.12
+					alt = maxf(alt * 1.12, 1.15)      # la domanda finisce sempre in alto
 					pausa = 0.45
 				elif fine in ",;":
 					pausa = 0.2

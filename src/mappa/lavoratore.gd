@@ -123,6 +123,8 @@ func _on_arrivato(_c: Colono) -> void:
 			if mestiere == "porto":
 				velocita = _velocita_terra
 			logistica.produci(_merce_prodotta(), edificio)
+			if mestiere == "porto" and edificio.proprietario == 1 and Popoli.mercanti():
+				logistica.produci(_merce_prodotta(), edificio)      # i Cartaginesi: il porto rende il doppio
 			_turno += 1
 			imposta_foglio(_foglio_cammino)
 			stato = Stato.ARRIVO
