@@ -18,11 +18,11 @@ Ultime modifiche significative (step 35, Fase 7): traversate delle schiere per m
 
 ## In sviluppo
 
-- **Fase 7 «Le guerre di Annibale»**: step 30–35 fatti, più gli step 36a (costruttori al cantiere, v0.51.0), 36b (voce di re Italo, v0.52.0) e 36 (assedi, v0.53.0).
+- **Fase 7 «Le guerre di Annibale»**: step 30–35 fatti, più gli step 36a (costruttori al cantiere, v0.51.0), 36b (voce di re Italo, v0.52.0) 36 (assedi, v0.53.0) 37 (Cartaginesi, v0.54.0) e 38 (mappa del Bruzio, v0.55.0).
 
 ## Da fare (in ordine) per finire questa versione del gioco
 
-1. **Fase 7**: step 37 Cartaginesi con elefanti, 38 mappa del Bruzio, 39 campagna di Annibale, 40 grafica di guerra.
+1. **Fase 7**: 38 mappa del Bruzio, 39 campagna di Annibale, 40 grafica di guerra.
 2. **Musica nuova** (FluidSynth + soundfont libero, brani originali).
 3. **Chiusura**: prova completa, bilanciamento finale, versione 1.0.
 
@@ -41,4 +41,4 @@ Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita de
 
 ## Prossima attività consigliata
 
-**Step 37 — i Cartaginesi** (Fase 7, `docs/piano-imperivm.md`): ottavo popolo giocabile, con gli elefanti (circa 40 modelli: edifici nel loro stile, soldati, condottiero, elefante da guerra); voce in `Popoli.DATI`, modelli `<tipo>_cartaginesi`, catalogo e test come per gli altri popoli.
+**Step 39 — campagna «Annibale nel Bruzio»** (Fase 7, `docs/piano-imperivm.md`): 8–10 missioni sulla mappa del Bruzio, giocabili dai due lati (Roma, oppure Cartagine con i Brettii), con le schiere attive nelle missioni, le scelte e il Mercante.

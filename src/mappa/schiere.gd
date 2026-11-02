@@ -36,6 +36,8 @@ const ABILITA := {
 		{"nome": "Carica pesante", "descrizione": "Lance in resta: duelli molto più facili per 10 s", "effetto": "duelli", "valore": 0.22, "durata": 10.0}],
 	"siculi": [{"nome": "Grido degli antenati", "descrizione": "Le voci di Pantalica: morale +20", "effetto": "morale", "valore": 20},
 		{"nome": "Lance lunghe", "descrizione": "Duelli più facili per 20 s", "effetto": "duelli", "valore": 0.12, "durata": 20.0}],
+	"cartaginesi": [{"nome": "Astuzia di Canne", "descrizione": "Annibale accerchia il nemico: duelli molto più facili per 12 s", "effetto": "duelli", "valore": 0.2, "durata": 12.0},
+		{"nome": "Giuramento di Annibale", "descrizione": "L'odio giurato a Roma: morale +25", "effetto": "morale", "valore": 25}],
 	"sicani": [{"nome": "Rifugio sui monti", "descrizione": "Kokalo conosce ogni passo: schiera più veloce per 20 s", "effetto": "passo", "valore": 1.5, "durata": 20.0},
 		{"nome": "Pioggia di frecce", "descrizione": "Punte d'ossidiana: duelli molto più facili per 10 s", "effetto": "duelli", "valore": 0.2, "durata": 10.0}],
 }
@@ -49,13 +51,17 @@ const MACCHINE := {
 		"descrizione": "Sfonda le mura da vicino (3 punti a colpo) e ripara i soldati"},
 	"onagro": {"nome": "Onagro", "costo": {"assi": 4, "pietra": 3, "armi": 1}, "danno": 2.0,
 		"descrizione": "Tira grossi sassi sulle mura da lontano (2 punti ogni 3 secondi)"},
+	# step 37: l'unità speciale dei Cartaginesi, dalla stalla degli elefanti
+	"elefante": {"nome": "Elefante da guerra", "costo": {"elefanti": 1, "armi": 1}, "danno": 2.0, "popolo": "cartaginesi",
+		"edificio": "stalla_elefanti", "descrizione": "Abbatte le mura da vicino (2 punti a colpo) e dà coraggio ai duelli"},
 }
+const CORAGGIO_ELEFANTE := 0.1
 const DISTANZA_ONAGRO := 9.0
 const RICARICA_ONAGRO := 3.0
 const VOLO_MASSO := 0.9
 const RICARICA := 60.0
 const NOMI := {"greci": "Eudora", "brettii": "Tauro", "romani": "Gaio Settimio", "saraceni": "Zahra",
-	"normanni": "Osmund", "siculi": "Duketio", "sicani": "Kokalo"}
+	"normanni": "Osmund", "siculi": "Duketio", "sicani": "Kokalo", "cartaginesi": "Annibale"}
 
 var villaggio: Villaggio
 var guerra: Guerra
@@ -158,6 +164,16 @@ func _nuovo(p: Vector2, foglio: String) -> Colono:
 	return c
 
 
+## Il posto di una macchina dietro la schiera: l'ariete a sinistra, l'onagro a destra, l'elefante davanti in mezzo.
+func _posto_macchina(t: String, righe: int) -> Vector2:
+	match t:
+		"onagro":
+			return Vector2(0.6, (righe + 1) * 0.5 + 0.4)
+		"elefante":
+			return Vector2(0.9, -0.6)
+	return Vector2(-0.6, (righe + 1) * 0.5 + 0.4)
+
+
 ## Il posto di un soldato nella formazione: file di 4 dietro al condottiero.
 func _posto(k: int) -> Vector2:
 	return Vector2((k % 4) * 0.45 - 0.7, (k / 4 + 1) * 0.5)
@@ -204,7 +220,7 @@ func _marcia(percorso: Array[Vector2]) -> void:
 		var m: Colono = macchine()[t]
 		m.imposta_foglio(_foglio_macchina(t, false))
 		var p: Array[Vector2] = percorso.duplicate()
-		p[-1] = arrivo + Vector2(0.6 if t == "onagro" else -0.6, (righe + 1) * 0.5 + 0.4)
+		p[-1] = arrivo + _posto_macchina(t, righe)
 		var b = schiera.get("bersaglio")
 		if t == "onagro" and typeof(b) == TYPE_OBJECT and is_instance_valid(b):
 			# l'onagro si ferma appena il bersaglio è a tiro
@@ -279,7 +295,7 @@ func _sbarca() -> void:
 		s.pos = terra + _posto(k)
 		s.visible = true
 	for t in macchine():
-		macchine()[t].pos = terra + Vector2(0.6 if t == "onagro" else -0.6, 2.4)
+		macchine()[t].pos = terra + _posto_macchina(t, 3)
 		macchine()[t].visible = true
 	schiera["nave"].queue_free()
 	schiera.erase("nave")
@@ -426,7 +442,8 @@ func _imposta_velocita() -> void:
 func probabilita_vittoria(tipo_difensore := "fanteria") -> float:
 	var morale: float = schiera.get("morale", 70) if esiste() else 70.0
 	return clampf(0.55 + villaggio.vantaggi.get("duelli", 0.0) + (morale - 50.0) / 500.0 + 0.02 * (livello() - 1)
-		+ Popoli.vantaggio_tipo(tipo(), tipo_difensore) + bonus_attivo(), 0.1, 0.95)
+		+ Popoli.vantaggio_tipo(tipo(), tipo_difensore) + bonus_attivo()
+		+ (CORAGGIO_ELEFANTE if macchine().has("elefante") else 0.0), 0.1, 0.95)
 
 
 func _cambia_morale(d: int) -> void:
@@ -603,8 +620,20 @@ func macchine() -> Dictionary:
 	return schiera.get("macchine", {}) if esiste() else {}
 
 
+## Quale edificio costruisce la macchina (l'armaiolo, o la stalla per l'elefante).
+static func edificio_macchina(t: String) -> String:
+	return MACCHINE[t].get("edificio", "armaiolo")
+
+
+## La macchina c'è per il popolo del giocatore? (l'elefante solo per i Cartaginesi)
+static func macchina_del_popolo(t: String) -> bool:
+	return MACCHINE[t].get("popolo", Popoli.giocatore) == Popoli.giocatore
+
+
 func _foglio_macchina(t: String, lavoro: bool) -> String:
-	var nome := t + ("_colpo" if t == "ariete" else "_tiro") if lavoro else t
+	if t == "elefante":
+		t = "elefante_guerra"
+	var nome: String = t + {"ariete": "_colpo", "onagro": "_tiro"}.get(t, "_lotta") if lavoro else t
 	if ResourceLoader.exists("res://assets/grafica/%s.png" % nome):
 		return nome
 	return "portatore_nessuno"
@@ -614,6 +643,8 @@ func _foglio_macchina(t: String, lavoro: bool) -> String:
 func motivo_no_macchina(t: String) -> String:
 	if not attive():
 		return "Le macchine d'assedio non ci sono in questa partita"
+	if not macchina_del_popolo(t):
+		return "Solo i %s hanno questa unità" % Popoli.nome(MACCHINE[t]["popolo"])
 	if not esiste():
 		return "Serve una schiera da seguire"
 	if in_viaggio():
@@ -642,9 +673,12 @@ func costruisci_macchina(t: String, armaiolo: Edificio) -> bool:
 	var capo: Colono = schiera["condottiero"]
 	var percorso := percorso_a_piedi(Vector2i(inizio.floor()), Vector2i(capo.pos.floor()))
 	if not percorso.is_empty():
-		percorso[-1] = capo.pos + Vector2(0.6 if t == "onagro" else -0.6, 2.4)
+		percorso[-1] = capo.pos + _posto_macchina(t, 3)
 		c.percorri(percorso)
-	villaggio.messaggio.emit("L'armaiolo ha costruito l'%s: segue la schiera di %s" % [MACCHINE[t]["nome"].to_lower(), nome_condottiero()], false)
+	if t == "elefante":
+		villaggio.messaggio.emit("Un elefante da guerra esce dalla stalla e segue %s" % nome_condottiero(), false)
+	else:
+		villaggio.messaggio.emit("L'armaiolo ha costruito l'%s: segue la schiera di %s" % [MACCHINE[t]["nome"].to_lower(), nome_condottiero()], false)
 	Suono.suona("completato")
 	cambiata.emit()
 	return true
@@ -688,12 +722,17 @@ func _colpisci_mura(b: Edificio) -> void:
 		ariete.imposta_foglio(_foglio_macchina("ariete", true))
 		ariete._anim.play()
 		Suono.suona_in("martello", b.position, 2.0)
+	var elefante: Colono = macchine().get("elefante")
+	if elefante and elefante.pos.distance_to(b.centro()) <= distanza_assalto() + 2.0:
+		danno += MACCHINE["elefante"]["danno"]
+		elefante.imposta_foglio(_foglio_macchina("elefante", true))
+		elefante._anim.play()
 	b.mura = maxf(0.0, b.mura - danno)
 	b.queue_redraw()
 	if b.mura <= 0.0:
 		villaggio.messaggio.emit("Le mura sono crollate: all'assalto!", false)
 		return
-	if ariete == null and _rng.randf() < RISCHIO_MURA:
+	if ariete == null and elefante == null and _rng.randf() < RISCHIO_MURA:
 		_cambia_morale(-2)
 		_perdi_soldato()
 

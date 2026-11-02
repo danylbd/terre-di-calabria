@@ -1,6 +1,6 @@
 class_name Popoli
 ## I popoli giocabili (Fase 4): nome, nemici, soldati, passo dei portatori e aspetto degli edifici.
-## Vedi docs/brettii.md, docs/romani.md, docs/saraceni.md, docs/normanni.md e docs/siculi_sicani.md.
+## Vedi docs/brettii.md, docs/romani.md, docs/saraceni.md, docs/normanni.md, docs/siculi_sicani.md e docs/cartaginesi.md.
 
 const DATI := {
 	"greci": {"nome": "Greci", "descrizione": "Città sulla costa: olio, vino e commercio all'agorà.",
@@ -20,11 +20,13 @@ const DATI := {
 	"sicani": {"nome": "Sicani", "descrizione": "Montanari della Sicilia: lame di ossidiana, cave e miniere più rapide.",
 		"nemici": "siculi", "soldati": ["arciere_sicano", "arciere_sicano_lotta"], "torre": "torre",
 		"svelti": ["cava", "miniera_ferro", "miniera_argento"]},
+	"cartaginesi": {"nome": "Cartaginesi", "descrizione": "Mercanti del mare venuti con Annibale: porpora, porti ricchi ed elefanti da guerra.",
+		"nemici": "romani", "soldati": ["mercenario_cartaginese", "mercenario_cartaginese_lotta"], "torre": "torre", "mercanti": true},
 }
 ## step 33: il tipo dei soldati di ogni popolo e chi batte chi (la cavalleria i tiratori, i tiratori la
 ## fanteria, la fanteria la cavalleria)
 const TIPI_SOLDATO := {"greci": "fanteria", "brettii": "tiratori", "romani": "fanteria", "saraceni": "cavalleria",
-	"normanni": "cavalleria", "siculi": "fanteria", "sicani": "tiratori"}
+	"normanni": "cavalleria", "siculi": "fanteria", "sicani": "tiratori", "cartaginesi": "fanteria"}
 const BATTE := {"cavalleria": "tiratori", "tiratori": "fanteria", "fanteria": "cavalleria"}
 const VANTAGGIO_TIPO := 0.15
 const NOMI_TIPO := {"fanteria": "fanteria", "tiratori": "tiratori", "cavalleria": "cavalleria"}
@@ -69,6 +71,11 @@ static func confini() -> int:
 ## Quanto dura il lavoro di un mestiere per il popolo del giocatore (1 = come tutti).
 static func durata(mestiere: String) -> float:
 	return SVELTEZZA if mestiere in DATI[giocatore].get("svelti", []) else 1.0
+
+
+## Il porto del giocatore rende il doppio (Cartaginesi, mercanti del mare).
+static func mercanti() -> bool:
+	return DATI[giocatore].get("mercanti", false)
 
 
 ## Il giocatore irriga i campi vicino all'acqua (Saraceni).
