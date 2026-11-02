@@ -21,6 +21,11 @@ var _scaletta: Array[String] = []    # brani che si alternano uno dopo l'altro
 var _musica_spenta := false
 var _prossima := 0
 var suonati := {}                    # nome -> quante volte (per i test)
+## la voce dei personaggi (re Italo): sillabe inventate sotto le battute scritte, una dopo l'altra
+const SILLABE_MAX := 3               # sillabe per parola al massimo
+var _voce_parlata: AudioStreamPlayer
+var _discorso: Array = []            # [sillaba, altezza, pausa dopo] ancora da dire
+var _attesa_voce := 0.0
 
 
 func _ready() -> void:
@@ -44,6 +49,9 @@ func _ready() -> void:
 	_voce_ui = AudioStreamPlayer.new()
 	_voce_ui.bus = "Effetti"
 	add_child(_voce_ui)
+	_voce_parlata = AudioStreamPlayer.new()
+	_voce_parlata.bus = "Effetti"
+	add_child(_voce_parlata)
 	for i in 2:
 		var m := AudioStreamPlayer.new()
 		m.bus = "Musica"
@@ -113,6 +121,61 @@ func _voce_libera() -> AudioStreamPlayer2D:
 	var v := _voci[_prossima]
 	_prossima = (_prossima + 1) % VOCI
 	return v
+
+
+## Un personaggio dice una battuta (voce = "voce_italo"): per ogni parola una o più sillabe inventate,
+## la voce scende verso la fine della frase, pause sulle virgole e sui punti, sale un po' sulle domande.
+func parla(voce: String, testo: String) -> void:
+	taci()
+	if not _varianti.has(voce):
+		return
+	var parole := testo.split(" ", false)
+	var tot := 0
+	for p in parole:
+		tot += clampi(p.length() / 3, 1, SILLABE_MAX)
+	var k := 0
+	for p in parole:
+		var n := clampi(p.length() / 3, 1, SILLABE_MAX)
+		var fine := p[p.length() - 1]
+		for j in n:
+			var alt := 1.06 - 0.16 * k / maxf(1.0, tot) + randf_range(-0.05, 0.05)
+			var pausa := randf_range(0.015, 0.05)
+			if j == n - 1:
+				if fine in ".!:":
+					alt *= 0.88
+					pausa = 0.45
+				elif fine == "?":
+					alt *= 1.12
+					pausa = 0.45
+				elif fine in ",;":
+					pausa = 0.2
+			_discorso.append([voce, alt, pausa])
+			k += 1
+	_attesa_voce = 0.0
+
+
+func taci() -> void:
+	_discorso.clear()
+	if _voce_parlata:
+		_voce_parlata.stop()
+
+
+func sta_parlando() -> bool:
+	return not _discorso.is_empty() or (_voce_parlata != null and _voce_parlata.playing)
+
+
+func _process(delta: float) -> void:
+	if _discorso.is_empty() or _voce_parlata.playing:
+		return
+	_attesa_voce -= delta
+	if _attesa_voce > 0.0:
+		return
+	var s: Array = _discorso.pop_front()
+	_voce_parlata.stream = _scegli(s[0])
+	_voce_parlata.pitch_scale = s[1]
+	_voce_parlata.play()
+	suonati[s[0]] = suonati.get(s[0], 0) + 1
+	_attesa_voce = s[2]
 
 
 ## Accende (volume_db) o spegne (null) un suono d'ambiente in loop, con dissolvenza.

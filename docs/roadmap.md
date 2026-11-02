@@ -86,6 +86,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 34 | Abilità dei condottieri | fatto (v0.49.0) |
 | 35 | Navi da guerra e traversate delle schiere | fatto (v0.50.0) |
 | 36a | Costruttori al cantiere (come in Settlers) | fatto (v0.51.0) |
+| 36b | Voce di re Italo (sillabe inventate, libere da diritti) | fatto (v0.52.0) |
 | 36 | Assedi (ariete, onagro) | |
 | 37 | I Cartaginesi (ottavo popolo, elefanti) | |
 | 38 | Mappa «Il Bruzio di Annibale» | |

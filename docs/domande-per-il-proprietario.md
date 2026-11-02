@@ -72,4 +72,4 @@ Il proprietario vuole sentire la voce di re Italo, solo con suoni e voci liberi 
 2. **Voce sintetica italiana con Piper** (motore MIT; voci italiane «riccardo», «paola», «serena»). Le voci sono addestrate su raccolte di registrazioni le cui licenze vanno controllate una per una prima di usarle in un gioco distribuito: «riccardo» viene dal dataset M-AILABS (in gran parte audiolibri LibriVox di pubblico dominio), ma il testo della licenza va letto prima. Serve installare Piper solo sul computer di sviluppo.
 3. **Voce registrata da una persona** (il proprietario o un amico che firma il permesso): voce vera e diritti chiari.
 
-Risposta: (in attesa)
+Risposta (2026-11-02): **1, voce inventata**. Fatta nello step 36b.
