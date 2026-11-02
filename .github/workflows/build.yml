@@ -26,28 +26,31 @@ jobs:
         run: |
           $V = "$env:GODOT_VERSION-stable"
           Invoke-WebRequest -Uri "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_win64.exe.zip" -OutFile godot.zip -MaximumRetryCount 5 -RetryIntervalSec 5
-          Expand-Archive godot.zip -DestinationPath godot_bin
-          $exe = Get-ChildItem godot_bin -Filter "*_console.exe" -Recurse | Select-Object -First 1
-          if (-not $exe) { $exe = Get-ChildItem godot_bin -Filter "*.exe" -Recurse | Select-Object -First 1 }
-          Copy-Item $exe.FullName godot.exe
+          Expand-Archive godot.zip -DestinationPath "$env:RUNNER_TEMP/godot_bin"
+          # il Godot «console» va lasciato accanto all'eseguibile vero, con il suo nome: lo cerca lì
+          $exe = Get-ChildItem "$env:RUNNER_TEMP/godot_bin" -Filter "*_console.exe" -Recurse | Select-Object -First 1
+          "GODOT=$($exe.FullName)" >> $env:GITHUB_ENV
+          Write-Host "Godot: $($exe.FullName)"
           Invoke-WebRequest -Uri "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_export_templates.tpz" -OutFile templates.zip -MaximumRetryCount 5 -RetryIntervalSec 5
           $D = "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable"
           New-Item -ItemType Directory -Force $D | Out-Null
           Expand-Archive templates.zip -DestinationPath tpl
           Copy-Item tpl\templates\windows_release_* $D
           Copy-Item tpl\templates\version.txt $D
-          Remove-Item -Recurse -Force tpl, templates.zip, godot.zip, godot_bin
+          Remove-Item -Recurse -Force tpl, templates.zip, godot.zip
 
       - name: Importa il progetto
         shell: pwsh
-        run: ./godot.exe --headless --path . --import
+        run: |
+          & $env:GODOT --headless --path . --import
+          exit 0
 
       - name: Esporta
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force build/arm64, build/x64 | Out-Null
-          ./godot.exe --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCalabria.exe
-          ./godot.exe --headless --path . --export-release "Windows x64" build/x64/TerreDiCalabria.exe
+          & $env:GODOT --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCalabria.exe
+          & $env:GODOT --headless --path . --export-release "Windows x64" build/x64/TerreDiCalabria.exe
           foreach ($f in "build/arm64/TerreDiCalabria.exe", "build/arm64/TerreDiCalabria.pck", "build/x64/TerreDiCalabria.exe", "build/x64/TerreDiCalabria.pck") {
             if (-not (Test-Path $f)) { Write-Error "Manca $f"; exit 1 }
           }
