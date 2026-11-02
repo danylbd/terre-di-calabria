@@ -23,14 +23,13 @@ Ultime modifiche significative (step 35, Fase 7): traversate delle schiere per m
 ## Da fare (in ordine) per finire questa versione del gioco
 
 1. **Fase 7**: 38 mappa del Bruzio, 39 campagna di Annibale, 40 grafica di guerra.
-2. **Musica nuova** (FluidSynth + soundfont libero, brani originali).
+2. ~~Musica nuova~~ fatta (v0.58.0).
 3. **Chiusura**: prova completa, bilanciamento finale, versione 1.0.
 
 Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita del villaggio» e iPhone, in [`idee-future.md`](idee-future.md).
 
 ## Bug e limiti noti
 
-- **Musica segnaposto**: deciso come rifarla (FluidSynth + soundfont libero, brani originali), da fare. Manca una musica di guerra.
 - **Compilazioni su GitHub non verificate da qui**: `gh` non è installato; i push partono, l'esito delle Actions va guardato su GitHub.
 - Animali degli allevamenti fermi nel modello (non si muovono).
 - Le rocce sono finite e i boschi naturali non ricrescono da soli: per giocare ore servono guardaboschi accanto ai boscaioli e cave nuove quando le rocce finiscono (voluto, come in Settlers).
@@ -41,4 +40,4 @@ Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita de
 
 ## Prossima attività consigliata
 
-**Musica nuova** (anche di guerra): FluidSynth + soundfont libero, brani originali; serve il permesso del proprietario per scaricarli (domanda in `domande-per-il-proprietario.md`). Poi la **chiusura**: prova completa, bilanciamento finale, versione 1.0.
+**Chiusura — versione 1.0**: prova completa di tutte le campagne, bilanciamento finale, rifiniture (titolo, crediti con le licenze di FluidSynth e GeneralUser GS), versione 1.0.0.

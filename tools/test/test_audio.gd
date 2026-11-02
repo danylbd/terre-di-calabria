@@ -60,7 +60,7 @@ func _prova() -> void:
 	_controlla(audio._ambiente.has("uccelli") and audio._ambiente["uccelli"].playing, "uccelli in sottofondo")
 	# musica: un brano della scaletta suona, alla fine passa al successivo, M la toglie e la rimette
 	for nome in ["mattino", "lavoro", "sera"]:
-		_controlla(ResourceLoader.exists("res://assets/musica/%s.wav" % nome), "brano " + nome)
+		_controlla(ResourceLoader.exists("res://assets/musica/%s.ogg" % nome), "brano " + nome)
 	var brano: String = audio.brano_attuale()
 	_controlla(brano in ["mattino", "lavoro", "sera"] and audio._musica[0].playing, "musica in corso: " + brano)
 	audio._on_brano_finito(audio._musica[0])

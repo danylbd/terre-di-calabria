@@ -35,6 +35,9 @@ var _fantasma: Sprite2D
 var _casella_mouse := Vector2i(-1, -1)
 var _evidenziato: Edificio
 var _ascolto_mare := 0.0
+const SCALETTA_PACE: Array[String] = ["lavoro", "mattino", "sera"]
+const CALMA := 25.0                  # secondi senza battaglia prima che la musica torni quella del villaggio
+var _calma := 0.0
 var monumenti: Monumenti
 var indigeni: VillaggiIndigeni
 var schiere: Schiere
@@ -165,7 +168,7 @@ func _ready() -> void:
 	barra.aggiorna(villaggio.scorte)
 	barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita())
 	barra.aggiorna_stagione(stagioni.nome())
-	Suono.scaletta(["lavoro", "mattino", "sera"] as Array[String])
+	Suono.scaletta(SCALETTA_PACE)
 	Suono.ambiente("uccelli", -6.0)
 	Suono.ambiente("vento", -12.0)
 	Suono.ambiente("mare", -40.0)
@@ -188,6 +191,7 @@ func _process(delta: float) -> void:
 	if _ascolto_mare <= 0.0:
 		_ascolto_mare = 0.5
 		_aggiorna_ambiente()
+		_aggiorna_musica(0.5)
 	var c := dati.casella_da_schermo(get_global_mouse_position())
 	if c == _casella_mouse:
 		return
@@ -573,6 +577,20 @@ func _metti(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> void:
 
 
 ## Il mare si sente di più quando la camera guarda la costa; il vento in alto, fra le rocce.
+## In battaglia (duelli, attacchi, la schiera all'assalto) suona la musica di guerra; finita la battaglia,
+## dopo un po' di calma, torna quella del villaggio.
+func _aggiorna_musica(passo: float) -> void:
+	var battaglia := guerra.in_battaglia() or (schiere.esiste() and schiere.schiera.get("bersaglio") != null)
+	if battaglia:
+		_calma = CALMA
+		if Suono.brano() != "guerra":
+			Suono.scaletta(["guerra"] as Array[String])
+	elif _calma > 0.0:
+		_calma -= passo
+		if _calma <= 0.0:
+			Suono.scaletta(SCALETTA_PACE)
+
+
 func _aggiorna_ambiente() -> void:
 	var centro := dati.casella_da_schermo(camera.global_position)
 	var acqua := 0

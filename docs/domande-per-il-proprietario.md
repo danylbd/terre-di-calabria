@@ -85,4 +85,4 @@ Le regole di lavoro mi chiedono il tuo permesso per scaricare file. Posso scaric
 
 Intanto vado avanti con il resto (step 40 e la chiusura).
 
-Risposta: (in attesa)
+Risposta (2026-11-02): «sì, fai quello che vuoi». Scaricati FluidSynth 2.6.2 e GeneralUser GS 2.0.3 in `C:\Users\User\Tools` (fuori dal progetto).
