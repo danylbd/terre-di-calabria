@@ -81,7 +81,7 @@ func _riassunto(q: Node2D) -> Dictionary:
 	merci.sort()
 	var con_lavoratore := v.edifici.values().filter(func(e): return e.lavoratore != null).size()
 	return {"edifici": edifici, "bandiere": q.rete.bandiere.size(), "tratti": q.rete.tratti.size(),
-		"portatori": q.rete.portatori(), "lavoratori": con_lavoratore, "coloni": v.coloni_liberi + v.in_cammino,
+		"portatori": q.rete.portatori(), "lavoratori": con_lavoratore, "coloni": v.coloni_liberi + v.in_cammino + v.costruttori,
 		"popolazione": v.popolazione(), "scorte": v.scorte, "alberi": alberi, "campi": ris.campi.size(),
 		"riserva_rocce": riserva, "merci": merci, "ceppi": ris._ceppi.size()}
 

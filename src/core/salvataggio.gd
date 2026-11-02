@@ -72,7 +72,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	var ris: RisorseNaturali = p.risorse
 	var log: Logistica = p.logistica
 	var d := {"versione": VERSIONE, "seme": p.SEME, "mappa": p.mappa, "popolo": p.popolo, "tempo": log.tempo, "storia": log.storia, "calendario": p.stagioni.tempo,
-		"scorte": v.scorte, "coloni_liberi": v.coloni_liberi + v.in_cammino,
+		"scorte": v.scorte, "coloni_liberi": v.coloni_liberi + v.in_cammino + v.costruttori,
 		"camera": [p.camera.position.x, p.camera.position.y, p.camera.zoom.x]}
 	# natura
 	var alberi := []

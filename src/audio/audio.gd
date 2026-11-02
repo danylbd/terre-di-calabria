@@ -8,7 +8,7 @@ const CARTELLA_SUONI := "res://assets/suoni/"
 const CARTELLA_MUSICA := "res://assets/musica/"
 const BUS := ["Musica", "Effetti", "Ambiente"]
 const VOCI := 16                     # effetti che possono suonare insieme
-const DISTANZA_MAX := 1800.0         # oltre questa distanza (pixel) un effetto non si sente
+const DISTANZA_MAX := 1000.0         # oltre questa distanza (pixel) dal centro della vista un effetto non si sente
 const DISSOLVENZA := 2.5             # secondi per il cambio di brano o d'ambiente
 
 var _varianti := {}                  # nome -> Array[AudioStream]
@@ -38,7 +38,7 @@ func _ready() -> void:
 		var v := AudioStreamPlayer2D.new()
 		v.bus = "Effetti"
 		v.max_distance = DISTANZA_MAX
-		v.attenuation = 1.6
+		v.attenuation = 2.0
 		add_child(v)
 		_voci.append(v)
 	_voce_ui = AudioStreamPlayer.new()

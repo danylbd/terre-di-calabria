@@ -247,3 +247,9 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Il proprietario: personaggi, feste, cura del mare, collezioni e museo «per ora no», in una versione successiva.
 - Nuovo `docs/idee-future.md` (con l'iPhone); roadmap, decisioni, stato, memoria e passaggio di consegne aggiornati.
 - Per finire il gioco restano: step 36–40, musica nuova, chiusura con la versione 1.0.
+
+### 2026-11-02 — Step 36a: costruttori al cantiere (v0.51.0)
+- Richiesta del proprietario: i cantieri come in Settlers, con chi va a costruirli.
+- `Costruttore` (dal magazzino, martella sul fianco del cantiere, torna a lavoro finito o se il cantiere è demolito); modelli col mazzuolo e il berretto arancione.
+- Suoni di lavoro udibili solo vicino (1000 px). Mandati al proprietario musiche ed effetti da ascoltare.
+- Test nuovo `test_costruttori`; aggiornati `test_popolazione` (testo del pannello) e `test_salvataggio` (conta i costruttori). 39 test OK, compreso `test_durata`.
