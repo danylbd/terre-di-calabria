@@ -1,10 +1,11 @@
 name: Compila gioco e installer
 
+# Un solo job su Windows: esporta il gioco, crea il Setup e (solo su main) pubblica la Release.
+# Niente artifact intermedi: non si usa lo spazio di archiviazione di Actions.
 on:
   push:
-    branches: [main, "step-*"]
+    branches: [main]
     tags: ["v*"]
-  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -14,51 +15,46 @@ env:
   GODOT_VERSION: "4.7.2"
 
 jobs:
-  esporta:
-    name: Esporta il gioco (Windows ARM64 e x64)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Scarica Godot e i modelli di esportazione
-        run: |
-          V="${GODOT_VERSION}-stable"
-          curl -sSL --retry 5 -o godot.zip "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_linux.x86_64.zip"
-          unzip -q godot.zip && mv "Godot_v${V}_linux.x86_64" godot && chmod +x godot
-          curl -sSL --retry 5 -o templates.tpz "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_export_templates.tpz"
-          D="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
-          mkdir -p "$D"
-          unzip -q -j templates.tpz 'templates/windows_release_*' 'templates/version.txt' -d "$D"
-          rm templates.tpz godot.zip
-
-      - name: Importa il progetto
-        run: ./godot --headless --path . --import
-
-      - name: Esporta
-        run: |
-          mkdir -p build/arm64 build/x64
-          ./godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCalabria.exe
-          ./godot --headless --path . --export-release "Windows x64" build/x64/TerreDiCalabria.exe
-          test -f build/arm64/TerreDiCalabria.exe && test -f build/arm64/TerreDiCalabria.pck
-          test -f build/x64/TerreDiCalabria.exe && test -f build/x64/TerreDiCalabria.pck
-          ls -la build/*
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: gioco-windows
-          path: build/
-
-  installer:
-    name: Crea il Setup.exe
-    needs: esporta
+  compila:
+    name: Esporta il gioco e crea il Setup.exe
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: gioco-windows
-          path: build
+      - name: Scarica Godot e i modelli di esportazione
+        shell: pwsh
+        run: |
+          $V = "$env:GODOT_VERSION-stable"
+          Invoke-WebRequest -Uri "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_win64.exe.zip" -OutFile godot.zip -MaximumRetryCount 5 -RetryIntervalSec 5
+          Expand-Archive godot.zip -DestinationPath "$env:RUNNER_TEMP/godot_bin"
+          # il Godot «console» va lasciato accanto all'eseguibile vero, con il suo nome: lo cerca lì
+          $exe = Get-ChildItem "$env:RUNNER_TEMP/godot_bin" -Filter "*_console.exe" -Recurse | Select-Object -First 1
+          "GODOT=$($exe.FullName)" >> $env:GITHUB_ENV
+          Write-Host "Godot: $($exe.FullName)"
+          Invoke-WebRequest -Uri "https://github.com/godotengine/godot/releases/download/$V/Godot_v${V}_export_templates.tpz" -OutFile templates.zip -MaximumRetryCount 5 -RetryIntervalSec 5
+          $D = "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable"
+          New-Item -ItemType Directory -Force $D | Out-Null
+          Expand-Archive templates.zip -DestinationPath tpl
+          Copy-Item tpl\templates\windows_release_* $D
+          Copy-Item tpl\templates\version.txt $D
+          Remove-Item -Recurse -Force tpl, templates.zip, godot.zip
+
+      - name: Importa il progetto
+        shell: pwsh
+        run: |
+          & $env:GODOT --headless --path . --import
+          exit 0
+
+      - name: Esporta
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build/arm64, build/x64 | Out-Null
+          & $env:GODOT --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCalabria.exe
+          & $env:GODOT --headless --path . --export-release "Windows x64" build/x64/TerreDiCalabria.exe
+          foreach ($f in "build/arm64/TerreDiCalabria.exe", "build/arm64/TerreDiCalabria.pck", "build/x64/TerreDiCalabria.exe", "build/x64/TerreDiCalabria.pck") {
+            if (-not (Test-Path $f)) { Write-Error "Manca $f"; exit 1 }
+          }
+          Get-ChildItem build -Recurse | Format-Table FullName, Length
 
       - name: Installa Inno Setup
         run: choco install innosetup -y --no-progress
@@ -74,11 +70,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "versione=$ver" >> $env:GITHUB_OUTPUT
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: TerreDiCalabria-Setup
-          path: installer/Output/*.exe
-
       - name: Pubblica la versione (solo per main)
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
@@ -86,6 +77,7 @@ jobs:
           tag_name: v${{ steps.wizard.outputs.versione }}
           target_commitish: ${{ github.sha }}
           name: Terre di Calabria ${{ steps.wizard.outputs.versione }}
+          make_latest: true
           body: |
             Installa con **TerreDiCalabria-Setup-${{ steps.wizard.outputs.versione }}.exe** (Windows ARM64 nativo, oppure x64).
             Novità: vedi docs/roadmap.md.

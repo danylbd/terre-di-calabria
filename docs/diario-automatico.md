@@ -263,3 +263,18 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Mura sulle torri nemiche (crescono col tempo, barra di pietre sopra la torre); prima delle mura niente duelli.
 - Ariete e onagro dall'armaiolo, seguono la schiera; modelli fatti da un subagente.
 - Corretto un errore vecchio (schiera sciolta durante l'ultimo duello). Test nuovo `test_assedi`; 41 test OK.
+
+### 2026-11-02 — Step 37: i Cartaginesi (v0.54.0)
+- Ottavo popolo: nemici i Romani, mercenari, porto che rende il doppio, tintoria della porpora, stalla degli elefanti, Annibale.
+- Elefante da guerra come unità speciale nella schiera (dalla stalla).
+- Modelli in tre file separati, fatti da tre subagenti in parallelo in tre worktree (nessun conflitto su `modelli.gd`).
+
+### 2026-11-02 — Step 38: mappa del Bruzio (v0.55.0)
+- La Calabria centrale da coordinate vere: i due mari, l'istmo, la Sila, le Serre, l'Aspromonte, Crotone e Locri.
+- Villaggio nel Marchesato vicino a Crotone; villaggi indigeni Petelia, Scolacium, Consentia.
+- Scritta mentre i subagenti disegnavano i Cartaginesi (worktree separati). Test nuovo `test_bruzio`.
+
+### 2026-11-02 — Step 39: campagna «Annibale nel Bruzio» (v0.56.0)
+- Otto missioni nel Bruzio, dai due lati (Cartagine o Roma), con racconti diversi per lato.
+- Schiere e villaggi indigeni accesi nelle missioni che lo chiedono; prove nuove.
+- Pulsanti sulla mappa della Calabria e scelta del lato. Test nuovo `test_annibale`.

@@ -161,7 +161,7 @@ func _riempi() -> void:
 		_nave.tooltip_text = no if no != "" else "Assi 6, armi 2: va a colpire la torre nemica più vicina alla costa"
 	for t in _macchine:
 		var b: Button = _macchine[t]
-		b.visible = e.tipo == "armaiolo" and e.finito and Schiere.attive() and schiere != null
+		b.visible = e.tipo == Schiere.edificio_macchina(t) and Schiere.macchina_del_popolo(t) and e.finito and Schiere.attive() and schiere != null
 		if b.visible:
 			var no := schiere.motivo_no_macchina(t)
 			b.disabled = no != ""

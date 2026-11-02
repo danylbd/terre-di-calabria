@@ -48,7 +48,7 @@ Proprietario: danylbd. Lingua del progetto, del codice e dei commit: **italiano*
 - `src/storia/` — missioni e campagne; `src/main/` — menu iniziale e mappa della Calabria
 - `src/ui/` — menu, barra, pannelli; `src/core/` — salvataggio, impostazioni, sprite, coordinate, palette; `src/audio/` — audio
 - `assets/grafica/` (sprite **generati**), `assets/terreno/`, `assets/suoni/`, `assets/musica/`
-- `tools/studio/` (modelli 3D in codice e studio di rendering), `tools/terreno/`, `tools/suoni/`, `tools/test/` (test automatici)
+- `tools/studio/` (modelli 3D in codice e studio di rendering; `modelli_*.gd` aggiungono modelli con `catalogo_extra()`), `tools/terreno/`, `tools/suoni/`, `tools/test/` (test automatici)
 - `installer/setup.iss`, `.github/workflows/build.yml`
 
 Dettaglio per sistema e regole tecniche: `docs/PROJECT_MEMORY.md`.
@@ -73,4 +73,4 @@ godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCa
 
 ## Stato
 
-Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve (release v0.53.0): Fasi 1, 2, 3, 4 e 6 fatte, più Monteleone (V1–V3), la rifinitura grafica G6, le sfide e il bilanciamento (sette popoli giocabili, ognuno con tutti gli edifici nel suo stile; tre mappe; quattro campagne). Prossima: **Fase 7 «Le guerre di Annibale»** (idee da Imperivm, `docs/piano-imperivm.md`), step 30–35 (villaggi indigeni, condottieri e schiere, cibo e morale, tipi di unità, abilità, navi) 36 (assedi), 36a (costruttori al cantiere) e 36b (voce di re Italo) fatti; prossimo lo step 37 (Cartaginesi con elefanti). Poi musica nuova e chiusura (versione 1.0). Fase 5 «Vita del villaggio» e iPhone rimandati a una versione successiva (`docs/idee-future.md`).
+Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve (release v0.56.0): Fasi 1, 2, 3, 4 e 6 fatte, più Monteleone (V1–V3), la rifinitura grafica G6, le sfide e il bilanciamento (otto popoli giocabili con i Cartaginesi, ognuno con tutti gli edifici nel suo stile; quattro mappe con il Bruzio di Annibale; cinque campagne con quella di Annibale). Prossima: **Fase 7 «Le guerre di Annibale»** (idee da Imperivm, `docs/piano-imperivm.md`), step 30–35 (villaggi indigeni, condottieri e schiere, cibo e morale, tipi di unità, abilità, navi) 36 (assedi), 36a (costruttori al cantiere), 36b (voce di re Italo) 37 (Cartaginesi con elefanti) 38 (mappa del Bruzio) e 39 (campagna di Annibale) fatti; prossimo lo step 40 (grafica di guerra). Poi musica nuova e chiusura (versione 1.0). Fase 5 «Vita del villaggio» e iPhone rimandati a una versione successiva (`docs/idee-future.md`).
