@@ -31,6 +31,7 @@ var presidiata := false              # torri e castelli: la guardia è entrata, 
 var soldati := 0                     # soldati dentro il forte (o difensori di una torre nemica)
 var soldati_in_arrivo := 0
 var proprietario := 1                # 1 il giocatore, 2.. un altro popolo
+var mura := -1.0                     # torri nemiche (step 36): punti di mura da abbattere prima dei duelli (-1 nessuna)
 var dati_mappa: DatiMappa
 var villaggio: Node
 
@@ -126,6 +127,8 @@ func evidenzia(colore: Color) -> void:
 
 func _draw() -> void:
 	if finito:
+		if proprietario != 1 and mura >= 0.0:
+			_disegna_mura()
 		return
 	# barra di avanzamento del cantiere
 	var w := 64.0
@@ -140,3 +143,15 @@ func _draw() -> void:
 		draw_circle(c, 10, Color("e05a3a"))
 		draw_rect(Rect2(c.x - 1.5, c.y - 6, 3, 8), Palette.PERGAMENA_CHIARA)
 		draw_rect(Rect2(c.x - 1.5, c.y + 4, 3, 3), Palette.PERGAMENA_CHIARA)
+
+
+## Le mura di una torre nemica: una fila di blocchi di pietra sopra la torre, uno per punto.
+func _disegna_mura() -> void:
+	var n := int(Schiere.MURA_MAX)
+	var w := 7.0
+	var x0 := -n * (w + 2.0) * 0.5
+	var y := -70.0 - taglia * 45.0
+	draw_rect(Rect2(x0 - 3, y - 3, n * (w + 2.0) + 4, w + 6), Color(Palette.INCHIOSTRO, 0.7))
+	for k in n:
+		var pieno := k < ceili(mura)
+		draw_rect(Rect2(x0 + k * (w + 2.0), y, w, w), Color("c8bca4") if pieno else Color(0.35, 0.3, 0.26, 0.6))

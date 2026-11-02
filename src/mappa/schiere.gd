@@ -4,6 +4,8 @@ extends Node2D
 ## popolo esce dalla caserma o dal castello con fino a 12 soldati presi dalla riserva. Si comanda in modo
 ## diretto: clic sul condottiero per sceglierlo, poi clic sulla terra (va lì), su una torre nemica o su un
 ## villaggio indigeno (attacca). L'economia resta alla Settlers. Non c'è nella partita in pace.
+## Step 36 (assedi): le torri nemiche hanno le mura, punti da abbattere prima dei duelli, che il nemico rialza
+## col tempo; l'armaiolo costruisce l'ariete (sfonda da vicino) e l'onagro (tira da lontano), che seguono la schiera.
 
 signal cambiata
 
@@ -38,6 +40,19 @@ const ABILITA := {
 		{"nome": "Pioggia di frecce", "descrizione": "Punte d'ossidiana: duelli molto più facili per 10 s", "effetto": "duelli", "valore": 0.2, "durata": 10.0}],
 }
 const LIVELLI_ABILITA := [2, 4]
+const MURA_INIZIO := 2.0             # punti di mura di una torre nemica appena vista
+const MURA_MAX := 8.0
+const RIFORZO_MURA := 45.0           # secondi perché il nemico aggiunga un punto di mura (non mentre lo assediamo)
+const RISCHIO_MURA := 0.2            # senza ariete, sotto le mura un soldato può cadere a ogni colpo
+const MACCHINE := {
+	"ariete": {"nome": "Ariete", "costo": {"assi": 5, "armi": 1}, "danno": 3.0,
+		"descrizione": "Sfonda le mura da vicino (3 punti a colpo) e ripara i soldati"},
+	"onagro": {"nome": "Onagro", "costo": {"assi": 4, "pietra": 3, "armi": 1}, "danno": 2.0,
+		"descrizione": "Tira grossi sassi sulle mura da lontano (2 punti ogni 3 secondi)"},
+}
+const DISTANZA_ONAGRO := 9.0
+const RICARICA_ONAGRO := 3.0
+const VOLO_MASSO := 0.9
 const RICARICA := 60.0
 const NOMI := {"greci": "Eudora", "brettii": "Tauro", "romani": "Gaio Settimio", "saraceni": "Zahra",
 	"normanni": "Osmund", "siculi": "Duketio", "sicani": "Kokalo"}
@@ -61,6 +76,8 @@ var _bonus_fino := 0.0
 var _passo := 1.0
 var _passo_fino := 0.0
 var _orologio := 0.0
+var _tiro_onagro := 0.0
+var _massi: Array = []               # [da, a, tempo]: i sassi dell'onagro in volo
 var _pasto := CONSUMO
 var _fame := FAME
 
@@ -115,7 +132,7 @@ func forma(da: Edificio) -> bool:
 		var s := _nuovo(inizio + _posto(k), Popoli.soldati(1)[0])
 		s.velocita = 1.0
 		truppa.append(s)
-	schiera = {"condottiero": capo, "soldati": truppa, "bersaglio": null, "razioni": 0, "morale": 70}
+	schiera = {"condottiero": capo, "soldati": truppa, "bersaglio": null, "razioni": 0, "morale": 70, "macchine": {}}
 	_rifornisci()
 	villaggio.messaggio.emit("%s guida una schiera di %d soldati: cliccalo per dargli ordini" % [nome_condottiero(), n], false)
 	cambiata.emit()
@@ -177,6 +194,20 @@ func _marcia(percorso: Array[Vector2]) -> void:
 		var p: Array[Vector2] = percorso.duplicate()
 		p[-1] = arrivo + _posto(k)
 		s.percorri(p)
+	var righe: int = (schiera["soldati"].size() + 3) / 4
+	for t in macchine():
+		var m: Colono = macchine()[t]
+		m.imposta_foglio(_foglio_macchina(t, false))
+		var p: Array[Vector2] = percorso.duplicate()
+		p[-1] = arrivo + Vector2(0.6 if t == "onagro" else -0.6, (righe + 1) * 0.5 + 0.4)
+		var b = schiera.get("bersaglio")
+		if t == "onagro" and typeof(b) == TYPE_OBJECT and is_instance_valid(b):
+			# l'onagro si ferma appena il bersaglio è a tiro
+			for i in p.size():
+				if p[i].distance_to(b.centro()) <= DISTANZA_ONAGRO - 1.5:
+					p = p.slice(0, i + 1)
+					break
+		m.percorri(p)
 
 
 ## La traversata (step 35): la schiera va al porto, sale sulla nave e sbarca a un altro nostro porto
@@ -220,7 +251,7 @@ func in_viaggio() -> bool:
 ## Al porto: tutti a bordo, la nave attraversa il mare.
 func _salpa() -> void:
 	var imb: Dictionary = schiera["imbarco"]
-	for m in [schiera["condottiero"]] + schiera["soldati"]:
+	for m in [schiera["condottiero"]] + schiera["soldati"] + macchine().values():
 		m.visible = false
 		m.percorri([m.pos] as Array[Vector2])
 	var nave := _nuovo(Vector2(imb["acqua"]) + Vector2(0.5, 0.5), "nave")
@@ -242,6 +273,9 @@ func _sbarca() -> void:
 		var s: Colono = schiera["soldati"][k]
 		s.pos = terra + _posto(k)
 		s.visible = true
+	for t in macchine():
+		macchine()[t].pos = terra + Vector2(0.6 if t == "onagro" else -0.6, 2.4)
+		macchine()[t].visible = true
 	schiera["nave"].queue_free()
 	schiera.erase("nave")
 	schiera.erase("imbarco")
@@ -442,7 +476,10 @@ func _process(delta: float) -> void:
 	_orologio += delta
 	for k in 2:
 		_ricarica[k] = maxf(0.0, _ricarica[k] - delta)
+	if attive() and villaggio:
+		_rinforza_mura(delta)
 	if not esiste():
+		_avanza_massi(delta)
 		return
 	if _passo != 1.0 and _orologio >= _passo_fino:
 		_passo = 1.0
@@ -458,6 +495,7 @@ func _process(delta: float) -> void:
 		return
 	queue_redraw()
 	_avanza_effetti(delta)
+	_avanza_massi(delta)
 	_rifornisci()
 	_mangia(delta)
 	if not esiste():
@@ -474,6 +512,8 @@ func _process(delta: float) -> void:
 		centro = b.centro()
 	else:
 		centro = Vector2(indigeni.elenco[b]["casella"]) + Vector2(2.5, 2.5)
+	if typeof(b) == TYPE_OBJECT:
+		_onagro(b, delta)
 	if capo.pos.distance_to(centro) > distanza_assalto() + 0.5:
 		return
 	_duello -= delta
@@ -484,6 +524,8 @@ func _process(delta: float) -> void:
 	for s in schiera["soldati"]:
 		s.imposta_foglio(Popoli.soldati(1)[1])
 	_combatti(b)
+	if not esiste():
+		return
 	_effetti(centro)
 
 
@@ -509,6 +551,9 @@ func _avanza_effetti(delta: float) -> void:
 
 ## Un duello: vince il nostro (con il vantaggio dei duelli e il condottiero che dà coraggio) o il difensore.
 func _combatti(b) -> void:
+	if b is Edificio and b.mura > 0.0:
+		_colpisci_mura(b)
+		return
 	var tipo_dif := "fanteria"
 	if b is Edificio:
 		tipo_dif = Popoli.tipo_soldato(Popoli.di(b.proprietario))
@@ -535,6 +580,7 @@ func _perdi_soldato() -> void:
 	if truppa.is_empty():
 		var capo: Colono = schiera["condottiero"]
 		capo.queue_free()
+		_perdi_macchine()
 		villaggio.messaggio.emit("%s si ritira ferito: la schiera è sciolta" % nome_condottiero(), true)
 		schiera = {}
 		scelta = false
@@ -546,6 +592,150 @@ func _perdi_soldato() -> void:
 	cambiata.emit()
 
 
+# ------------------------------------------------------------ assedi (step 36)
+
+func macchine() -> Dictionary:
+	return schiera.get("macchine", {}) if esiste() else {}
+
+
+func _foglio_macchina(t: String, lavoro: bool) -> String:
+	var nome := t + ("_colpo" if t == "ariete" else "_tiro") if lavoro else t
+	if ResourceLoader.exists("res://assets/grafica/%s.png" % nome):
+		return nome
+	return "portatore_nessuno"
+
+
+## Perché l'armaiolo non può costruire questa macchina adesso («» se può).
+func motivo_no_macchina(t: String) -> String:
+	if not attive():
+		return "Le macchine d'assedio non ci sono in questa partita"
+	if not esiste():
+		return "Serve una schiera da seguire"
+	if in_viaggio():
+		return "La schiera è in mare"
+	if macchine().has(t):
+		return "%s ha già il suo %s" % [nome_condottiero(), MACCHINE[t]["nome"].to_lower()]
+	var costo: Dictionary = MACCHINE[t]["costo"]
+	for m in costo:
+		if villaggio.scorte.get(m, 0) < costo[m]:
+			return "Servono " + ", ".join(costo.keys().map(func(k): return "%d %s" % [costo[k], CatalogoEdifici.NOMI_RISORSE.get(k, k).to_lower()]))
+	return ""
+
+
+## L'armaiolo costruisce la macchina, che esce dalla bottega e raggiunge la schiera.
+func costruisci_macchina(t: String, armaiolo: Edificio) -> bool:
+	if motivo_no_macchina(t) != "":
+		return false
+	var costo: Dictionary = MACCHINE[t]["costo"]
+	for m in costo:
+		villaggio.scorte[m] -= costo[m]
+	villaggio.scorte_cambiate.emit()
+	var inizio := Vector2(armaiolo.bandiera) + Vector2(0.5, 0.6)
+	var c := _nuovo(inizio, _foglio_macchina(t, false))
+	c.velocita = 0.8
+	schiera["macchine"][t] = c
+	var capo: Colono = schiera["condottiero"]
+	var percorso := percorso_a_piedi(Vector2i(inizio.floor()), Vector2i(capo.pos.floor()))
+	if not percorso.is_empty():
+		percorso[-1] = capo.pos + Vector2(0.6 if t == "onagro" else -0.6, 2.4)
+		c.percorri(percorso)
+	villaggio.messaggio.emit("L'armaiolo ha costruito l'%s: segue la schiera di %s" % [MACCHINE[t]["nome"].to_lower(), nome_condottiero()], false)
+	Suono.suona("completato")
+	cambiata.emit()
+	return true
+
+
+## Assi, pietre e armi delle macchine (nel salvataggio tornano nel magazzino: le macchine non si salvano).
+func materiali() -> Dictionary:
+	var m := {}
+	for t in macchine():
+		var costo: Dictionary = MACCHINE[t]["costo"]
+		for k in costo:
+			m[k] = m.get(k, 0) + costo[k]
+	return m
+
+
+## Le torri nemiche si fanno le mura e le rialzano col tempo (non quella che stiamo assediando).
+func _rinforza_mura(delta: float) -> void:
+	var assediata = schiera.get("bersaglio") if esiste() else null
+	if typeof(assediata) != TYPE_OBJECT:
+		assediata = null
+	for n in villaggio.nemici.values():
+		if n.mura < 0.0:
+			n.mura = MURA_INIZIO
+			n.queue_redraw()
+		elif n.mura < MURA_MAX and n != assediata:
+			var prima := ceili(n.mura)
+			n.mura = minf(MURA_MAX, n.mura + delta / RIFORZO_MURA)
+			if ceili(n.mura) != prima:
+				n.queue_redraw()
+
+
+## Un colpo sotto le mura: i soldati (e l'ariete, se è lì) le abbattono un po'; senza ariete
+## dagli spalti piovono sassi e un soldato può cadere.
+func _colpisci_mura(b: Edificio) -> void:
+	var danno := 1.0
+	var ariete: Colono = macchine().get("ariete")
+	if ariete and ariete.pos.distance_to(b.centro()) > distanza_assalto() + 2.0:
+		return          # i soldati aspettano al riparo che arrivi l'ariete
+	if ariete:
+		danno += MACCHINE["ariete"]["danno"]
+		ariete.imposta_foglio(_foglio_macchina("ariete", true))
+		ariete._anim.play()
+		Suono.suona_in("martello", b.position, 2.0)
+	b.mura = maxf(0.0, b.mura - danno)
+	b.queue_redraw()
+	if b.mura <= 0.0:
+		villaggio.messaggio.emit("Le mura sono crollate: all'assalto!", false)
+		return
+	if ariete == null and _rng.randf() < RISCHIO_MURA:
+		_cambia_morale(-2)
+		_perdi_soldato()
+
+
+## L'onagro tira da lontano: prima sulle mura, poi (a mura giù) sui difensori.
+func _onagro(b: Edificio, delta: float) -> void:
+	var onagro: Colono = macchine().get("onagro")
+	if onagro == null or onagro.in_cammino():
+		return
+	if onagro.pos.distance_to(b.centro()) > DISTANZA_ONAGRO:
+		return
+	_tiro_onagro -= delta
+	if _tiro_onagro > 0.0:
+		return
+	_tiro_onagro = RICARICA_ONAGRO
+	onagro.imposta_foglio(_foglio_macchina("onagro", true))
+	onagro._anim.play()
+	_massi.append([onagro.pos, b.centro() + Vector2(_rng.randf_range(-0.4, 0.4), _rng.randf_range(-0.4, 0.4)), 0.0, b])
+
+
+func _avanza_massi(delta: float) -> void:
+	for m in _massi:
+		m[2] += delta
+		if m[2] >= VOLO_MASSO and m.size() > 3:
+			var b = m[3]
+			m.resize(3)
+			if not is_instance_valid(b) or not villaggio.nemici.has(b.id):
+				continue
+			Suono.suona_in("piccone", b.position, 3.0)
+			if b.mura > 0.0:
+				b.mura = maxf(0.0, b.mura - MACCHINE["onagro"]["danno"])
+				b.queue_redraw()
+				if b.mura <= 0.0:
+					villaggio.messaggio.emit("L'onagro ha aperto una breccia nelle mura!", false)
+			elif b.soldati > 1 and _rng.randf() < 0.4:
+				b.soldati -= 1
+			_polvere.append([b.centro(), 0.0])
+	_massi = _massi.filter(func(m): return m[2] < VOLO_MASSO + 0.05)
+
+
+func _perdi_macchine() -> void:
+	for t in macchine():
+		macchine()[t].queue_free()
+	if esiste():
+		schiera["macchine"] = {}
+
+
 func _fine_assalto(testo: String) -> void:
 	schiera["bersaglio"] = null
 	_difensori_villaggio = -1
@@ -553,6 +743,9 @@ func _fine_assalto(testo: String) -> void:
 	capo.imposta_foglio(_foglio_condottiero(false))
 	for s in schiera["soldati"]:
 		s.imposta_foglio(Popoli.soldati(1)[0])
+	for t in macchine():
+		macchine()[t].imposta_foglio(_foglio_macchina(t, false))
+		macchine()[t]._ferma()
 	if testo != "":
 		villaggio.messaggio.emit(testo, false)
 	cambiata.emit()
@@ -566,6 +759,13 @@ func _draw() -> void:
 		var b := dati.a_schermo(pr[1].x, pr[1].y)
 		var q := a.lerp(b, f) + Vector2(0, -40.0 * sin(f * PI) - 20.0)
 		draw_circle(q, 2.5, Color("3a3028"))
+	for m in _massi:
+		var f: float = minf(1.0, m[2] / VOLO_MASSO)
+		var a := dati.a_schermo(m[0].x, m[0].y)
+		var b := dati.a_schermo(m[1].x, m[1].y)
+		var q := a.lerp(b, f) + Vector2(0, -110.0 * sin(f * PI) - 30.0)
+		draw_circle(q, 6.0, Color("5a5048"))
+		draw_circle(q + Vector2(-1.5, -1.5), 3.0, Color("8a8070"))
 	for po in _polvere:
 		var t: float = po[1] / 0.8
 		draw_circle(dati.a_schermo(po[0].x, po[0].y) + Vector2(0, -10), 8.0 + 14.0 * t, Color(0.82, 0.74, 0.58, 0.45 * (1.0 - t)))
@@ -596,6 +796,7 @@ func scioglie() -> void:
 	villaggio.soldati += soldati()
 	for s in schiera["soldati"]:
 		s.queue_free()
+	_perdi_macchine()
 	schiera["condottiero"].queue_free()
 	schiera = {}
 	scelta = false

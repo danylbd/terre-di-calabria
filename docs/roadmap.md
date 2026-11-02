@@ -87,7 +87,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 35 | Navi da guerra e traversate delle schiere | fatto (v0.50.0) |
 | 36a | Costruttori al cantiere (come in Settlers) | fatto (v0.51.0) |
 | 36b | Voce di re Italo (sillabe inventate, libere da diritti) | fatto (v0.52.0) |
-| 36 | Assedi (ariete, onagro) | |
+| 36 | Assedi (ariete, onagro) | fatto (v0.53.0) |
 | 37 | I Cartaginesi (ottavo popolo, elefanti) | |
 | 38 | Mappa «Il Bruzio di Annibale» | |
 | 39 | Campagna «Annibale nel Bruzio» (dai due lati) | |
