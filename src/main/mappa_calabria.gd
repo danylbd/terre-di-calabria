@@ -84,7 +84,7 @@ var _canto: Button                    # l'epilogo «L'ultimo canto»
 var _annibale: Button                 # la campagna di Annibale (step 39), sempre aperta
 var _bruzio: Button                   # partita libera sulla mappa del Bruzio
 var _scelta_lato: PanelContainer      # Roma o Cartagine
-const ANNIBALE := Vector2(1240, 470)
+const ANNIBALE := Vector2(1440, 540)
 const BRUZIO := Vector2(1150, 360)
 const CANTO := Vector2(1160, 650)
 const FUOCO := Vector2(470, 1040)
