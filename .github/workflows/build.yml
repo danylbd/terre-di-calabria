@@ -47,6 +47,7 @@ jobs:
         with:
           name: gioco-windows
           path: build/
+          retention-days: 1        # serve solo al passo dopo: non occupa lo spazio di Actions
 
   installer:
     name: Crea il Setup.exe
@@ -78,6 +79,7 @@ jobs:
         with:
           name: TerreDiCalabria-Setup
           path: installer/Output/*.exe
+          retention-days: 3        # il Setup resta per sempre nella Release; qui basta per provarlo
 
       - name: Pubblica la versione (solo per main)
         if: github.ref == 'refs/heads/main'
