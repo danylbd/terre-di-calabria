@@ -13,6 +13,7 @@ const MAPPE := {
 	"costa_ionica": ["Costa ionica", "Monti a ovest, pianura di ulivi e il mare a est."],
 	"monteleone": ["Monteleone", "Il Vibonese: Monteleone sul colle, il golfo, Tropea, il Poro e le Serre."],
 	"zancle": ["Zancle e l'Etna", "Oltre lo Stretto: Messina, i Peloritani, Taormina e il vulcano fumante."],
+	"bruzio": ["Il Bruzio di Annibale", "La Calabria di Annibale tra i due mari: Crotone e il Lacinio, la Sila, Consentia, Scolacium e Locri."],
 }
 
 ## Costa del Vibonese in caselle (da coordinate vere: x = (lon − 15,80)/0,50·96, y = (38,80 − lat)/0,36·96),
@@ -46,6 +47,8 @@ static func crea(mappa: String, seme: int) -> DatiMappa:
 			return genera_monteleone(seme)
 		"zancle":
 			return genera_zancle(seme)
+		"bruzio":
+			return genera_bruzio(seme)
 	return genera(seme)
 
 
@@ -275,6 +278,104 @@ static func genera_zancle(seme: int, w := 96, h := 96) -> DatiMappa:
 	for nome in LUOGHI_ZANCLE:
 		d.luoghi[nome] = LUOGHI_ZANCLE[nome]
 	_radura(d, LUOGHI_ZANCLE["Zancle"], 9)
+	return d
+
+
+## Il Bruzio di Annibale (step 38): la Calabria centrale tra il Tirreno e lo Ionio, da coordinate vere
+## (x = (lon − 15,95)·80, y = (39,45 − lat)·100, una casella ≈ 1,1 km). A ovest la costa tirrenica con il
+## golfo di Sant'Eufemia, a est la costa ionica dal capo Alice a Locri, con Crotone e il capo Lacinio.
+const COSTA_TIRRENO := [
+	Vector2(2.4, -5), Vector2(6.4, 9), Vector2(9.6, 32), Vector2(12.0, 40), Vector2(20.0, 47), Vector2(21.6, 55),
+	Vector2(16.8, 72), Vector2(14.4, 73), Vector2(6.4, 73), Vector2(-4, 75),
+]
+const COSTA_IONIO := [
+	Vector2(88, -2), Vector2(96.8, 5), Vector2(94.4, 8), Vector2(94.4, 15), Vector2(94.4, 20), Vector2(96, 25),
+	Vector2(94.4, 37), Vector2(100, 42), Vector2(91.2, 56), Vector2(86.4, 54), Vector2(72.8, 52), Vector2(53.6, 63),
+	Vector2(48, 76), Vector2(49.6, 88), Vector2(49.6, 100), Vector2(36.8, 113), Vector2(28, 118), Vector2(24.8, 121),
+	Vector2(18.4, 130),
+]
+const LUOGHI_BRUZIO := {
+	"Crotone": Vector2i(89, 36), "Capo Lacinio": Vector2i(95, 41), "Petelia": Vector2i(87, 18), "Consentia": Vector2i(24, 15),
+	"Sila": Vector2i(48, 20), "Valle del Crati": Vector2i(26, 4), "Terina": Vector2i(25, 50), "Scolacium": Vector2i(49, 65),
+	"Hipponion": Vector2i(13, 79), "Serre": Vector2i(33, 92), "Kaulon": Vector2i(46, 100), "Locri": Vector2i(23, 119),
+	"Aspromonte": Vector2i(9, 114), "Marchesato": Vector2i(76, 34),
+}
+## colline a campana: centro, altezza, raggio, tetto (0 = nessuno)
+const COLLI_BRUZIO := [
+	[Vector2(48, 20), 150.0, 19.0, 108.0],   # l'altopiano della Sila, coperto di pini
+	[Vector2(13, 18), 120.0, 6.0, 0.0],      # la Catena Costiera sopra Paola
+	[Vector2(14, 30), 110.0, 5.0, 0.0],
+	[Vector2(26, 6), -20.0, 7.0, 0.0],       # la valle del Crati
+	[Vector2(35, 58), -10.0, 8.0, 0.0],      # l'istmo tra i due mari, il punto più stretto d'Italia
+	[Vector2(36, 84), 135.0, 9.0, 0.0],      # le Serre
+	[Vector2(31, 98), 140.0, 9.0, 0.0],
+	[Vector2(9, 116), 230.0, 13.0, 0.0],     # l'Aspromonte
+	[Vector2(76, 34), 30.0, 12.0, 0.0],      # le colline d'argilla del Marchesato
+	[Vector2(75, 28), 185.0, 2.6, 0.0],      # uno sperone di roccia nel Marchesato, la cava di Crotone
+]
+
+
+static func genera_bruzio(seme: int, w := 104, h := 120) -> DatiMappa:
+	var d := DatiMappa.new(w, h)
+	var frastaglio := _rumore(seme + 20, 0.12, 2)
+	var umido := _rumore(seme + 21, 0.06, 3)
+	var secco := _rumore(seme + 22, 0.07, 2)
+	var dettaglio := _rumore(seme + 23, 0.25, 2)
+	var coste := [COSTA_TIRRENO, COSTA_IONIO]
+	var terra := PackedVector2Array(COSTA_TIRRENO)
+	terra.append_array([Vector2(-6, h + 6)])
+	var ionio_rovescio := COSTA_IONIO.duplicate()
+	ionio_rovescio.reverse()
+	terra.append_array(PackedVector2Array(ionio_rovescio))
+	terra.append_array([Vector2(88, -6), Vector2(2.4, -6)])
+
+	# --- quote dei vertici (s: distanza con segno dalla costa, positiva verso terra)
+	var dist_v := PackedFloat32Array()
+	dist_v.resize((w + 1) * (h + 1))
+	for j in h + 1:
+		for i in w + 1:
+			var p := Vector2(i, j)
+			var s := _distanza_costa(p, coste, [terra]) + frastaglio.get_noise_2d(i, j) * 1.3
+			dist_v[j * (w + 1) + i] = s
+			var q := 0.0
+			if s > 0.0:
+				q = 5.0 + minf(s, 8.0) * 3.0
+				for c in COLLI_BRUZIO:
+					var r: float = c[2]
+					var alta: float = c[1] * exp(-p.distance_squared_to(c[0]) / (2.0 * r * r))
+					q += minf(alta, c[3]) if c[3] > 0.0 else alta
+				q += dettaglio.get_noise_2d(i, j) * 3.0
+				q = maxf(q, 3.0)
+			d.imposta_quota(i, j, q)
+
+	# --- tipo di terreno per casella
+	for y in h:
+		for x in w:
+			var centro := Vector2(x + 0.5, y + 0.5)
+			var s := (dist_v[y * (w + 1) + x] + dist_v[y * (w + 1) + x + 1] + dist_v[(y + 1) * (w + 1) + x] + dist_v[(y + 1) * (w + 1) + x + 1]) * 0.25
+			var q := d.quota(centro.x, centro.y)
+			var t := T.PRATO
+			if s <= 0.0:
+				t = T.ACQUA
+			elif s < 1.6 and q < 20.0:
+				t = T.SABBIA
+			elif q > 225.0:
+				t = T.NEVE
+			elif q > 150.0:
+				t = T.ROCCIA
+			elif centro.distance_to(COLLI_BRUZIO[0][0]) < 22.0 and q > 60.0:
+				t = T.BOSCO                   # i pini della Sila
+			elif (q > 95.0 and umido.get_noise_2d(x, y) > -0.3) or (umido.get_noise_2d(x, y) > 0.15 and q > 20.0):
+				t = T.BOSCO
+			elif centro.distance_to(COLLI_BRUZIO[8][0]) < 16.0 and secco.get_noise_2d(x, y) > -0.2:
+				t = T.SECCO                   # le argille assolate del Marchesato
+			d.imposta_tipo(x, y, t)
+
+	_mare_piatto(d)
+	for nome in LUOGHI_BRUZIO:
+		d.luoghi[nome] = LUOGHI_BRUZIO[nome]
+	_radura(d, LUOGHI_BRUZIO["Crotone"] + Vector2i(-8, -2), 10)
+	_spiana(d, LUOGHI_BRUZIO["Crotone"] + Vector2i(3, 0), 4, true)     # il porto di Crotone
 	return d
 
 
