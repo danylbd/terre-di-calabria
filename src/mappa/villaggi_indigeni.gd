@@ -65,6 +65,14 @@ func genera(mappa: String) -> void:
 	cambiato.emit()
 
 
+## Lo sprite di un pezzo del villaggio: il modello proprio (step 40) se c'è, altrimenti l'edificio di un popolo.
+static func sprite_di(tipo: String, k: int) -> String:
+	var proprio := "indigeni_%s_%d" % [tipo, k]
+	if ResourceLoader.exists("res://assets/grafica/%s.png" % proprio):
+		return proprio
+	return TIPI[tipo]["sprite"][k]
+
+
 func _aggiungi(v: Dictionary) -> void:
 	elenco.append(v)
 	var c: Vector2i = v["casella"]
@@ -77,7 +85,7 @@ func _aggiungi(v: Dictionary) -> void:
 			villaggio.togli_decori.emit(Vector2i(x, y))
 	for k in 3:
 		var p: Vector2i = c + posti[k]
-		var s := Sprites.crea(TIPI[v["tipo"]]["sprite"][k])
+		var s := Sprites.crea(sprite_di(v["tipo"], k))
 		s.position = dati.a_schermo(p.x + 1.0, p.y + 1.0)
 		oggetti.add_child(s)
 		nodi.append(s)

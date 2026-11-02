@@ -73,3 +73,16 @@ Il proprietario vuole sentire la voce di re Italo, solo con suoni e voci liberi 
 3. **Voce registrata da una persona** (il proprietario o un amico che firma il permesso): voce vera e diritti chiari.
 
 Risposta (2026-11-02): **1, voce inventata**. Fatta nello step 36b.
+
+## 2026-11-02 — Musica nuova: serve scaricare FluidSynth e un soundfont
+
+La decisione è: musica con **FluidSynth** e un **soundfont orchestrale libero**, brani originali scritti in codice. Per farlo devo **scaricare e installare** due cose sul computer di sviluppo (non nel gioco):
+1. FluidSynth (programma libero, licenza LGPL), circa 5–10 MB;
+2. un soundfont libero, per esempio «GeneralUser GS» (licenza libera, si può usare nei giochi) o «FluidR3_GM» (MIT), circa 30–150 MB.
+
+Le regole di lavoro mi chiedono il tuo permesso per scaricare file. Posso scaricarli?
+★ Sì, scarica FluidSynth e GeneralUser GS · Sì, ma un altro soundfont · No, usa il sintetizzatore che c'è già (tools/suoni/musica.py)
+
+Intanto vado avanti con il resto (step 40 e la chiusura).
+
+Risposta: (in attesa)

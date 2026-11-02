@@ -145,8 +145,18 @@ func _draw() -> void:
 		draw_rect(Rect2(c.x - 1.5, c.y + 4, 3, 3), Palette.PERGAMENA_CHIARA)
 
 
-## Le mura di una torre nemica: una fila di blocchi di pietra sopra la torre, uno per punto.
+## Le mura di una torre nemica: una fila di blocchi di pietra sopra la torre, uno per punto; a mura
+## crollate, macerie e polvere ai piedi della torre (step 40).
 func _disegna_mura() -> void:
+	if mura <= 0.0:
+		var rng := RandomNumberGenerator.new()
+		rng.seed = id
+		for k in 9:
+			var p := Vector2(rng.randf_range(-34, 34), rng.randf_range(-6, 16))
+			var r := rng.randf_range(3.0, 6.5)
+			draw_circle(p + Vector2(1.5, 2), r, Color(0, 0, 0, 0.25))
+			draw_circle(p, r, Color("b4a68c").darkened(rng.randf_range(0.0, 0.3)))
+			draw_circle(p + Vector2(-r * 0.3, -r * 0.3), r * 0.45, Color("d8ccb0"))
 	var n := int(Schiere.MURA_MAX)
 	var w := 7.0
 	var x0 := -n * (w + 2.0) * 0.5

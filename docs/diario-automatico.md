@@ -278,3 +278,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Otto missioni nel Bruzio, dai due lati (Cartagine o Roma), con racconti diversi per lato.
 - Schiere e villaggi indigeni accesi nelle missioni che lo chiedono; prove nuove.
 - Pulsanti sulla mappa della Calabria e scelta del lato. Test nuovo `test_annibale`.
+
+### 2026-11-02 — GitHub e step 40 (v0.57.0)
+- Lo spazio di Actions era finito (artifact a 90 giorni): workflow riscritto in un solo job su Windows senza artifact, solo per i push su main; esito nel ramo `ci-esito`. Prima compilazione verde (esecuzione 130, release v0.56.0).
+- Step 40: modelli dei 4 villaggi indigeni (12, subagente), macerie delle mura crollate. **Fase 7 finita.**
+- Il proprietario cancella a mano le release vecchie (le cancellazioni definitive non posso farle io).

@@ -91,7 +91,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 37 | I Cartaginesi (ottavo popolo, elefanti) | fatto (v0.54.0) |
 | 38 | Mappa «Il Bruzio di Annibale» | fatto (v0.55.0) |
 | 39 | Campagna «Annibale nel Bruzio» (dai due lati) | fatto (v0.56.0) |
-| 40 | Rifinitura grafica di guerra | |
+| 40 | Rifinitura grafica di guerra | fatto (v0.57.0) |
 
 ## Per finire il gioco (dopo la Fase 7)
 
