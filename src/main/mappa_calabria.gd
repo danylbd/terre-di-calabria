@@ -81,6 +81,11 @@ const ZANCLE := Vector2(600, 860)
 var _zancle: Button                   # partita libera in Sicilia, oltre lo Stretto
 var _fuoco: Button                    # la campagna in Sicilia (docs/fuoco.md)
 var _canto: Button                    # l'epilogo «L'ultimo canto»
+var _annibale: Button                 # la campagna di Annibale (step 39), sempre aperta
+var _bruzio: Button                   # partita libera sulla mappa del Bruzio
+var _scelta_lato: PanelContainer      # Roma o Cartagine
+const ANNIBALE := Vector2(1240, 470)
+const BRUZIO := Vector2(1150, 360)
 const CANTO := Vector2(1160, 650)
 const FUOCO := Vector2(470, 1040)
 const MONTELEONE := Vector2(880, 735)
@@ -153,6 +158,26 @@ func _ready() -> void:
 	_canto.add_theme_font_size_override("font_size", 16)
 	_canto.pressed.connect(_gioca.bind("ultimo_canto"))
 	add_child(_canto)
+	_annibale = Button.new()
+	var prossima_annibale := Missione.prossima(Missione.CAMPAGNA_ANNIBALE)
+	_annibale.text = "Annibale nel Bruzio" if prossima_annibale != "" else "Annibale nel Bruzio ✔"
+	_annibale.tooltip_text = ("Campagna: la seconda guerra punica in Calabria, con Roma o con Cartagine" if prossima_annibale == ""
+		or prossima_annibale == Missione.CAMPAGNA_ANNIBALE[0] else "%d. %s" % [Missione.CAMPAGNA_ANNIBALE.find(prossima_annibale) + 1,
+		Missione.MISSIONI[prossima_annibale]["titolo"]])
+	_annibale.add_theme_font_size_override("font_size", 18)
+	_annibale.pressed.connect(_apri_annibale)
+	add_child(_annibale)
+	_bruzio = Button.new()
+	_bruzio.text = "Gioca nel Bruzio"
+	_bruzio.tooltip_text = "Partita libera nella Calabria di Annibale: Crotone, la Sila, i due mari"
+	_bruzio.add_theme_font_size_override("font_size", 16)
+	_bruzio.pressed.connect(func():
+		Impostazioni.missione = ""
+		Impostazioni.mappa = "bruzio"
+		get_tree().change_scene_to_file("res://src/mappa/partita.tscn"))
+	add_child(_bruzio)
+	_scelta_lato = _crea_scelta_lato()
+	add_child(_scelta_lato)
 	_scelta_popolo = _crea_scelta_popolo()
 	add_child(_scelta_popolo)
 	var indietro := Button.new()
@@ -182,6 +207,47 @@ func _apri_soglia() -> void:
 		_scelta_popolo.visible = true
 		return
 	_gioca(prossima)
+
+
+func _apri_annibale() -> void:
+	var prossima := Missione.prossima(Missione.CAMPAGNA_ANNIBALE)
+	if prossima == "":
+		prossima = Missione.CAMPAGNA_ANNIBALE[-1]      # finita: si può rigiocare l'ultima
+	if not Missione.lato_scelto() or prossima == Missione.CAMPAGNA_ANNIBALE[0]:
+		_scelta_lato.visible = true
+		return
+	_gioca(prossima)
+
+
+func _crea_scelta_lato() -> PanelContainer:
+	var pannello := PanelContainer.new()
+	pannello.visible = false
+	var colonna := VBoxContainer.new()
+	colonna.add_theme_constant_override("separation", 10)
+	pannello.add_child(colonna)
+	var titolo := Label.new()
+	titolo.text = "Annibale nel Bruzio — da che parte stai?"
+	titolo.add_theme_font_size_override("font_size", 26)
+	titolo.add_theme_color_override("font_color", Palette.TERRACOTTA_SCURA)
+	colonna.add_child(titolo)
+	var testi := {"cartaginesi": "Con Cartagine — Annibale, gli elefanti e gli alleati Brettii",
+		"romani": "Con Roma — le legioni, le rocche e la pazienza del Temporeggiatore"}
+	for lato in Missione.LATI_ANNIBALE:
+		var b := Button.new()
+		b.text = testi[lato]
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.pressed.connect(func():
+			Missione.scegli_lato_annibale(lato)
+			_gioca(Missione.CAMPAGNA_ANNIBALE[0]))
+		colonna.add_child(b)
+	var annulla := Button.new()
+	annulla.text = "Annulla"
+	annulla.pressed.connect(func(): pannello.visible = false)
+	colonna.add_child(annulla)
+	pannello.set_anchors_and_offsets_preset(Control.PRESET_CENTER, Control.PRESET_MODE_MINSIZE)
+	pannello.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	pannello.grow_vertical = Control.GROW_DIRECTION_BOTH
+	return pannello
 
 
 func _crea_scelta_popolo() -> PanelContainer:
@@ -241,6 +307,8 @@ func _disponi() -> void:
 	_fuoco.position = _p(FUOCO) - Vector2(_fuoco.get_combined_minimum_size().x * 0.5, 0)
 	_canto.position = _p(CANTO) - Vector2(_canto.get_combined_minimum_size().x * 0.5, 0)
 	_soglia.position = _p(SOGLIA) - _soglia.get_combined_minimum_size() * 0.5
+	_annibale.position = _p(ANNIBALE) - _annibale.get_combined_minimum_size() * 0.5
+	_bruzio.position = _p(BRUZIO) - Vector2(_bruzio.get_combined_minimum_size().x * 0.5, 0)
 	queue_redraw()
 
 

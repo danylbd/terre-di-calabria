@@ -44,7 +44,8 @@ func prepara(v: Villaggio, d: DatiMappa, nodo_oggetti: Node2D, ris: RisorseNatur
 	risorse = ris
 	dati = d
 	oggetti = nodo_oggetti
-	attivi = Impostazioni.villaggi_indigeni and Impostazioni.missione == ""
+	attivi = Impostazioni.villaggi_indigeni and (Impostazioni.missione == ""
+		or Missione.MISSIONI.get(Impostazioni.missione, {}).get("indigeni", false))
 
 
 ## Partita nuova: i villaggi nascono vicino ai loro luoghi (o nelle loro direzioni), dove c'è spazio.

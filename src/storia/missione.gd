@@ -18,10 +18,174 @@ const CAMPAGNA_FUOCO := ["fuoco_traversata", "fuoco_zancle", "fuoco_vasai", "fuo
 ## l'epilogo (docs/ultimo_canto.md): il Sigillo intero torna sulla Soglia, e Rocco si svela
 const CAMPAGNA_FINALE := ["ultimo_canto"]
 const CAMPAGNE := [CAMPAGNA_GRECI, CAMPAGNA_SOGLIA, CAMPAGNA_FUOCO, CAMPAGNA_FINALE]
+## la campagna di Annibale (step 39, docs/annibale.md): sempre aperta, sulla mappa del Bruzio, giocabile dai
+## due lati (Roma o Cartagine con i Brettii); le schiere e i villaggi indigeni ci sono
+const CAMPAGNA_ANNIBALE := ["annibale_sbarco", "annibale_brettii", "annibale_condottiero", "annibale_petelia",
+	"annibale_lacinio", "annibale_marchesato", "annibale_due_mari", "annibale_partenza"]
+const LATI_ANNIBALE := ["cartaginesi", "romani"]
 ## le sfide (docs/sfide.md): sempre aperte, senza sconfitta; il cronometro segna il record
 const SFIDE := ["sfida_200", "sfida_seta", "sfida_alluvione"]
 
 const MISSIONI := {
+	# ---------------------------------------------------- la campagna di Annibale (step 39, docs/annibale.md)
+	"annibale_sbarco": {
+		"titolo": "Il porto di Crotone",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 40, "schiere": true, "indigeni": true,
+		"scorte": {"tronchi": 24, "assi": 40, "pietra": 40, "grano": 8, "pesce": 8},
+		"inizio": {
+			"cartaginesi": [
+				["Rocco della Lira", "Ascoltate, ascoltate... Questa è una storia vera, o quasi. Dopo Canne, Annibale scese a sud, nella terra dei Brettii, e ci restò tanti anni quanti ne ha un ragazzo che diventa uomo."],
+				["Annibale", "Crotone ha un buon porto e campi d'argilla che danno grano. Da qui arriveranno le navi di Cartagine. Costruite, e in fretta."],
+			],
+			"romani": [
+				["Rocco della Lira", "Ascoltate, ascoltate... Dopo Canne, Roma tremava. E Annibale scese a sud, nella terra dei Brettii. Ma qualcuno, a Crotone, teneva ancora alta l'aquila."],
+				["Gaio Settimio", "Crotone è la chiave dello Ionio. Se Annibale prende il porto, da Cartagine gli arriveranno uomini ed elefanti. Fortifichiamola."],
+			],
+		},
+		"obiettivi": [
+			{"testo": "Fai crescere il villaggio fino a 50 coloni", "aiuto": "Abitazioni, cibo e il lusso del tuo popolo: le case crescono più in fretta.", "prova": "popolazione", "n": 50},
+			{"testo": "Costruisci il porto", "aiuto": "Nel menu «Base», sulla riva vicino a Crotone. Le navi portano anfore e tornano con i ducati.", "prova": "edificio", "tipo": "porto"},
+		],
+		"fine": {
+			"cartaginesi": [["Annibale", "Le vele entrano nel golfo. Da oggi il Bruzio non è più una trappola: è una casa."]],
+			"romani": [["Gaio Settimio", "Il porto è nostro. Che Annibale guardi pure il mare: non ne arriverà niente."]],
+		},
+	},
+	"annibale_brettii": {
+		"titolo": "I popoli della Sila",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 50, "schiere": true, "indigeni": true,
+		"scorte": {"tronchi": 24, "assi": 40, "pietra": 40, "grano": 8, "pesce": 8, "vino": 4, "olio": 4},
+		"inizio": {
+			"cartaginesi": [
+				["Rocco della Lira", "I Brettii scendevano dalla Sila con le loro pecore e le loro fionde. Roma li aveva umiliati, e non l'avevano dimenticato."],
+				["Annibale", "Un esercito lontano da casa vive dei suoi amici. Portate doni ai villaggi: Petelia, Consentia, Scolacium. Chi mangia il nostro pane combatte con noi."],
+			],
+			"romani": [
+				["Rocco della Lira", "I Brettii scendevano dalla Sila con le loro pecore e le loro fionde. Annibale prometteva loro la libertà; Roma, la pace."],
+				["Gaio Settimio", "Le città del Bruzio guardano chi vince. Facciamo loro vedere che Roma sa anche donare, non solo comandare."],
+			],
+		},
+		"obiettivi": [
+			{"testo": "Fai alleato (o conquista) un villaggio del Bruzio", "aiuto": "Clic su un villaggio indigeno: con i doni di lusso diventa alleato, con i soldati si conquista.", "prova": "villaggi", "n": 1},
+			{"testo": "Fai crescere il villaggio fino a 70 coloni", "aiuto": "Gli alleati mandano parte del loro raccolto al tuo magazzino.", "prova": "popolazione", "n": 70},
+		],
+		"fine": [["Rocco della Lira", "Il villaggio mandò grano e formaggio. E con il formaggio, come sempre, arrivarono le notizie: l'altro esercito si stava muovendo."]],
+	},
+	"annibale_condottiero": {
+		"titolo": "La schiera",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 60, "schiere": true, "indigeni": true, "brettii": true,
+		"scorte": {"tronchi": 24, "assi": 50, "pietra": 50, "grano": 10, "pesce": 10, "pane": 20, "armi": 10},
+		"inizio": {
+			"cartaginesi": [
+				["Annibale", "I Romani hanno alzato torri sulle colline, a ovest. Non le prenderemo con i portatori. Mi serve una schiera vera, che marci con me."],
+			],
+			"romani": [
+				["Gaio Settimio", "I Brettii di Annibale hanno torri sulle colline, a ovest. Una legione non si improvvisa: caserma, armi, e poi in marcia."],
+			],
+		},
+		"obiettivi": [
+			{"testo": "Forma una schiera di almeno 10 soldati", "aiuto": "Caserma (o castello) e armi dall'armaiolo: i soldati di riserva escono con il condottiero (pulsante «Schiera»).", "prova": "schiera", "n": 10},
+			{"testo": "Conquista una torre nemica con la schiera", "aiuto": "Clic sul condottiero, poi sulla torre. Prima vanno giù le mura, poi si combatte.", "prova": "conquiste", "n": 1},
+		],
+		"fine": [["Rocco della Lira", "Quella sera il condottiero contò i suoi uomini, uno per uno. Ne mancavano. Ma la torre era presa, e dalla torre si vedeva il mare dall'altra parte."]],
+	},
+	"annibale_petelia": {
+		"titolo": "L'assedio di Petelia",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 60, "schiere": true, "indigeni": true, "brettii": true,
+		"scorte": {"tronchi": 30, "assi": 60, "pietra": 50, "grano": 10, "pesce": 10, "pane": 30, "armi": 14},
+		"inizio": {
+			"cartaginesi": [
+				["Rocco della Lira", "Petelia, sulla sua rupe, restò fedele a Roma. Mangiarono le erbe, poi il cuoio degli scudi. Le storie dicono undici mesi."],
+				["Annibale", "Le mura nemiche si fanno più alte ogni giorno che aspettiamo. Ariete e onagro, dall'armaiolo. Non lasceremo il tempo di finirle."],
+			],
+			"romani": [
+				["Rocco della Lira", "Petelia, sulla sua rupe, restò fedele a Roma, e Annibale la strinse d'assedio. Ma questa volta la storia la scrivete voi."],
+				["Gaio Settimio", "I nemici si sono chiusi dietro le mura. Gli ingegneri dicono: un ariete per le porte, un onagro per i merli. All'armaiolo."],
+			],
+		},
+		"obiettivi": [
+			{"testo": "Fai costruire una macchina d'assedio", "aiuto": "All'armaiolo, con una schiera in campo: l'ariete sfonda da vicino, l'onagro tira da lontano.", "prova": "macchina", "n": 1},
+			{"testo": "Conquista due torri nemiche", "aiuto": "Mura giù con le macchine, poi i duelli. Tieni la schiera vicino al magazzino per le razioni.", "prova": "conquiste", "n": 2},
+		],
+		"fine": [["Rocco della Lira", "Quando le mura caddero, uscirono uomini magri come rami d'inverno. Chi vinse non fece festa: ci sono vittorie che si guardano in silenzio."]],
+	},
+	"annibale_lacinio": {
+		"titolo": "Il tempio sul capo",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 70, "schiere": true, "indigeni": true,
+		"scorte": {"tronchi": 30, "assi": 50, "pietra": 50, "grano": 12, "pesce": 12},
+		"inizio": {
+			"cartaginesi": [
+				["Rocco della Lira", "Sul capo Lacinio c'era il tempio di Hera, con una sola colonna che oggi guarda ancora il mare. Annibale vi lasciò un'iscrizione in due lingue: le sue imprese, raccontate da lui."],
+				["Annibale", "Un condottiero muore. Le parole restano. Portiamo al tempio doni degni: porpora, vino, olio."],
+			],
+			"romani": [
+				["Rocco della Lira", "Sul capo Lacinio c'era il tempio di Hera, ricco di doni di tutto il mondo greco. Chi lo onorava, onorava Crotone."],
+				["Gaio Settimio", "La gente di Crotone ci guarderà diversamente, se vedrà Roma salire al tempio con le mani piene."],
+			],
+		},
+		"obiettivi": [
+			{"testo": "Metti da parte 14 merci di lusso per il tempio", "aiuto": "Il lusso del tuo popolo (porpora, tegole, vino, olio...) resta in magazzino come dono.", "prova": "lusso", "n": 14},
+			{"testo": "Fai crescere il villaggio fino a 100 coloni", "aiuto": "Più abitazioni, più cibo, più lusso.", "prova": "popolazione", "n": 100},
+		],
+		"fine": [["Rocco della Lira", "Il vento del capo portava via le parole, ma non quelle scolpite. Le iscrizioni del Lacinio, dicono, le lesse anche uno storico greco, cinquant'anni dopo."]],
+	},
+	"annibale_marchesato": {
+		"titolo": "La rocca del Marchesato",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 70, "schiere": true, "indigeni": true, "brettii": true,
+		"scorte": {"tronchi": 30, "assi": 70, "pietra": 80, "grano": 12, "pesce": 12, "pane": 30, "armi": 12},
+		"inizio": {
+			"cartaginesi": [["Annibale", "Roma non ci attacca: ci aspetta. Ogni anno ci toglie una città. Allora costruiamo una rocca che non si toglie."]],
+			"romani": [["Gaio Settimio", "Annibale non perde battaglie. Allora non gliene daremo: rocche, granai, pazienza. Lo chiamano il metodo di Fabio, il Temporeggiatore."]],
+		},
+		"obiettivi": [
+			{"testo": "Costruisci un castello e presidialo", "aiuto": "Nel menu «Difesa». Servono molte assi e pietre; una guardia lo presidia.", "prova": "forti", "n": 1},
+			{"testo": "Fai salire il condottiero al livello 3", "aiuto": "Il condottiero cresce con i duelli vinti dalla sua schiera.", "prova": "condottiero_livello", "n": 3},
+		],
+		"fine": [["Rocco della Lira", "Dalla rocca si vedeva tutto il Marchesato, giallo d'estate e verde d'inverno. E si vedeva, lontano, il fumo dell'altro campo."]],
+	},
+	"annibale_due_mari": {
+		"titolo": "Tra i due mari",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 80, "schiere": true, "indigeni": true, "brettii": true,
+		"scorte": {"tronchi": 30, "assi": 70, "pietra": 70, "grano": 14, "pesce": 14, "pane": 40, "armi": 16},
+		"inizio": [
+			["Rocco della Lira", "Tra Scolacium e Terina la Calabria si stringe come una vita sottile: trenta chilometri, e dall'alto si vedono tutti e due i mari. Chi tiene l'istmo, tiene il Bruzio."],
+		],
+		"obiettivi": [
+			{"testo": "Fai tuoi (alleati o conquistati) due villaggi del Bruzio", "aiuto": "Doni di lusso o soldati: Petelia, Scolacium, Consentia.", "prova": "villaggi", "n": 2},
+			{"testo": "Conquista due torri nemiche", "aiuto": "Schiera, macchine d'assedio e razioni.", "prova": "conquiste", "n": 2},
+		],
+		"fine": [["Rocco della Lira", "Sull'istmo si piantarono le insegne. Da una parte il Tirreno, dall'altra lo Ionio: e in mezzo, per una stagione, la pace di chi ha vinto."]],
+	},
+	"annibale_partenza": {
+		"titolo": "L'ultima estate",
+		"popolo": "lato", "mappa": "bruzio", "villaggio": "pieno", "coloni": 90, "schiere": true, "indigeni": true, "brettii": true,
+		"scorte": {"tronchi": 30, "assi": 80, "pietra": 80, "grano": 16, "pesce": 16, "pane": 40, "armi": 20},
+		"inizio": {
+			"cartaginesi": [
+				["Rocco della Lira", "Era il 203 avanti Cristo. Da Cartagine arrivò l'ordine: tornare a casa, perché Roma era sbarcata in Africa."],
+				["Annibale", "Sedici anni in Italia, e nessuno mi ha battuto in campo. Ma la guerra non si vince solo in campo. Prima di partire, che i Romani ricordino il Bruzio."],
+			],
+			"romani": [
+				["Rocco della Lira", "Era il 203 avanti Cristo. Scipione era sbarcato in Africa, e Cartagine richiamava il suo generale."],
+				["Gaio Settimio", "Annibale se ne va da Crotone, ma i suoi alleati restano sulle colline. Il Bruzio deve tornare tutto sotto l'aquila."],
+			],
+		},
+		"obiettivi": [
+			{"testo": "Conquista tutte le torri nemiche", "aiuto": "Schiera, macchine e razioni: le torri rimaste sono a ovest e a sud-ovest.", "prova": "nemici_zero"},
+		],
+		"fine": {
+			"cartaginesi": [
+				["Rocco della Lira", "Annibale salpò da Crotone in una mattina d'estate. Dicono che dal ponte guardasse la costa finché diventò una riga, e poi niente."],
+				["Annibale", "Ho fatto tremare Roma. Che basti, a chi racconterà."],
+				["Rocco della Lira", "E qualcuno, ve lo assicuro, lo racconta ancora. Fine."],
+			],
+			"romani": [
+				["Rocco della Lira", "Annibale salpò da Crotone senza voltarsi. Sulle colline del Bruzio tornò l'aquila, e con l'aquila le strade lastricate."],
+				["Gaio Settimio", "Sedici anni. Tanto è durato. Che nessuno dimentichi quanto costa una vittoria."],
+				["Rocco della Lira", "E i Brettii? I Brettii tornarono alle loro pecore, sulla Sila. Le montagne, ragazzi, sopravvivono a tutti gli imperi. Fine."],
+			],
+		},
+	},
 	"sfida_200": {
 		"titolo": "Nutri 200 abitanti",
 		"sfida": true, "popolo": "libero", "mappa": "costa_ionica", "villaggio": "pieno", "coloni": 40,
@@ -415,7 +579,14 @@ func finita() -> bool:
 
 
 func comincia() -> void:
-	dialogo.emit(dati["inizio"])
+	dialogo.emit(per_lato(dati["inizio"]))
+
+
+## Nella campagna di Annibale i racconti possono cambiare con il lato scelto: {"romani": [...], "cartaginesi": [...]}.
+static func per_lato(battute) -> Array:
+	if battute is Dictionary:
+		return battute.get(lato_annibale(), battute.values()[0])
+	return battute
 
 
 func _process(delta: float) -> void:
@@ -438,7 +609,7 @@ func _process(delta: float) -> void:
 		if ob.has("evento"):
 			_evento(ob["evento"])
 		if ob.has("dopo"):
-			dialogo.emit(ob["dopo"])
+			dialogo.emit(per_lato(ob["dopo"]))
 		obiettivo_cambiato.emit()
 		if finita():
 			segna_compiuta(id)
@@ -450,7 +621,7 @@ func _process(delta: float) -> void:
 
 ## Il racconto di chiusura; nell'ultima missione della Soglia dipende dal finale scelto.
 func racconto_finale() -> Array:
-	return dati.get("fine_" + finale(), dati.get("fine", []))
+	return per_lato(dati.get("fine_" + finale(), dati.get("fine", [])))
 
 
 ## Verifica un obiettivo sullo stato della partita.
@@ -480,6 +651,16 @@ func raggiunto(ob: Dictionary) -> bool:
 			return _nemici_iniziali - v.nemici.size() >= n
 		"forti":
 			return v.edifici.values().filter(func(e): return CatalogoEdifici.dati(e.tipo).has("presidio") and e.presidiata and e.collegato).size() >= n
+		"villaggi":
+			return partita.indigeni.elenco.filter(func(i): return i["stato"] in ["alleato", "nostro"]).size() >= n
+		"schiera":
+			return partita.schiere.soldati() >= n
+		"condottiero_livello":
+			return partita.schiere.livello() >= n
+		"macchina":
+			return partita.schiere.macchine().size() >= n
+		"nemici_zero":
+			return v.nemici.is_empty()
 		"una_tra":
 			for altra in ob["prove"]:
 				if raggiunto(altra):
@@ -565,6 +746,22 @@ static func scegli_popolo_soglia(popolo: String) -> void:
 	_scrivi(d)
 
 
+## Il lato scelto per la campagna di Annibale: «cartaginesi» (di serie) o «romani».
+static func lato_annibale() -> String:
+	var l: String = _leggi().get("lato_annibale", "")
+	return l if l in LATI_ANNIBALE else "cartaginesi"
+
+
+static func lato_scelto() -> bool:
+	return _leggi().get("lato_annibale", "") in LATI_ANNIBALE
+
+
+static func scegli_lato_annibale(lato: String) -> void:
+	var d := _leggi()
+	d["lato_annibale"] = lato
+	_scrivi(d)
+
+
 ## Il finale della campagna della Soglia: «unione» (di serie) o «conquista».
 static func finale() -> String:
 	return _leggi().get("finale", "unione")
@@ -594,6 +791,9 @@ static func prossima(campagna: Array) -> String:
 static func sbloccata(missione: String) -> bool:
 	if missione in SFIDE:
 		return true
+	var a := CAMPAGNA_ANNIBALE.find(missione)
+	if a >= 0:
+		return a == 0 or CAMPAGNA_ANNIBALE[a - 1] in completate()
 	for k in CAMPAGNE.size():
 		var campagna: Array = CAMPAGNE[k]
 		var i := campagna.find(missione)
