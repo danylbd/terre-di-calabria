@@ -37,6 +37,11 @@ func in_marcia() -> int:
 	return _soldati.filter(func(s): return s["lato"] == 1).size()
 
 
+## C'è una battaglia in corso (duelli o soldati che vanno all'attacco, da una parte o dall'altra)?
+func in_battaglia() -> bool:
+	return not _duelli.is_empty() or _soldati.any(func(s): return s["scopo"] == "attacco")
+
+
 ## fogli dei soldati (camminata, lotta) secondo il popolo di ogni lato: vedi Popoli.soldati()
 
 

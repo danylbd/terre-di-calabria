@@ -44,6 +44,11 @@ static func scaletta(nomi: Array[String]) -> void:
 		a.scaletta(nomi)
 
 
+static func brano() -> String:
+	var a := _audio()
+	return a.brano_attuale() if a else ""
+
+
 static func alterna_musica() -> bool:
 	var a := _audio()
 	return a.alterna_musica() if a else false

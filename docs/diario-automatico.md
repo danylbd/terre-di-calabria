@@ -283,3 +283,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Lo spazio di Actions era finito (artifact a 90 giorni): workflow riscritto in un solo job su Windows senza artifact, solo per i push su main; esito nel ramo `ci-esito`. Prima compilazione verde (esecuzione 130, release v0.56.0).
 - Step 40: modelli dei 4 villaggi indigeni (12, subagente), macerie delle mura crollate. **Fase 7 finita.**
 - Il proprietario cancella a mano le release vecchie (le cancellazioni definitive non posso farle io).
+
+### 2026-11-02 — Musica nuova (v0.58.0)
+- Scaricati FluidSynth 2.6.2 e GeneralUser GS (licenza libera anche commerciale) in `C:\Users\User\Tools`.
+- `tools/suoni/musica_fluid.py`: quattro brani originali (mattino, lavoro, sera, guerra) scritti come MIDI e resi in Ogg.
+- In battaglia parte la musica di guerra, dopo 25 s di calma torna quella del villaggio. Test nuovo `test_musica`.

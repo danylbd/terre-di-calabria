@@ -64,7 +64,8 @@ godot --headless --path . --import
 # un test (FOTO=file.png e senza --headless per lo screenshot; MISSIONE=id per test_campagna)
 godot --headless --path . --script tools/test/test_catena.gd
 # suoni, musica, texture
-python tools/suoni/suoni.py ; python tools/suoni/voce.py ; python tools/suoni/musica.py ; python tools/terreno/texture.py
+python tools/suoni/suoni.py ; python tools/suoni/voce.py ; python tools/suoni/musica_fluid.py   # musica: serve FluidSynth + GeneralUser GS in C:\Users\User\Tools
+python python tools/terreno/texture.py
 # esportazione
 godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCalabria.exe
 ```
@@ -73,4 +74,4 @@ godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCa
 
 ## Stato
 
-Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve (release v0.57.0): Fasi 1, 2, 3, 4 e 6 fatte, più Monteleone (V1–V3), la rifinitura grafica G6, le sfide e il bilanciamento (otto popoli giocabili con i Cartaginesi, ognuno con tutti gli edifici nel suo stile; quattro mappe con il Bruzio di Annibale; cinque campagne con quella di Annibale). Prossima: **Fase 7 «Le guerre di Annibale»** (idee da Imperivm, `docs/piano-imperivm.md`), step 30–35 (villaggi indigeni, condottieri e schiere, cibo e morale, tipi di unità, abilità, navi) 36 (assedi), 36a (costruttori al cantiere), 36b (voce di re Italo) 37 (Cartaginesi con elefanti) 38 (mappa del Bruzio) 39 (campagna di Annibale) e 40 (grafica di guerra) fatti: Fase 7 finita. Poi musica nuova e chiusura (versione 1.0). Fase 5 «Vita del villaggio» e iPhone rimandati a una versione successiva (`docs/idee-future.md`).
+Vedi `docs/DEVELOPMENT_STATUS.md` e `docs/SESSION_HANDOFF.md`. In breve (release v0.58.0): Fasi 1, 2, 3, 4 e 6 fatte, più Monteleone (V1–V3), la rifinitura grafica G6, le sfide e il bilanciamento (otto popoli giocabili con i Cartaginesi, ognuno con tutti gli edifici nel suo stile; quattro mappe con il Bruzio di Annibale; cinque campagne con quella di Annibale). Prossima: **Fase 7 «Le guerre di Annibale»** (idee da Imperivm, `docs/piano-imperivm.md`), step 30–35 (villaggi indigeni, condottieri e schiere, cibo e morale, tipi di unità, abilità, navi) 36 (assedi), 36a (costruttori al cantiere), 36b (voce di re Italo) 37 (Cartaginesi con elefanti) 38 (mappa del Bruzio) 39 (campagna di Annibale) e 40 (grafica di guerra) fatti: Fase 7 finita. Musica nuova fatta (FluidSynth). Prossima: chiusura con la versione 1.0. Poi musica nuova e chiusura (versione 1.0). Fase 5 «Vita del villaggio» e iPhone rimandati a una versione successiva (`docs/idee-future.md`).

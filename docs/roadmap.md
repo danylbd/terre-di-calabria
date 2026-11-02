@@ -97,7 +97,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 
 | Cosa | Stato |
 |---|---|
-| Musica nuova (FluidSynth + soundfont libero, brani originali) | |
+| Musica nuova (FluidSynth + soundfont libero, brani originali) | fatto (v0.58.0): mattino, lavoro, sera e guerra |
 | Chiusura: prova completa, bilanciamento finale, versione 1.0 | |
 
 ## Fase 5 — rimandata a una versione successiva
