@@ -685,6 +685,8 @@ func _popolo_da_usare() -> String:
 		match pm:
 			"scelto":
 				pm = Missione.popolo_soglia()
+			"lato":
+				pm = Missione.lato_annibale()
 			"libero":
 				pm = Impostazioni.popolo
 		return pm if Popoli.DATI.has(pm) else "greci"

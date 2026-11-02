@@ -273,3 +273,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - La Calabria centrale da coordinate vere: i due mari, l'istmo, la Sila, le Serre, l'Aspromonte, Crotone e Locri.
 - Villaggio nel Marchesato vicino a Crotone; villaggi indigeni Petelia, Scolacium, Consentia.
 - Scritta mentre i subagenti disegnavano i Cartaginesi (worktree separati). Test nuovo `test_bruzio`.
+
+### 2026-11-02 — Step 39: campagna «Annibale nel Bruzio» (v0.56.0)
+- Otto missioni nel Bruzio, dai due lati (Cartagine o Roma), con racconti diversi per lato.
+- Schiere e villaggi indigeni accesi nelle missioni che lo chiedono; prove nuove.
+- Pulsanti sulla mappa della Calabria e scelta del lato. Test nuovo `test_annibale`.

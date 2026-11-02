@@ -98,8 +98,13 @@ func prepara(v: Villaggio, g: Guerra, ind: VillaggiIndigeni, d: DatiMappa, nodo_
 	_rng.randomize()
 
 
+## Le schiere ci sono nella partita libera (non in pace) e nelle missioni che le vogliono (la campagna di Annibale).
 static func attive() -> bool:
-	return Impostazioni.condottieri and Impostazioni.modalita != "pace" and Impostazioni.missione == ""
+	if not Impostazioni.condottieri:
+		return false
+	if Impostazioni.missione != "":
+		return Missione.MISSIONI.get(Impostazioni.missione, {}).get("schiere", false)
+	return Impostazioni.modalita != "pace"
 
 
 static func nome_condottiero() -> String:
