@@ -26,6 +26,7 @@ const SU_MAPPA := {
 		["Siris", "citta_greca", Vector2(0.2, 1)]],
 	"monteleone": [["Tropea", "citta_greca", "Tropea"], ["Pizzo", "pescatori", "Pizzo"], ["Pastori delle Serre", "pastori", "Serre"]],
 	"zancle": [["Milazzo", "pescatori", "Milazzo"], ["Taormina", "citta_greca", "Taormina"], ["Aci", "borgo_siculo", "Acireale"]],
+	"bruzio": [["Petelia", "pastori", "Petelia"], ["Scolacium", "citta_greca", "Scolacium"], ["Consentia", "pastori", "Consentia"]],
 }
 const STATI := {"neutrale": "neutrale", "alleato": "alleato", "nostro": "conquistato"}
 

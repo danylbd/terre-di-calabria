@@ -712,6 +712,8 @@ func _metti_brettii() -> void:
 			versi = [Vector2(-0.4, 1), Vector2(1, 0.6)]
 		"zancle":
 			versi = [Vector2(-1, 0.3), Vector2(-0.5, 1)]
+		"bruzio":
+			versi = [Vector2(-1, -0.2), Vector2(-0.6, 0.8)]
 	for verso in versi:
 		var migliore := Vector2i(-1, -1)
 		var punteggio := -INF

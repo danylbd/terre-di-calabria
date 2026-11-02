@@ -89,7 +89,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 36b | Voce di re Italo (sillabe inventate, libere da diritti) | fatto (v0.52.0) |
 | 36 | Assedi (ariete, onagro) | fatto (v0.53.0) |
 | 37 | I Cartaginesi (ottavo popolo, elefanti) | fatto (v0.54.0) |
-| 38 | Mappa «Il Bruzio di Annibale» | |
+| 38 | Mappa «Il Bruzio di Annibale» | fatto (v0.55.0) |
 | 39 | Campagna «Annibale nel Bruzio» (dai due lati) | |
 | 40 | Rifinitura grafica di guerra | |
 
