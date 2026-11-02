@@ -36,7 +36,7 @@ func _prova() -> void:
 	v.coloni_liberi = 0
 	var bosc := _piazza("boscaiolo", func(f): return _conta_vicini(p.risorse.alberi, f, 7))
 	_controlla(rete.tratti_senza_portatore() > 0, "senza coloni la strada nuova aspetta il portatore")
-	_controlla(PannelloEdificio.stato(bosc, v).begins_with("In costruzione"), "pannello: cantiere in costruzione")
+	_controlla(PannelloEdificio.stato(bosc, v).begins_with("Nessun colono libero per costruire"), "pannello: il cantiere aspetta un colono per costruire")
 	v.coloni_liberi = liberi
 	await create_timer(2.0).timeout
 	_controlla(rete.tratti_senza_portatore() == 0, "tornati i coloni, arriva il portatore")

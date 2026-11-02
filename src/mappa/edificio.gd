@@ -1,7 +1,7 @@
 class_name Edificio
 extends Node2D
 ## Un edificio sulla mappa. Nasce come cantiere e cresce in tre fasi fino a diventare l'edificio vero.
-## (Nello step 05 il cantiere avanzerà solo quando i portatori consegnano assi e pietre.)
+## Il cantiere avanza solo quando i portatori consegnano assi e pietre e il costruttore (step 36a) è al lavoro.
 
 signal completato(e: Edificio)
 
@@ -20,6 +20,7 @@ var consegnati := {}                 # già arrivati
 var ingresso := {}                   # merci in deposito per la produzione (es. tronchi alla segheria)
 var in_arrivo := {}                  # merci per la produzione già in viaggio verso l'edificio
 var lavoratore: Node2D               # chi ci lavora (null se nessuno)
+var costruttore: Node2D              # il costruttore del cantiere (null finché non parte dal magazzino)
 var manca_attrezzo := false          # il lavoratore aspetta che arrivi il suo attrezzo
 var manca_colono := false            # non c'erano coloni liberi per mandare il lavoratore
 var prodotti := 0                    # merci prodotte finora
@@ -66,6 +67,10 @@ func frazione_materiali() -> float:
 	return 1.0 if tot == 0 else float(ok) / tot
 
 
+func costruttore_al_lavoro() -> bool:
+	return costruttore != null and is_instance_valid(costruttore) and costruttore.al_lavoro
+
+
 func centro() -> Vector2:
 	return Vector2(casella.x + taglia * 0.5, casella.y + taglia * 0.5)
 
@@ -76,9 +81,9 @@ func _process(delta: float) -> void:
 	if not collegato:
 		queue_redraw()
 		return
-	# il cantiere avanza solo fin dove arrivano i materiali consegnati
+	# il cantiere avanza solo fin dove arrivano i materiali consegnati, e solo col costruttore accanto
 	var limite := frazione_materiali()
-	if progresso < limite:
+	if progresso < limite and costruttore_al_lavoro():
 		progresso = minf(limite, progresso + delta / tempo_totale)
 		_martello -= delta
 		if _martello <= 0.0:

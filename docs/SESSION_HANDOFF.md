@@ -6,11 +6,11 @@
 
 ## Ultimo obiettivo affrontato
 
-Il proprietario ha deciso che la Fase 5 «Vita del villaggio» **non** è in questa versione: spostata in [`idee-future.md`](idee-future.md) (con l'iPhone). Per finire il gioco restano: step 36–40, musica nuova, chiusura con la versione 1.0.
+**Step 36a — costruttori al cantiere** (v0.51.0), chiesto dal proprietario: `src/mappa/costruttore.gd`, `Villaggio._manda_costruttore()`, `Edificio.costruttore_al_lavoro()`; test `test_costruttori`. Suoni di lavoro più vicini (`Audio.DISTANZA_MAX` 1000). Prima: Fase 5 rimandata in `idee-future.md`.
 
 ## Stato generale
 
-Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 step 30–35 fatti. Sette popoli giocabili, tre mappe (Costa ionica, Monteleone, Zancle), quattro campagne (Greci, Soglia, Sicilia, epilogo), sfide.
+Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 step 30–35 e 36a fatti. Sette popoli giocabili, tre mappe (Costa ionica, Monteleone, Zancle), quattro campagne (Greci, Soglia, Sicilia, epilogo), sfide.
 
 ## Prossimo
 
@@ -19,5 +19,6 @@ Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 step 30–35 fatt
 
 ## Problemi irrisolti
 
-- Musica ancora segnaposto (deciso come rifarla, da fare).
+- Musica ancora segnaposto (deciso come rifarla, da fare); manca la musica di guerra.
+- Voce di re Italo libera da diritti: vedi `domande-per-il-proprietario.md`.
 - Esito delle GitHub Actions non verificabile da qui (`gh` assente).

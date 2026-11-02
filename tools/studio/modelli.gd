@@ -461,7 +461,7 @@ static func catalogo() -> Dictionary:
 	c["nave_guerra"] = {"crea": nave_guerra, "posa": posa_voga,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(144, 112), "ancora": Vector2(72, 72)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
-	for att in ["ascia", "piccone", "pala", "falce", "canna"]:
+	for att in ["ascia", "piccone", "pala", "falce", "canna", "martello"]:
 		c["lavoratore_%s" % att] = {"crea": lavoratore.bind(att), "posa": posa_cammino,
 			"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(96, 96), "ancora": Vector2(42, 80)}
 		c["lavoratore_%s_lavoro" % att] = {"crea": lavoratore.bind(att), "posa": posa_pesca if att == "canna" else posa_lavoro,
@@ -2128,11 +2128,17 @@ static func lavoratore(attrezzo: String) -> Node3D:
 			for k in 5:
 				var a := k * 0.35
 				att.add_child(scatola(Vector3(0.008, 0.02, 0.04), Vector3(0, 0.05 * sin(a), 0.09 + 0.05 * (1.0 - cos(a)) + k * 0.012), "ferro", Vector3(rad_to_deg(a), 0, 0)))
+		"martello":
+			# il costruttore dei cantieri: mazzuolo da carpentiere con la testa di legno cerchiata di ferro
+			att.add_child(cilindro(0.009, 0.009, 0.2, Vector3(0, 0.0, 0.07), "legno", Vector3(90, 0, 0), 6))
+			att.add_child(cilindro(0.028, 0.028, 0.09, Vector3(0, 0.0, 0.17), "legno_chiaro", Vector3(0, 0, 90), 8))
+			att.add_child(cilindro(0.03, 0.03, 0.012, Vector3(0.04, 0.0, 0.17), "ferro", Vector3(0, 0, 90), 8))
+			att.add_child(cilindro(0.03, 0.03, 0.012, Vector3(-0.04, 0.0, 0.17), "ferro", Vector3(0, 0, 90), 8))
 		"canna":
 			att.add_child(cilindro(0.006, 0.003, 0.5, Vector3(0, 0.08, 0.2), "legno_chiaro", Vector3(70, 0, 0), 5))
 			att.add_child(cilindro(0.002, 0.002, 0.2, Vector3(0, 0.22, 0.45), "corda", Vector3.ZERO, 3))
 	# berretto di lana per riconoscere i mestieri
-	corpo.add_child(sfera(0.07, Vector3(0, 0.2 + 0.31, -0.005), {"ascia": "giocatore", "piccone": "terra", "pala": "orto", "falce": "paglia", "canna": "persiana"}[attrezzo], Vector3(1, 0.55, 1)))
+	corpo.add_child(sfera(0.07, Vector3(0, 0.2 + 0.31, -0.005), {"ascia": "giocatore", "piccone": "terra", "pala": "orto", "falce": "paglia", "canna": "persiana", "martello": "terracotta"}[attrezzo], Vector3(1, 0.55, 1)))
 	r.set_meta("carico", "attrezzo")
 	return r
 

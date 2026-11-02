@@ -199,6 +199,12 @@ static func stato(e: Edificio, v: Villaggio) -> String:
 	if not e.finito:
 		if not e.collegato:
 			return "Cantiere senza strada: collegalo con una strada"
+		if not e.costruttore_al_lavoro():
+			if e.costruttore == null and e.manca_colono:
+				return "Nessun colono libero per costruire: costruisci abitazioni"
+			return "Il costruttore sta arrivando (%d%%)" % int(e.progresso * 100)
+		if e.progresso >= e.frazione_materiali():
+			return "Il costruttore aspetta assi e pietre (%d%%)" % int(e.progresso * 100)
 		return "In costruzione: %d%%" % int(e.progresso * 100)
 	if not e.collegato:
 		return "Non è collegato al magazzino con una strada"

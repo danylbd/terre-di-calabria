@@ -25,6 +25,7 @@ var scorte := {"tronchi": 20, "assi": 24, "pietra": 18,
 var _prossimo_id := 2
 var coloni_liberi := 40              # coloni in magazzino, pronti a fare i portatori o i lavoratori
 var in_cammino := 0                  # coloni appena nati che vanno verso il magazzino
+var costruttori := 0                 # coloni usciti a costruire i cantieri (step 36a)
 var _richiamo := 0.0
 var centri_esterni := []             # territori di altri popoli: [casella, raggio, proprietario]
 var nemici := {}                     # id -> Edificio di un altro popolo (torri con i loro difensori)
@@ -154,6 +155,8 @@ func demolisci(e: Edificio, recupera := true) -> void:
 	if e.lavoratore and is_instance_valid(e.lavoratore):
 		e.lavoratore.queue_free()
 		restituisci_colono()
+	if e.costruttore and is_instance_valid(e.costruttore):
+		e.costruttore.torna()
 	if recupera:
 		for r in e.ingresso:
 			scorte[r] = scorte.get(r, 0) + e.ingresso[r]
@@ -196,7 +199,7 @@ func popolazione() -> int:
 	var nei_forti := 0
 	for e in edifici.values():
 		nei_forti += e.soldati
-	return coloni_liberi + in_cammino + lavoratori() + (rete.portatori() if rete else 0) + soldati + nei_forti \
+	return coloni_liberi + in_cammino + costruttori + lavoratori() + (rete.portatori() if rete else 0) + soldati + nei_forti \
 		+ (guerra.in_marcia() if guerra else 0)
 
 
@@ -370,6 +373,7 @@ func _aggiorna_collegamenti() -> void:
 	for e in edifici.values():
 		e.collegato = e.tipo == "magazzino" or rete.collegata(e.bandiera)
 		_chiama_lavoratore(e)
+		_manda_costruttore(e)
 
 
 ## Un edificio di produzione finito e collegato riceve il suo lavoratore, che arriva dal magazzino
@@ -408,6 +412,33 @@ func _chiama_lavoratore(e: Edificio) -> void:
 	oggetti.add_child(l)
 	l.avvia(e, risorse, logistica, rete, punti)
 	e.lavoratore = l
+
+
+## Un cantiere collegato riceve il suo costruttore, che parte dal magazzino lungo le strade (step 36a).
+func _manda_costruttore(e: Edificio) -> void:
+	if caricamento or e.finito or not e.collegato or e.costruttore != null:
+		return
+	var mag := magazzino()
+	if mag == null or mag == e:
+		return
+	var punti := rete.percorso_tra_bandiere(mag.bandiera, e.bandiera)
+	if punti.is_empty():
+		return
+	if coloni_liberi <= 0:
+		e.manca_colono = true
+		return
+	prendi_colono()
+	e.manca_colono = false
+	costruttori += 1
+	var c := Costruttore.new()
+	oggetti.add_child(c)
+	c.avvia(self, e, rete, punti)
+	e.costruttore = c
+
+
+func costruttore_tornato(_c: Costruttore) -> void:
+	costruttori -= 1
+	restituisci_colono()
 
 
 func _mare_entro(c: Vector2i, raggio: int) -> bool:
