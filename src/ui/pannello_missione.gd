@@ -5,6 +5,8 @@ extends Control
 
 signal finito_dialogo
 
+const VOCI := {"Rocco della Lira": "voce_italo"}   # chi ha una voce (sillabe in assets/suoni)
+
 var missione: Missione
 var _obiettivi: RichTextLabel
 var _riquadro: PanelContainer
@@ -103,6 +105,7 @@ func mostra_dialogo(battute: Array) -> void:
 
 func avanti() -> void:
 	if _coda.is_empty():
+		Suono.taci()
 		_dialogo.visible = false
 		get_tree().paused = false
 		finito_dialogo.emit()
@@ -110,5 +113,10 @@ func avanti() -> void:
 	var b: Array = _coda.pop_front()
 	_chi.text = b[0]
 	_battuta.text = b[1]
+	# re Italo (Rocco della Lira) ha la sua voce; gli altri per ora parlano solo per iscritto
+	if VOCI.has(b[0]):
+		Suono.parla(VOCI[b[0]], b[1])
+	else:
+		Suono.taci()
 	_avanti.text = "Avanti" if not _coda.is_empty() else ("Al lavoro!" if not missione.finita() else "Fine")
 	_avanti.grab_focus()

@@ -69,4 +69,5 @@
 
 | Argomento | Decisione |
 |---|---|
+| Voce di re Italo | Voce **inventata, generata in codice** (sillabe senza parole vere sotto il testo scritto): libera da diritti. Solo suoni e voci liberi da diritti. |
 | Fase 5 «Vita del villaggio» | **Non in questa versione**: personaggi, feste, cura del mare, collezioni e museo si faranno in una versione successiva. Spostata in [`idee-future.md`](idee-future.md). Sostituisce l'ordine della risposta 15: dopo la Fase 7 vengono solo la musica e la chiusura del gioco. |

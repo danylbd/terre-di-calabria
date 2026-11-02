@@ -18,7 +18,7 @@ Ultime modifiche significative (step 35, Fase 7): traversate delle schiere per m
 
 ## In sviluppo
 
-- **Fase 7 «Le guerre di Annibale»**: step 30–35 fatti, più lo step 36a (costruttori al cantiere, v0.51.0).
+- **Fase 7 «Le guerre di Annibale»**: step 30–35 fatti, più gli step 36a (costruttori al cantiere, v0.51.0) e 36b (voce di re Italo, v0.52.0).
 
 ## Da fare (in ordine) per finire questa versione del gioco
 
@@ -31,7 +31,6 @@ Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita de
 ## Bug e limiti noti
 
 - **Musica segnaposto**: deciso come rifarla (FluidSynth + soundfont libero, brani originali), da fare. Manca una musica di guerra.
-- **Voce di re Italo**: il proprietario la vuole, libera da diritti (domanda del 2026-11-02 in `domande-per-il-proprietario.md`).
 - **Compilazioni su GitHub non verificate da qui**: `gh` non è installato; i push partono, l'esito delle Actions va guardato su GitHub.
 - Animali degli allevamenti fermi nel modello (non si muovono).
 - Le rocce sono finite e i boschi naturali non ricrescono da soli: per giocare ore servono guardaboschi accanto ai boscaioli e cave nuove quando le rocce finiscono (voluto, come in Settlers).

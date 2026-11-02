@@ -6,11 +6,11 @@
 
 ## Ultimo obiettivo affrontato
 
-**Step 36a — costruttori al cantiere** (v0.51.0), chiesto dal proprietario: `src/mappa/costruttore.gd`, `Villaggio._manda_costruttore()`, `Edificio.costruttore_al_lavoro()`; test `test_costruttori`. Suoni di lavoro più vicini (`Audio.DISTANZA_MAX` 1000). Prima: Fase 5 rimandata in `idee-future.md`.
+**Step 36b — voce di re Italo** (v0.52.0): `tools/suoni/voce.py`, `Audio.parla()`, `PannelloMissione.VOCI`; test `test_voce`. Prima lo step 36a (costruttori al cantiere, v0.51.0).
 
 ## Stato generale
 
-Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 step 30–35 e 36a fatti. Sette popoli giocabili, tre mappe (Costa ionica, Monteleone, Zancle), quattro campagne (Greci, Soglia, Sicilia, epilogo), sfide.
+Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 step 30–35, 36a e 36b fatti. Sette popoli giocabili, tre mappe (Costa ionica, Monteleone, Zancle), quattro campagne (Greci, Soglia, Sicilia, epilogo), sfide.
 
 ## Prossimo
 
@@ -20,5 +20,4 @@ Fasi 1, 2, 3, 4 (tranne l'iPhone, rimandato) e 6 fatte; Fase 7 step 30–35 e 36
 ## Problemi irrisolti
 
 - Musica ancora segnaposto (deciso come rifarla, da fare); manca la musica di guerra.
-- Voce di re Italo libera da diritti: vedi `domande-per-il-proprietario.md`.
 - Esito delle GitHub Actions non verificabile da qui (`gh` assente).

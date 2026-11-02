@@ -47,3 +47,16 @@ static func scaletta(nomi: Array[String]) -> void:
 static func alterna_musica() -> bool:
 	var a := _audio()
 	return a.alterna_musica() if a else false
+
+
+## Un personaggio dice una battuta con la sua voce inventata (sillabe senza parole vere).
+static func parla(voce: String, testo: String) -> void:
+	var a := _audio()
+	if a:
+		a.parla(voce, testo)
+
+
+static func taci() -> void:
+	var a := _audio()
+	if a:
+		a.taci()
