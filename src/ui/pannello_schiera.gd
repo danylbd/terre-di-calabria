@@ -40,6 +40,9 @@ func _process(delta: float) -> void:
 	var sc: Dictionary = schiere.schiera
 	_testo.text = "%s · livello %d · %s · %d soldati · morale %d · razioni %d" % [Schiere.nome_condottiero(), schiere.livello(),
 		Schiere.tipo(), schiere.soldati(), sc["morale"], sc["razioni"]]
+	var mac: Array = schiere.macchine().keys().map(func(t): return Schiere.MACCHINE[t]["nome"].to_lower())
+	if not mac.is_empty():
+		_testo.text += " · " + " e ".join(mac)
 	var ab := Schiere.abilita()
 	for k in 2:
 		var b := _pulsanti[k]

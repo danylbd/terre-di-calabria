@@ -805,6 +805,7 @@ func _crea_interfaccia() -> void:
 	pannello.schiere = schiere
 	pannello.navi_guerra = navi_guerra
 	pannello.arma_nave.connect(func(e: Edificio): navi_guerra.arma(e))
+	pannello.costruisci_macchina.connect(func(t: String, e: Edificio): schiere.costruisci_macchina(t, e))
 	pannello.forma_schiera.connect(func(e: Edificio):
 		if schiere.forma(e):
 			pannello.chiudi_pannello()

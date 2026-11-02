@@ -258,3 +258,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Il proprietario ha scelto la voce inventata (libera da diritti).
 - `tools/suoni/voce.py`: 20 sillabe a formanti (voce bassa, vibrato, tremolio d'anziano); `Audio.parla()` le mette in fila sotto le battute di Rocco della Lira.
 - Test nuovo `test_voce`; esempio `esempio_voce_italo.wav` mandato al proprietario.
+
+### 2026-11-02 — Step 36: assedi (v0.53.0)
+- Mura sulle torri nemiche (crescono col tempo, barra di pietre sopra la torre); prima delle mura niente duelli.
+- Ariete e onagro dall'armaiolo, seguono la schiera; modelli fatti da un subagente.
+- Corretto un errore vecchio (schiera sciolta durante l'ultimo duello). Test nuovo `test_assedi`; 41 test OK.

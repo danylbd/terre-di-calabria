@@ -114,7 +114,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	d["edifici"] = edifici
 	var nemici := []
 	for n in v.nemici.values():
-		nemici.append([n.tipo, n.casella.x, n.casella.y, n.proprietario, n.soldati])
+		nemici.append([n.tipo, n.casella.x, n.casella.y, n.proprietario, n.soldati, n.mura])
 	d["nemici"] = nemici
 	if p.missione:
 		d["missione"] = [p.missione.id, p.missione.indice]
@@ -126,6 +126,9 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	# le navi da guerra non si salvano: i loro materiali tornano nel magazzino
 	var scorte: Dictionary = v.scorte.duplicate()
 	var mat: Dictionary = p.navi_guerra.materiali()
+	var mac: Dictionary = p.schiere.materiali()           # anche le macchine d'assedio
+	for m in mac:
+		mat[m] = mat.get(m, 0) + mac[m]
 	for m in mat:
 		scorte[m] = scorte.get(m, 0) + mat[m]
 	d["scorte"] = scorte
@@ -176,7 +179,9 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 
 	v.caricamento = true
 	for n in d.get("nemici", []):
-		v.metti_nemico(n[0], Vector2i(int(n[1]), int(n[2])), int(n[3]), int(n[4]))
+		var ne := v.metti_nemico(n[0], Vector2i(int(n[1]), int(n[2])), int(n[3]), int(n[4]))
+		if n.size() > 5:
+			ne.mura = float(n[5])
 	v.soldati = int(d.get("soldati", 0))
 	if d.has("avversario"):
 		p.avversario.tempo = float(d["avversario"][0])

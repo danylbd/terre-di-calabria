@@ -460,6 +460,15 @@ static func catalogo() -> Dictionary:
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 74)}
 	c["nave_guerra"] = {"crea": nave_guerra, "posa": posa_voga,
 		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(144, 112), "ancora": Vector2(72, 72)}
+	# macchine d'assedio (step 36)
+	c["ariete"] = {"crea": ariete, "posa": posa_ariete,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 80)}
+	c["ariete_colpo"] = {"crea": ariete, "posa": posa_ariete_colpo,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 80)}
+	c["onagro"] = {"crea": onagro, "posa": posa_onagro,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 80)}
+	c["onagro_tiro"] = {"crea": onagro, "posa": posa_onagro_tiro,
+		"fotogrammi": 8, "direzioni": 8, "dimensione": Vector2i(128, 112), "ancora": Vector2(64, 80)}
 	# mestieri: camminata con l'attrezzo e gesto di lavoro (8 direzioni × 8 fotogrammi)
 	for att in ["ascia", "piccone", "pala", "falce", "canna", "martello"]:
 		c["lavoratore_%s" % att] = {"crea": lavoratore.bind(att), "posa": posa_cammino,
@@ -945,6 +954,10 @@ static func materiale(nome: String) -> Material:
 			m.albedo_color = Color("221a14")
 		"cuoio":
 			m.albedo_texture = _rumore(135, 0.3, Color("5e3a1e"), Color("8c5a2e"))
+		"pelle_conciata":
+			m.albedo_texture = _rumore(137, 0.35, Color("7e5434"), Color("b07e52"))
+		"pelle_conciata_scura":
+			m.albedo_texture = _rumore(138, 0.35, Color("5e3c22"), Color("8a603c"))
 		"tunica_ocra":
 			m.albedo_texture = _rumore(136, 0.4, Color("bc7a34"), Color("dc9e52"))
 		# materiali dei Sicani
@@ -3393,6 +3406,279 @@ static func posa_voga(modello: Node3D, fotogramma: int, totale: int) -> void:
 		var corpo: Node3D = b.get_node("arciere_%d" % k).get_node("corpo")
 		corpo.get_node("braccio_s").rotation = Vector3(-1.3, 0, -0.15)
 		corpo.get_node("braccio_d").rotation = Vector3(-1.2 + 0.25 * sin(t + k * PI), 0, 0.3)
+
+# =================================================================== ASSEDIO (step 36)
+
+## Ruota piena di assi, con cerchione di ferro, mozzo e listelli; gira attorno all'asse X.
+static func _ruota_piena(raggio: float, spessore: float, pos: Vector3) -> Node3D:
+	var w := Node3D.new()
+	w.position = pos
+	w.add_child(cilindro(raggio, raggio, spessore, Vector3.ZERO, "legno", Vector3(0, 0, 90), 18))
+	w.add_child(_toro(raggio * 0.9, raggio * 1.02, Vector3.ZERO, "ferro", Vector3(0, 0, 90)))
+	# giunture tra le tre assi e listello di traverso, su tutte e due le facce
+	for s: int in [-1, 1]:
+		for yy: float in [-0.34, 0.34]:
+			w.add_child(scatola(Vector3(0.004, raggio * 0.07, raggio * 1.8), Vector3(s * spessore * 0.5, raggio * yy, 0), "legno_scuro"))
+		w.add_child(scatola(Vector3(0.008, raggio * 1.5, raggio * 0.3), Vector3(s * spessore * 0.52, 0, 0), "legno_chiaro"))
+	w.add_child(cilindro(raggio * 0.28, raggio * 0.28, spessore + 0.025, Vector3.ZERO, "legno_scuro", Vector3(0, 0, 90), 10))
+	w.add_child(cilindro(raggio * 0.12, raggio * 0.12, spessore + 0.04, Vector3.ZERO, "ferro", Vector3(0, 0, 90), 8))
+	return w
+
+
+## Ariete coperto (testuggine): carro di travi su quattro ruote piene, tettoia a due spioventi coperta di pelli
+## conciate cucite insieme, e sotto, appeso a due corde, il tronco con la testa d'ariete di bronzo. Davanti verso +z.
+static func ariete() -> Node3D:
+	var r := Node3D.new()
+	# ruote e assali
+	var ruote := Node3D.new()
+	ruote.name = "ruote"
+	r.add_child(ruote)
+	var k := 0
+	for zz: float in [-0.27, 0.27]:
+		r.add_child(cilindro(0.018, 0.018, 0.56, Vector3(0, 0.095, zz), "legno_scuro", Vector3(0, 0, 90), 8))
+		for s: int in [-1, 1]:
+			var w := _ruota_piena(0.095, 0.035, Vector3(s * 0.255, 0.095, zz))
+			w.name = "ruota_%d" % k
+			k += 1
+			ruote.add_child(w)
+	# telaio: longheroni, traverse, ritti, correnti di gronda, catene e monaci
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.05, 0.05, 0.86), Vector3(s * 0.2, 0.14, 0), "legno"))
+		for zz: float in [-0.38, 0.0, 0.38]:
+			r.add_child(scatola(Vector3(0.036, 0.27, 0.036), Vector3(s * 0.215, 0.285, zz), "legno"))
+			r.add_child(scatola(Vector3(0.042, 0.02, 0.042), Vector3(s * 0.215, 0.168, zz), "ferro"))
+		r.add_child(scatola(Vector3(0.04, 0.04, 0.84), Vector3(s * 0.215, 0.42, 0), "legno_scuro"))
+		# fascia col colore del giocatore lungo la gronda
+		r.add_child(scatola(Vector3(0.006, 0.026, 0.7), Vector3(s * 0.238, 0.37, 0), "giocatore"))
+		# croci di rinforzo sui fianchi
+		ramo(r, Vector3(s * 0.215, 0.17, -0.37), Vector3(s * 0.215, 0.4, -0.02), 0.009, "legno_chiaro")
+		ramo(r, Vector3(s * 0.215, 0.17, 0.37), Vector3(s * 0.215, 0.4, 0.02), 0.009, "legno_chiaro")
+	for zz: float in [-0.4, 0.4]:
+		r.add_child(scatola(Vector3(0.46, 0.04, 0.04), Vector3(0, 0.14, zz), "legno"))
+	for zz: float in [-0.38, -0.17, 0.17, 0.38]:
+		r.add_child(scatola(Vector3(0.47, 0.035, 0.035), Vector3(0, 0.42, zz), "legno_scuro"))
+	for zz: float in [-0.38, 0.38]:
+		r.add_child(scatola(Vector3(0.03, 0.17, 0.03), Vector3(0, 0.51, zz), "legno"))
+		for s: int in [-1, 1]:
+			ramo(r, Vector3(s * 0.25, 0.4, zz), Vector3(0, 0.605, zz), 0.012, "legno")
+	r.add_child(cilindro(0.02, 0.02, 0.9, Vector3(0, 0.6, 0), "legno_scuro", Vector3(90, 0, 0), 8))
+	# tettoia: due falde di pelli conciate di toni diversi, cucite con stringhe scure
+	var dx := 0.29
+	var dy := 0.2
+	var lungo := sqrt(dx * dx + dy * dy)
+	var ang := rad_to_deg(atan2(dy, dx))
+	var pezzi := 4
+	var lz := 0.92
+	for s: int in [-1, 1]:
+		var falda := Node3D.new()
+		falda.position = Vector3(s * dx * 0.5, 0.608 - dy * 0.5 + 0.012, 0)
+		falda.rotation_degrees.z = -s * ang
+		r.add_child(falda)
+		for j in pezzi:
+			var z0 := -lz * 0.5 + (j + 0.5) * lz / pezzi
+			var tinta := "pelle_conciata" if (j + (1 if s > 0 else 0)) % 2 == 0 else "pelle_conciata_scura"
+			falda.add_child(scatola(Vector3(lungo + 0.03, 0.014, lz / pezzi + 0.004), Vector3(s * 0.008, 0.002 * (j % 2), z0), tinta))
+			# lembo che pende sotto la gronda, con l'orlo un po' irregolare
+			falda.add_child(scatola(Vector3(0.012, 0.06 + 0.012 * ((j * 7 + (s + 1)) % 3), lz / pezzi - 0.01), Vector3(s * (lungo * 0.5 + 0.018), -0.03, z0), tinta, Vector3(0, 0, s * ang)))
+		# cuciture tra le pelli: cordone scuro e punti di traverso
+		for j in pezzi - 1:
+			var zc := -lz * 0.5 + (j + 1) * lz / pezzi
+			falda.add_child(scatola(Vector3(lungo + 0.02, 0.02, 0.01), Vector3(0, 0.004, zc), "pelle_scura"))
+			for q in 6:
+				var xq := -lungo * 0.42 + q * lungo * 0.168
+				falda.add_child(scatola(Vector3(0.007, 0.022, 0.032), Vector3(xq, 0.005, zc), "corda", Vector3(0, 30, 0)))
+		# una cucitura lungo la falda, a metà
+		falda.add_child(scatola(Vector3(0.004, 0.018, lz - 0.02), Vector3(0.02, 0.004, 0), "pelle_scura"))
+		# pietre e funi che tengono giù le pelli
+		for zz: float in [-0.3, 0.3]:
+			falda.add_child(scatola(Vector3(lungo + 0.04, 0.008, 0.008), Vector3(0, 0.01, zz), "corda"))
+	# colmo coperto da una striscia di cuoio e pennoncello del giocatore sul davanti
+	r.add_child(scatola(Vector3(0.05, 0.016, 0.94), Vector3(0, 0.616, 0), "cuoio"))
+	r.add_child(cilindro(0.005, 0.004, 0.16, Vector3(0, 0.69, 0.43), "legno_scuro", Vector3.ZERO, 6))
+	var bandiera := Node3D.new()
+	bandiera.name = "bandiera"
+	bandiera.position = Vector3(0, 0.75, 0.43)
+	r.add_child(bandiera)
+	for j in 3:
+		var pz := scatola(Vector3(0.004, 0.045 - j * 0.01, 0.028), Vector3(0, -0.012 + j * 0.003, -0.014 - j * 0.026), "giocatore")
+		pz.name = "lembo_%d" % j
+		bandiera.add_child(pz)
+	# frontone posteriore chiuso di assi
+	for j in 4:
+		var yy := 0.44 + j * 0.04
+		var largo := 0.42 * (1.0 - (yy - 0.42) / 0.19)
+		r.add_child(scatola(Vector3(largo, 0.036, 0.012), Vector3(0, yy, -0.4), "legno_vecchio"))
+	# tronco appeso: il perno sta sotto il colmo, le corde scendono fino al tronco
+	var tronco := Node3D.new()
+	tronco.name = "tronco"
+	tronco.position = Vector3(0, 0.42, 0)
+	r.add_child(tronco)
+	var ty := -0.2
+	tronco.add_child(cilindro(0.046, 0.05, 0.9, Vector3(0, ty, 0.07), "corteccia", Vector3(90, 0, 0), 12))
+	tronco.add_child(cilindro(0.05, 0.05, 0.004, Vector3(0, ty, -0.381), "legno_chiaro", Vector3(90, 0, 0), 12))
+	for zz: float in [-0.28, 0.0, 0.3, 0.46]:
+		tronco.add_child(_toro(0.046, 0.056, Vector3(0, ty, zz), "ferro", Vector3(90, 0, 0)))
+	for zz: float in [-0.17, 0.17]:
+		ramo(tronco, Vector3(0, 0.0, zz), Vector3(0, ty + 0.04, zz), 0.007, "corda")
+		tronco.add_child(_toro(0.048, 0.06, Vector3(0, ty, zz), "corda", Vector3(90, 0, 0)))
+	# testa d'ariete di bronzo: blocco arrotondato con muso, occhi e due corna a spirale
+	var tz := 0.55
+	tronco.add_child(cilindro(0.058, 0.052, 0.05, Vector3(0, ty, tz - 0.035), "bronzo", Vector3(90, 0, 0), 12))
+	tronco.add_child(sfera(0.06, Vector3(0, ty + 0.008, tz + 0.01), "bronzo", Vector3(0.9, 0.95, 1.15)))
+	tronco.add_child(sfera(0.036, Vector3(0, ty - 0.012, tz + 0.06), "bronzo", Vector3(0.85, 0.85, 1.1)))
+	for s: int in [-1, 1]:
+		tronco.add_child(sfera(0.009, Vector3(s * 0.042, ty + 0.024, tz + 0.04), "buio"))
+		tronco.add_child(sfera(0.006, Vector3(s * 0.014, ty - 0.02, tz + 0.094), "buio"))
+		# corno: tante sferette sempre più piccole lungo una spirale che gira sul fianco della testa
+		var c0 := Vector3(s * 0.058, ty + 0.0, tz - 0.0)
+		for q in 10:
+			var a := 1.9 - q * 0.62
+			var rr := 0.036 - q * 0.0026
+			var p := c0 + Vector3(s * q * 0.0035, rr * cos(a), rr * sin(a))
+			tronco.add_child(sfera(0.017 - q * 0.0011, p, "bronzo"))
+	# ombra sotto il carro (terra calpestata) non serve: la proietta lo studio
+	return r
+
+
+## Ariete in marcia: le ruote girano e il tronco dondola piano sulle corde.
+static func posa_ariete(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale * TAU
+	for w: Node3D in modello.get_node("ruote").get_children():
+		w.rotation.x = t * 0.5
+	modello.get_node("tronco").rotation.x = 0.07 * sin(t)
+	_bandierina(modello, t)
+
+
+## Colpo d'ariete: il tronco viene tirato indietro piano e poi sbatte in avanti con forza (un colpo per ciclo).
+static func posa_ariete_colpo(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var curva := [0.0, 0.14, 0.27, 0.36, 0.4, -0.16, -0.1, -0.04]
+	var i := int(float(fotogramma) / totale * curva.size()) % curva.size()
+	modello.get_node("tronco").rotation.x = curva[i]
+	for w: Node3D in modello.get_node("ruote").get_children():
+		w.rotation.x = 0.0
+	_bandierina(modello, float(fotogramma) / totale * TAU)
+
+
+static func _bandierina(modello: Node3D, t: float) -> void:
+	var bandiera: Node3D = modello.get_node("bandiera")
+	for j in 3:
+		var pz: Node3D = bandiera.get_node("lembo_%d" % j)
+		pz.rotation.y = 0.3 * sin(t * 2.0 - j * 0.9) * (j + 1) * 0.5
+
+
+## Onagro: catapulta a torsione su una slitta di travi con quattro ruotine; matassa di corde attorcigliate
+## in basso, braccio unico con la fionda di cuoio e il sasso, due montanti con la traversa imbottita davanti
+## e il verricello dietro. Davanti verso +z.
+static func onagro() -> Node3D:
+	var r := Node3D.new()
+	var ruote := Node3D.new()
+	ruote.name = "ruote"
+	r.add_child(ruote)
+	var k := 0
+	for zz: float in [-0.36, 0.22]:
+		r.add_child(cilindro(0.012, 0.012, 0.37, Vector3(0, 0.055, zz), "legno_scuro", Vector3(0, 0, 90), 8))
+		for s: int in [-1, 1]:
+			var w := _ruota_piena(0.055, 0.03, Vector3(s * 0.17, 0.055, zz))
+			w.name = "ruota_%d" % k
+			k += 1
+			ruote.add_child(w)
+	# slitta: due longheroni con le punte smussate, traverse, ferri agli angoli
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.05, 0.065, 0.82), Vector3(s * 0.12, 0.1, -0.07), "legno"))
+		r.add_child(scatola(Vector3(0.05, 0.05, 0.08), Vector3(s * 0.12, 0.085, 0.36), "legno", Vector3(-25, 0, 0)))
+		r.add_child(scatola(Vector3(0.005, 0.04, 0.24), Vector3(s * 0.147, 0.1, 0.12), "giocatore"))
+		r.add_child(scatola(Vector3(0.005, 0.04, 0.16), Vector3(s * 0.147, 0.1, -0.36), "giocatore"))
+		for zz: float in [-0.46, 0.06, 0.3]:
+			r.add_child(scatola(Vector3(0.056, 0.07, 0.016), Vector3(s * 0.12, 0.1, zz), "ferro"))
+	for zz: float in [-0.44, -0.26, 0.06, 0.3]:
+		r.add_child(scatola(Vector3(0.2, 0.04, 0.045), Vector3(0, 0.1, zz), "legno_scuro"))
+	# piano di tavole sul retro, dove sta il servente
+	for j in 4:
+		r.add_child(scatola(Vector3(0.19, 0.01, 0.035), Vector3(0, 0.125, -0.42 + j * 0.04), "legno_vecchio"))
+	# telaio della matassa: due blocchi rinforzati, con le rondelle di bronzo e le leve per torcere
+	var pz := -0.14
+	var py := 0.17
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.06, 0.12, 0.11), Vector3(s * 0.12, py, pz), "legno_scuro"))
+		r.add_child(scatola(Vector3(0.064, 0.02, 0.115), Vector3(s * 0.12, py + 0.05, pz), "ferro"))
+		r.add_child(scatola(Vector3(0.064, 0.02, 0.115), Vector3(s * 0.12, py - 0.05, pz), "ferro"))
+		r.add_child(cilindro(0.045, 0.045, 0.012, Vector3(s * 0.156, py, pz), "bronzo", Vector3(0, 0, 90), 14))
+		r.add_child(_toro(0.03, 0.045, Vector3(s * 0.163, py, pz), "bronzo", Vector3(0, 0, 90)))
+		r.add_child(scatola(Vector3(0.01, 0.13, 0.016), Vector3(s * 0.168, py, pz), "ferro", Vector3(35, 0, 0)))
+	# matassa di corde attorcigliate
+	r.add_child(cilindro(0.04, 0.04, 0.2, Vector3(0, py, pz), "corda", Vector3(0, 0, 90), 12))
+	for j in 9:
+		var xx := -0.08 + j * 0.02
+		r.add_child(_toro(0.034, 0.046, Vector3(xx, py, pz), "corda" if j % 2 == 0 else "lino", Vector3(0, 0, 90 + 25)))
+	# montanti con puntoni e traversa imbottita
+	var mz := 0.1
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.04, 0.32, 0.045), Vector3(s * 0.115, 0.29, mz), "legno"))
+		ramo(r, Vector3(s * 0.115, 0.36, mz + 0.01), Vector3(s * 0.12, 0.13, 0.3), 0.012, "legno")
+		ramo(r, Vector3(s * 0.115, 0.3, mz - 0.01), Vector3(s * 0.12, 0.13, -0.02), 0.01, "legno_chiaro")
+		r.add_child(scatola(Vector3(0.046, 0.02, 0.05), Vector3(s * 0.115, 0.16, mz), "ferro"))
+	r.add_child(scatola(Vector3(0.29, 0.045, 0.05), Vector3(0, 0.43, mz), "legno_scuro"))
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.016, 0.05, 0.055), Vector3(s * 0.135, 0.43, mz), "ferro"))
+	var cuscino := sfera(0.05, Vector3(0, 0.425, mz - 0.04), "pelle_conciata", Vector3(1.6, 0.8, 0.7))
+	r.add_child(cuscino)
+	r.add_child(sfera(0.051, Vector3(0, 0.425, mz - 0.04), "cuoio", Vector3(1.62, 0.5, 0.72)))
+	for s: int in [-1, 1]:
+		ramo(r, Vector3(s * 0.06, 0.45, mz - 0.03), Vector3(s * 0.06, 0.4, mz - 0.03), 0.004, "corda")
+	# verricello dietro, con le razze e la fune che va al braccio (staccata nel tiro)
+	r.add_child(cilindro(0.026, 0.026, 0.25, Vector3(0, 0.16, -0.43), "legno", Vector3(0, 0, 90), 10))
+	for s: int in [-1, 1]:
+		r.add_child(scatola(Vector3(0.03, 0.08, 0.03), Vector3(s * 0.12, 0.16, -0.43), "legno_scuro"))
+		for q in 2:
+			r.add_child(scatola(Vector3(0.012, 0.14, 0.012), Vector3(s * 0.15, 0.16, -0.43), "legno_chiaro", Vector3(q * 90 + 20, 0, 0)))
+	for j in 4:
+		r.add_child(_toro(0.024, 0.032, Vector3(-0.04 + j * 0.026, 0.16, -0.43), "corda", Vector3(0, 0, 90)))
+	# braccio di lancio: perno nella matassa, ruota attorno all'asse X; costruito dritto verso +y
+	var braccio := Node3D.new()
+	braccio.name = "braccio"
+	braccio.position = Vector3(0, py, pz)
+	r.add_child(braccio)
+	var lb := 0.4
+	braccio.add_child(cilindro(0.024, 0.017, lb, Vector3(0, lb * 0.5, 0), "legno", Vector3.ZERO, 8))
+	for yy: float in [0.06, 0.16, 0.26]:
+		braccio.add_child(_toro(0.017, 0.026, Vector3(0, yy, 0), "ferro", Vector3.ZERO))
+	# fionda di cuoio: coppa con l'apertura verso +z locale (in alto quando il braccio è abbassato)
+	var coppa := Vector3(0, lb - 0.01, 0.03)
+	braccio.add_child(sfera(0.042, coppa, "cuoio", Vector3(1.0, 1.0, 0.55)))
+	braccio.add_child(_toro(0.034, 0.044, coppa + Vector3(0, 0, 0.014), "corda", Vector3(90, 0, 0)))
+	for s: int in [-1, 1]:
+		ramo(braccio, Vector3(0, lb - 0.04, 0), coppa + Vector3(s * 0.035, 0, 0.012), 0.003, "corda")
+	var sasso := sfera(0.034, coppa + Vector3(0, 0, 0.03), "sasso_sic", Vector3(1.0, 0.9, 0.95))
+	sasso.name = "sasso"
+	braccio.add_child(sasso)
+	# un po' più grande di un carro: leggibile accanto ai soldati
+	r.scale = Vector3.ONE * 1.2
+	return r
+
+
+const ONAGRO_BASSO := -1.38
+
+
+## Onagro in marcia: le ruotine girano, il braccio sta abbassato e fermo col sasso nella fionda.
+static func posa_onagro(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var t := float(fotogramma) / totale * TAU
+	for w: Node3D in modello.get_node("ruote").get_children():
+		w.rotation.x = t * 0.5
+	var braccio: Node3D = modello.get_node("braccio")
+	braccio.rotation.x = ONAGRO_BASSO
+	braccio.get_node("sasso").visible = true
+
+
+## Tiro: il braccio si carica ancora più giù, poi scatta in avanti e batte sulla traversa imbottita;
+## il sasso parte allo scatto, poi il braccio torna giù per il colpo seguente.
+static func posa_onagro_tiro(modello: Node3D, fotogramma: int, totale: int) -> void:
+	var curva := [ONAGRO_BASSO, ONAGRO_BASSO - 0.06, ONAGRO_BASSO - 0.1, -0.2, 0.62, 0.48, -0.4, -1.0]
+	var i := int(float(fotogramma) / totale * curva.size()) % curva.size()
+	var braccio: Node3D = modello.get_node("braccio")
+	braccio.rotation.x = curva[i]
+	braccio.get_node("sasso").visible = i < 3
+	for w: Node3D in modello.get_node("ruote").get_children():
+		w.rotation.x = 0.0
 
 # =================================================================== METALLO (step 07)
 
