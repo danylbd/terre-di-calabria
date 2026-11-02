@@ -311,7 +311,7 @@ const COLLI_BRUZIO := [
 	[Vector2(31, 98), 140.0, 9.0, 0.0],
 	[Vector2(9, 116), 230.0, 13.0, 0.0],     # l'Aspromonte
 	[Vector2(76, 34), 30.0, 12.0, 0.0],      # le colline d'argilla del Marchesato
-	[Vector2(75, 28), 185.0, 2.6, 0.0],      # uno sperone di roccia nel Marchesato, la cava di Crotone
+	[Vector2(78, 30), 185.0, 2.6, 0.0],      # uno sperone di roccia nel Marchesato, la cava di Crotone
 ]
 
 
@@ -374,8 +374,8 @@ static func genera_bruzio(seme: int, w := 104, h := 120) -> DatiMappa:
 	_mare_piatto(d)
 	for nome in LUOGHI_BRUZIO:
 		d.luoghi[nome] = LUOGHI_BRUZIO[nome]
-	_radura(d, LUOGHI_BRUZIO["Crotone"] + Vector2i(-8, -2), 10)
-	_spiana(d, LUOGHI_BRUZIO["Crotone"] + Vector2i(3, 0), 4, true)     # il porto di Crotone
+	_radura(d, LUOGHI_BRUZIO["Crotone"] + Vector2i(-5, -1), 10)
+	_spiana(d, LUOGHI_BRUZIO["Crotone"] + Vector2i(2, 1), 4, true)     # il porto di Crotone, dentro i primi confini
 	return d
 
 

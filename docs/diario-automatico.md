@@ -288,3 +288,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Scaricati FluidSynth 2.6.2 e GeneralUser GS (licenza libera anche commerciale) in `C:\Users\User\Tools`.
 - `tools/suoni/musica_fluid.py`: quattro brani originali (mattino, lavoro, sera, guerra) scritti come MIDI e resi in Ogg.
 - In battaglia parte la musica di guerra, dopo 25 s di calma torna quella del villaggio. Test nuovo `test_musica`.
+
+### 2026-11-02 — Versione 1.0.0
+- Crediti completi nel menu, README della 1.0.
+- Prova completa delle 28 missioni con il giocatore automatico; corretto quello che è venuto fuori.
+- Tutti i test verdi; versione 1.0.0 pubblicata.
