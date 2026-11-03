@@ -2,7 +2,7 @@
 
 *Si aggiorna a ogni passaggio importante. Lo storico è in [`diario-automatico.md`](diario-automatico.md).*
 
-**Aggiornato:** 2026-11-02, **versione 1.0.0** pubblicata in `main`: il gioco di questa versione è finito (Fasi 1, 2, 3, 4, 6 e 7, musica nuova, crediti). Per le versioni successive: `docs/idee-future.md`. Ogni lavoro nuovo: worktree in C:/Users/User/Projects/tdc-wt/<ramo>, test nuovo, tutti i test a gruppi, versione, documenti, merge e push; esito della compilazione dal ramo `ci-esito`.
+**Aggiornato:** 2026-11-03, versione 1.0.0 in `main`. Il proprietario ha chiesto la **Fase 8 «Rifiniture alla Settlers»** (step 43–51 in `docs/roadmap.md`, decisioni in `docs/decisioni.md`): si fanno in ordine, una versione 1.x per step. Ogni lavoro: worktree in C:/Users/User/Projects/tdc-wt/<ramo>, test nuovo, tutti i test a gruppi, versione, documenti, merge e push; esito della compilazione dal ramo `ci-esito`.
 
 ## Ultimo obiettivo affrontato
 

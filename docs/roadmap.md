@@ -100,6 +100,20 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | Musica nuova (FluidSynth + soundfont libero, brani originali) | fatto (v0.58.0): mattino, lavoro, sera e guerra |
 | Chiusura: prova completa, bilanciamento finale, versione 1.0 | fatto (v1.0.0) |
 
+## Fase 8 — Rifiniture alla Settlers (richieste del proprietario del 2026-11-03, versioni 1.x)
+
+| Step | Cosa | Stato |
+|---|---|---|
+| 43 | Interfaccia: tutto schermo, menu di costruzione richiudibile, nome del villaggio cambiabile, legenda dei tasti nascondibile, zoom regolabile con un pulsante, via il pulsante «Bandierina» | |
+| 44 | Montagna: sui monti solo miniere, cava e torri (e si possono allargare i confini sui monti) | |
+| 45 | Torri: due soldati per torre, i confini si allargano solo quando i soldati entrano | |
+| 46 | Stagioni di un'ora di gioco l'una; suono della segheria più adatto; bandierine nascoste quando la strada è collegata | |
+| 47 | Economia: ogni bottega accumula fuori, in ordine, le sue merci (fino a 50, poi si ferma); magazzini da 200 merci, uno ogni 50 coloni | |
+| 48 | Abitazioni con comignoli e fumo | |
+| 49 | Casa dei pionieri e pionieri che allargano i confini, come in Settlers | |
+| 50 | Mappe molto più grandi, la telecamera si ferma prima del bordo | |
+| 51 | Mappa più interessante: rocche antiche in rovina, villaggi abbandonati e altri dettagli | |
+
 ## Fase 5 — rimandata a una versione successiva
 
 La modalità «Vita del villaggio» (idee da Coral Island) e la versione iPhone non fanno parte di questa versione (decisione del 2026-11-02): sono in [`idee-future.md`](idee-future.md).

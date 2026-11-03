@@ -40,4 +40,4 @@ Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita de
 
 ## Prossima attività consigliata
 
-**Versione 1.0.0 pubblicata.** Il gioco di questa versione è finito. Le idee per le versioni successive sono in `docs/idee-future.md` (modalità «Vita del villaggio», iPhone): si parte da lì quando il proprietario lo chiede.
+**Fase 8 — Rifiniture alla Settlers** (richieste del 2026-11-03, `docs/roadmap.md`): step 43–51, una versione 1.x per step. Prima: **versione 1.0.0 pubblicata.** Le idee per le versioni successive sono in `docs/idee-future.md` (modalità «Vita del villaggio», iPhone): si parte da lì quando il proprietario lo chiede.
