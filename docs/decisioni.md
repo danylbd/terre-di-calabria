@@ -72,3 +72,22 @@
 | Voce di re Italo | Voce **inventata, generata in codice** (sillabe senza parole vere sotto il testo scritto): libera da diritti. Solo suoni e voci liberi da diritti. |
 | Fase 5 «Vita del villaggio» | **Non in questa versione**: personaggi, feste, cura del mare, collezioni e museo si faranno in una versione successiva. Spostata in [`idee-future.md`](idee-future.md). Sostituisce l'ordine della risposta 15: dopo la Fase 7 vengono solo la musica e la chiusura del gioco. |
 | Download per la musica | Sì (2026-11-02, «fai quello che vuoi»): FluidSynth e GeneralUser GS sul computer di sviluppo |
+
+## Richieste del 2026-11-03 (Fase 8, dopo la versione 1.0)
+
+| Argomento | Decisione |
+|---|---|
+| Schermo | Il gioco parte a tutto schermo |
+| Menu di costruzione | Richiudibile; il nome del villaggio si può cambiare |
+| Legenda dei tasti in basso | Si può nascondere |
+| Bandierine | Via il pulsante «Bandierina»; le bandierine delle strade non si vedono più quando la strada è collegata |
+| Zoom | Pulsante per regolarlo |
+| Abitazioni | Comignoli con il fumo |
+| Merci | Ogni bottega accumula fuori, in ordine e in modo carino, quello che produce o raccoglie, fino a 50 pezzi; poi si ferma. Serve un magazzino: 200 merci l'uno, uno ogni 50 coloni |
+| Stagioni | Un'ora di gioco per stagione |
+| Mappa | Molto più grande; la telecamera si ferma prima del bordo |
+| Torri | Due soldati per torre; i confini si allargano solo quando i soldati sono entrati |
+| Suoni | Segheria più adatta |
+| Pionieri | Casa dei pionieri e pionieri come in Settlers |
+| Montagna | Sui monti solo miniere, cava di pietra e torri (bug: oggi non si allargano i confini sui monti) |
+| Dettagli della mappa | Rocche antiche in rovina o abbandonate e altre particolarità |

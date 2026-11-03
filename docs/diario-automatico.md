@@ -293,3 +293,6 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Crediti completi nel menu, README della 1.0.
 - Prova completa delle 28 missioni con il giocatore automatico; corretto quello che è venuto fuori.
 - Tutti i test verdi; versione 1.0.0 pubblicata.
+
+### 2026-11-03 — Fase 8 chiesta dal proprietario
+- Quattordici richieste (interfaccia, montagna, torri, stagioni, suoni, merci e magazzini, comignoli, pionieri, mappe più grandi, rovine): raccolte negli step 43–51.
