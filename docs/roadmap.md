@@ -113,6 +113,8 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 49 | Casa dei pionieri e pionieri che allargano i confini, come in Settlers | fatto (v1.1.0) |
 | 50 | Mappe molto più grandi, la telecamera si ferma prima del bordo | fatto (v1.1.0) |
 | 51 | Mappa più interessante: rocche antiche in rovina, villaggi abbandonati e altri dettagli | fatto (v1.1.0) |
+| 52 | Coloni più dettagliati: atlas animati con otto direzioni, abiti, merci e attrezzi | fatto (v1.1.0) |
+| 53 | Partita pacifica più dinamica: esplorare rovine e trovare ricompense | fatto (v1.1.0) |
 
 ## Fase 5 — rimandata a una versione successiva
 
