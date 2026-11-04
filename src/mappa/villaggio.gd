@@ -7,6 +7,7 @@ signal territorio_cambiato
 signal messaggio(testo: String, errore: bool)
 signal togli_decori(c: Vector2i)
 signal popolazione_cambiata
+signal edifici_speciali_cambiati
 
 const T := DatiMappa.Terreno
 const RAGGIO_MAGAZZINO := 9.0
@@ -15,6 +16,7 @@ const PENDENZA_MAX := {1: 14.0, 2: 12.0, 3: 10.0}
 const PENDENZA_MINIERA := 40.0
 
 var dati: DatiMappa
+var nome := "Villaggio"
 var rete: ReteStrade
 var risorse: RisorseNaturali
 var logistica: Logistica
@@ -22,6 +24,7 @@ var oggetti: Node2D                  # nodo con ordinamento in profondità dove 
 var edifici := {}                    # id -> Edificio
 var scorte := {"tronchi": 20, "assi": 24, "pietra": 18,
 	"ascia": 3, "piccone": 3, "pala": 2, "falce": 4, "canna": 2, "sega": 2, "martello": 2}
+var edifici_speciali_acquistati := {}
 var _prossimo_id := 2
 var coloni_liberi := 40              # coloni in magazzino, pronti a fare i portatori o i lavoratori
 var in_cammino := 0                  # coloni appena nati che vanno verso il magazzino
@@ -32,6 +35,7 @@ var nemici := {}                     # id -> Edificio di un altro popolo (torri 
 var soldati := 0                     # soldati di riserva, pronti a raggiungere i forti
 var guerra: Guerra
 var centri_propri := []             # altri centri del nostro territorio: [casella, raggio, 1] (villaggi indigeni conquistati)
+var pionieri: Array[Vector2i] = []  # avamposti fondati dalle case dei pionieri
 var vantaggi := {}                   # dai monumenti: "confini" (+raggio), "nascita" e "lavoro" (×tempo), "duelli" (+probabilità)
 var caricamento := false             # si sta ricostruendo una partita salvata: niente costi né messaggi
 
@@ -44,18 +48,88 @@ func _init(d: DatiMappa, nodo_oggetti: Node2D) -> void:
 	oggetti = nodo_oggetti
 
 
+func rinomina(nuovo_nome: String) -> void:
+	var pulito := nuovo_nome.strip_edges()
+	if pulito.is_empty():
+		return
+	nome = pulito.substr(0, 32)
+
+
+func puo_fondare_pioniere(c: Vector2i) -> String:
+	if not dati.dentro(c.x, c.y):
+		return "Fuori dalla mappa"
+	if dati.proprietario(c.x, c.y) != 0 or dati.occupante(c.x, c.y) != 0:
+		return "Scegli un terreno libero fuori dai confini"
+	if dati.tipo(c.x, c.y) in [T.ACQUA, T.NEVE, T.ROCCIA]:
+		return "Il pioniere può fondare solo su terreno abitabile"
+	var distanza := INF
+	for y in dati.altezza:
+		for x in dati.larghezza:
+			if dati.proprietario(x, y) == 1:
+				distanza = minf(distanza, Vector2(c - Vector2i(x, y)).length())
+	if distanza > 18.0:
+		return "Troppo lontano: resta entro 18 caselle dal villaggio"
+	return ""
+
+
+func fonda_avamposto(c: Vector2i, origine: Edificio) -> bool:
+	var perche := puo_fondare_pioniere(c)
+	if perche != "":
+		messaggio.emit(perche, true)
+		return false
+	if scorte.get("assi", 0) < 2:
+		messaggio.emit("Servono 2 assi per l'accampamento", true)
+		return false
+	if not prendi_colono():
+		messaggio.emit("Manca un colono libero per il pioniere", true)
+		return false
+	scorte["assi"] -= 2
+	costruttori += 1
+	pionieri.append(c)
+	centri_propri.append([c, 7.0, 1])
+	dati.occupa(c.x, c.y, DatiMappa.NATURA)
+	var viandante := Colono.new()
+	oggetti.add_child(viandante)
+	viandante.prepara(dati, origine.centro(), "portatore_attrezzi")
+	viandante.arrivato.connect(func(_c):
+		costruttori = maxi(0, costruttori - 1)
+		viandante.queue_free()
+		restituisci_colono())
+	viandante.percorri([origine.centro(), Vector2(c) + Vector2(0.5, 0.5)])
+	_mostra_campo_pioniere(c)
+	_ricalcola_territorio()
+	scorte_cambiate.emit()
+	messaggio.emit("Il pioniere ha fondato un avamposto: i confini si allargano", false)
+	return true
+
+
+func _mostra_campo_pioniere(c: Vector2i) -> void:
+	var campo := Node2D.new()
+	campo.set_script(load("res://src/mappa/campo_pioniere.gd"))
+	campo.position = dati.a_schermo(c.x + 0.5, c.y + 0.5)
+	oggetti.add_child(campo)
+
+
 # ------------------------------------------------------------ verifiche
 
 func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> String:
 	var info := CatalogoEdifici.dati(tipo)
+	if tipo in CatalogoEdifici.EDIFICI_SPECIALI and edifici_speciali_acquistati.get(tipo, 0) <= 0:
+		return "Acquista questo edificio all'agorà prima di costruirlo"
+	if tipo == "magazzino" and _conta("magazzino") >= magazzini_massimi():
+		return "Serve un magazzino ogni 50 coloni"
 	var s: int = info["taglia"]
+	var montano := _edificio_montano(tipo)
 	for y in range(c.y, c.y + s):
 		for x in range(c.x, c.x + s):
 			if not dati.dentro(x, y):
 				return "Fuori dalla mappa"
 			if not dati.nel_territorio(x, y):
 				return "Fuori dai tuoi confini"
-			if dati.tipo(x, y) not in TERRENI_EDIFICABILI and not (info.has("miniera") and dati.tipo(x, y) == T.ROCCIA):
+			var terreno := dati.tipo(x, y)
+			if terreno in [T.ROCCIA, T.NEVE] and not montano:
+				return "Sui monti si costruiscono solo miniere, cave e torri"
+			if terreno not in TERRENI_EDIFICABILI and not (montano and terreno in [T.ROCCIA, T.NEVE]):
 				return "Terreno non adatto"
 			var o := dati.occupante(x, y)
 			if o == DatiMappa.NATURA and not (info.has("miniera") and risorse and risorse.solo_massi(Vector2i(x, y))):
@@ -65,7 +139,7 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 			if rete and (rete.strada.has(Vector2i(x, y)) or rete.bandiere.has(Vector2i(x, y))):
 				return "C'è una strada"
 	var b := Vector2i(c.x + (s - 1) / 2, c.y + s)
-	var vietati := [T.ACQUA, T.NEVE] if info.has("miniera") else [T.ACQUA, T.ROCCIA, T.NEVE]
+	var vietati := [T.ACQUA, T.NEVE] if info.has("miniera") else ([T.ACQUA] if montano else [T.ACQUA, T.ROCCIA, T.NEVE])
 	if not dati.nel_territorio(b.x, b.y) or dati.tipo(b.x, b.y) in vietati or dati.occupante(b.x, b.y) != 0:
 		return "Serve spazio davanti alla porta per la bandierina"
 	if rete and not rete.bandiere.has(b) and rete.motivo_no_bandiera(b) != "":
@@ -91,8 +165,28 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 	return ""
 
 
+func _edificio_montano(tipo: String) -> bool:
+	var info := CatalogoEdifici.dati(tipo)
+	return tipo == "cava" or info.has("miniera") or info.get("presidio", 0) > 0
+
+
 func puo_costruire(tipo: String, c: Vector2i) -> bool:
 	return motivo_impossibile(tipo, c) == ""
+
+
+func acquista_edificio_speciale(tipo: String) -> bool:
+	if tipo not in CatalogoEdifici.EDIFICI_SPECIALI:
+		return false
+	var prezzo: int = CatalogoEdifici.dati(tipo)["prezzo_ducati"]
+	if scorte.get("ducati", 0) < prezzo:
+		messaggio.emit("Servono %d ducati per acquistare %s" % [prezzo, CatalogoEdifici.dati(tipo)["nome"]], true)
+		return false
+	scorte["ducati"] -= prezzo
+	edifici_speciali_acquistati[tipo] = edifici_speciali_acquistati.get(tipo, 0) + 1
+	scorte_cambiate.emit()
+	edifici_speciali_cambiati.emit()
+	messaggio.emit("Acquistato: %s. Ora è disponibile nel menu Speciali" % CatalogoEdifici.dati(tipo)["nome"], false)
+	return true
 
 
 # ------------------------------------------------------------ azioni
@@ -111,6 +205,9 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false, forza := false) 
 	e.position = dati.a_schermo(e.centro().x, e.centro().y)
 	oggetti.add_child(e)
 	edifici[e.id] = e
+	if not gia_finito and not forza and tipo in CatalogoEdifici.EDIFICI_SPECIALI:
+		edifici_speciali_acquistati[tipo] -= 1
+		edifici_speciali_cambiati.emit()
 	for y in range(c.y, c.y + e.taglia):
 		for x in range(c.x, c.x + e.taglia):
 			if CatalogoEdifici.dati(tipo).has("miniera") and risorse and risorse.solo_massi(Vector2i(x, y)):
@@ -142,10 +239,9 @@ func demolisci(e: Edificio, recupera := true) -> void:
 	for y in range(e.casella.y, e.casella.y + e.taglia):
 		for x in range(e.casella.x, e.casella.x + e.taglia):
 			dati.occupa(x, y, 0)
-	# materiali recuperati: tutti quelli già arrivati al cantiere, metà del costo se l'edificio era finito
-	var recupero: Dictionary = e.consegnati if recupera else {}
-	if e.finito and recupera:
-		recupero = {}
+	# La demolizione restituisce metà del costo iniziale, sia per i cantieri sia per gli edifici finiti.
+	var recupero := {}
+	if recupera:
 		var costo: Dictionary = CatalogoEdifici.dati(e.tipo)["costo"]
 		for r in costo:
 			recupero[r] = int(costo[r] / 2)
@@ -160,6 +256,9 @@ func demolisci(e: Edificio, recupera := true) -> void:
 	if recupera:
 		for r in e.ingresso:
 			scorte[r] = scorte.get(r, 0) + e.ingresso[r]
+	if e.tipo in CatalogoEdifici.EDIFICI_SPECIALI:
+		edifici_speciali_acquistati[e.tipo] = edifici_speciali_acquistati.get(e.tipo, 0) + 1
+		edifici_speciali_cambiati.emit()
 	rete.libera_protezione(e.bandiera)
 	rete.segna_ostacoli_vecchi()
 	e.queue_free()
@@ -201,6 +300,22 @@ func popolazione() -> int:
 		nei_forti += e.soldati
 	return coloni_liberi + in_cammino + costruttori + lavoratori() + (rete.portatori() if rete else 0) + soldati + nei_forti \
 		+ (guerra.in_marcia() if guerra else 0)
+
+
+func magazzini_massimi() -> int:
+	return maxi(1, ceili(float(popolazione()) / 50.0))
+
+
+func capienza_magazzini() -> int:
+	return _conta("magazzino") * 200
+
+
+func merci_in_scorta() -> int:
+	var totale := 0
+	for tipo in scorte:
+		if tipo != "ducati":
+			totale += maxi(0, int(scorte[tipo]))
+	return totale
 
 
 func magazzino() -> Edificio:

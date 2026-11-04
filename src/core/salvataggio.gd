@@ -71,7 +71,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	var rete: ReteStrade = p.rete
 	var ris: RisorseNaturali = p.risorse
 	var log: Logistica = p.logistica
-	var d := {"versione": VERSIONE, "seme": p.SEME, "mappa": p.mappa, "popolo": p.popolo, "tempo": log.tempo, "storia": log.storia, "calendario": p.stagioni.tempo,
+	var d := {"versione": VERSIONE, "seme": p.SEME, "mappa": p.mappa, "popolo": p.popolo, "nome_villaggio": v.nome, "tempo": log.tempo, "storia": log.storia, "calendario": p.stagioni.tempo,
 		"scorte": v.scorte, "coloni_liberi": v.coloni_liberi + v.in_cammino + v.costruttori,
 		"camera": [p.camera.position.x, p.camera.position.y, p.camera.zoom.x]}
 	# natura
@@ -100,6 +100,10 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	d["spada"] = _chiavi(ris.spada)
 	d["ripopola_spada"] = _chiavi(ris._ripopola_spada)
 	d["olive_attesa"] = _chiavi(ris._olive_attesa)
+	var funghi := []
+	for c in ris.funghi:
+		funghi.append([c.x, c.y, ris.funghi[c]["disponibile"], ris.funghi[c]["attesa"]])
+	d["funghi"] = funghi
 	var minerali := {}
 	for tipo in ris.minerali:
 		minerali[tipo] = _chiavi(ris.minerali[tipo])
@@ -109,9 +113,12 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	for e in v.edifici.values():
 		edifici.append({"id": e.id, "tipo": e.tipo, "casella": _v(e.casella), "finito": e.finito, "progresso": e.progresso,
 			"consegnati": e.consegnati, "richiesti": e.richiesti, "ingresso": e.ingresso, "in_arrivo": e.in_arrivo,
-			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "guadagno": e.guadagno, "presidiata": e.presidiata, "soldati": e.soldati + e.soldati_in_arrivo, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono,
+			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "vendite_in_coda": e.vendite_in_coda, "guadagno": e.guadagno, "presidiata": e.presidiata, "soldati": e.soldati + e.soldati_in_arrivo, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono, "produzione_attiva": e.produzione_attiva, "priorita_materiali": e.priorita_materiali,
 			"lavoratore": e.lavoratore != null and is_instance_valid(e.lavoratore)})
 	d["edifici"] = edifici
+	d["pionieri"] = v.pionieri.map(func(c): return _v(c))
+	d["edifici_speciali_acquistati"] = v.edifici_speciali_acquistati
+	d["rovine_esplorate"] = p.rovine_esplorate.map(func(c): return _v(c))
 	var nemici := []
 	for n in v.nemici.values():
 		nemici.append([n.tipo, n.casella.x, n.casella.y, n.proprietario, n.soldati, n.mura])
@@ -147,7 +154,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	var merci := []
 	for m in log.merci:
 		if is_instance_valid(m.destinazione):
-			merci.append([m.tipo, m.bandiera.x, m.bandiera.y, m.destinazione.id])
+			merci.append([m.tipo, m.bandiera.x, m.bandiera.y, m.destinazione.id, m.origine, m.locale])
 	d["merci"] = merci
 	var f := FileAccess.open(percorso, FileAccess.WRITE)
 	if f == null:
@@ -208,8 +215,11 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		e.ingresso = _interi(s["ingresso"])
 		e.in_arrivo = _interi(s["in_arrivo"])
 		e.prodotti = int(s["prodotti"])
+		e.produzione_attiva = s.get("produzione_attiva", true)
+		e.priorita_materiali = int(s.get("priorita_materiali", 0))
 		e.nascita = s["nascita"]
 		e.acquisto = s.get("acquisto", "")
+		e.vendite_in_coda.assign(s.get("vendite_in_coda", []))
 		e.guadagno = int(s.get("guadagno", 0))
 		e.presidiata = s.get("presidiata", false)
 		e.soldati = int(s.get("soldati", 0))
@@ -236,6 +246,8 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 			tr.portatore = null
 
 	v.scorte = _interi(d["scorte"])
+	v.edifici_speciali_acquistati = _interi(d.get("edifici_speciali_acquistati", {}))
+	v.nome = str(d.get("nome_villaggio", "Villaggio"))
 	if v.scorte.has("monete"):
 		# salvataggi vecchi: le monete ora si chiamano ducati
 		v.scorte["ducati"] = v.scorte.get("ducati", 0) + v.scorte["monete"]
@@ -248,7 +260,10 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 	for m in d["merci"]:
 		var dest: Edificio = vecchi.get(int(m[3]))
 		if dest:
-			log._nuova_merce(m[0], dest, Vector2i(int(m[1]), int(m[2])))
+			var merce: Merce = log._nuova_merce(m[0], dest, Vector2i(int(m[1]), int(m[2])))
+			if m.size() > 4:
+				merce.origine = int(m[4])
+				merce.locale = bool(m[5])
 	for s in d["edifici"]:
 		var e: Edificio = vecchi.get(int(s["id"]))
 		if e and s["lavoratore"]:
@@ -256,6 +271,9 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 	if d.has("missione") and p.missione == null:
 		p.avvia_missione(d["missione"][0], int(d["missione"][1]))
 	p.indigeni.carica(d.get("indigeni", []))
+	p.rovine_esplorate.clear()
+	for c in d.get("rovine_esplorate", []):
+		p.rovine_esplorate.append(_c(c))
 	p.schiere.esperienza = int(d.get("esperienza_condottiero", 0))
 	var mon: Dictionary = d.get("monumenti", {})
 	for o in mon.get("ottenuti", []):
@@ -263,6 +281,12 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 	p.monumenti.prodotti = _interi(mon.get("prodotti", {}))
 	p.monumenti.tempo_senza_perdite = float(mon.get("senza_perdite", 0.0))
 	v.caricamento = false
+	for salvato in d.get("pionieri", []):
+		var c := _c(salvato)
+		v.pionieri.append(c)
+		v.centri_propri.append([c, 7.0, 1])
+		v.dati.occupa(c.x, c.y, DatiMappa.NATURA)
+		v._mostra_campo_pioniere(c)
 	v._ricalcola_territorio()
 	p.camera.position = Vector2(d["camera"][0], d["camera"][1])
 	p.camera.zoom = Vector2.ONE * float(d["camera"][2])
@@ -318,5 +342,11 @@ static func _carica_natura(d: Dictionary, ris: RisorseNaturali, dati: DatiMappa)
 	ris.spada = _interi(_da_chiavi(d["spada"]))
 	ris._ripopola_spada = _da_chiavi(d["ripopola_spada"])
 	ris._olive_attesa = _da_chiavi(d["olive_attesa"])
+	for f in d.get("funghi", []):
+		var c := Vector2i(int(f[0]), int(f[1]))
+		if ris.funghi.has(c):
+			ris.funghi[c]["disponibile"] = bool(f[2])
+			ris.funghi[c]["attesa"] = float(f[3])
+			(ris.funghi[c]["sprite"] as CanvasItem).visible = bool(f[2])
 	for tipo in d["minerali"]:
 		ris.minerali[tipo] = _interi(_da_chiavi(d["minerali"][tipo]))

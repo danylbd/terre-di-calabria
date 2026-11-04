@@ -42,6 +42,8 @@ func _draw() -> void:
 		draw_polyline(punti, Color(COLORI_POPOLI[1], 0.9), 2.5)
 	if mostra_bandiere and villaggio.rete:
 		for c in villaggio.rete.bandiere:
+			if villaggio.rete.collegata(c) and c != inizio_strada:
+				continue
 			var p := dati.a_schermo(c.x + 0.5, c.y + 0.5)
 			var scelta: bool = c == inizio_strada
 			var col := Palette.OCRA if scelta else Color(Palette.PERGAMENA_CHIARA, 0.9)
@@ -72,6 +74,8 @@ func _disegna_confini() -> void:
 			for v in [[Vector2i(1, 0), Vector2(1, 0.5)], [Vector2i(-1, 0), Vector2(0, 0.5)], [Vector2i(0, 1), Vector2(0.5, 1)], [Vector2i(0, -1), Vector2(0.5, 0)]]:
 				var n: Vector2i = Vector2i(x, y) + v[0]
 				if dati.proprietario(n.x, n.y) == chi:
+					continue
+				if not dati.dentro(n.x, n.y) or dati.tipo(n.x, n.y) == DatiMappa.Terreno.ACQUA:
 					continue
 				var m: Vector2 = Vector2(x, y) + v[1]
 				var p := dati.a_schermo(m.x, m.y)

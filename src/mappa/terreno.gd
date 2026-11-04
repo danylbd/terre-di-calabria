@@ -43,7 +43,7 @@ func _crea_mesh() -> ArrayMesh:
 			var dqy := (dati.quota_vertice(i, j + 1) - dati.quota_vertice(i, j - 1)) * 0.5
 			var n := Vector3(-dqx / scala_orizzontale * 3.2, -dqy / scala_orizzontale * 3.2, 1.0).normalized()
 			var l := clampf(0.3 + 0.78 * n.dot(LUCE.normalized()), 0.3, 1.2)
-			colori.append(Color(l * 0.8, l * 0.8, l * 0.8, 1.0))
+			colori.append(Color(l * 0.8, l * 0.8, l * 0.8, clampf(q / 280.0, 0.0, 1.0)))
 	for j in h:
 		for i in w:
 			var a := j * (w + 1) + i

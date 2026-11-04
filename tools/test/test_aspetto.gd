@@ -18,7 +18,7 @@ func _initialize() -> void:
 				var nome := Popoli.sprite(tipo, popolo)
 				if not ResourceLoader.exists("res://assets/grafica/%s.png" % nome):
 					mancano.append(nome)
-				elif popolo != "greci" and nome == tipo and not CatalogoEdifici.dati(tipo).has("popolo"):
+				elif popolo != "greci" and tipo not in CatalogoEdifici.EDIFICI_SPECIALI and nome == tipo and not CatalogoEdifici.dati(tipo).has("popolo"):
 					greci.append(tipo)
 		_controlla(mancano.is_empty(), "%s: tutti gli sprite esistono %s" % [popolo, mancano])
 		if popolo in COMPLETI:

@@ -6,7 +6,7 @@ config_version=5
 
 config/name="Terre di Calabria"
 config/description="Gioco di strategia ed economia ambientato in Calabria."
-config/version="1.0.0"
+config/version="1.1.0"
 run/main_scene="res://src/main/title_screen.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
@@ -19,7 +19,7 @@ Audio="*res://src/audio/audio.gd"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/mode=2
+window/size/mode=3
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 

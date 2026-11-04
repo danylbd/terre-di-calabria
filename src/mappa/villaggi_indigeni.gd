@@ -8,6 +8,7 @@ extends Node
 signal cambiato
 
 const PERIODO := 60.0                # secondi tra un invio di merci e l'altro
+const BASE_SABBIOSA := preload("res://src/mappa/base_sabbiosa.gdshader")
 const CRESCITA := 90.0               # secondi per un abitante in più
 const ABITANTI_MAX := 60
 const RAGGIO_CONFINI := 5.0
@@ -86,6 +87,10 @@ func _aggiungi(v: Dictionary) -> void:
 	for k in 3:
 		var p: Vector2i = c + posti[k]
 		var s := Sprites.crea(sprite_di(v["tipo"], k))
+		if v["tipo"] == "pescatori":
+			var materiale := ShaderMaterial.new()
+			materiale.shader = BASE_SABBIOSA
+			s.material = materiale
 		s.position = dati.a_schermo(p.x + 1.0, p.y + 1.0)
 		oggetti.add_child(s)
 		nodi.append(s)
@@ -99,7 +104,20 @@ func _aggiungi(v: Dictionary) -> void:
 	l.add_theme_constant_override("outline_size", 6)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	l.z_index = 45
-	oggetti.get_parent().add_child(l)
+	var pannello := PanelContainer.new()
+	var fondo := StyleBoxFlat.new()
+	fondo.bg_color = Color(Palette.INCHIOSTRO, 0.88)
+	fondo.set_corner_radius_all(6)
+	fondo.content_margin_left = 9
+	fondo.content_margin_right = 9
+	fondo.content_margin_top = 4
+	fondo.content_margin_bottom = 4
+	pannello.add_theme_stylebox_override("panel", fondo)
+	pannello.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pannello.z_index = 44
+	pannello.add_child(l)
+	oggetti.get_parent().add_child(pannello)
+	nodi.append(pannello)
 	nodi.append(l)
 	_nodi.append(nodi)
 	_aggiorna_etichetta(elenco.size() - 1)
@@ -113,9 +131,11 @@ func _aggiorna_etichetta(i: int) -> void:
 	l.text = "%s · %d abitanti · %s" % [v["nome"], v["abitanti"], STATI[v["stato"]]]
 	var col := {"neutrale": Palette.PERGAMENA_CHIARA, "alleato": Color("bfe39a"), "nostro": Color("9fd0ff")}
 	l.add_theme_color_override("font_color", col[v["stato"]])
-	l.reset_size()
+	var pannello: PanelContainer = _nodi[i][-2]
+	pannello.reset_size()
 	var c: Vector2i = v["casella"]
-	l.position = dati.a_schermo(c.x + 2.5, c.y + 2.5) - Vector2(l.get_combined_minimum_size().x * 0.5, 110)
+	pannello.position = dati.a_schermo(c.x + 2.5, c.y + 2.5) - Vector2(pannello.get_combined_minimum_size().x * 0.5, 110)
+	pannello.visible = false
 
 
 func _posto_vicino(centro: Vector2i) -> Vector2i:
@@ -150,7 +170,12 @@ func villaggio_in(c: Vector2i) -> int:
 func _process(delta: float) -> void:
 	if not attivi:
 		return
+	var camera := get_viewport().get_camera_2d()
+	if camera == null:
+		return
+	var sotto := villaggio_in(dati.casella_da_schermo(camera.get_global_mouse_position()))
 	for i in elenco.size():
+		(_nodi[i][-2] as Control).visible = i == sotto
 		var v: Dictionary = elenco[i]
 		v["crescita"] += delta
 		if v["crescita"] >= CRESCITA and v["abitanti"] < ABITANTI_MAX:

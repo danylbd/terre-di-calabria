@@ -53,9 +53,10 @@ func _prova() -> void:
 				casella_loro = Vector2i(x, y)
 	_controlla(v.motivo_impossibile("casa_greca", casella_loro) == "Fuori dai tuoi confini", "non si costruisce nel territorio altrui")
 
-	# torre verso est: allarga solo dopo il presidio, e non ruba le caselle altrui
-	var torre := _piazza("torre", func(f): return f.x * 1.0 - absf(f.y - mag.bandiera.y))
-	_controlla(torre != null, "torre piazzata verso est")
+	# torre al limite raggiungibile: allarga solo dopo il presidio, e non ruba le caselle altrui
+	var torre := _piazza("torre", func(f): return Vector2(f - mag.bandiera).length())
+	_controlla(torre != null, "torre piazzata al limite dei confini")
+	_controlla(CatalogoEdifici.dati("torre").get("soldati_max", 0) == 2, "una torre ospita due soldati")
 	var prima := _conta(1)
 	Engine.time_scale = VELOCITA
 	var visto_senza := false

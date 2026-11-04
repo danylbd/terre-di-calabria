@@ -13,7 +13,7 @@ const FOGLI := {"tronchi": "portatore_tronco", "assi": "portatore_asse", "pietra
 	"pala": "portatore_attrezzi", "falce": "portatore_attrezzi", "canna": "portatore_attrezzi",
 	"sega": "portatore_attrezzi", "martello": "portatore_attrezzi", "argilla": "portatore_sacco",
 	"anfore": "portatore_anfora", "sale": "portatore_sacco", "argento": "portatore_pietra", "ducati": "portatore_sacco",
-	"stoffa": "portatore_lana", "armi": "portatore_armi"}
+	"stoffa": "portatore_lana", "armi": "portatore_armi", "porcini": "portatore_cesta"}
 
 var tipo := ""
 var destinazione: Edificio          # dove deve arrivare
@@ -22,13 +22,15 @@ var prenotata := false               # un portatore sta venendo a prenderla
 var in_spalla := false
 var sprite: Sprite2D
 var origine := 0                     # id dell'edificio che l'ha prodotta (0 = uscita dal magazzino)
+var locale := false                  # prodotto in attesa fuori dalla bottega perché non c'è spazio in magazzino
 
 
 func _init(p_tipo: String, dest: Edificio, dove: Vector2i) -> void:
 	tipo = p_tipo
 	destinazione = dest
 	bandiera = dove
-	sprite = Sprites.crea("merce_" + p_tipo)
+	var icona := "merce_formaggio" if p_tipo == "porcini" else "merce_" + p_tipo
+	sprite = Sprites.crea(icona)
 
 
 func foglio_portatore() -> String:

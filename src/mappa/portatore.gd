@@ -38,6 +38,7 @@ func trasporta(m: Merce, da: Vector2i, a: Vector2i) -> void:
 	var tornando := stato == Stato.RIENTRA and da == _capo_lasciato
 	_capo_lasciato = Vector2i(-1, -1)
 	stato = Stato.VA_A_PRENDERE
+	visible = true
 	if tornando:
 		var al_capo: Array[Vector2] = [_centro(da)]
 		percorri(al_capo)
@@ -62,6 +63,7 @@ func _on_arrivato(_c: Colono) -> void:
 		Stato.ARRIVO, Stato.RIENTRA:
 			_capo_lasciato = Vector2i(-1, -1)
 			stato = Stato.ATTESA
+			visible = false
 			imposta_foglio("portatore_nessuno")
 		Stato.VA_A_PRENDERE:
 			_merce.in_spalla = true

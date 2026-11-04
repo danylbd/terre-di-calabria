@@ -30,6 +30,10 @@ func _ready() -> void:
 	_zoom_obiettivo = zoom.x
 
 
+func regola_zoom(valore: float) -> void:
+	_zoom_obiettivo = clampf(valore, ZOOM_MIN, ZOOM_MAX)
+
+
 func _process(delta: float) -> void:
 	if _tocchi.size() == 1 and not tocco_mosso and not tocco_lungo_fatto:
 		_tempo_tocco += delta

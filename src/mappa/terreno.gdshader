@@ -25,10 +25,12 @@ uniform float neve = 0.0;          // 0..1: d'inverno la neve copre la terra (no
 
 varying vec2 coord;
 varying float luce;
+varying float quota;
 
 void vertex() {
 	coord = UV;
 	luce = COLOR.r * 1.25;
+	quota = COLOR.a;
 }
 
 float somma4(vec4 v) { return v.x + v.y + v.z + v.w; }
@@ -66,6 +68,7 @@ void fragment() {
 	if (neve > 0.001) {
 		float chiazze = texture(rumore, coord * 0.05 + vec2(0.13, 0.71)).r;
 		float copre = clamp(neve * 1.6 - chiazze * 0.9 - wa.z * 0.6, 0.0, 1.0);
+		copre *= smoothstep(0.22, 0.78, quota);
 		vec3 bianco = texture(t_neve, tc).rgb * vec3(0.97, 0.99, 1.04);
 		col = mix(col, bianco * (1.0 - wb.y), copre * (1.0 - wb.y));
 	}

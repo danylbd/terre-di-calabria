@@ -2,7 +2,8 @@ class_name CatalogoEdifici
 ## Elenco degli edifici costruibili (Greci) con taglia, costo, categoria e descrizione.
 ## taglia = lato dell'impronta in caselle: 1 (pozzo), 2 (la maggior parte), 3 (magazzino).
 
-const CATEGORIE := ["Base", "Cibo", "Metallo", "Difesa"]
+const CATEGORIE := ["Base", "Cibo", "Metallo", "Difesa", "Speciali"]
+const EDIFICI_SPECIALI := ["tempio_proserpina", "foro_valentia", "duomo"]
 
 const EDIFICI := {
 	"casa_greca": {"nome": "Abitazione", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Base",
@@ -49,6 +50,9 @@ const EDIFICI := {
 	"apiario": {"nome": "Apiario", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
 		"tempo": 16.0, "lavoratore": "portatore_nessuno", "produce": "miele", "durata": 14.0,
 		"descrizione": "Le arnie danno miele dai fiori dei prati."},
+	"raccoglitore_funghi": {"nome": "Raccoglitore di porcini", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
+		"tempo": 18.0, "attrezzo": "pala", "lavoratore": "lavoratore_pala", "produce": "porcini",
+		"descrizione": "Raccoglie porcini nei boschi vicini. I funghi ricrescono col tempo."},
 	"caseificio": {"nome": "Caseificio", "taglia": 2, "costo": {"assi": 2, "pietra": 2}, "categoria": "Cibo",
 		"tempo": 22.0, "lavoratore": "portatore_nessuno", "ingressi": {"latte": 4}, "produce": "formaggio",
 		"descrizione": "Fa il formaggio con il latte di pecore e capre."},
@@ -67,6 +71,12 @@ const EDIFICI := {
 	"agora": {"nome": "Agorà", "popolo": "greci", "taglia": 3, "costo": {"assi": 6, "pietra": 8}, "categoria": "Base",
 		"tempo": 45.0, "lavoratore": "portatore_nessuno", "vende": 8, "produce": "", "durata": 6.0,
 		"descrizione": "La piazza del mercato dei Greci: vende olio, vino, anfore, stoffa e altro in cambio di ducati, e con i ducati compra quello che scegli."},
+	"tempio_proserpina": {"nome": "Tempio di Proserpina", "taglia": 3, "costo": {}, "prezzo_ducati": 90, "categoria": "Speciali",
+		"tempo": 52.0, "descrizione": "Un tempio dedicato a Proserpina, acquistabile al mercato."},
+	"foro_valentia": {"nome": "Foro di Valentia", "taglia": 3, "costo": {}, "prezzo_ducati": 180, "categoria": "Speciali",
+		"tempo": 64.0, "descrizione": "Un grande foro civico, acquistabile al mercato."},
+	"duomo": {"nome": "Duomo di Santa Maria Maggiore", "taglia": 3, "costo": {}, "prezzo_ducati": 300, "categoria": "Speciali",
+		"tempo": 74.0, "descrizione": "Il duomo di Valentia, acquistabile al mercato."},
 	"pescatore": {"nome": "Pescatore", "taglia": 2, "costo": {"assi": 2}, "categoria": "Cibo",
 		"tempo": 16.0, "attrezzo": "canna", "lavoratore": "lavoratore_canna", "produce": "pesce", "vicino_mare": 5,
 		"descrizione": "Pesca dalla riva. Il pesce finisce e torna col tempo: costruiscilo vicino al mare."},
@@ -146,8 +156,10 @@ const EDIFICI := {
 		"produce": "attrezzi", "durata": 8.0,
 		"descrizione": "Forgia gli attrezzi dei mestieri. Fa per primi quelli che mancano."},
 	"torre": {"nome": "Torre di guardia", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Difesa",
-		"tempo": 30.0, "territorio": 7, "presidio": 1, "lavoratore": "guardia", "soldati_max": 3,
-		"descrizione": "Allarga i confini quando una guardia la presidia. Ospita 3 soldati, che da qui possono attaccare."},
+		"tempo": 30.0, "territorio": 7, "presidio": 1, "lavoratore": "guardia", "soldati_max": 2,
+		"descrizione": "Allarga i confini solo quando la guardia entra. Può ospitare 2 soldati."},
+	"casa_pionieri": {"nome": "Casa dei pionieri", "taglia": 2, "costo": {"assi": 4, "pietra": 3}, "categoria": "Difesa",
+		"tempo": 32.0, "lavoratore": "portatore_nessuno", "descrizione": "Da qui partono i pionieri per fondare avamposti e allargare il territorio."},
 	"castello": {"nome": "Castello", "taglia": 3, "costo": {"assi": 6, "pietra": 12}, "categoria": "Difesa",
 		"tempo": 60.0, "territorio": 11, "presidio": 1, "lavoratore": "guardia", "soldati_max": 8,
 		"descrizione": "Fortezza di pietra: allarga molto i confini quando è presidiata. Ospita 8 soldati."},
@@ -169,13 +181,17 @@ const NOMI_RISORSE := {"tronchi": "Tronchi", "assi": "Assi", "pietra": "Pietra",
 	"pesce_spada": "Pesce spada", "ferro": "Ferro", "carbone": "Carbone", "pece": "Pece", "tegole": "Tegole", "bozzoli": "Bozzoli", "seta": "Seta", "cavalli": "Cavalli", "porpora": "Porpora", "elefanti": "Elefanti", "ceramiche": "Ceramiche", "lame": "Lame di ossidiana", "lingotti": "Lingotti",
 	"ascia": "Asce", "piccone": "Picconi", "pala": "Pale", "falce": "Falci", "canna": "Canne da pesca", "sega": "Seghe",
 	"martello": "Martelli", "argilla": "Argilla", "anfore": "Anfore", "sale": "Sale", "argento": "Argento",
-	"ducati": "Ducati", "stoffa": "Stoffa", "armi": "Armi"}
+	"ducati": "Ducati", "stoffa": "Stoffa", "armi": "Armi", "porcini": "Porcini"}
 ## all'agorà: ducati ricavati vendendo una merce (i Greci sono buoni mercanti: prezzi favorevoli)
-const VENDITA := {"olio": 3, "vino": 3, "stoffa": 3, "anfore": 2, "pesce_spada": 2, "miele": 2, "formaggio": 1, "sale": 1,
-	"agrumi": 1}
+const VENDITA := {"tronchi": 1, "assi": 2, "pietra": 1, "grano": 1, "farina": 1, "acqua": 1, "pane": 2, "pesce": 2,
+	"maiale": 2, "carne": 3, "latte": 1, "lana": 2, "formaggio": 3, "miele": 3, "olive": 1, "olio": 4, "uva": 1,
+	"vino": 4, "ortaggi": 1, "cipolle": 1, "agrumi": 2, "pesce_spada": 3, "ferro": 2, "carbone": 1, "lingotti": 4,
+	"argilla": 2, "anfore": 4, "sale": 2, "argento": 5, "stoffa": 4, "armi": 5, "pece": 4, "tegole": 3, "bozzoli": 1,
+	"seta": 5, "cavalli": 5, "porpora": 6, "ceramiche": 4, "lame": 4, "porcini": 5}
 ## all'agorà: ducati per comprare una merce
 const ACQUISTO := {"grano": 1, "pesce": 1, "tronchi": 1, "pietra": 1, "assi": 1, "argilla": 1, "ferro": 2, "carbone": 1,
-	"lingotti": 3, "lana": 1}
+	"lingotti": 3, "lana": 1, "farina": 1, "acqua": 1, "pane": 2, "carne": 3, "formaggio": 3, "olio": 4, "vino": 4,
+	"anfore": 3, "sale": 2}
 ## attrezzi dei mestieri: senza l'attrezzo in magazzino l'artigiano non arriva
 const ATTREZZI := ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]
 const ATTREZZO_UNO := {"ascia": "un'ascia", "piccone": "un piccone", "pala": "una pala", "falce": "una falce",

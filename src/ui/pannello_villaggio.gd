@@ -8,7 +8,7 @@ const GRUPPI := [
 		"ortaggi", "cipolle", "olive"]],
 	["Lusso", ["vino", "olio", "agrumi", "miele", "lana", "stoffa", "anfore", "pece", "tegole", "bozzoli", "seta", "cavalli", "ceramiche", "lame", "porpora", "elefanti"]],
 	["Metallo", ["ferro", "carbone", "lingotti", "argento", "ducati", "armi"]],
-	["Altro", ["argilla", "sale"]],
+	["Altro", ["argilla", "sale", "porcini"]],
 	["Attrezzi", ["ascia", "piccone", "pala", "falce", "canna", "sega", "martello"]],
 ]
 
@@ -20,6 +20,8 @@ var avversario: Avversario
 var monumenti: Monumenti
 var schiere: Schiere
 var _testo: RichTextLabel
+var _titolo: Label
+var _nome_edit: LineEdit
 var _aggiorna := 0.0
 
 
@@ -30,12 +32,25 @@ func _ready() -> void:
 	add_child(colonna)
 	var testa := HBoxContainer.new()
 	colonna.add_child(testa)
-	var titolo := Label.new()
-	titolo.text = "Il villaggio"
-	titolo.add_theme_font_size_override("font_size", 24)
-	titolo.add_theme_color_override("font_color", Palette.TERRACOTTA_SCURA)
-	titolo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	testa.add_child(titolo)
+	_titolo = Label.new()
+	_titolo.text = villaggio.nome
+	_titolo.add_theme_font_size_override("font_size", 24)
+	_titolo.add_theme_color_override("font_color", Palette.TERRACOTTA_SCURA)
+	_titolo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	testa.add_child(_titolo)
+	_nome_edit = LineEdit.new()
+	_nome_edit.custom_minimum_size = Vector2(210, 36)
+	_nome_edit.max_length = 32
+	_nome_edit.visible = false
+	_nome_edit.text_submitted.connect(_conferma_nome)
+	_nome_edit.focus_exited.connect(func(): _conferma_nome(_nome_edit.text))
+	testa.add_child(_nome_edit)
+	var rinomina := Button.new()
+	rinomina.text = "✎"
+	rinomina.custom_minimum_size = Vector2(38, 36)
+	rinomina.tooltip_text = "Cambia nome al villaggio"
+	rinomina.pressed.connect(_inizia_rinomina)
+	testa.add_child(rinomina)
 	var chiudi := Button.new()
 	chiudi.text = "✕"
 	chiudi.custom_minimum_size = Vector2(36, 36)
@@ -56,6 +71,21 @@ func alterna() -> void:
 	visible = not visible
 	if visible:
 		_riempi()
+
+
+func _inizia_rinomina() -> void:
+	_titolo.visible = false
+	_nome_edit.text = villaggio.nome
+	_nome_edit.visible = true
+	_nome_edit.grab_focus()
+	_nome_edit.select_all()
+
+
+func _conferma_nome(testo: String) -> void:
+	villaggio.rinomina(testo)
+	_titolo.text = villaggio.nome
+	_titolo.visible = true
+	_nome_edit.visible = false
 
 
 func _process(delta: float) -> void:

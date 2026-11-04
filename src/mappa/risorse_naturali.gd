@@ -32,6 +32,7 @@ var _ripopola := {}   # Vector2i -> secondi al prossimo pesce
 var spada := {}       # Vector2i (al largo) -> pesci spada rimasti (assente = pieno)
 var _ripopola_spada := {}
 var minerali := {}    # tipo -> {Vector2i (casella di roccia) -> quantità rimasta}
+var funghi := {}      # Vector2i -> {sprite, disponibile, attesa, prenotata}
 var _olive_attesa := {}   # Vector2i -> secondi prima che l'ulivo abbia di nuovo olive
 var _olive_prenotate := {}
 var _ceppi: Array = []  # [sprite, secondi rimasti]
@@ -109,6 +110,45 @@ func registra(nome: String, c: Vector2i, s: Sprite2D) -> void:
 	elif specie == "ulivo":
 		ulivi.get_or_add(c, []).append(s)
 	dati.occupa(c.x, c.y, DatiMappa.NATURA)
+
+
+func registra_fungo(c: Vector2i, s: Sprite2D) -> void:
+	funghi[c] = {"sprite": s, "disponibile": true, "attesa": 0.0, "prenotata": false}
+
+
+func fungo_vicino(da: Vector2i, raggio: int) -> Vector2i:
+	var migliore := Vector2i(-1, -1)
+	var distanza := INF
+	for c in funghi:
+		var d := Vector2(c - da).length()
+		if funghi[c]["disponibile"] and not funghi[c]["prenotata"] and d < distanza and d <= raggio and _raggiungibile(da, c):
+			migliore = c
+			distanza = d
+	return migliore
+
+
+func prenota_fungo(c: Vector2i) -> bool:
+	if funghi.has(c) and funghi[c]["disponibile"] and not funghi[c]["prenotata"]:
+		funghi[c]["prenotata"] = true
+		return true
+	return false
+
+
+func raccogli_fungo(c: Vector2i) -> bool:
+	if not funghi.has(c) or not funghi[c]["prenotata"]:
+		return false
+	var fungo: Dictionary = funghi[c]
+	fungo["prenotata"] = false
+	fungo["disponibile"] = false
+	fungo["attesa"] = 240.0
+	(fungo["sprite"] as CanvasItem).visible = false
+	return true
+
+
+func rimuovi_fungo(c: Vector2i) -> void:
+	if funghi.has(c):
+		(funghi[c]["sprite"] as Node).queue_free()
+		funghi.erase(c)
 
 
 # ------------------------------------------------------------ ricerca
@@ -378,6 +418,9 @@ func solo_massi(c: Vector2i) -> bool:
 
 ## Toglie tutta la natura da una casella (alberi, ulivi, massi): per far posto a un villaggio indigeno.
 func sgombra(c: Vector2i) -> void:
+	if funghi.has(c):
+		(funghi[c]["sprite"] as Node).queue_free()
+		funghi.erase(c)
 	for s in alberi.get(c, []):
 		(s["sprite"] as Node).queue_free()
 	for s in ulivi.get(c, []):
@@ -416,6 +459,13 @@ func _metti_ceppo(pos: Vector2, nome := "ceppo", durata := DURATA_CEPPO) -> void
 # ------------------------------------------------------------ tempo che passa
 
 func _process(delta: float) -> void:
+	for c in funghi:
+		var fungo: Dictionary = funghi[c]
+		if not fungo["disponibile"]:
+			fungo["attesa"] -= delta
+			if fungo["attesa"] <= 0.0:
+				fungo["disponibile"] = true
+				(fungo["sprite"] as CanvasItem).visible = true
 	for c in alberi:
 		for a in alberi[c]:
 			if a["crescita"] < 3.0:

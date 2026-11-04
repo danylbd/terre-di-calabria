@@ -52,7 +52,7 @@ static func crea(mappa: String, seme: int) -> DatiMappa:
 	return genera(seme)
 
 
-static func genera(seme: int, w := 72, h := 72) -> DatiMappa:
+static func genera(seme: int, w := 144, h := 144) -> DatiMappa:
 	var d := DatiMappa.new(w, h)
 	var continente := _rumore(seme, 0.035, 3)
 	var monti := _rumore(seme + 1, 0.05, 4)
@@ -60,23 +60,29 @@ static func genera(seme: int, w := 72, h := 72) -> DatiMappa:
 	var umido := _rumore(seme + 3, 0.06, 3)
 	var secco := _rumore(seme + 4, 0.05, 2)
 	var dettaglio := _rumore(seme + 5, 0.25, 2)
+	# Il riquadro storico di 72×72 resta identico al suo centro; la nuova area si aggiunge
+	# tutt'intorno e continua il terreno senza rimpicciolire montagne, costa o risorse.
+	var margine_x := maxi(0, int((w - 72) / 2))
+	var margine_y := maxi(0, int((h - 72) / 2))
 
 	# --- quote dei vertici
 	var costa_v := PackedFloat32Array()
 	costa_v.resize((w + 1) * (h + 1))
 	for j in h + 1:
 		for i in w + 1:
-			var fx := float(i) / w
-			var fy := float(j) / h
-			var costa := fx * 0.85 + fy * 0.22 + continente.get_noise_2d(i, j) * 0.16
+			var mx := i - margine_x
+			var my := j - margine_y
+			var fx := float(mx) / 72.0
+			var fy := float(my) / 72.0
+			var costa := fx * 0.85 + fy * 0.22 + continente.get_noise_2d(mx, my) * 0.16
 			costa_v[j * (w + 1) + i] = costa
 			var entro := 0.76 - costa
 			var q := 0.0
 			if entro > 0.0:
-				var forza_monte := clampf((0.5 - fx) * 2.4 + monti.get_noise_2d(i, j) * 0.6, 0.0, 1.0)
-				var cresta := 1.0 - absf(creste.get_noise_2d(i, j))
+				var forza_monte := clampf((0.5 - fx) * 2.4 + monti.get_noise_2d(mx, my) * 0.6, 0.0, 1.0)
+				var cresta := 1.0 - absf(creste.get_noise_2d(mx, my))
 				q = 4.0 + minf(entro, 0.12) * 60.0 + pow(forza_monte, 1.5) * 260.0 * (0.45 + 0.55 * cresta)
-				q += dettaglio.get_noise_2d(i, j) * 3.0
+				q += dettaglio.get_noise_2d(mx, my) * 3.0
 			d.imposta_quota(i, j, q)
 
 	# --- tipo di terreno per casella
@@ -93,20 +99,20 @@ static func genera(seme: int, w := 72, h := 72) -> DatiMappa:
 				t = T.NEVE
 			elif q > 120.0:
 				t = T.ROCCIA
-			elif umido.get_noise_2d(x, y) > 0.08 and q > 18.0:
+			elif umido.get_noise_2d(x - margine_x, y - margine_y) > 0.08 and q > 18.0:
 				t = T.BOSCO
-			elif secco.get_noise_2d(x, y) > 0.22:
+			elif secco.get_noise_2d(x - margine_x, y - margine_y) > 0.22:
 				t = T.SECCO
 			d.imposta_tipo(x, y, t)
 
 	_mare_piatto(d)
-	_radura(d, Vector2i(int(w * 0.48), int(h * 0.5)))
+	_radura(d, Vector2i(margine_x + 34, margine_y + 36))
 	return d
 
 
 ## Il Vibonese: Monteleone sul colle sopra il golfo, Vibo Marina, Pizzo e il lago dell'Angitola a nord-est,
 ## Tropea sulla rupe e Capo Vaticano a ovest, l'altopiano del Poro, la valle del Mesima e le Serre a sud-est.
-static func genera_monteleone(seme: int, w := 96, h := 96) -> DatiMappa:
+static func genera_monteleone(seme: int, w := 144, h := 144) -> DatiMappa:
 	var d := DatiMappa.new(w, h)
 	var frastaglio := _rumore(seme + 10, 0.12, 2)
 	var serre_r := _rumore(seme + 11, 0.07, 3)
@@ -206,7 +212,7 @@ const ETNA := Vector2(11.6, 59.7)
 ## La Sicilia nord-orientale: Zancle (Messina) sulla falce del porto davanti allo Stretto, i monti Peloritani alle
 ## spalle, la penisola di Milazzo, Taormina sulla rupe, l'Etna innevato e la sua terra nera, Catania; oltre lo
 ## Stretto la punta della Calabria. Il villaggio nasce a Zancle.
-static func genera_zancle(seme: int, w := 96, h := 96) -> DatiMappa:
+static func genera_zancle(seme: int, w := 144, h := 144) -> DatiMappa:
 	var d := DatiMappa.new(w, h)
 	var frastaglio := _rumore(seme + 20, 0.12, 2)
 	var creste := _rumore(seme + 21, 0.08, 3)
@@ -315,7 +321,7 @@ const COLLI_BRUZIO := [
 ]
 
 
-static func genera_bruzio(seme: int, w := 104, h := 120) -> DatiMappa:
+static func genera_bruzio(seme: int, w := 144, h := 144) -> DatiMappa:
 	var d := DatiMappa.new(w, h)
 	var frastaglio := _rumore(seme + 20, 0.12, 2)
 	var umido := _rumore(seme + 21, 0.06, 3)

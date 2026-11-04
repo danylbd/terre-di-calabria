@@ -104,15 +104,15 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 
 | Step | Cosa | Stato |
 |---|---|---|
-| 43 | Interfaccia: tutto schermo, menu di costruzione richiudibile, nome del villaggio cambiabile, legenda dei tasti nascondibile, zoom regolabile con un pulsante, via il pulsante «Bandierina» | |
-| 44 | Montagna: sui monti solo miniere, cava e torri (e si possono allargare i confini sui monti) | |
-| 45 | Torri: due soldati per torre, i confini si allargano solo quando i soldati entrano | |
-| 46 | Stagioni di un'ora di gioco l'una; suono della segheria più adatto; bandierine nascoste quando la strada è collegata | |
-| 47 | Economia: ogni bottega accumula fuori, in ordine, le sue merci (fino a 50, poi si ferma); magazzini da 200 merci, uno ogni 50 coloni | |
-| 48 | Abitazioni con comignoli e fumo | |
-| 49 | Casa dei pionieri e pionieri che allargano i confini, come in Settlers | |
-| 50 | Mappe molto più grandi, la telecamera si ferma prima del bordo | |
-| 51 | Mappa più interessante: rocche antiche in rovina, villaggi abbandonati e altri dettagli | |
+| 43 | Interfaccia: tutto schermo, menu di costruzione richiudibile, nome del villaggio cambiabile, legenda dei tasti nascondibile, zoom regolabile con un pulsante, via il pulsante «Bandierina» | fatto (v1.1.0) |
+| 44 | Montagna: sui monti solo miniere, cava e torri (e si possono allargare i confini sui monti) | fatto (v1.1.0) |
+| 45 | Torri: due soldati per torre, i confini si allargano solo quando i soldati entrano | fatto (v1.1.0) |
+| 46 | Stagioni di un'ora di gioco l'una; suono della segheria più adatto; bandierine nascoste quando la strada è collegata | fatto (v1.1.0) |
+| 47 | Economia: ogni bottega accumula fuori, in ordine, le sue merci (fino a 50, poi si ferma); magazzini da 200 merci, uno ogni 50 coloni | fatto (v1.1.0) |
+| 48 | Abitazioni con comignoli e fumo | fatto (v1.1.0) |
+| 49 | Casa dei pionieri e pionieri che allargano i confini, come in Settlers | fatto (v1.1.0) |
+| 50 | Mappe molto più grandi, la telecamera si ferma prima del bordo | fatto (v1.1.0) |
+| 51 | Mappa più interessante: rocche antiche in rovina, villaggi abbandonati e altri dettagli | fatto (v1.1.0) |
 
 ## Fase 5 — rimandata a una versione successiva
 

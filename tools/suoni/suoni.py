@@ -176,6 +176,37 @@ def sega(rng):
     return dissolvi_bordi(normalizza(per(x, corsa), 0.7), 0.01, 0.05)
 
 
+def segheria(rng):
+    """Sega a mano nel legno: due corse morbide, scricchiolio di fibre e colpo sul banco."""
+    durata = 1.15
+    n = int(durata * FC)
+    rumore_legno = passa_banda(rumore(n, rng), 850, 1.0)
+    raspatura = passa_banda(rumore(n, rng), 1900, 0.7)
+    corsa = [max(0.0, math.sin(math.pi * ((i / n * 2.0) % 1.0))) ** 0.8 for i in range(n)]
+    ritmo = [0.72 + 0.28 * math.sin(DUE_PI * 42 * i / FC) ** 2 for i in range(n)]
+    x = [(a * 0.8 + b * 0.38) * c * d for a, b, c, d in zip(rumore_legno, raspatura, corsa, ritmo)]
+    banco = per(passa_basso(rumore(int(0.24 * FC), rng), 420), inviluppo(int(0.24 * FC), 0.002, 0.04))
+    mescola(x, banco, 0.78, 0.32)
+    return dissolvi_bordi(normalizza(x, 0.62), 0.015, 0.08)
+
+
+def cava(rng):
+    """Piccone in cava: colpo sordo sulla pietra con un breve tintinnio e ghiaia che ricade."""
+    n = int(0.72 * FC)
+    colpo = per(passa_basso(rumore(n, rng), 900), inviluppo(n, 0.001, 0.09))
+    tono = [0.0] * n
+    base = rng.uniform(480, 720)
+    for k, amp in ((1.0, 0.7), (1.83, 0.28), (3.1, 0.12)):
+        mescola(tono, risonanza(n, base * k, 0.18 / k), 0.0, amp)
+    x = [a * 0.8 + b * 0.65 for a, b in zip(colpo, tono)]
+    for _ in range(rng.randint(3, 5)):
+        t = rng.uniform(0.12, 0.48)
+        m = int(0.025 * FC)
+        ghiaia = per(passa_banda(rumore(m, rng), rng.uniform(1400, 3200), 2.5), inviluppo(m, 0.0005, 0.008))
+        mescola(x, ghiaia, t, rng.uniform(0.12, 0.28))
+    return dissolvi_bordi(normalizza(x, 0.72))
+
+
 def vanga(rng):
     """Il guardaboschi pianta: vanga nella terra e terra smossa."""
     n = int(0.5 * FC)
@@ -412,7 +443,7 @@ def scontro(rng):
 
 # ------------------------------------------------------------------ elenco
 
-VARIANTI = {"ascia": (ascia, 3), "piccone": (piccone, 3), "sega": (sega, 2), "vanga": (vanga, 2),
+VARIANTI = {"ascia": (ascia, 3), "piccone": (piccone, 3), "sega": (sega, 2), "segheria": (segheria, 2), "cava": (cava, 2), "vanga": (vanga, 2),
             "martello": (martello, 3), "albero_cade": (albero_cade, 1),
             "falce": (falce, 2), "scontro": (scontro, 3), "tuffo": (tuffo, 2), "macina": (macina, 1),
             "clic": (clic, 1), "posa": (posa, 1), "completato": (completato, 1), "errore": (errore, 1)}
