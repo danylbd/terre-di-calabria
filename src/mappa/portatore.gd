@@ -10,6 +10,7 @@ enum Stato { ARRIVO, ATTESA, VA_A_PRENDERE, PORTA, RIENTRA }
 
 var stato := Stato.ARRIVO
 var tratto                     # ReteStrade.Tratto
+var casa_origine := Vector2i(-1, -1)
 var _merce: Merce
 var _da := Vector2i.ZERO
 var _a := Vector2i.ZERO

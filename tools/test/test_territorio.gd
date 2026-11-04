@@ -75,7 +75,7 @@ func _prova() -> void:
 	_controlla(torre.lavoratore != null and v.lavoratori() >= 1, "la guardia conta come lavoratore")
 
 	# una casa nella zona nuova; demolendo la torre la casa resta fuori e brucia
-	var casa := _piazza("casa_greca", func(f): return Vector2(f - Vector2i(torre.centro())).length() * -1.0 if not _vicino_magazzino(f, mag) else -99.0)
+	var casa := _piazza("casa_greca", func(f): return Vector2(f - mag.bandiera).length() if not _vicino_magazzino(f, mag) else -99.0)
 	_controlla(casa != null and not _vicino_magazzino(casa.bandiera, mag), "casa costruita nella zona della torre")
 	var tratti_prima: int = p.rete.tratti.size()
 	v.demolisci(torre)

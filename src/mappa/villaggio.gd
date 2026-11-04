@@ -26,8 +26,10 @@ var scorte := {"tronchi": 20, "assi": 24, "pietra": 18,
 	"ascia": 3, "piccone": 3, "pala": 2, "falce": 4, "canna": 2, "sega": 2, "martello": 2}
 var edifici_speciali_acquistati := {}
 var _prossimo_id := 2
-var coloni_liberi := 40              # coloni in magazzino, pronti a fare i portatori o i lavoratori
-var in_cammino := 0                  # coloni appena nati che vanno verso il magazzino
+var coloni_liberi := 40              # coloni a casa, pronti a essere chiamati al lavoro
+var _coloni_disponibili_case := {}   # bandierina dell'abitazione -> coloni liberi che vi aspettano
+var ultima_origine_colono := Vector2i(-1, -1)
+var in_cammino := 0                  # compatibilità con coloni già in viaggio nei salvataggi
 var costruttori := 0                 # coloni usciti a costruire i cantieri (step 36a)
 var _richiamo := 0.0
 var centri_esterni := []             # territori di altri popoli: [casella, raggio, proprietario]
@@ -90,12 +92,20 @@ func fonda_avamposto(c: Vector2i, origine: Edificio) -> bool:
 	dati.occupa(c.x, c.y, DatiMappa.NATURA)
 	var viandante := Colono.new()
 	oggetti.add_child(viandante)
-	viandante.prepara(dati, origine.centro(), "portatore_attrezzi")
+	var casa_origine := ultima_origine_colono
+	var partenza := edificio_con_bandiera(casa_origine)
+	var cammino: Array[Vector2] = []
+	if partenza:
+		cammino.append(partenza.centro())
+		cammino.append_array(rete.percorso_tra_bandiere(casa_origine, origine.bandiera))
+	cammino.append(origine.centro())
+	cammino.append(Vector2(c) + Vector2(0.5, 0.5))
+	viandante.prepara(dati, cammino[0], "portatore_attrezzi")
 	viandante.arrivato.connect(func(_c):
 		costruttori = maxi(0, costruttori - 1)
 		viandante.queue_free()
-		restituisci_colono())
-	viandante.percorri([origine.centro(), Vector2(c) + Vector2(0.5, 0.5)])
+		restituisci_colono(casa_origine))
+	viandante.percorri(cammino)
 	_mostra_campo_pioniere(c)
 	_ricalcola_territorio()
 	scorte_cambiate.emit()
@@ -276,14 +286,68 @@ func prendi_colono() -> bool:
 		return true
 	if coloni_liberi <= 0:
 		return false
+	_ripartisci_coloni_libere()
+	ultima_origine_colono = _scegli_casa_libera()
+	if ultima_origine_colono != Vector2i(-1, -1):
+		_coloni_disponibili_case[ultima_origine_colono] = maxi(0, _coloni_disponibili_case.get(ultima_origine_colono, 0) - 1)
 	coloni_liberi -= 1
 	popolazione_cambiata.emit()
 	return true
 
 
-func restituisci_colono() -> void:
+func restituisci_colono(origine := Vector2i(-1, -1)) -> void:
+	var casa_origine := edificio_con_bandiera(origine)
+	if casa_origine == null or CatalogoEdifici.dati(casa_origine.tipo).get("abitanti", 0) <= 0:
+		_ripartisci_coloni_libere()
+		origine = _scegli_casa_libera()
 	coloni_liberi += 1
+	if origine == Vector2i(-1, -1):
+		var mag := magazzino()
+		if mag:
+			origine = mag.bandiera
+	if origine != Vector2i(-1, -1):
+		_coloni_disponibili_case[origine] = _coloni_disponibili_case.get(origine, 0) + 1
 	popolazione_cambiata.emit()
+
+
+func _ripartisci_coloni_libere() -> void:
+	for pos in _coloni_disponibili_case.keys():
+		var casa: Edificio = edificio_con_bandiera(pos)
+		if casa == null or not casa.finito or CatalogoEdifici.dati(casa.tipo).get("abitanti", 0) <= 0:
+			_coloni_disponibili_case.erase(pos)
+	var presenti := 0
+	for n in _coloni_disponibili_case.values():
+		presenti += int(n)
+	var case := edifici.values().filter(func(e):
+		return e.finito and CatalogoEdifici.dati(e.tipo).get("abitanti", 0) > 0)
+	case.sort_custom(func(a, b): return a.id < b.id)
+	while presenti < coloni_liberi and not case.is_empty():
+		var scelta: Edificio = null
+		for c in case:
+			if _coloni_disponibili_case.get(c.bandiera, 0) < CatalogoEdifici.dati(c.tipo).get("abitanti", 0):
+				scelta = c
+				break
+		if scelta == null:
+			break
+		_coloni_disponibili_case[scelta.bandiera] = _coloni_disponibili_case.get(scelta.bandiera, 0) + 1
+		presenti += 1
+	if presenti < coloni_liberi:
+		var mag := magazzino()
+		if mag:
+			_coloni_disponibili_case[mag.bandiera] = _coloni_disponibili_case.get(mag.bandiera, 0) + coloni_liberi - presenti
+
+
+func _scegli_casa_libera() -> Vector2i:
+	var scelta := Vector2i(-1, -1)
+	var quanti := 2147483647
+	for posizione in _coloni_disponibili_case:
+		var liberi: int = _coloni_disponibili_case[posizione]
+		if liberi > 0 and liberi < quanti:
+			var casa := edificio_con_bandiera(posizione)
+			if casa and CatalogoEdifici.dati(casa.tipo).get("abitanti", 0) > 0:
+				scelta = posizione
+				quanti = liberi
+	return scelta
 
 
 func lavoratori() -> int:
@@ -400,33 +464,23 @@ func _cresci(casa: Edificio, delta: float) -> void:
 		_nasce_colono(casa)
 
 
-## Un nuovo colono esce dalla casa e va a piedi lungo le strade fino al magazzino.
+## Un nuovo colono resta nella sua abitazione e si aggiunge alla riserva libera del villaggio.
 func _nasce_colono(casa: Edificio) -> void:
-	var mag: Edificio = null
-	for m in edifici.values():
-		if m.tipo == "magazzino" and m.finito:
-			mag = m
-			break
-	if mag == null:
-		return
-	var punti: Array[Vector2] = [casa.centro()]
-	punti.append_array(rete.percorso_tra_bandiere(casa.bandiera, mag.bandiera))
-	punti.append(mag.centro())
-	var c := Colono.new()
-	oggetti.add_child(c)
-	c.prepara(dati, punti[0])
-	c.arrivato.connect(func(_c):
-		in_cammino -= 1
-		c.queue_free()
-		restituisci_colono())
-	c.percorri(punti)
-	in_cammino += 1
+	coloni_liberi += 1
+	_coloni_disponibili_case[casa.bandiera] = _coloni_disponibili_case.get(casa.bandiera, 0) + 1
 	popolazione_cambiata.emit()
 
 
 func edificio_in(c: Vector2i) -> Edificio:
 	var o := dati.occupante(c.x, c.y)
 	return edifici.get(o) if o >= 2 else null
+
+
+func edificio_con_bandiera(c: Vector2i) -> Edificio:
+	for e in edifici.values():
+		if e.bandiera == c:
+			return e
+	return null
 
 
 func _on_completato(e: Edificio) -> void:
@@ -512,12 +566,17 @@ func _chiama_lavoratore(e: Edificio) -> void:
 			break
 	if mag == null:
 		return
-	var punti := rete.percorso_tra_bandiere(mag.bandiera, e.bandiera)
-	if punti.is_empty():
-		return
 	if not prendi_colono():
 		e.manca_colono = true
 		return
+	var partenza: Vector2i = ultima_origine_colono if ultima_origine_colono != Vector2i(-1, -1) else mag.bandiera
+	var punti := rete.percorso_tra_bandiere(partenza, e.bandiera)
+	if punti.is_empty():
+		restituisci_colono(partenza)
+		return
+	var casa := edificio_con_bandiera(partenza)
+	if casa:
+		punti.push_front(casa.centro())
 	e.manca_colono = false
 	if att != "":
 		scorte[att] -= 1
@@ -529,31 +588,37 @@ func _chiama_lavoratore(e: Edificio) -> void:
 	e.lavoratore = l
 
 
-## Un cantiere collegato riceve il suo costruttore, che parte dal magazzino lungo le strade (step 36a).
+## Un cantiere collegato riceve il suo costruttore, che parte da casa lungo le strade (step 36a).
 func _manda_costruttore(e: Edificio) -> void:
 	if caricamento or e.finito or not e.collegato or e.costruttore != null:
 		return
 	var mag := magazzino()
 	if mag == null or mag == e:
 		return
-	var punti := rete.percorso_tra_bandiere(mag.bandiera, e.bandiera)
-	if punti.is_empty():
-		return
 	if coloni_liberi <= 0:
 		e.manca_colono = true
 		return
-	prendi_colono()
+	if not prendi_colono():
+		return
+	var partenza: Vector2i = ultima_origine_colono if ultima_origine_colono != Vector2i(-1, -1) else mag.bandiera
+	var punti := rete.percorso_tra_bandiere(partenza, e.bandiera)
+	if punti.is_empty():
+		restituisci_colono(partenza)
+		return
+	var casa := edificio_con_bandiera(partenza)
+	if casa:
+		punti.push_front(casa.centro())
 	e.manca_colono = false
 	costruttori += 1
 	var c := Costruttore.new()
 	oggetti.add_child(c)
-	c.avvia(self, e, rete, punti)
+	c.avvia(self, e, rete, punti, partenza)
 	e.costruttore = c
 
 
-func costruttore_tornato(_c: Costruttore) -> void:
+func costruttore_tornato(c: Costruttore) -> void:
 	costruttori -= 1
-	restituisci_colono()
+	restituisci_colono(c.casa_origine)
 
 
 func _mare_entro(c: Vector2i, raggio: int) -> bool:

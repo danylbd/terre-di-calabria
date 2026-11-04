@@ -1,6 +1,6 @@
 class_name Lavoratore
 extends Colono
-## Il lavoratore di un edificio di produzione. Arriva dal magazzino lungo le strade, entra
+## Il lavoratore di un edificio di produzione. Arriva dalla propria casa lungo le strade, entra
 ## nell'edificio e poi lavora: esce a piedi verso alberi, rocce, campi o riva, torna con la merce
 ## e la posa alla bandierina; oppure (segheria, mulino, forno, pozzo) la fa dentro l'edificio,
 ## consumando le merci che gli arrivano, ed esce a posare il prodotto.
