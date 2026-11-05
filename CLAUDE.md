@@ -74,4 +74,4 @@ godot --headless --path . --export-release "Windows ARM64" build/arm64/TerreDiCa
 
 ## Stato
 
-La Fase 8 (step 43–53) è implementata nel branch `feature/fase-8-rifiniture`, versione `1.1.0`. Verificare `docs/DEVELOPMENT_STATUS.md`, `docs/SESSION_HANDOFF.md` e `docs/roadmap.md`. Prima di considerarla conclusa: 48 suite verdi, export locale, commit, merge `--no-ff` e push su `main`; poi verificare esito GitHub Actions in `ci-esito` e la Release `v1.1.0` con Setup Windows ARM64/x64.
+La Fase 8 (step 43–53) è pubblicata come `v1.1.0` su `main`. Continuità e risultati: `docs/DEVELOPMENT_STATUS.md`, `docs/SESSION_HANDOFF.md`, `docs/roadmap.md`; release con installer Windows ARM64/x64: https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.0.

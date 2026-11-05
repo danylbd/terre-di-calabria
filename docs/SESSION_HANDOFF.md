@@ -1,6 +1,6 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-05 — Release v1.1.0 in preparazione.** Lavoro nel worktree `work/tdc-step-43`, branch `feature/fase-8-rifiniture`, repository `danylbd/terre-di-calabria`. Le richieste Fase 8, step 43–53, sono implementate; README e preset export sono aggiornati a 1.1.0. Le 48 suite Godot sono state eseguite e risultano verdi dopo aver allineato i test alle regole nuove e corretto lo spazio di costruzione nella radura di Zancle. L'export locale non parte perché mancano i template Windows di Godot; la workflow GitHub li scarica e sarà la verifica di compilazione definitiva. Prossimi passi: commit, push del branch, merge `--no-ff` su `main`, push e verifica di GitHub Actions e asset `TerreDiCalabria-Setup-1.1.0.exe` nella Release `v1.1.0`.
+**Aggiornamento 2026-11-05 — Release v1.1.0 pubblicata.** Repository `danylbd/terre-di-calabria`, branch principale aggiornato al commit `4c0655cc5002f6b69ed0632ea54984ea4df60cfc`. Le richieste Fase 8, step 43–53, sono implementate; tutte le 48 suite Godot sono verdi. GitHub Actions run 135 è riuscita: import, export Windows x64/ARM64, Setup Inno e pubblicazione completati. Release: [v1.1.0](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.0), asset `TerreDiCalabria-Setup-1.1.0.exe` (126.743.026 byte). L'export locale non era disponibile perché mancavano i template Windows; l'export GitHub è riuscito.
 
 ## Correzioni emerse dalla verifica
 
@@ -12,6 +12,6 @@
 - Zancle non lasciava abbastanza spazio pianeggiante e accessibile per la segheria: radura iniziale ampliata a 12 caselle.
 - Il test audio si aspettava il vecchio suono generico della cava; ora controlla il suono dedicato `cava`.
 
-**Ultimo passaggio:** verificare `git diff --check`, esportazione locale e documenti; poi commit e rilascio GitHub. Non dichiarare la release pronta finché `ci-esito` non segnala successo e il file Setup non è presente nella release.
+**Ultimo passaggio:** release e documenti verificati; non restano attività richieste per la versione 1.1.0.
 
 Storico in [`diario-automatico.md`](diario-automatico.md).
