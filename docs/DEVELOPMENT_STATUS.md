@@ -4,7 +4,7 @@
 
 ## Versione in preparazione
 
-**v1.1.0 — Fase 8 «Rifiniture alla Settlers»**, step 43–53: implementata sul branch `feature/fase-8-rifiniture`. La versione 1.0.0 resta in `main` fino alla pubblicazione della nuova release. La release 1.1.0 non è pronta finché GitHub Actions non termina con successo e il Setup non è visibile nella pagina Release.
+**v1.1.0 — Fase 8 «Rifiniture alla Settlers»**, step 43–53: pubblicata su `main`. GitHub Actions run 135 (`4c0655c`) ha completato con successo export x64/ARM64 e installer. [Scarica la release v1.1.0](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.0): contiene `TerreDiCalabria-Setup-1.1.0.exe`.
 
 ## Richieste incluse
 
@@ -18,7 +18,7 @@
 
 ## Verifica
 
-Tutte le **48 suite** in `tools/test/` sono state eseguite in Godot 4.7.2 e hanno stampato `RISULTATO: OK`. La suite di durata ha simulato 1,5 ore; ha verificato stabilità di nodi, oggetti e memoria, produzione durante la partita, merci in viaggio e rispetto della capienza del magazzino. `git diff --check` e import Godot sono passati. L'export locale non è disponibile perché mancano i template Windows; GitHub Actions scarica i template e compilerà entrambi i pacchetti al push su `main`. Prossimo: commit, merge `--no-ff`, push e verifica della Release v1.1.0.
+Tutte le **48 suite** in `tools/test/` sono state eseguite in Godot 4.7.2 e hanno stampato `RISULTATO: OK`. La suite di durata ha simulato 1,5 ore; ha verificato stabilità di nodi, oggetti e memoria, produzione durante la partita, merci in viaggio e rispetto della capienza del magazzino. `git diff --check` e import Godot sono passati. GitHub Actions ha completato l'export x64/ARM64 e pubblicato il Setup; la release è stata verificata su GitHub.
 
 ## Versione pubblicata precedente
 

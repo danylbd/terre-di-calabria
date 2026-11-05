@@ -301,3 +301,6 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Eseguite le 48 suite Godot: passate dopo aggiornamenti dei test per mappe 144×144, coloni che restano nelle case, neve montana e magazzino da 200; corretta la radura iniziale di Zancle e la pendenza per le miniere.
 - README e preset Windows aggiornati a 1.1.0; inclusi nell'export gli atlas SVG dei coloni.
 - Release ancora in preparazione: completare export, push/merge su `main` e verificare Actions, tag `v1.1.0` e Setup.exe.
+- GitHub Actions run 135 (`4c0655c`) completata con successo; Release `v1.1.0` pubblicata con `TerreDiCalabria-Setup-1.1.0.exe` caricato (126.743.026 byte).
+- Esito `ci-esito`: `success`; export Windows x64 e ARM64 e compilazione Inno Setup riusciti.
+- Documenti di handoff e stato sviluppo aggiornati alla release pubblicata.
