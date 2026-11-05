@@ -38,10 +38,15 @@ func _prova() -> void:
 	var neve: float = (p.terreno.material as ShaderMaterial).get_shader_parameter("neve")
 	_controlla(neve > 0.9, "la neve copre il terreno (%.2f)" % neve)
 	_controlla(st.fiocchi.emitting, "cadono i fiocchi")
-	var fiocchi_alti := not st.fiocchi.emission_points.is_empty()
+	var punti_montagna := {}
+	for y in d.altezza:
+		for x in d.larghezza:
+			if d.tipo(x, y) in [DatiMappa.Terreno.ROCCIA, DatiMappa.Terreno.NEVE] and d.quota(x + 0.5, y + 0.5) >= 80.0:
+				var punto := d.a_schermo(x + 0.5, y + 0.5)
+				punti_montagna[Vector2i(roundi(punto.x * 100.0), roundi(punto.y * 100.0))] = true
+	var fiocchi_alti := not st.fiocchi.emission_points.is_empty() and st.fiocchi.emission_points.size() == punti_montagna.size()
 	for punto in st.fiocchi.emission_points:
-		var c_neve := d.casella_da_schermo(punto)
-		if not d.dentro(c_neve.x, c_neve.y) or d.quota(c_neve.x + 0.5, c_neve.y + 0.5) < 80.0 or d.tipo(c_neve.x, c_neve.y) not in [DatiMappa.Terreno.ROCCIA, DatiMappa.Terreno.NEVE]:
+		if not punti_montagna.has(Vector2i(roundi(punto.x * 100.0), roundi(punto.y * 100.0))):
 			fiocchi_alti = false
 			break
 	_controlla(fiocchi_alti, "la neve cade solo in montagna")

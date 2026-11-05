@@ -13,7 +13,7 @@ const T := DatiMappa.Terreno
 const RAGGIO_MAGAZZINO := 9.0
 const TERRENI_EDIFICABILI := [T.PRATO, T.SECCO, T.TERRA]
 const PENDENZA_MAX := {1: 14.0, 2: 12.0, 3: 10.0}
-const PENDENZA_MINIERA := 40.0
+const PENDENZA_MINIERA := 80.0
 
 var dati: DatiMappa
 var nome := "Villaggio"

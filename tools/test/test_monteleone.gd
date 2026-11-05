@@ -23,7 +23,7 @@ func _fine() -> void:
 	_controllata = true
 	var d: DatiMappa = p.dati
 	var T := DatiMappa.Terreno
-	_controlla(p.mappa == "monteleone" and d.larghezza == 96 and d.altezza == 96, "si gioca sulla mappa di Monteleone 96×96")
+	_controlla(p.mappa == "monteleone" and d.larghezza == 144 and d.altezza == 144, "si gioca sulla mappa di Monteleone ampliata 144×144")
 	_controlla(d.tipo(30, 8) == T.ACQUA and d.tipo(5, 20) == T.ACQUA, "il mare sta a nord-ovest (golfo di Sant'Eufemia)")
 	_controlla(d.tipo(90, 90) != T.ACQUA and d.tipo(60, 60) != T.ACQUA, "l'entroterra a sud-est è terra")
 	var tropea: Vector2i = d.luoghi["Tropea"]
@@ -53,7 +53,7 @@ func _fine() -> void:
 	p.queue_free()
 	root.add_child(p2)
 	await process_frame
-	_controlla(p2.mappa == "monteleone" and p2.dati.larghezza == 96, "ricaricando si torna a Monteleone")
+	_controlla(p2.mappa == "monteleone" and p2.dati.larghezza == 144, "ricaricando si torna a Monteleone")
 	_controlla(p2.villaggio.edifici.size() == p.villaggio.edifici.size() if is_instance_valid(p) else p2.villaggio.edifici.size() >= 5,
 		"gli edifici sono stati ricaricati (%d)" % p2.villaggio.edifici.size())
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(FILE))

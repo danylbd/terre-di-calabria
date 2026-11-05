@@ -283,7 +283,7 @@ static func genera_zancle(seme: int, w := 144, h := 144) -> DatiMappa:
 	_mare_piatto(d)
 	for nome in LUOGHI_ZANCLE:
 		d.luoghi[nome] = LUOGHI_ZANCLE[nome]
-	_radura(d, LUOGHI_ZANCLE["Zancle"], 9)
+	_radura(d, LUOGHI_ZANCLE["Zancle"], 12)
 	return d
 
 

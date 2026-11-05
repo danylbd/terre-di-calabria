@@ -3,7 +3,7 @@
 Gioco di strategia ed economia in stile «costruisci e trasporta», ambientato nella Calabria antica e medievale.
 Originale: meccaniche ispirate ai classici del genere, ma grafica, popoli, storia, musica e nomi sono nostri.
 
-## Che cosa c'è nella versione 1.0
+## Che cosa c'è nella versione 1.1.0
 
 - **Otto popoli giocabili**, ognuno con tutti gli edifici nel suo stile e un suo vantaggio: Greci, Brettii, Romani, Saraceni, Normanni, Siculi, Sicani e Cartaginesi.
 - **Quattro mappe**: Costa ionica, Monteleone (il Vibonese), Zancle e l'Etna, il Bruzio di Annibale (la Calabria centrale con la forma vera).
@@ -11,6 +11,15 @@ Originale: meccaniche ispirate ai classici del genere, ma grafica, popoli, stori
 - **Economia alla Settlers**: portatori sulle strade, costruttori ai cantieri, catene di produzione, stagioni, porti e navi.
 - **Guerra alla Imperivm**: condottieri con le loro schiere, cibo e morale, fanteria, tiratori e cavalleria, abilità, assedi con ariete e onagro, elefanti da guerra, navi da guerra, villaggi indigeni da unire o conquistare.
 - **Musica e voce originali**: quattro brani (anche di guerra) e la voce inventata di re Italo, il cantastorie.
+
+## Aggiornamento 1.1.0
+
+- Interfaccia a schermo intero con menu di costruzione richiudibile, zoom, nome del villaggio modificabile e menu di pausa con controlli audio.
+- Produzione più leggibile: merci visibili fuori dalle attività, limite di 50 pezzi, magazzini da 200 unità e uno ogni 50 coloni; priorità e arresto della produzione.
+- Agorà con vendita e acquisto di merci, ducati e nuovi edifici speciali acquistabili.
+- Pionieri, raccoglitore di porcini, rovine da esplorare e mappe più ampie.
+- Torri presidiate da due soldati, stagioni di un'ora, neve limitata alle montagne e nuovi dettagli visivi e sonori.
+- Nuovi coloni animati e salvataggi mantenuti quando si aggiorna il gioco.
 
 ## Installare
 

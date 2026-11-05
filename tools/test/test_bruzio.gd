@@ -24,7 +24,7 @@ func _fine() -> void:
 	_controllata = true
 	var d: DatiMappa = p.dati
 	var T := DatiMappa.Terreno
-	_controlla(p.mappa == "bruzio" and d.larghezza == 104 and d.altezza == 120, "si gioca sulla mappa del Bruzio 104×120")
+	_controlla(p.mappa == "bruzio" and d.larghezza == 144 and d.altezza == 144, "si gioca sulla mappa del Bruzio ampliata 144×144")
 	_controlla(d.tipo(2, 30) == T.ACQUA and d.tipo(100, 70) == T.ACQUA, "a ovest il Tirreno, a est lo Ionio")
 	# l'istmo: sulla riga di Lamezia e Catanzaro la terra è stretta
 	var terra := 0

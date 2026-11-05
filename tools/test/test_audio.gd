@@ -55,7 +55,7 @@ func _prova() -> void:
 		await create_timer(30.0).timeout
 		print("t=%3ds suonati=%s ambiente=%s" % [(i + 1) * 30, audio.suonati, audio._ambiente.keys()])
 	Engine.time_scale = 1.0
-	for nome in ["martello", "ascia", "piccone", "albero_cade", "completato"]:
+	for nome in ["martello", "ascia", "cava", "albero_cade", "completato"]:
 		_controlla(audio.suonati.get(nome, 0) > 0, "si è sentito " + nome)
 	_controlla(audio._ambiente.has("uccelli") and audio._ambiente["uccelli"].playing, "uccelli in sottofondo")
 	# musica: un brano della scaletta suona, alla fine passa al successivo, M la toglie e la rimette
