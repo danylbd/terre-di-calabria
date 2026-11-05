@@ -1,16 +1,19 @@
 class_name MenuCostruzione
 extends PanelContainer
-## Pannello in basso a sinistra: schede per categoria, pulsanti degli edifici con anteprima,
+## Pannello a sinistra: schede per categoria, pulsanti degli edifici con anteprima,
 ## pulsante per demolire.
 
 signal edificio_scelto(tipo: String)
-signal strumento(nome: String, attivo: bool)   # "strada", "bandierina", "demolisci"
+signal strumento(nome: String, attivo: bool)   # "strada", "demolisci"
 
 var _griglia: GridContainer
+var _corpo: VBoxContainer
+var _pulsante_chiudi: Button
 var _schede: Array[Button] = []
 var _pulsanti := {}          # tipo -> Button
 var _attrezzi := {}
 var _nota: Label
+var villaggio: Villaggio
 var _categoria := "Base"
 var _gruppo := ButtonGroup.new()
 
@@ -20,16 +23,29 @@ func _ready() -> void:
 	var colonna := VBoxContainer.new()
 	colonna.add_theme_constant_override("separation", 8)
 	add_child(colonna)
+	var intestazione := HBoxContainer.new()
+	colonna.add_child(intestazione)
 
 	var titolo := Label.new()
 	titolo.text = "Costruisci"
 	titolo.add_theme_font_size_override("font_size", 22)
 	titolo.add_theme_color_override("font_color", Palette.TERRACOTTA_SCURA)
-	colonna.add_child(titolo)
+	titolo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	intestazione.add_child(titolo)
+	_pulsante_chiudi = Button.new()
+	_pulsante_chiudi.text = "−"
+	_pulsante_chiudi.custom_minimum_size = Vector2(38, 34)
+	_pulsante_chiudi.tooltip_text = "Riduci il menu di costruzione"
+	_pulsante_chiudi.pressed.connect(alterna)
+	intestazione.add_child(_pulsante_chiudi)
+
+	_corpo = VBoxContainer.new()
+	_corpo.add_theme_constant_override("separation", 8)
+	colonna.add_child(_corpo)
 
 	var riga := HBoxContainer.new()
 	riga.add_theme_constant_override("separation", 4)
-	colonna.add_child(riga)
+	_corpo.add_child(riga)
 	var gruppo_schede := ButtonGroup.new()
 	for cat in CatalogoEdifici.CATEGORIE:
 		var b := Button.new()
@@ -46,20 +62,19 @@ func _ready() -> void:
 	_griglia.columns = 4
 	_griglia.add_theme_constant_override("h_separation", 6)
 	_griglia.add_theme_constant_override("v_separation", 6)
-	colonna.add_child(_griglia)
+	_corpo.add_child(_griglia)
 
 	_nota = Label.new()
 	_nota.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_nota.custom_minimum_size = Vector2(390, 0)
 	_nota.add_theme_color_override("font_color", Color(Palette.INCHIOSTRO, 0.7))
-	colonna.add_child(_nota)
+	_corpo.add_child(_nota)
 
 	var attrezzi := HBoxContainer.new()
 	attrezzi.add_theme_constant_override("separation", 6)
-	colonna.add_child(attrezzi)
-	for a in [["strada", "Strada", "Clicca una bandierina, poi il punto d'arrivo: la strada trova da sola il percorso. (Tasto R)"],
-			["bandierina", "Bandierina", "Pianta una bandierina su una strada per dividerla: ogni tratto ha il suo portatore. (Tasto F)"],
-			["demolisci", "Demolisci", "Clicca un edificio, una strada o una bandierina per toglierli."]]:
+	_corpo.add_child(attrezzi)
+	for a in [["strada", "Collegamento", "Collega due punti della rete: la strada trova da sola il percorso. (Tasto R)"],
+			["demolisci", "Demolisci", "Clicca un edificio, una strada o un collegamento per toglierli."]]:
 		var b := Button.new()
 		b.text = a[1]
 		b.toggle_mode = true
@@ -72,6 +87,12 @@ func _ready() -> void:
 		_attrezzi[nome] = b
 
 	_mostra_categoria(_categoria)
+
+
+func alterna() -> void:
+	_corpo.visible = not _corpo.visible
+	_pulsante_chiudi.text = "−" if _corpo.visible else "+"
+	_pulsante_chiudi.tooltip_text = "Riduci il menu di costruzione" if _corpo.visible else "Espandi il menu di costruzione"
 
 
 func _mostra_categoria(cat: String) -> void:
@@ -96,6 +117,10 @@ func _mostra_categoria(cat: String) -> void:
 		b.add_theme_font_size_override("font_size", 12 if d["nome"].length() > 11 else 13)
 		b.add_theme_constant_override("icon_max_width", 84)
 		b.tooltip_text = "%s\n%s\nCosto: %s" % [d["nome"], d["descrizione"], CatalogoEdifici.testo_costo(tipo)]
+		if d.has("prezzo_ducati"):
+			var disponibili: int = 0 if villaggio == null else villaggio.edifici_speciali_acquistati.get(tipo, 0)
+			b.disabled = disponibili <= 0
+			b.tooltip_text += "\nPrezzo: %d ducati%s" % [d["prezzo_ducati"], " — acquista all'agorà" if disponibili <= 0 else " — disponibili: %d" % disponibili]
 		if d.has("attrezzo"):
 			b.tooltip_text += "\nAttrezzo: %s (dal magazzino)" % CatalogoEdifici.ATTREZZO_UNO[d["attrezzo"]]
 		b.toggled.connect(func(on: bool):
@@ -104,6 +129,10 @@ func _mostra_categoria(cat: String) -> void:
 		)
 		_griglia.add_child(b)
 		_pulsanti[tipo] = b
+
+
+func aggiorna() -> void:
+	_mostra_categoria(_categoria)
 
 
 ## Toglie la selezione (dopo aver piazzato, o con Esc / tasto destro).

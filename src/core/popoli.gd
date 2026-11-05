@@ -103,6 +103,10 @@ static func torre_nemica() -> String:
 
 ## Lo sprite di un edificio con l'aspetto del suo popolo (se il modello esiste, altrimenti quello comune).
 static func sprite(tipo: String, popolo: String) -> String:
+	if tipo == "casa_pionieri":
+		tipo = "casa_greca"
+	if tipo == "raccoglitore_funghi":
+		tipo = "capraio"
 	if popolo == "greci":
 		return tipo
 	if popolo == "brettii" and tipo == "torre":

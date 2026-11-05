@@ -68,7 +68,10 @@ func _fai_uscire(delta: float) -> void:
 ## Il cantiere collegato più vecchio che aspetta ancora un materiale disponibile in magazzino.
 func _prossima_richiesta(mag: Edificio) -> Array:
 	var cantieri := villaggio.edifici.values().filter(func(e): return not e.finito and e.collegato)
-	cantieri.sort_custom(func(a, b): return a.id < b.id)
+	cantieri.sort_custom(func(a, b):
+		if a.priorita_materiali != b.priorita_materiali:
+			return a.priorita_materiali > b.priorita_materiali
+		return a.id < b.id)
 	for e in cantieri:
 		for tipo in e.fabbisogno:
 			var mancano: int = e.fabbisogno[tipo] - e.richiesti.get(tipo, 0)
@@ -78,7 +81,17 @@ func _prossima_richiesta(mag: Edificio) -> Array:
 	for e in villaggio.edifici.values():
 		if not e.finito or not e.collegato:
 			continue
-		for tipo in CatalogoEdifici.merci_in_ingresso(e.tipo):
+		var tipi := CatalogoEdifici.merci_in_ingresso(e.tipo)
+		if e.tipo == "agora":
+			# L'agorà riceve a rotazione le merci meno presenti: una produzione continua di legna
+			# non deve impedire al mercato di vendere anche olio, vino, stoffa o altri prodotti.
+			tipi.sort_custom(func(a, b):
+				var qa: int = e.ingresso.get(a, 0) + e.in_arrivo.get(a, 0)
+				var qb: int = e.ingresso.get(b, 0) + e.in_arrivo.get(b, 0)
+				if qa != qb:
+					return qa < qb
+				return str(a) < str(b))
+		for tipo in tipi:
 			if _spazio_ingresso(e, tipo) > 0 and villaggio.scorte.get(tipo, 0) > 0:
 				if rete.prossimo_salto(mag.bandiera, e.bandiera) != Vector2i(-1, -1):
 					return [e, tipo]
@@ -104,15 +117,28 @@ func _spazio_ingresso(e: Edificio, tipo: String) -> int:
 func produci(tipo: String, da: Edificio) -> void:
 	if tipo == "":
 		return
+	if merci_in_uscita(da) >= 50:
+		return
 	da.prodotti += 1
 	storia.append([tempo, tipo])
 	prodotta.emit(tipo)
 	var dest := _destinazione_per(tipo, da.bandiera)
-	if dest == null:
-		return
-	if dest.tipo != "magazzino":
+	if dest != null and dest.tipo != "magazzino":
 		dest.in_arrivo[tipo] = dest.in_arrivo.get(tipo, 0) + 1
-	_nuova_merce(tipo, dest, da.bandiera).origine = da.id
+	var m := _nuova_merce(tipo, dest if dest else da, da.bandiera)
+	m.origine = da.id
+	m.locale = dest == null
+	_disponi(da.bandiera)
+
+
+func puo_produrre(da: Edificio) -> bool:
+	if not da.produzione_attiva:
+		return false
+	var prodotti := CatalogoEdifici.prodotti(da.tipo)
+	if prodotti.is_empty():
+		return true
+	var tipo: String = prodotti[da.prodotti % prodotti.size()]
+	return merci_in_uscita(da) < 50 or _destinazione_per(tipo, da.bandiera) != null
 
 
 ## Quante merci di ogni tipo sono state prodotte negli ultimi minuti.
@@ -158,10 +184,21 @@ func _destinazione_per(tipo: String, da: Vector2i) -> Edificio:
 	if migliore:
 		return migliore
 	for e in _magazzini():
-		if rete.prossimo_salto(da, e.bandiera).x >= 0 or e.bandiera == da:
+		if spazio_magazzino() > 0 and (rete.prossimo_salto(da, e.bandiera).x >= 0 or e.bandiera == da):
 			if migliore == null or Vector2(e.bandiera - da).length() < Vector2(migliore.bandiera - da).length():
 				migliore = e
-	return migliore if migliore else (_magazzini()[0] if _magazzini().size() > 0 else null)
+	return migliore
+
+
+func spazio_magazzino(escludi: Merce = null) -> int:
+	var limite: int = villaggio.capienza_magazzini()
+	if limite <= 0:
+		return 0
+	var occupati := villaggio.merci_in_scorta()
+	for m in merci:
+		if m != escludi and not m.locale and is_instance_valid(m.destinazione) and m.destinazione.tipo == "magazzino":
+			occupati += 1
+	return maxi(0, limite - occupati)
 
 
 ## Merci prodotte da questo edificio che aspettano ancora alla sua bandierina (non quelle di passaggio).
@@ -183,6 +220,14 @@ func _assegna_trasporti() -> void:
 	for m in merci:
 		if m.prenotata or m.in_spalla:
 			continue
+		if m.locale:
+			var destinazione := _destinazione_per(m.tipo, m.bandiera)
+			if destinazione == null:
+				continue
+			m.destinazione = destinazione
+			m.locale = false
+			if destinazione.tipo != "magazzino":
+				destinazione.in_arrivo[m.tipo] = destinazione.in_arrivo.get(m.tipo, 0) + 1
 		var dest := m.destinazione.bandiera
 		if m.bandiera == dest:
 			_da_consegnare.append(m)
@@ -212,11 +257,14 @@ func _consegna(m: Merce) -> void:
 	merci.erase(m)
 	m.sprite.queue_free()
 	if e.tipo == "magazzino" and e.finito:
-		villaggio.scorte[m.tipo] = villaggio.scorte.get(m.tipo, 0) + 1
-		scorte_cambiate.emit()
+		if spazio_magazzino(m) > 0:
+			villaggio.scorte[m.tipo] = villaggio.scorte.get(m.tipo, 0) + 1
+			scorte_cambiate.emit()
 	elif e.finito:
 		e.in_arrivo[m.tipo] = maxi(0, e.in_arrivo.get(m.tipo, 0) - 1)
 		e.ingresso[m.tipo] = e.ingresso.get(m.tipo, 0) + 1
+		if e.tipo == "agora":
+			e.vendite_in_coda.append(m.tipo)
 	else:
 		e.consegnati[m.tipo] = e.consegnati.get(m.tipo, 0) + 1
 	_disponi(m.bandiera)
@@ -246,15 +294,12 @@ func _controlla_destinazioni() -> void:
 
 # ------------------------------------------------------------ merci posate vicino alle bandierine
 
-const POSTI := [Vector2(-0.22, 0.12), Vector2(0.12, 0.22), Vector2(-0.3, -0.12), Vector2(0.24, -0.06),
-	Vector2(-0.05, 0.3), Vector2(0.3, 0.2), Vector2(-0.34, 0.26), Vector2(0.06, -0.26)]
-
-
 func _disponi(f: Vector2i) -> void:
 	var k := 0
 	for m in merci:
 		if m.bandiera == f and not m.in_spalla:
-			var o: Vector2 = POSTI[k % POSTI.size()]
+			# Griglia compatta 10×5: fino a 50 merci in attesa senza sovrapporsi.
+			var o := Vector2(-0.38 + float(k % 10) * 0.085, -0.25 + float(k / 10) * 0.11)
 			m.sprite.position = dati.a_schermo(f.x + 0.5 + o.x, f.y + 0.5 + o.y)
 			m.sprite.visible = true
 			k += 1

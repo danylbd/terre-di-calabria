@@ -1,43 +1,25 @@
 # Stato dello sviluppo
 
-*Aggiornato il 2026-11-01. Fonte del piano completo: [`roadmap.md`](roadmap.md). Registro cronologico dettagliato: [`diario-automatico.md`](diario-automatico.md).*
+*Aggiornato il 2026-11-05. Fonte del piano completo: [`roadmap.md`](roadmap.md); richieste del proprietario: [`decisioni.md`](decisioni.md).*
 
-## Completato (in `main`)
+## Versione in preparazione
 
-Ultima release: **v0.50.0** (step 35). Tutti i test automatici passano (38 script in `tools/test/`).
+**v1.1.0 — Fase 8 «Rifiniture alla Settlers»**, step 43–53: implementata sul branch `feature/fase-8-rifiniture`. La versione 1.0.0 resta in `main` fino alla pubblicazione della nuova release. La release 1.1.0 non è pronta finché GitHub Actions non termina con successo e il Setup non è visibile nella pagina Release.
 
-| Fase | Step | Contenuto |
-|---|---|---|
-| 1 — Il villaggio vive | 00, G1, 01–05, M1, G2, 06–11 | fondamenta e installer, studio grafico, mappa, costruzione, strade, trasporto, prima catena, audio (musica segnaposto), grafica livello 2, cibo (campi, allevamenti, pesca), metallo e attrezzi, popolazione e pannelli, salvataggio, stagioni, Greci completi (36 edifici, agorà) |
-| 2 — Guerra e avversario | 12–15 | territorio per proprietario, torri e castello presidiati, soldati e conquista, i Brettii controllati dal computer, scelta della modalità (pace / pace poi guerra / guerra) |
-| 3 — La storia | 16–18 | tutorial «Il naufragio», campagna dei Greci (6 missioni, sblocco progressivo), mappa della Calabria con la forma reale |
-| 4 — Gli altri popoli | 19–23 | Brettii, Romani, Saraceni e Normanni giocabili nella partita libera (`src/core/popoli.gd`; Brettii: pecificio e pece; Romani: laterizi e tegole, legionari, portatori +15%; Saraceni: seta, cavalieri leggeri, campi irrigati ×1,5; Normanni: cavalli e mastio, cavalieri pesanti, confini +2); campagna finale «La Soglia» (4 missioni, due finali) |
-| Vibo Valentia | V1–V3 | mappa di gioco «Monteleone» (96×96) con la costa vera da Pizzo a Nicotera, scelta nel menu e dalla mappa della Calabria; 11 monumenti sbloccati in ordine a traguardi, posati al loro posto, con vantaggi; partite senza fine verificate (2 ore di gioco stabili) |
+## Richieste incluse
 
-Ultime modifiche significative (step 35, Fase 7): traversate delle schiere per mare tra due nostri porti e navi da guerra che bersagliano le torri nemiche sulla costa (`Mare`, `NaviGuerra`), bireme disegnata; test `test_navi`. Prima: abilità dei condottieri (step 34).
+- Interfaccia a schermo intero; menu costruzione e legenda richiudibili; nome del villaggio modificabile; zoom regolabile; menu Esc con salvataggio e impostazioni audio.
+- Strumento «Collegamento» per le strade; bandierine nascoste dopo la connessione; priorità dei materiali, stop produzione e rimborso metà materiali demolendo.
+- Merci di produzione mostrate in ordine fuori dagli edifici fino a 50; arresto a scorta piena; magazzini da 200 articoli, uno ogni 50 coloni.
+- Abitazioni con comignoli/fumo; coloni animati, gli inattivi assegnati alle case; casa dei pionieri, avamposti, torre da due soldati, confini sbloccati all'arrivo dei soldati.
+- Mappe 144×144 con camera ai bordi; costruzioni in montagna limitate a miniere, cava e torri; rovine e dettagli ambientali; neve emessa solo su celle montane.
+- Raccoglitore di porcini; stagione di un'ora; suoni dedicati per segheria e cava; tintura sabbia e nomi alleati visibili al passaggio.
+- Agorà con vendita/acquisto, ducati e costruzioni speciali; salvataggio compatibile conservato agli aggiornamenti; più spazio costruibile e partita pacifica con rovine esplorabili e ricompense.
 
-## In sviluppo
+## Verifica
 
-- **Fase 7 «Le guerre di Annibale»**: step 30–35 fatti, più gli step 36a (costruttori al cantiere, v0.51.0), 36b (voce di re Italo, v0.52.0) 36 (assedi, v0.53.0) 37 (Cartaginesi, v0.54.0) 38 (mappa del Bruzio, v0.55.0) 39 (campagna di Annibale, v0.56.0) e 40 (grafica di guerra, v0.57.0): **Fase 7 finita**.
+Tutte le **48 suite** in `tools/test/` sono state eseguite in Godot 4.7.2 e hanno stampato `RISULTATO: OK`. La suite di durata ha simulato 1,5 ore; ha verificato stabilità di nodi, oggetti e memoria, produzione durante la partita, merci in viaggio e rispetto della capienza del magazzino. `git diff --check` e import Godot sono passati. L'export locale non è disponibile perché mancano i template Windows; GitHub Actions scarica i template e compilerà entrambi i pacchetti al push su `main`. Prossimo: commit, merge `--no-ff`, push e verifica della Release v1.1.0.
 
-## Da fare (in ordine) per finire questa versione del gioco
+## Versione pubblicata precedente
 
-1. **Fase 7**: 38 mappa del Bruzio, 39 campagna di Annibale, 40 grafica di guerra.
-2. ~~Musica nuova~~ fatta (v0.58.0).
-3. ~~Chiusura~~ fatta: **versione 1.0.0**.
-
-Rimandati a una versione successiva (decisione del 2026-11-02): Fase 5 «Vita del villaggio» e iPhone, in [`idee-future.md`](idee-future.md).
-
-## Bug e limiti noti
-
-- **Compilazioni su GitHub non verificate da qui**: `gh` non è installato; i push partono, l'esito delle Actions va guardato su GitHub.
-- Animali degli allevamenti fermi nel modello (non si muovono).
-- Le rocce sono finite e i boschi naturali non ricrescono da soli: per giocare ore servono guardaboschi accanto ai boscaioli e cave nuove quando le rocce finiscono (voluto, come in Settlers).
-- La costa è lontana dal villaggio iniziale: per pescatore e barca servono 1–2 torri verso il mare.
-- Le materie prime grezze (olive, tronchi…) non hanno tetto di scorta: solo pozzo e trasformatori si fermano.
-- Con una sola strada verso il magazzino si formano code (normale: il giocatore aggiunge strade).
-- Sulla mappa di Monteleone i Brettii mettono entrambi gli avamposti sul Poro (le Serre sono troppo ripide e boscose).
-
-## Prossima attività consigliata
-
-**Fase 8 — Rifiniture alla Settlers** (richieste del 2026-11-03, `docs/roadmap.md`): step 43–51, una versione 1.x per step. Prima: **versione 1.0.0 pubblicata.** Le idee per le versioni successive sono in `docs/idee-future.md` (modalità «Vita del villaggio», iPhone): si parte da lì quando il proprietario lo chiede.
+**v1.0.0**. Contenuto e storia delle fasi precedenti sono in [`roadmap.md`](roadmap.md) e [`diario-automatico.md`](diario-automatico.md). La modalità «Vita del villaggio» e l'esportazione iPhone restano idee future in [`idee-future.md`](idee-future.md).

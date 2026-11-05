@@ -10,6 +10,7 @@ const BUS := ["Musica", "Effetti", "Ambiente"]
 const VOCI := 16                     # effetti che possono suonare insieme
 const DISTANZA_MAX := 1000.0         # oltre questa distanza (pixel) dal centro della vista un effetto non si sente
 const DISSOLVENZA := 2.5             # secondi per il cambio di brano o d'ambiente
+const PERCORSO_IMPOSTAZIONI := "user://impostazioni_audio.cfg"
 
 var _varianti := {}                  # nome -> Array[AudioStream]
 var _voci: Array[AudioStreamPlayer2D] = []
@@ -36,8 +37,14 @@ func _ready() -> void:
 			var i := AudioServer.bus_count - 1
 			AudioServer.set_bus_name(i, nome)
 			AudioServer.set_bus_send(i, "Master")
-	imposta_volume("Musica", 0.7)
-	imposta_volume("Ambiente", 0.6)
+	var configurazione := ConfigFile.new()
+	configurazione.load(PERCORSO_IMPOSTAZIONI)
+	for coppia in [["Musica", 0.7], ["Effetti", 1.0], ["Ambiente", 0.6]]:
+		var indice := AudioServer.get_bus_index(coppia[0])
+		var volume_lineare: float = configurazione.get_value("audio", coppia[0], coppia[1])
+		if indice >= 0:
+			AudioServer.set_bus_volume_db(indice, linear_to_db(maxf(volume_lineare, 0.0001)))
+			AudioServer.set_bus_mute(indice, volume_lineare <= 0.001)
 	_carica_suoni()
 	for i in VOCI:
 		var v := AudioStreamPlayer2D.new()
@@ -265,6 +272,10 @@ func imposta_volume(bus: String, lineare: float) -> void:
 	if i >= 0:
 		AudioServer.set_bus_volume_db(i, linear_to_db(maxf(lineare, 0.0001)))
 		AudioServer.set_bus_mute(i, lineare <= 0.001)
+		var configurazione := ConfigFile.new()
+		configurazione.load(PERCORSO_IMPOSTAZIONI)
+		configurazione.set_value("audio", bus, clampf(lineare, 0.0, 1.0))
+		configurazione.save(PERCORSO_IMPOSTAZIONI)
 
 
 func volume(bus: String) -> float:

@@ -47,16 +47,17 @@ func _prova() -> void:
 	v.scorte["vino"] = 3
 	Engine.time_scale = VELOCITA
 	var pop_0 := v.popolazione()
-	var nati_in_cammino := false
+	var liberi_in_casa_0 := _coloni_nelle_case(v)
+	var nati_in_casa := false
 	for k in 24:
 		await create_timer(15.0).timeout
-		nati_in_cammino = nati_in_cammino or v.in_cammino > 0
+		nati_in_casa = nati_in_casa or _coloni_nelle_case(v) > liberi_in_casa_0
 		print("t=%3ds popolazione %d / %d  liberi %d  portatori %d  lavoratori %d  in cammino %d  vino %d | casa: %s | boscaiolo: %s" % [
 			(k + 1) * 15, v.popolazione(), v.capacita(), v.coloni_liberi, rete.portatori(), v.lavoratori(), v.in_cammino,
 			v.scorte.get("vino", 0), PannelloEdificio.stato(casa, v), PannelloEdificio.stato(bosc, v)])
 	_controlla(v.capacita() == 48, "la casa aggiunge 8 posti")
 	_controlla(v.popolazione() > pop_0, "sono nati coloni (%d -> %d)" % [pop_0, v.popolazione()])
-	_controlla(nati_in_cammino, "i nuovi coloni camminano fino al magazzino")
+	_controlla(nati_in_casa, "i nuovi coloni restano nelle abitazioni")
 	_controlla(v.scorte.get("vino", 0) < 3, "il vino ha fatto crescere più in fretta")
 	_controlla(v.popolazione() <= v.capacita(), "mai più coloni dei posti")
 	_controlla(p.logistica.produzione_recente().get("tronchi", 0) > 0, "la produzione recente conta i tronchi")
@@ -97,6 +98,13 @@ func _controlla(ok: bool, cosa: String) -> void:
 	print(("  ok  " if ok else "  NO  ") + cosa)
 	if not ok:
 		errori += 1
+
+
+func _coloni_nelle_case(v: Villaggio) -> int:
+	var totale := 0
+	for disponibili in v._coloni_disponibili_case.values():
+		totale += int(disponibili)
+	return totale
 
 
 ## Caselle libere di prato vicino alla bandierina (spazio per i campi).

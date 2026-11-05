@@ -24,8 +24,11 @@ var costruttore: Node2D              # il costruttore del cantiere (null finché
 var manca_attrezzo := false          # il lavoratore aspetta che arrivi il suo attrezzo
 var manca_colono := false            # non c'erano coloni liberi per mandare il lavoratore
 var prodotti := 0                    # merci prodotte finora
+var produzione_attiva := true
+var priorita_materiali := 0       # priorità di consegna al cantiere: 0 normale, 1 alta, 2 urgente
 var nascita := 0.0                   # abitazioni: secondi al prossimo colono
 var acquisto := ""                   # agorà: la merce da comprare con i ducati ("" = niente)
+var vendite_in_coda: Array[String] = [] # agorà: ordine in cui arrivano le merci da vendere
 var guadagno := 0                    # agorà: ducati ricavati finora
 var presidiata := false              # torri e castelli: la guardia è entrata, i confini si allargano
 var soldati := 0                     # soldati dentro il forte (o difensori di una torre nemica)
@@ -36,6 +39,7 @@ var dati_mappa: DatiMappa
 var villaggio: Node
 
 var _sprite: Sprite2D
+var _comignolo: Node2D
 var _fase := -1
 var _martello := 0.0
 
@@ -52,6 +56,11 @@ func prepara(p_id: int, p_tipo: String, p_casella: Vector2i, gia_finito := false
 	_sprite = Sprite2D.new()
 	_sprite.centered = false
 	add_child(_sprite)
+	if tipo.begins_with("casa_"):
+		_comignolo = Node2D.new()
+		_comignolo.set_script(load("res://src/mappa/comignolo.gd"))
+		_comignolo.visible = false
+		add_child(_comignolo)
 	if gia_finito:
 		progresso = 1.0
 		_finisci(false)
@@ -111,6 +120,8 @@ func _finisci(avvisa: bool) -> void:
 	_imposta_sprite(aspetto)
 	_sprite.scale = Vector2.ONE
 	_sprite.offset = -Sprites.ancora(aspetto)
+	if _comignolo:
+		_comignolo.visible = true
 	queue_redraw()
 	if avvisa:
 		Suono.suona_in("completato", global_position)

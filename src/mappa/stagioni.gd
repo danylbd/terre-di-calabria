@@ -7,8 +7,8 @@ signal cambiata(stagione: int)
 
 enum { PRIMAVERA, ESTATE, AUTUNNO, INVERNO }
 const NOMI := ["Primavera", "Estate", "Autunno", "Inverno"]
-const DURATA := 300.0                # secondi di gioco per ogni stagione
-const PASSAGGIO := 25.0              # secondi in cui i colori sfumano da una stagione all'altra
+const DURATA := 3600.0               # un'ora di gioco per ogni stagione
+const PASSAGGIO := 120.0             # secondi in cui i colori sfumano da una stagione all'altra
 
 ## quanto crescono le colture in ogni stagione (primavera, estate, autunno, inverno)
 const CRESCITA := {

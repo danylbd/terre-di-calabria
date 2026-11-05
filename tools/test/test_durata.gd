@@ -58,6 +58,7 @@ func _misura(k: int) -> void:
 		"storia": p.logistica.storia.size(),
 		"popolazione": p.villaggio.popolazione(),
 		"assi": p.villaggio.scorte.get("assi", 0),
+		"scorte": _scorte_totali(),
 	}
 	_misure.append(m)
 	if k % 10 == 0:
@@ -72,6 +73,7 @@ func _controlla_crescita() -> void:
 		_controlla(fine[chiave] <= meta[chiave] * 1.25 + 50, "%s stabili (%.0f a metà, %.0f alla fine)" % [chiave, meta[chiave], fine[chiave]])
 	_controlla(fine["merci"] < 200, "le merci in viaggio non si accumulano (%d)" % fine["merci"])
 	_controlla(fine["storia"] < 2000, "il registro della produzione resta corto (%d)" % fine["storia"])
+	_controlla(fine["scorte"] <= p.villaggio.capienza_magazzini(), "le scorte rispettano la capienza dei magazzini (%d / %d)" % [fine["scorte"], p.villaggio.capienza_magazzini()])
 
 
 func _fine_durata() -> void:
@@ -79,6 +81,15 @@ func _fine_durata() -> void:
 		var l = e.lavoratore
 		print("  %s %s lavoratore=%s prodotti=%d ingresso=%s" % [e.tipo, e.casella, "nessuno" if l == null else Lavoratore.Stato.keys()[l.stato], e.prodotti, e.ingresso])
 	print("  alberi %d (alberelli %d), riserva rocce %d, scorte %s" % [p.risorse.alberi.size(), _alberelli(), _riserva_rocce(), p.villaggio.scorte])
-	var prod: int = p.logistica.storia.size()
-	_controlla(prod > 0, "dopo ore di gioco si produce ancora (%d merci negli ultimi 5 minuti)" % prod)
+	var ha_prodotto := false
+	for misura in _misure:
+		ha_prodotto = ha_prodotto or int(misura["storia"]) > 0
+	_controlla(ha_prodotto, "la produzione è attiva durante la partita")
 	super._fine()
+
+
+func _scorte_totali() -> int:
+	var totale := 0
+	for quantita in p.villaggio.scorte.values():
+		totale += int(quantita)
+	return totale

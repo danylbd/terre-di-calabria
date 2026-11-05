@@ -296,3 +296,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 
 ### 2026-11-03 — Fase 8 chiesta dal proprietario
 - Quattordici richieste (interfaccia, montagna, torri, stagioni, suoni, merci e magazzini, comignoli, pionieri, mappe più grandi, rovine): raccolte negli step 43–51.
+
+### 2026-11-05 — Verifica finale Fase 8 e release v1.1.0
+- Eseguite le 48 suite Godot: passate dopo aggiornamenti dei test per mappe 144×144, coloni che restano nelle case, neve montana e magazzino da 200; corretta la radura iniziale di Zancle e la pendenza per le miniere.
+- README e preset Windows aggiornati a 1.1.0; inclusi nell'export gli atlas SVG dei coloni.
+- Release ancora in preparazione: completare export, push/merge su `main` e verificare Actions, tag `v1.1.0` e Setup.exe.

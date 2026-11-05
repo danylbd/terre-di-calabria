@@ -253,7 +253,7 @@ func _rimuovi_tratto(t: Tratto) -> void:
 		if m:
 			merce_rilasciata.emit(m)
 		t.portatore.queue_free()
-		villaggio.restituisci_colono()
+		villaggio.restituisci_colono(t.portatore.casa_origine)
 	tratti.erase(t.id)
 
 
@@ -354,7 +354,7 @@ func _ricalcola() -> void:
 func manda_portatori_mancanti() -> void:
 	for t in tratti.values():
 		if t.portatore == null and _collegate.has(t.a) and villaggio.prendi_colono():
-			_manda_portatore(t, _adiacenti)
+			_manda_portatore(t, _adiacenti, villaggio.ultima_origine_colono)
 
 
 func tratti_senza_portatore() -> int:
@@ -373,27 +373,33 @@ func portatori() -> int:
 	return n
 
 
-func _manda_portatore(t: Tratto, adiacenti: Dictionary) -> void:
-	# il portatore parte dal magazzino e segue la rete fino a metà del suo tratto
-	var catena: Array[Vector2i] = [t.a]
-	while _collegate[catena[0]] != catena[0]:
-		catena.push_front(_collegate[catena[0]])
+func _manda_portatore(t: Tratto, adiacenti: Dictionary, origine := Vector2i(-1, -1)) -> void:
+	# Il portatore parte dalla casa in cui aspettava e raggiunge il proprio tratto.
+	var mag := villaggio.magazzino()
+	if origine == Vector2i(-1, -1) and mag:
+		origine = mag.bandiera
 	var punti: Array[Vector2] = []
-	for k in catena.size() - 1:
-		var da: Vector2i = catena[k]
-		var a: Vector2i = catena[k + 1]
-		for tr in adiacenti.get(da, []):
-			if (tr.a == da and tr.b == a) or (tr.b == da and tr.a == a):
-				var p: Array[Vector2i] = tr.percorso.duplicate()
-				if tr.b == da:
-					p.reverse()
-				for c in p:
-					punti.append(Vector2(c) + Vector2(0.5, 0.5))
-				break
+	var casa := villaggio.edificio_con_bandiera(origine)
+	if casa:
+		punti.append(casa.centro())
+	var strada := percorso_tra_bandiere(origine, t.a)
+	if strada.is_empty() and origine != t.a:
+		origine = mag.bandiera if mag else t.a
+		punti.clear()
+		if mag:
+			punti.append(mag.centro())
+		strada = percorso_tra_bandiere(origine, t.a)
+	punti.append_array(strada)
+	var percorso_tratto := t.percorso.duplicate()
+	if percorso_tratto[0] != t.a:
+		percorso_tratto.reverse()
+	for c in percorso_tratto:
+		punti.append(Vector2(c) + Vector2(0.5, 0.5))
 	var nuovo := Portatore.new()
 	nuovo.agile = Popoli.giocatore == "brettii"
 	nuovo.velocita *= Popoli.passo()
 	nuovo.tratto = t
+	nuovo.casa_origine = origine
 	oggetti.add_child(nuovo)
 	var meta_punti := t.percorso.size() / 2
 	for k in meta_punti + 1:

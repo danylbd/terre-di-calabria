@@ -9,6 +9,7 @@ signal attacca(e: Edificio)
 signal forma_schiera(e: Edificio)
 signal arma_nave(e: Edificio)
 signal costruisci_macchina(tipo: String, e: Edificio)
+signal manda_pioniere(e: Edificio)
 
 var edificio: Edificio
 var villaggio: Villaggio
@@ -18,6 +19,9 @@ var _icona: TextureRect
 var _aggiorna := 0.0
 var _compra: OptionButton
 var _riga_compra: HBoxContainer
+var _riga_speciali: HBoxContainer
+var _speciale: OptionButton
+var _compra_speciale: Button
 var _pulsanti: HBoxContainer
 var _attacca: Button
 var _schiera: Button
@@ -25,6 +29,9 @@ var schiere: Schiere
 var navi_guerra: NaviGuerra
 var _nave: Button
 var _macchine := {}                  # "ariete"/"onagro" -> Button (all'armaiolo)
+var _produzione: Button
+var _pioniere: Button
+var _priorita: Button
 
 
 func _ready() -> void:
@@ -77,6 +84,24 @@ func _ready() -> void:
 		if edificio:
 			edificio.acquisto = "" if i == 0 else CatalogoEdifici.ACQUISTO.keys()[i - 1])
 	_riga_compra.add_child(_compra)
+	_riga_speciali = HBoxContainer.new()
+	_riga_speciali.add_theme_constant_override("separation", 8)
+	colonna.add_child(_riga_speciali)
+	var titolo_speciali := Label.new()
+	titolo_speciali.text = "Edifici speciali:"
+	titolo_speciali.add_theme_color_override("font_color", Palette.INCHIOSTRO)
+	_riga_speciali.add_child(titolo_speciali)
+	_speciale = OptionButton.new()
+	for tipo in CatalogoEdifici.EDIFICI_SPECIALI:
+		var d := CatalogoEdifici.dati(tipo)
+		_speciale.add_item("%s (%d ducati)" % [d["nome"], d["prezzo_ducati"]])
+	_riga_speciali.add_child(_speciale)
+	_compra_speciale = Button.new()
+	_compra_speciale.text = "Compra"
+	_compra_speciale.pressed.connect(func():
+		if edificio and villaggio.acquista_edificio_speciale(CatalogoEdifici.EDIFICI_SPECIALI[_speciale.selected]):
+			_riempi())
+	_riga_speciali.add_child(_compra_speciale)
 
 	var pulsanti := HBoxContainer.new()
 	pulsanti.add_theme_constant_override("separation", 8)
@@ -108,6 +133,28 @@ func _ready() -> void:
 	_nave.custom_minimum_size = Vector2(140, 36)
 	_nave.pressed.connect(func(): arma_nave.emit(edificio))
 	pulsanti.add_child(_nave)
+	_produzione = Button.new()
+	_produzione.custom_minimum_size = Vector2(140, 36)
+	_produzione.pressed.connect(func():
+		if edificio:
+			edificio.produzione_attiva = not edificio.produzione_attiva
+			_riempi())
+	pulsanti.add_child(_produzione)
+	_pioniere = Button.new()
+	_pioniere.text = "Invia pioniere"
+	_pioniere.custom_minimum_size = Vector2(140, 36)
+	_pioniere.tooltip_text = "Manda un colono a fondare un avamposto entro 18 caselle"
+	_pioniere.pressed.connect(func():
+		if edificio:
+			manda_pioniere.emit(edificio))
+	pulsanti.add_child(_pioniere)
+	_priorita = Button.new()
+	_priorita.custom_minimum_size = Vector2(140, 36)
+	_priorita.pressed.connect(func():
+		if edificio:
+			edificio.priorita_materiali = (edificio.priorita_materiali + 1) % 3
+			_riempi())
+	pulsanti.add_child(_priorita)
 	for t in Schiere.MACCHINE:
 		var b := Button.new()
 		b.text = Schiere.MACCHINE[t]["nome"]
@@ -124,6 +171,7 @@ func mostra(e: Edificio) -> void:
 	_icona.texture = Sprites.icona(Popoli.sprite(e.tipo, Popoli.di(e.proprietario)))
 	_titolo.text = CatalogoEdifici.dati(e.tipo)["nome"]
 	_riga_compra.visible = e.tipo == "agora"
+	_riga_speciali.visible = e.tipo == "agora"
 	_pulsanti.visible = e.proprietario == 1
 	if e.tipo == "agora":
 		_compra.select(0 if e.acquisto == "" else CatalogoEdifici.ACQUISTO.keys().find(e.acquisto) + 1)
@@ -155,6 +203,15 @@ func _riempi() -> void:
 	_attacca.visible = info.has("soldati_max") and e.presidiata
 	_attacca.disabled = e.soldati < 2
 	_nave.visible = e.tipo == "porto" and e.finito and Schiere.attive() and navi_guerra != null
+	var prodotti := CatalogoEdifici.prodotti(e.tipo).filter(func(p): return p != "")
+	_produzione.visible = e.proprietario == 1 and e.finito and not prodotti.is_empty()
+	_produzione.text = "Ferma produzione" if e.produzione_attiva else "Riprendi produzione"
+	_produzione.tooltip_text = "La produzione attiva riprenderà quando ci sarà spazio fuori dall'edificio e nel magazzino."
+	_pioniere.visible = e.proprietario == 1 and e.tipo == "casa_pionieri" and e.finito
+	_pioniere.disabled = villaggio.coloni_liberi <= 0 or villaggio.scorte.get("assi", 0) < 2
+	_priorita.visible = not e.finito
+	_priorita.text = ["Priorità normale", "Priorità alta", "Priorità urgente"][e.priorita_materiali]
+	_priorita.tooltip_text = "Cambia la priorità con cui il magazzino invia i materiali a questo cantiere"
 	if _nave.visible:
 		var no := navi_guerra.motivo_no_nave(e)
 		_nave.disabled = no != ""
@@ -175,6 +232,9 @@ func _riempi() -> void:
 		righe.append("[b]Difensori: %d[/b]" % e.soldati)
 		_testo.text = "\n".join(righe)
 		return
+	if e.tipo == "agora":
+		var speciale: String = CatalogoEdifici.EDIFICI_SPECIALI[_speciale.selected]
+		_compra_speciale.disabled = villaggio.scorte.get("ducati", 0) < CatalogoEdifici.dati(speciale)["prezzo_ducati"]
 	if info.has("soldati_max") and e.finito:
 		righe.append("Soldati: %d / %d%s" % [e.soldati, info["soldati_max"], "  (+%d in arrivo)" % e.soldati_in_arrivo if e.soldati_in_arrivo > 0 else ""])
 	righe.append("[b]%s[/b]" % stato(e, villaggio))
@@ -202,9 +262,9 @@ func _riempi() -> void:
 			for m in CatalogoEdifici.VENDITA:
 				listino.append("%s %d" % [CatalogoEdifici.NOMI_RISORSE[m].to_lower(), CatalogoEdifici.VENDITA[m]])
 			righe.append("[font_size=14]Vende (ducati): %s[/font_size]" % ", ".join(listino))
-		var prodotti := CatalogoEdifici.prodotti(e.tipo).filter(func(p): return p != "")
-		if not prodotti.is_empty():
-			var nomi := prodotti.map(func(p): return "attrezzi" if p == "attrezzi" else CatalogoEdifici.NOMI_RISORSE[p].to_lower())
+		var prodotti_edificio := CatalogoEdifici.prodotti(e.tipo).filter(func(p): return p != "")
+		if not prodotti_edificio.is_empty():
+			var nomi := prodotti_edificio.map(func(p): return "attrezzi" if p == "attrezzi" else CatalogoEdifici.NOMI_RISORSE[p].to_lower())
 			righe.append("Produce: %s  —  finora %d" % [", ".join(nomi), e.prodotti])
 	_testo.text = "\n".join(righe)
 

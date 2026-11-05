@@ -23,7 +23,7 @@ func _fine() -> void:
 	_controllata = true
 	var d: DatiMappa = p.dati
 	var T := DatiMappa.Terreno
-	_controlla(p.mappa == "zancle" and d.larghezza == 96, "si gioca sulla mappa di Zancle 96×96")
+	_controlla(p.mappa == "zancle" and d.larghezza == 144 and d.altezza == 144, "si gioca sulla mappa di Zancle ampliata 144×144")
 	_controlla(d.tipo(60, 60) == T.ACQUA and d.tipo(50, 90) == T.ACQUA, "a est e a sud-est c'è il mar Ionio")
 	_controlla(d.tipo(10, 80) != T.ACQUA and d.tipo(85, 20) != T.ACQUA, "a ovest la Sicilia, a est la Calabria")
 	var stretto := 0

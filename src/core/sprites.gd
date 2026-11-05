@@ -18,7 +18,8 @@ static func info(nome: String) -> Dictionary:
 
 static func texture(nome: String) -> Texture2D:
 	if not _texture.has(nome):
-		_texture[nome] = load("res://assets/grafica/%s.png" % nome)
+		var colono := "res://assets/grafica/coloni/%s.svg" % nome
+		_texture[nome] = load(colono) if ResourceLoader.exists(colono) else load("res://assets/grafica/%s.png" % nome)
 	return _texture[nome]
 
 

@@ -1,6 +1,6 @@
 class_name Lavoratore
 extends Colono
-## Il lavoratore di un edificio di produzione. Arriva dal magazzino lungo le strade, entra
+## Il lavoratore di un edificio di produzione. Arriva dalla propria casa lungo le strade, entra
 ## nell'edificio e poi lavora: esce a piedi verso alberi, rocce, campi o riva, torna con la merce
 ## e la posa alla bandierina; oppure (segheria, mulino, forno, pozzo) la fa dentro l'edificio,
 ## consumando le merci che gli arrivano, ed esce a posare il prodotto.
@@ -10,8 +10,8 @@ enum Stato { ARRIVO, DENTRO, ANDATA, LAVORO, RITORNO, ESCE_CON_MERCE, NAVIGA }
 const RAGGIO := 7
 const PAUSA := 3.5
 ## suono di lavoro di ogni mestiere e secondi tra un colpo e l'altro
-const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardaboschi": ["vanga", 1.3],
-	"segheria": ["sega", 1.45], "fattoria": ["falce", 1.1], "vigneto": ["falce", 1.4], "ortolano": ["vanga", 1.3],
+const SUONI := {"boscaiolo": ["ascia", 0.85], "guardaboschi": ["vanga", 1.3],
+	"segheria": ["segheria", 1.2], "cava": ["cava", 1.3], "fattoria": ["falce", 1.1], "vigneto": ["falce", 1.4], "ortolano": ["vanga", 1.3],
 	"agrumeto": ["falce", 1.6], "uliveto": ["falce", 1.5], "mulino": ["macina", 1.7], "pozzo": ["tuffo", 2.4],
 	"miniera_ferro": ["piccone", 0.9], "miniera_argento": ["piccone", 0.9], "fabbro": ["martello", 0.7],
 	"fonderia": ["macina", 2.0], "zecca": ["martello", 1.2], "armaiolo": ["martello", 0.8], "caserma": ["scontro", 2.5], "argillaio": ["vanga", 1.3], "fornace": ["macina", 2.2]}
@@ -19,7 +19,7 @@ const SUONI := {"boscaiolo": ["ascia", 0.85], "cava": ["piccone", 1.0], "guardab
 const DURATA := {"boscaiolo": 4.0, "cava": 4.0, "guardaboschi": 3.0, "fattoria": 3.5, "pescatore": 6.0,
 	"uliveto": 4.0, "pesca_spada": 9.0}
 const DURATA_DENTRO := 5.0
-const MESTIERI_FUORI := ["boscaiolo", "cava", "guardaboschi", "pescatore", "uliveto", "pesca_spada"]
+const MESTIERI_FUORI := ["boscaiolo", "cava", "guardaboschi", "pescatore", "uliveto", "pesca_spada", "raccoglitore_funghi"]
 const RAGGIO_LARGO := 12
 const RAGGIO_CAMPI := 4
 const MAX_CAMPI := 8
@@ -143,7 +143,7 @@ func _entra() -> void:
 
 func _cerca_lavoro() -> void:
 	_attesa = PAUSA
-	if logistica.merci_in_uscita(edificio) >= 3:
+	if not logistica.puo_produrre(edificio):
 		return
 	var da := edificio.bandiera
 	if _coltura != "":
@@ -169,6 +169,11 @@ func _cerca_lavoro() -> void:
 		"uliveto":
 			_bersaglio = risorse.ulivo_con_olive(da, RAGGIO)
 			if _bersaglio.x < 0 or not risorse.prenota_ulivo(_bersaglio):
+				return
+		"raccoglitore_funghi":
+			_bersaglio = risorse.fungo_vicino(da, RAGGIO_LARGO)
+			if _bersaglio.x < 0 or not risorse.prenota_fungo(_bersaglio):
+				_segnala("Il raccoglitore non trova porcini nei boschi vicini")
 				return
 		"pesca_spada":
 			_acqua = risorse.posto_al_largo(da, RAGGIO_LARGO)
@@ -219,6 +224,9 @@ func _cerca_campo(da: Vector2i) -> bool:
 
 
 func _fine_lavoro() -> void:
+	if mestiere == "agora" and _attrezzo_scelto != "":
+		_torna(Merce.FOGLI.get(_attrezzo_scelto, "portatore_nessuno"))
+		return
 	if mestiere == "caserma":
 		edificio.villaggio.arruola()
 		edificio.prodotti += 1
@@ -249,6 +257,11 @@ func _fine_lavoro() -> void:
 		"uliveto":
 			risorse.raccogli_olive(_bersaglio)
 			_torna(Merce.FOGLI["olive"])
+		"raccoglitore_funghi":
+			if risorse.raccogli_fungo(_bersaglio):
+				_torna(Merce.FOGLI["porcini"])
+			else:
+				_rientra_vuoto()
 		"pesca_spada":
 			if risorse.pesca_spada(_acqua):
 				Suono.suona_in("tuffo", global_position, -2.0)
@@ -282,6 +295,8 @@ func _lavora_dentro() -> void:
 		return
 	if mestiere == "agora":
 		_lavora_agora()
+		return
+	if mestiere == "casa_pionieri":
 		return
 	if info.has("presidio"):
 		return                 # la guardia sta di vedetta: niente da produrre
@@ -329,9 +344,17 @@ func _lavora_dentro() -> void:
 func _lavora_agora() -> void:
 	var v: Villaggio = edificio.villaggio
 	_attrezzo_scelto = ""
-	for m in CatalogoEdifici.VENDITA:
+	var coda := edificio.vendite_in_coda.duplicate()
+	if coda.is_empty():
+		for m in CatalogoEdifici.VENDITA:
+			if edificio.ingresso.get(m, 0) > 0:
+				coda.append(m)
+	for m in coda:
 		if edificio.ingresso.get(m, 0) > 0:
 			edificio.ingresso[m] -= 1
+			var posto := edificio.vendite_in_coda.find(m)
+			if posto >= 0:
+				edificio.vendite_in_coda.remove_at(posto)
 			var ricavo: int = CatalogoEdifici.VENDITA[m]
 			v.scorte["ducati"] = v.scorte.get("ducati", 0) + ricavo
 			edificio.guadagno += ricavo

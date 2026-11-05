@@ -28,15 +28,28 @@ func _prova() -> void:
 		if e.tipo == "magazzino":
 			mag = e
 	_controlla(st.stagione() == Stagioni.PRIMAVERA and st.anno() == 1, "si parte in primavera, anno 1 (%s)" % st.nome())
+	_controlla(Stagioni.DURATA == 3600.0, "ogni stagione dura un'ora di gioco")
 	_controlla(p.barra._stagione.text == st.nome(), "la barra mostra la stagione")
 
 	# inverno: la fattoria non semina, i campi non crescono, nevica
-	st.tempo = Stagioni.DURATA * 3 + 30.0
+	st.tempo = Stagioni.DURATA * 3 + Stagioni.PASSAGGIO + 1.0
 	await create_timer(1.0).timeout
 	_controlla(st.inverno(), "salto all'inverno (%s)" % st.nome())
 	var neve: float = (p.terreno.material as ShaderMaterial).get_shader_parameter("neve")
 	_controlla(neve > 0.9, "la neve copre il terreno (%.2f)" % neve)
 	_controlla(st.fiocchi.emitting, "cadono i fiocchi")
+	var punti_montagna := {}
+	for y in d.altezza:
+		for x in d.larghezza:
+			if d.tipo(x, y) in [DatiMappa.Terreno.ROCCIA, DatiMappa.Terreno.NEVE] and d.quota(x + 0.5, y + 0.5) >= 80.0:
+				var punto := d.a_schermo(x + 0.5, y + 0.5)
+				punti_montagna[Vector2i(roundi(punto.x * 100.0), roundi(punto.y * 100.0))] = true
+	var fiocchi_alti := not st.fiocchi.emission_points.is_empty() and st.fiocchi.emission_points.size() == punti_montagna.size()
+	for punto in st.fiocchi.emission_points:
+		if not punti_montagna.has(Vector2i(roundi(punto.x * 100.0), roundi(punto.y * 100.0))):
+			fiocchi_alti = false
+			break
+	_controlla(fiocchi_alti, "la neve cade solo in montagna")
 	var c_prova := Vector2i(-1, -1)
 	for y in range(mag.casella.y + 5, mag.casella.y + 9):
 		for x in range(mag.casella.x - 4, mag.casella.x + 4):
@@ -58,9 +71,10 @@ func _prova() -> void:
 			await process_frame
 		root.get_viewport().get_texture().get_image().save_png(foto.get_basename() + "_inverno.png")
 
-	# primavera dell'anno 2: si semina e si cresce, la neve se ne va
+	# primavera: si semina e si cresce, la neve se ne va (salto calendario per non attendere un'ora reale).
 	Engine.time_scale = VELOCITA
-	await create_timer(140.0).timeout
+	st.tempo = Stagioni.DURATA * 4 + Stagioni.PASSAGGIO + 1.0
+	await process_frame
 	_controlla(st.stagione() == Stagioni.PRIMAVERA and st.anno() == 2, "torna la primavera, anno 2 (%s)" % st.nome())
 	await create_timer(60.0).timeout
 	Engine.time_scale = 1.0
@@ -70,7 +84,7 @@ func _prova() -> void:
 	_controlla(neve < 0.1 and not st.fiocchi.emitting, "la neve si è sciolta")
 
 	# autunno: castagni e querce cambiano colore
-	st.tempo = Stagioni.DURATA * 6 + 60.0
+	st.tempo = Stagioni.DURATA * 10 + Stagioni.PASSAGGIO + 1.0
 	await create_timer(1.0).timeout
 	var arancio := false
 	for c in ris.alberi:

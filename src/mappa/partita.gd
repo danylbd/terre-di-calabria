@@ -19,6 +19,7 @@ var avversario: Avversario
 var missione: Missione
 var pannello_missione: PannelloMissione
 var _attaccante: Edificio
+var _casa_pionieri: Edificio
 
 var menu: MenuCostruzione
 var pannello: PannelloEdificio
@@ -47,6 +48,8 @@ var pannello_schiera: PannelloSchiera
 var mappa := "costa_ionica"
 var popolo := "greci"         # il popolo del giocatore (Popoli.DATI)   # quale mappa si gioca (GeneratoreMappa.MAPPE)
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
+var rovine: Array[Vector2i] = []
+var rovine_esplorate: Array[Vector2i] = []
 
 
 func _ready() -> void:
@@ -149,10 +152,10 @@ func _ready() -> void:
 	stagioni.cambiata.connect(func(s: int):
 		barra.aggiorna_stagione(stagioni.nome())
 		_mostra_avviso("Arriva %s" % ["la primavera", "l'estate", "l'autunno", "l'inverno"][s], false))
-	villaggio.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
-	villaggio.popolazione_cambiata.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
-	villaggio.territorio_cambiato.connect(func(): barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita()))
-	logistica.scorte_cambiate.connect(func(): barra.aggiorna(villaggio.scorte))
+	villaggio.scorte_cambiate.connect(_aggiorna_barra_risorse)
+	villaggio.popolazione_cambiata.connect(_aggiorna_barra_risorse)
+	villaggio.territorio_cambiato.connect(_aggiorna_barra_risorse)
+	logistica.scorte_cambiate.connect(_aggiorna_barra_risorse)
 	logistica.scorte_cambiate.connect(villaggio.richiama_lavoratori)
 	if da_caricare == "" and Impostazioni.missione != "":
 		avvia_missione(Impostazioni.missione, 0)
@@ -165,8 +168,7 @@ func _ready() -> void:
 			_metti_villaggio()
 			_metti_brettii()
 			_mostra_avviso("Il salvataggio non si può leggere: nuova partita", true)
-	barra.aggiorna(villaggio.scorte)
-	barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita())
+	_aggiorna_barra_risorse()
 	barra.aggiorna_stagione(stagioni.nome())
 	Suono.scaletta(SCALETTA_PACE)
 	Suono.ambiente("uccelli", -6.0)
@@ -211,15 +213,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif modalita != "":
 			_esci_modalita()
 		else:
-			Salvataggio.salva(self)
-			get_tree().change_scene_to_file("res://src/main/title_screen.tscn")
+			_menu_pausa.visible = true
+			get_tree().paused = true
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		match (event as InputEventKey).keycode:
 			KEY_R:
 				menu.premi_attrezzo("strada")
-			KEY_F:
-				menu.premi_attrezzo("bandierina")
 			KEY_F5:
 				_mostra_avviso("Partita salvata" if Salvataggio.salva(self) else "Non sono riuscito a salvare", false)
 			KEY_F9:
@@ -275,6 +275,12 @@ func _clic(c: Vector2i) -> void:
 					_esci_modalita()
 		"strada":
 			_clic_strada(c)
+		"pioniere":
+			if not is_instance_valid(_casa_pionieri):
+				_esci_modalita()
+				return
+			if villaggio.fonda_avamposto(c, _casa_pionieri):
+				_esci_modalita()
 		"bandierina":
 			var perche := rete.motivo_no_bandiera(c)
 			if perche != "":
@@ -325,7 +331,25 @@ func _clic(c: Vector2i) -> void:
 				menu.premi_attrezzo("strada")
 				_clic_strada(c)
 			else:
-				pannello.chiudi_pannello()
+				if not _esplora_rovina(c):
+					pannello.chiudi_pannello()
+
+
+func _esplora_rovina(c: Vector2i) -> bool:
+	for rovina in rovine:
+		if rovina in rovine_esplorate or Vector2(rovina - c).length() > 2.0:
+			continue
+		rovine_esplorate.append(rovina)
+		var monete := randi_range(8, 24)
+		villaggio.scorte["ducati"] = villaggio.scorte.get("ducati", 0) + monete
+		var materiali := ["pietra", "assi", "argento"]
+		var merce: String = materiali[randi_range(0, materiali.size() - 1)]
+		villaggio.scorte[merce] = villaggio.scorte.get(merce, 0) + randi_range(1, 3)
+		villaggio.scorte_cambiate.emit()
+		Suono.suona("completato")
+		_mostra_avviso("Rudere esplorato: %d ducati e materiali recuperati" % monete, false)
+		return true
+	return false
 
 
 ## Ordine alla schiera scelta: una torre nemica o un villaggio indigeno da attaccare, altrimenti dove andare.
@@ -424,6 +448,7 @@ func _strumento(nome: String, attivo: bool) -> void:
 
 func _esci_modalita(deseleziona := true) -> void:
 	modalita = ""
+	_casa_pionieri = null
 	tipo_scelto = ""
 	segni.tipo_scelto = ""
 	segni.mostra_bandiere = false
@@ -551,9 +576,23 @@ func _metti_natura() -> void:
 				T.SABBIA:
 					if rng.randf() < 0.015:
 						_metti("rocce_%d" % rng.randi_range(1, 3), x, y, rng)
+	# Ruderi rari: più facile trovarli tra i boschi e sulle alture che nelle pianure abitate.
+	for _i in range(maxi(12, int(dati.larghezza * dati.altezza / 700.0))):
+		var x := rng.randi_range(4, dati.larghezza - 5)
+		var y := rng.randi_range(4, dati.altezza - 5)
+		var c := Vector2i(x, y)
+		if Vector2(c - dati.villaggio).length() < 10.0 or dati.tipo(x, y) in [T.ACQUA, T.SABBIA, T.NEVE] or dati.occupante(x, y) != 0:
+			continue
+		var rudere := Node2D.new()
+		rudere.set_script(load("res://src/mappa/rovina_antica.gd"))
+		rudere.seme = int(rng.randi())
+		rudere.position = dati.a_schermo(x + 0.5, y + 0.5)
+		oggetti.add_child(rudere)
+		rovine.append(c)
 
 
 func _togli_decori(c: Vector2i) -> void:
+	risorse.rimuovi_fungo(c)
 	for d in decori.get(c, []):
 		d.queue_free()
 	decori.erase(c)
@@ -565,8 +604,8 @@ func _metti_decoro(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> 
 	s.position = dati.a_schermo(x + rng.randf_range(0.2, 0.8), y + rng.randf_range(0.2, 0.8))
 	oggetti.add_child(s)
 	decori.get_or_add(Vector2i(x, y), []).append(s)
-
-
+	if nome == "funghi":
+		risorse.registra_fungo(Vector2i(x, y), s)
 func _metti(nome: String, x: int, y: int, rng: RandomNumberGenerator) -> void:
 	var px := x + rng.randf_range(0.2, 0.8)
 	var py := y + rng.randf_range(0.2, 0.8)
@@ -776,38 +815,43 @@ func _crea_luce() -> CanvasModulate:
 
 ## Fiocchi di neve sullo schermo, accesi d'inverno.
 func _crea_fiocchi() -> CPUParticles2D:
-	var strato := CanvasLayer.new()
-	strato.layer = 0
-	add_child(strato)
+	var punti_neve := PackedVector2Array()
+	for y in dati.altezza:
+		for x in dati.larghezza:
+			if dati.tipo(x, y) in [T.ROCCIA, T.NEVE] and dati.quota(x + 0.5, y + 0.5) >= 80.0:
+				punti_neve.append(dati.a_schermo(x + 0.5, y + 0.5))
 	var f := CPUParticles2D.new()
 	f.emitting = false
-	f.amount = 500
-	f.lifetime = 9.0
-	f.preprocess = 9.0
-	f.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	f.emission_rect_extents = Vector2(1100, 10)
-	f.position = Vector2(960, -20)
+	f.amount = maxi(40, mini(500, punti_neve.size() * 3))
+	f.lifetime = 2.5
+	f.preprocess = 2.5
+	f.emission_shape = CPUParticles2D.EMISSION_SHAPE_POINTS
+	f.emission_points = punti_neve
 	f.direction = Vector2(0.15, 1)
-	f.spread = 12.0
-	f.gravity = Vector2(0, 30)
-	f.initial_velocity_min = 60.0
-	f.initial_velocity_max = 120.0
-	f.scale_amount_min = 2.0
-	f.scale_amount_max = 4.5
+	f.spread = 8.0
+	f.gravity = Vector2(0, 15)
+	f.initial_velocity_min = 18.0
+	f.initial_velocity_max = 35.0
+	f.scale_amount_min = 1.5
+	f.scale_amount_max = 3.0
 	f.color = Color(1, 1, 1, 0.85)
-	strato.add_child(f)
+	add_child(f)
 	return f
 
 
 # --------------------------------------------------------------- interfaccia
 
 var _strato_ui: CanvasLayer
+var _menu_pausa: PannelloPausa
 
 
 func _crea_interfaccia() -> void:
 	var strato := CanvasLayer.new()
 	add_child(strato)
 	_strato_ui = strato
+	_menu_pausa = PannelloPausa.new()
+	strato.add_child(_menu_pausa)
+	_menu_pausa.azione.connect(_azione_pausa)
 
 	barra = BarraRisorse.new()
 	strato.add_child(barra)
@@ -815,11 +859,12 @@ func _crea_interfaccia() -> void:
 	barra.grow_horizontal = Control.GROW_DIRECTION_BOTH
 
 	menu = MenuCostruzione.new()
+	menu.villaggio = villaggio
 	strato.add_child(menu)
-	menu.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 14)
-	menu.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	menu.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT, Control.PRESET_MODE_MINSIZE, 14)
 	menu.edificio_scelto.connect(_scegli_edificio)
 	menu.strumento.connect(_strumento)
+	villaggio.edifici_speciali_cambiati.connect(menu.aggiorna)
 
 	pannello = PannelloEdificio.new()
 	pannello.villaggio = villaggio
@@ -861,6 +906,13 @@ func _crea_interfaccia() -> void:
 		_attaccante = e
 		Input.set_default_cursor_shape(Input.CURSOR_CROSS)
 		_mostra_avviso("Clicca la torre nemica da attaccare (Esc per annullare)", false))
+	pannello.manda_pioniere.connect(func(e: Edificio):
+		pannello.chiudi_pannello()
+		_esci_modalita()
+		_casa_pionieri = e
+		modalita = "pioniere"
+		Input.set_default_cursor_shape(Input.CURSOR_CROSS)
+		_mostra_avviso("Clicca un terreno libero entro 18 caselle per fondare l'accampamento", false))
 	pannello.demolisci.connect(func(e: Edificio):
 		pannello.chiudi_pannello()
 		villaggio.demolisci(e)
@@ -889,7 +941,7 @@ func _crea_interfaccia() -> void:
 	pulsante.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 
 	var aiuto := Label.new()
-	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Clic: info edificio  ·  Tasto destro: trascina / annulla  ·  R: strada  ·  F: bandierina  ·  I: villaggio  ·  M: musica  ·  F5 salva  ·  F9 carica  ·  Esc: menu (salva)"
+	aiuto.text = "WASD: muovi  ·  Rotella: zoom  ·  Clic: info edificio  ·  Tasto destro: trascina / annulla  ·  R: collegamento  ·  I: villaggio  ·  M: musica  ·  F5 salva  ·  F9 carica  ·  Esc: menu (salva)"
 	aiuto.add_theme_font_size_override("font_size", 16)
 	aiuto.add_theme_color_override("font_color", Palette.PERGAMENA_CHIARA)
 	aiuto.add_theme_color_override("font_outline_color", Palette.INCHIOSTRO)
@@ -898,6 +950,42 @@ func _crea_interfaccia() -> void:
 	aiuto.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 12)
 	aiuto.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	aiuto.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	aiuto.visible = false
+	var pulsante_leggenda := Button.new()
+	pulsante_leggenda.text = "?"
+	pulsante_leggenda.custom_minimum_size = Vector2(38, 36)
+	pulsante_leggenda.tooltip_text = "Mostra i comandi"
+	pulsante_leggenda.pressed.connect(func():
+		aiuto.visible = not aiuto.visible
+		pulsante_leggenda.tooltip_text = "Nascondi i comandi" if aiuto.visible else "Mostra i comandi")
+	strato.add_child(pulsante_leggenda)
+	pulsante_leggenda.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 12)
+	pulsante_leggenda.offset_bottom = -48
+	pulsante_leggenda.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	var controlli_zoom := HBoxContainer.new()
+	controlli_zoom.add_theme_constant_override("separation", 6)
+	var zoom_meno := Button.new()
+	zoom_meno.text = "−"
+	zoom_meno.custom_minimum_size = Vector2(38, 36)
+	controlli_zoom.add_child(zoom_meno)
+	var cursore_zoom := HSlider.new()
+	cursore_zoom.custom_minimum_size = Vector2(150, 36)
+	cursore_zoom.min_value = CameraMappa.ZOOM_MIN
+	cursore_zoom.max_value = CameraMappa.ZOOM_MAX
+	cursore_zoom.step = 0.05
+	cursore_zoom.value = camera.zoom.x
+	cursore_zoom.tooltip_text = "Regola lo zoom della mappa"
+	cursore_zoom.value_changed.connect(func(valore: float): camera.regola_zoom(valore))
+	controlli_zoom.add_child(cursore_zoom)
+	var zoom_piu := Button.new()
+	zoom_piu.text = "+"
+	zoom_piu.custom_minimum_size = Vector2(38, 36)
+	controlli_zoom.add_child(zoom_piu)
+	zoom_meno.pressed.connect(func(): camera.regola_zoom(camera.zoom.x / CameraMappa.PASSO_ZOOM); cursore_zoom.value = camera.zoom.x / CameraMappa.PASSO_ZOOM)
+	zoom_piu.pressed.connect(func(): camera.regola_zoom(camera.zoom.x * CameraMappa.PASSO_ZOOM); cursore_zoom.value = camera.zoom.x * CameraMappa.PASSO_ZOOM)
+	strato.add_child(controlli_zoom)
+	controlli_zoom.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM, Control.PRESET_MODE_MINSIZE, 12)
+	controlli_zoom.grow_horizontal = Control.GROW_DIRECTION_BOTH
 
 	_avviso = Label.new()
 	_avviso.add_theme_font_size_override("font_size", 24)
@@ -907,6 +995,28 @@ func _crea_interfaccia() -> void:
 	strato.add_child(_avviso)
 	_avviso.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 92)
 	_avviso.grow_horizontal = Control.GROW_DIRECTION_BOTH
+
+
+func _aggiorna_barra_risorse() -> void:
+	if not barra or not villaggio:
+		return
+	barra.aggiorna(villaggio.scorte)
+	barra.aggiorna_coloni(villaggio.popolazione(), villaggio.capacita())
+	barra.aggiorna_capienza(villaggio.merci_in_scorta(), villaggio.capienza_magazzini())
+
+
+func _azione_pausa(nome: String) -> void:
+	match nome:
+		"continua":
+			_menu_pausa.visible = false
+			get_tree().paused = false
+		"salva":
+			var riuscito := Salvataggio.salva(self)
+			_menu_pausa.mostra_esito_salvataggio(riuscito)
+		"esci":
+			Salvataggio.salva(self)
+			get_tree().paused = false
+			get_tree().change_scene_to_file("res://src/main/title_screen.tscn")
 
 
 func _mostra_avviso(testo: String, errore: bool) -> void:

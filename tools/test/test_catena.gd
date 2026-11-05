@@ -111,7 +111,7 @@ func _piazza(tipo: String, punteggio: Callable) -> Edificio:
 			var f := Vector2i(c.x + (s - 1) / 2, c.y + s)
 			candidati.append([punteggio.call(f), c, f])
 	candidati.sort_custom(func(a, b): return a[0] > b[0])
-	for k in mini(candidati.size(), 60):
+	for k in mini(candidati.size(), 300):
 		var c: Vector2i = candidati[k][1]
 		var f: Vector2i = candidati[k][2]
 		if not v.puo_costruire(tipo, c):

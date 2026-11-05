@@ -1,8 +1,8 @@
 class_name Costruttore
 extends Colono
-## Il costruttore di un cantiere (step 36a, come in Settlers): parte dal magazzino lungo le strade,
+## Il costruttore di un cantiere (step 36a, come in Settlers): parte da casa lungo le strade,
 ## si mette accanto al cantiere e lo tira su col mazzuolo mentre i portatori consegnano assi e pietre.
-## Finito l'edificio (o se il cantiere viene demolito) torna al magazzino e ridiventa un colono libero.
+## Finito l'edificio (o se il cantiere viene demolito) torna a casa e ridiventa un colono libero.
 
 var cantiere: Edificio
 var villaggio: Node
@@ -10,15 +10,17 @@ var rete: ReteStrade
 var al_lavoro := false               # è accanto al cantiere: il cantiere può avanzare
 var _ritorno := false
 var _bandiera := Vector2i.ZERO       # la bandierina del cantiere (resta anche se il cantiere sparisce)
+var casa_origine := Vector2i(-1, -1)
 var _foglio_cammino := "portatore_nessuno"
 var _foglio_lavoro := ""
 
 
-func avvia(v: Node, e: Edificio, rs: ReteStrade, partenza: Array[Vector2]) -> void:
+func avvia(v: Node, e: Edificio, rs: ReteStrade, partenza: Array[Vector2], origine := Vector2i(-1, -1)) -> void:
 	villaggio = v
 	cantiere = e
 	rete = rs
 	_bandiera = e.bandiera
+	casa_origine = origine
 	if ResourceLoader.exists("res://assets/grafica/lavoratore_martello.png"):
 		_foglio_cammino = "lavoratore_martello"
 		_foglio_lavoro = "lavoratore_martello_lavoro"
@@ -64,20 +66,26 @@ func _process(delta: float) -> void:
 		_ferma()
 
 
-## Torna al magazzino lungo le strade (se non c'è più strada, rientra subito).
+## Torna alla casa da cui era partito (se non c'è più strada, rientra subito).
 func torna() -> void:
 	if _ritorno:
 		return
 	al_lavoro = false
 	_ritorno = true
 	imposta_foglio(_foglio_cammino)
-	var mag: Edificio = villaggio.magazzino()
+	var destinazione: Edificio = null
+	for e in villaggio.edifici.values():
+		if e.bandiera == casa_origine and CatalogoEdifici.dati(e.tipo).get("abitanti", 0) > 0:
+			destinazione = e
+			break
+	if destinazione == null:
+		destinazione = villaggio.magazzino()
 	var punti: Array[Vector2] = [Vector2(_bandiera) + Vector2(0.5, 0.5)]
-	if mag != null:
-		var strada := rete.percorso_tra_bandiere(_bandiera, mag.bandiera)
-		if not strada.is_empty() or mag.bandiera == _bandiera:
+	if destinazione != null:
+		var strada := rete.percorso_tra_bandiere(_bandiera, destinazione.bandiera)
+		if not strada.is_empty() or destinazione.bandiera == _bandiera:
 			punti.append_array(strada)
-			punti.append(mag.centro())
+			punti.append(destinazione.centro())
 			percorri(punti)
 			return
 	villaggio.costruttore_tornato(self)
