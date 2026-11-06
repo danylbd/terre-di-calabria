@@ -62,7 +62,7 @@ func avvia(e: Edificio, r: RisorseNaturali, l: Logistica, rs: ReteStrade, parten
 		_foglio_cammino = Popoli.soldati(e.proprietario)[0]     # la guardia ha l'aspetto del suo popolo
 	_foglio_lavoro = _foglio_cammino + "_lavoro" if _foglio_cammino.begins_with("lavoratore") else ""
 	_coltura = info.get("coltura", "")
-	prepara(e.dati_mappa, partenza[0], _foglio_cammino)
+	prepara(e.dati_mappa, partenza[0], _foglio_cammino, Popoli.di(e.proprietario))
 	arrivato.connect(_on_arrivato)
 	partenza.append(e.centro())
 	percorri(partenza)

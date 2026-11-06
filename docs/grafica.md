@@ -90,4 +90,10 @@ tools/studio/modelli.gd  ──▶  modello 3D (pietra, intonaco, coppi veri, le
 - Edifici: più "sporcizia" (muschio alla base, macchie di pioggia), più oggetti attorno.
 - Ombre a terra un po' più morbide.
 
+## 8. Atlas dei personaggi — direzione C
+
+La direzione scelta per i personaggi è compatta e leggibile: sagome chiare, colori per popolo, abiti e attrezzi semplificati ma riconoscibili. Gli atlas civili mantengono 8 direzioni × 8 fotogrammi e conservano varianti per merci e mestieri. Gli otto popoli hanno tavolozze e dettagli d'abito distinti; ogni tipo di soldato ha invece un atlas di marcia e uno di combattimento con equipaggiamento proprio.
+
+Per rigenerare tutte le varianti civili e militari, dopo `genera_coloni.py` eseguire `python tools/grafica/genera_atlas_popoli.py`; i sorgenti SVG finiscono in `assets/grafica/coloni/` e i metadati in `assets/grafica/`. I portatori e lavoratori scelgono la variante in base al popolo dell'unità o del proprietario dell'edificio.
+
 Anteprima: `python3 tools/studio/anteprima.py assets/grafica docs/immagini/g1-villaggio.png`

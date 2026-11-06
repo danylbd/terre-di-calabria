@@ -330,3 +330,6 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Corretto il collegamento stradale: il clic iniziale entro una casella da un nodo seleziona la bandierina più vicina; la destinazione prossima a un nodo o a una strada riusa l'innesto esistente, così anteprima e costruzione terminano nello stesso punto.
 - La ricerca valuta gli altri accessi ai nodi se il primo percorso valido devia; rimosso il limite arbitrario di 32 caselle per i collegamenti.
 - Verificate `test_rete_strade.gd`, `test_edifici_senza_bandiera.gd`, `test_piazzamento_visuale.gd` e `test_catena.gd`: tutte riportano `RISULTATO: OK`.
+- Su approvazione del proprietario scelta la direzione C per i personaggi: silhouette compatte e leggibili, palette e capi d'abito specifici per popolo.
+- Generati 280 atlas civili (35 varianti di ruolo e carico × 8 popoli) e 18 atlas di soldati (9 tipi × marcia/combattimento); selezione culturale collegata ai portatori e ai lavoratori.
+- Import Godot completato senza errori; anteprime dei gruppi civili e militari salvate in `docs/immagini/preview-coloni-popoli.png` e `docs/immagini/preview-soldati-popoli.png`.

@@ -1,0 +1,21 @@
+{
+  "cella": [
+    96,
+    96
+  ],
+  "ancora": [
+    42,
+    80
+  ],
+  "fotogrammi": 8,
+  "direzioni": [
+    "S",
+    "SE",
+    "E",
+    "NE",
+    "N",
+    "NO",
+    "O",
+    "SO"
+  ]
+}

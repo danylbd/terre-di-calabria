@@ -23,6 +23,14 @@ static func texture(nome: String) -> Texture2D:
 	return _texture[nome]
 
 
+## Restituisce la variante culturale di un portatore o lavoratore, se presente.
+static func atlante_colono(nome: String, popolo: String) -> String:
+	if not (nome.begins_with("portatore_") or nome.begins_with("lavoratore_")):
+		return nome
+	var variante := "%s_%s" % [nome, popolo]
+	return variante if ResourceLoader.exists("res://assets/grafica/coloni/%s.svg" % variante) else nome
+
+
 ## Sprite fermo, con il punto di ancoraggio (centro della casella a terra) nell'origine.
 static func crea(nome: String) -> Sprite2D:
 	var s := Sprite2D.new()

@@ -11,14 +11,16 @@ var agile := false                       # Brettii: più veloce nei boschi e in 
 var pos := Vector2.ZERO                  # posizione attuale in coordinate di mappa
 var _punti: Array[Vector2] = []
 var _foglio := ""
+var popolo := "greci"
 var _anim: AnimatedSprite2D
 var _velocita_animazione_base := 1.15
 var _fase_passo_inizializzata := false
 
 
-func prepara(d: DatiMappa, inizio: Vector2, foglio := "portatore_nessuno") -> void:
+func prepara(d: DatiMappa, inizio: Vector2, foglio := "portatore_nessuno", appartenenza := "") -> void:
 	dati = d
 	pos = inizio
+	popolo = appartenenza if appartenenza != "" else Popoli.giocatore
 	_anim = AnimatedSprite2D.new()
 	_anim.centered = false
 	add_child(_anim)
@@ -32,12 +34,13 @@ func imposta_foglio(foglio: String) -> void:
 	if foglio == _foglio:
 		return
 	_foglio = foglio
+	var atlante := Sprites.atlante_colono(foglio, popolo)
 	var anim: StringName = _anim.animation
 	if anim == &"" or anim == &"default":
 		anim = &"S"
-	_anim.sprite_frames = Sprites.animazioni(foglio)
+	_anim.sprite_frames = Sprites.animazioni(atlante)
 	_anim.animation = anim
-	_anim.offset = -Sprites.ancora(foglio)
+	_anim.offset = -Sprites.ancora(atlante)
 	# Le persone erano alla stessa scala delle strutture e dei mezzi: regola la sola figura,
 	# lasciando invariati navi, animali e macchine da guerra.
 	_anim.scale = Vector2.ONE * _scala_personaggio(foglio)

@@ -10,7 +10,35 @@ func _initialize() -> void:
 		if p.ends_with(".svg"):
 			nomi.append(p.trim_suffix(".svg"))
 	nomi.sort()
-	_controlla(nomi.size() == 35, "35 atlas dei coloni presenti (%d)" % nomi.size())
+	var popoli := ["greci", "brettii", "romani", "saraceni", "normanni", "siculi", "sicani", "cartaginesi"]
+	var civili := []
+	var varianti_civili := 0
+	for nome in nomi:
+		if not (nome.begins_with("portatore_") or nome.begins_with("lavoratore_")):
+			continue
+		var e_variante := false
+		for popolo in popoli:
+			if nome.ends_with("_" + popolo):
+				e_variante = true
+				break
+		if e_variante:
+			varianti_civili += 1
+		else:
+			civili.append(nome)
+	_controlla(civili.size() == 35, "35 atlas civili di base presenti (%d)" % civili.size())
+	_controlla(varianti_civili == 280, "280 varianti civili per popolo presenti (%d)" % varianti_civili)
+	var soldati := ["guardia", "brettio", "brettio_giocatore", "legionario", "cavaliere_leggero",
+		"cavaliere_pesante", "guerriero_siculo", "arciere_sicano", "mercenario_cartaginese"]
+	var varianti_soldati := 0
+	for soldato in soldati:
+		for suffisso in ["", "_lotta"]:
+			if nomi.has(soldato + suffisso):
+				varianti_soldati += 1
+	_controlla(varianti_soldati == 18, "18 atlas animati dei tipi di soldato presenti (%d)" % varianti_soldati)
+	_controlla(Sprites.atlante_colono("portatore_nessuno", "saraceni") == "portatore_nessuno_saraceni",
+		"il portatore seleziona l'atlante del proprio popolo")
+	_controlla(Sprites.atlante_colono("lavoratore_ascia_lavoro", "normanni") == "lavoratore_ascia_lavoro_normanni",
+		"l'animazione del mestiere conserva la variante culturale")
 	for nome in nomi:
 		var meta := Sprites.info(nome)
 		var texture: Texture2D = Sprites.texture(nome)
