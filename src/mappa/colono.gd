@@ -12,6 +12,8 @@ var pos := Vector2.ZERO                  # posizione attuale in coordinate di ma
 var _punti: Array[Vector2] = []
 var _foglio := ""
 var _anim: AnimatedSprite2D
+var _velocita_animazione_base := 1.15
+var _fase_passo_inizializzata := false
 
 
 func prepara(d: DatiMappa, inizio: Vector2, foglio := "portatore_nessuno") -> void:
@@ -56,6 +58,11 @@ func percorri(punti: Array[Vector2]) -> void:
 	_punti = punti.duplicate()
 	if _punti.size() > 0:
 		_anim.play()
+		# Evita che tutti i portatori inizino il passo nello stesso istante.
+		# Il seme resta riproducibile per la stessa partita.
+		if not _fase_passo_inizializzata:
+			_anim.frame = randi_range(0, 7)
+			_fase_passo_inizializzata = true
 
 
 func in_cammino() -> bool:
@@ -68,6 +75,8 @@ func _process(delta: float) -> void:
 	var passo := velocita * delta
 	if agile and _in_montagna():
 		passo *= Popoli.AGILITA
+	# Il ritmo dei passi segue la velocità effettiva (anche bonus e rallentamenti).
+	_anim.speed_scale = maxf(0.1, velocita * (Popoli.AGILITA if agile and _in_montagna() else 1.0) / _velocita_animazione_base)
 	while passo > 0.0 and _punti.size() > 0:
 		var meta: Vector2 = _punti[0]
 		var verso := meta - pos

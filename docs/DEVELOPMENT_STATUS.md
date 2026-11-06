@@ -2,7 +2,11 @@
 
 *Aggiornato il 2026-11-06. Fonte del piano completo: [`roadmap.md`](roadmap.md); richieste del proprietario: [`decisioni.md`](decisioni.md).*
 
-## Versione in preparazione
+## Lavoro corrente — step 55, bug dopo v1.1.1
+
+Worktree dedicato `C:\Users\User\Projects\tdc-wt\step-55-menu-costruzione`, ramo `step-55-menu-costruzione`, basato su `main` e3cfaeb. In corso: menu Costruisci ancorato in alto e con corpo scorrevole; animazioni dei passi sfalsate e sincronizzate alla velocità effettiva; nomi dei luoghi nascosti finché il cursore non passa vicino, con fondo scuro. Test mirati visuale e atlas coloni passano. La raccolta bug è aperta su richiesta del proprietario: non fare merge su main né pubblicare release prima che la lista sia completa.
+
+## Versione pubblicata
 
 **v1.1.1 — correzioni da schermate reali**, step 54: pubblicata. Edifici con accesso alternativo, bandierine stradali invisibili durante il gioco, pannello Costruisci richiudibile, raggio magazzino 13 e torri 9 (con guardia), coloni e soldati proporzionati senza rimpicciolire navi/macchine; atlanti con abiti variati e animazioni di camminata/lavoro. Salvataggi aggiornati per conservare ingressi reali, rete e territorio esplorato.
 

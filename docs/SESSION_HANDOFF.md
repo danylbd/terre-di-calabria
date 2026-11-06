@@ -1,6 +1,8 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-06 — step 54 completato e pubblicato come v1.1.1.** Repository `danylbd/terre-di-calabria`. Le foto hanno guidato le correzioni al piazzamento, alle bandierine visibili, al menu Costruisci e all'area edificabile. Ingressi liberi cercati lungo il perimetro; bandierine nascoste fuori dallo strumento Collegamento; menu richiudibile; raggio magazzino 13 e torri 9 con presidio; portatori/lavoratori alla scala 0.58, guardie 0.72; atlanti con vestiario differenziato e animazioni utensili. Salvataggi preservano ingressi, rete e territorio. Tutte le 49 suite, import Godot e screenshot visuale sono verificati. GitHub Actions run 137 e `ci-esito` confermano il commit `de5cb45b61310e03390d3bd187f16c34e8aa4839`; installer Setup ARM64/x64: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1). La v1.1.0 è la release precedente.
+**Aggiornamento 2026-11-06 — step 54 pubblicato come v1.1.1; step 55 in corso.** Repository `danylbd/terre-di-calabria`. La release v1.1.1 è verificata e scaricabile: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1).
+
+**Step 55 — worktree `C:\Users\User\Projects\tdc-wt\step-55-menu-costruzione`, ramo `step-55-menu-costruzione` basato su main `e3cfaeb`.** Corretti riapertura fuori schermo del menu Costruisci, ciclo del passo non continuo/coloni sincronizzati e nomi dei luoghi sempre visibili. Niente merge su main né release finché il proprietario raccoglie altri bug. Test mirati `test_piazzamento_visuale.gd` e `test_coloni_dettagliati.gd` passati.
 
 ## Correzioni emerse dalla verifica
 
@@ -12,6 +14,6 @@
 - Zancle non lasciava abbastanza spazio pianeggiante e accessibile per la segheria: radura iniziale ampliata a 12 caselle.
 - Il test audio si aspettava il vecchio suono generico della cava; ora controlla il suono dedicato `cava`.
 
-**Ultimo passaggio:** release v1.1.1 pubblicata e verificata; asset Setup Windows ARM64/x64 disponibile su GitHub.
+**Ultimo passaggio:** step 55 in lavorazione; correggere i bug raccolti, poi attendere che il proprietario completi la lista prima della prossima release.
 
 Storico in [`diario-automatico.md`](diario-automatico.md).

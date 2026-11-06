@@ -45,6 +45,7 @@ static func animazioni(nome: String, velocita := 10.0) -> SpriteFrames:
 	for d in DIREZIONI.size():
 		var anim: String = DIREZIONI[d]
 		sf.add_animation(anim)
+		sf.set_animation_loop(anim, true)
 		sf.set_animation_speed(anim, velocita)
 		for f in n:
 			var at := AtlasTexture.new()

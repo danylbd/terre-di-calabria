@@ -316,3 +316,9 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Merge su `main`: `de5cb45b61310e03390d3bd187f16c34e8aa4839`; GitHub Actions run 137 completato con successo per export ARM64/x64 e Setup.
 - Tag `v1.1.1` pubblicato con `TerreDiCalabria-Setup-1.1.1.exe` (123.645.878 byte): https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1.
 - Il ramo `ci-esito` riporta `success` e lo stesso commit; tutte le 49 suite Godot erano verdi prima del merge.
+
+### 2026-11-06 — Step 55: correzioni visive raccolte dopo v1.1.1
+- Pannello Costruisci ancorato in alto, riapertura dentro lo schermo e contenuti scorrevoli nelle finestre basse.
+- Coloni: ciclo del passo impostato in loop, partenze sfalsate e ritmo legato alla velocità, mantenendo gli atlas 8×8 originali.
+- Luoghi: cartigli con fondo scuro nascosti per impostazione predefinita e mostrati soltanto vicino al cursore.
+- Test mirati visuale e atlas coloni passano; worktree step 55 resta separato, senza merge o release mentre il proprietario raccoglie altri bug.
