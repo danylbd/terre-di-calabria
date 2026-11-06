@@ -4,7 +4,7 @@
 
 ## Versione in preparazione
 
-**v1.1.1 — correzioni da schermate reali**, step 54: tutte le 49 suite Godot passano. Edifici con accesso alternativo, bandierine stradali invisibili durante il gioco, pannello Costruisci richiudibile, raggio magazzino 13 e torri 9 (con guardia), coloni e soldati proporzionati senza rimpicciolire navi/macchine; atlanti con abiti variati e animazioni di camminata/lavoro. Salvataggi aggiornati per conservare ingressi reali, rete e territorio esplorato. Release in preparazione su `main`.
+**v1.1.1 — correzioni da schermate reali**, step 54: pubblicata. Edifici con accesso alternativo, bandierine stradali invisibili durante il gioco, pannello Costruisci richiudibile, raggio magazzino 13 e torri 9 (con guardia), coloni e soldati proporzionati senza rimpicciolire navi/macchine; atlanti con abiti variati e animazioni di camminata/lavoro. Salvataggi aggiornati per conservare ingressi reali, rete e territorio esplorato.
 
 Versione pubblicata precedente: [v1.1.0](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.0), con Setup Windows ARM64/x64.
 
@@ -20,7 +20,7 @@ Versione pubblicata precedente: [v1.1.0](https://github.com/danylbd/terre-di-cal
 
 ## Verifica
 
-Tutte le **49 suite** in `tools/test/` sono state eseguite in Godot 4.7.2 e hanno stampato `RISULTATO: OK`. La suite di durata ha simulato 1,5 ore; ha verificato stabilità di nodi, oggetti e memoria, produzione durante la partita, merci in viaggio e rispetto della capienza del magazzino. La nuova prova visuale controlla collasso del menu, accessi alternativi, bandierine, proporzioni e animazioni; screenshot in `docs/immagini/step54-piazzamento-coloni.png`. `git diff --check` e import Godot sono passati. La release v1.1.1 è in preparazione.
+Tutte le **49 suite** in `tools/test/` sono state eseguite in Godot 4.7.2 e hanno stampato `RISULTATO: OK`. La suite di durata ha simulato 1,5 ore; ha verificato stabilità di nodi, oggetti e memoria, produzione durante la partita, merci in viaggio e rispetto della capienza del magazzino. La nuova prova visuale controlla collasso del menu, accessi alternativi, bandierine, proporzioni e animazioni; screenshot in `docs/immagini/step54-piazzamento-coloni.png`. `git diff --check` e import Godot sono passati. GitHub Actions run **137** ha completato export x64/ARM64 e pubblicazione; l'asset `TerreDiCalabria-Setup-1.1.1.exe` (123.645.878 byte) è disponibile nella [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1). `ci-esito` conferma il commit `de5cb45b61310e03390d3bd187f16c34e8aa4839`.
 
 ## Versione pubblicata precedente
 

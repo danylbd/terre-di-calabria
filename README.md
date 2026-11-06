@@ -7,6 +7,8 @@ Originale: meccaniche ispirate ai classici del genere, ma grafica, popoli, stori
 
 Corregge il piazzamento degli edifici vicino agli ingressi occupati, nasconde le bandierine stradali durante il gioco, richiude davvero il menu Costruisci e amplia l'area edificabile: magazzino iniziale di raggio 13 e torri di raggio 9, sempre attive solo con una guardia presente. Coloni e guardie sono ridimensionati; le animazioni e i vestiti dei lavoratori sono stati rifiniti. Il salvataggio conserva ingressi, rete stradale e territorio già esplorato.
 
+Scarica [TerreDiCalabria-Setup-1.1.1.exe](https://github.com/danylbd/terre-di-calabria/releases/download/v1.1.1/TerreDiCalabria-Setup-1.1.1.exe) dalla [release 1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1) (Windows ARM64 o x64).
+
 ## Che cosa c'è nella versione 1.1.0
 
 - **Otto popoli giocabili**, ognuno con tutti gli edifici nel suo stile e un suo vantaggio: Greci, Brettii, Romani, Saraceni, Normanni, Siculi, Sicani e Cartaginesi.

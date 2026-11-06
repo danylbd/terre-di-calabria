@@ -311,3 +311,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Coloni/lavoratori ridimensionati, abiti differenziati e animazioni di camminata/lavoro ritoccate; guardie ridotte senza toccare navi e macchine.
 - Salvataggi preservano ingressi, rete stradale e mappa dei territori; tutte le 49 suite Godot, import e screenshot visuale passano.
 - Release Windows ARM64/x64 in preparazione; merge/push e verifica di Actions e asset in attesa del commit finale.
+
+### 2026-11-06 — Pubblicazione della release v1.1.1
+- Merge su `main`: `de5cb45b61310e03390d3bd187f16c34e8aa4839`; GitHub Actions run 137 completato con successo per export ARM64/x64 e Setup.
+- Tag `v1.1.1` pubblicato con `TerreDiCalabria-Setup-1.1.1.exe` (123.645.878 byte): https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1.
+- Il ramo `ci-esito` riporta `success` e lo stesso commit; tutte le 49 suite Godot erano verdi prima del merge.
