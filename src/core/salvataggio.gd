@@ -72,7 +72,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	var ris: RisorseNaturali = p.risorse
 	var log: Logistica = p.logistica
 	var d := {"versione": VERSIONE, "seme": p.SEME, "mappa": p.mappa, "popolo": p.popolo, "nome_villaggio": v.nome, "tempo": log.tempo, "storia": log.storia, "calendario": p.stagioni.tempo,
-		"scorte": v.scorte, "coloni_liberi": v.coloni_liberi + v.in_cammino + v.costruttori,
+		"scorte": v.scorte, "coloni_liberi": v.coloni_liberi + v.in_cammino + v.costruttori, "territorio": Array(p.dati.territorio),
 		"camera": [p.camera.position.x, p.camera.position.y, p.camera.zoom.x]}
 	# natura
 	var alberi := []
@@ -111,7 +111,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	# villaggio
 	var edifici := []
 	for e in v.edifici.values():
-		edifici.append({"id": e.id, "tipo": e.tipo, "casella": _v(e.casella), "finito": e.finito, "progresso": e.progresso,
+		edifici.append({"id": e.id, "tipo": e.tipo, "casella": _v(e.casella), "bandiera": _v(e.bandiera), "finito": e.finito, "progresso": e.progresso,
 			"consegnati": e.consegnati, "richiesti": e.richiesti, "ingresso": e.ingresso, "in_arrivo": e.in_arrivo,
 			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "vendite_in_coda": e.vendite_in_coda, "guadagno": e.guadagno, "presidiata": e.presidiata, "soldati": e.soldati + e.soldati_in_arrivo, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono, "produzione_attiva": e.produzione_attiva, "priorita_materiali": e.priorita_materiali,
 			"lavoratore": e.lavoratore != null and is_instance_valid(e.lavoratore)})
@@ -207,6 +207,8 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		var e := v.costruisci(s["tipo"], _c(s["casella"]), s["finito"], true)
 		if e == null:
 			continue
+		var bandiera_salvata := _c(s.get("bandiera", _v(e.bandiera)))
+		e.bandiera = bandiera_salvata
 		vecchi[int(s["id"])] = e
 		if not s["finito"]:
 			e.progresso = s["progresso"]
@@ -225,10 +227,16 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		e.soldati = int(s.get("soldati", 0))
 		e.manca_attrezzo = s["manca_attrezzo"]
 		e.manca_colono = s["manca_colono"]
+	# Ricrea la rete dai nodi salvati, dopo aver rimesso gli ingressi reali degli edifici.
+	# Le bandierine provvisorie create durante il ripristino degli edifici possono essere
+	# troppo vicine fra loro e impedire il ripristino corretto della rete originale.
+	for c in rete.bandiere.keys().duplicate():
+		rete.libera_protezione(c)
+		rete.rimuovi_bandiera(c)
 	for b in d["bandiere"]:
 		var c := _c(b)
 		if not rete.bandiere.has(c):
-			rete.aggiungi_bandiera(c, b[2])
+			rete.aggiungi_bandiera(c, b[2], true)
 	for t in d["tratti"]:
 		var perc: Array[Vector2i] = []
 		for c in t["percorso"]:
@@ -280,7 +288,6 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		p.monumenti.sblocca(o[0], true, Vector2i(int(o[1]), int(o[2])))
 	p.monumenti.prodotti = _interi(mon.get("prodotti", {}))
 	p.monumenti.tempo_senza_perdite = float(mon.get("senza_perdite", 0.0))
-	v.caricamento = false
 	for salvato in d.get("pionieri", []):
 		var c := _c(salvato)
 		v.pionieri.append(c)
@@ -288,6 +295,13 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		v.dati.occupa(c.x, c.y, DatiMappa.NATURA)
 		v._mostra_campo_pioniere(c)
 	v._ricalcola_territorio()
+	if d.has("territorio") and d["territorio"].size() == v.dati.territorio.size():
+		v.dati.territorio = PackedByteArray(d["territorio"])
+		v.rete.segna_ostacoli_vecchi()
+		v.territorio_cambiato.emit()
+	# Durante il ripristino si conserva la rete salvata anche se un confine viene ricalcolato
+	# con centri/ingressi temporaneamente diversi; il gioco applicherà le perdite ai successivi cambi.
+	v.caricamento = false
 	p.camera.position = Vector2(d["camera"][0], d["camera"][1])
 	p.camera.zoom = Vector2.ONE * float(d["camera"][2])
 	v.scorte_cambiate.emit()

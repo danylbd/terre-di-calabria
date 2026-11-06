@@ -156,7 +156,7 @@ const EDIFICI := {
 		"produce": "attrezzi", "durata": 8.0,
 		"descrizione": "Forgia gli attrezzi dei mestieri. Fa per primi quelli che mancano."},
 	"torre": {"nome": "Torre di guardia", "taglia": 2, "costo": {"assi": 2, "pietra": 4}, "categoria": "Difesa",
-		"tempo": 30.0, "territorio": 7, "presidio": 1, "lavoratore": "guardia", "soldati_max": 2,
+		"tempo": 30.0, "territorio": 9, "presidio": 1, "lavoratore": "guardia", "soldati_max": 2,
 		"descrizione": "Allarga i confini solo quando la guardia entra. Può ospitare 2 soldati."},
 	"casa_pionieri": {"nome": "Casa dei pionieri", "taglia": 2, "costo": {"assi": 4, "pietra": 3}, "categoria": "Difesa",
 		"tempo": 32.0, "lavoratore": "portatore_nessuno", "descrizione": "Da qui partono i pionieri per fondare avamposti e allargare il territorio."},

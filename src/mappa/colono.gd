@@ -36,6 +36,20 @@ func imposta_foglio(foglio: String) -> void:
 	_anim.sprite_frames = Sprites.animazioni(foglio)
 	_anim.animation = anim
 	_anim.offset = -Sprites.ancora(foglio)
+	# Le persone erano alla stessa scala delle strutture e dei mezzi: regola la sola figura,
+	# lasciando invariati navi, animali e macchine da guerra.
+	_anim.scale = Vector2.ONE * _scala_personaggio(foglio)
+
+
+func _scala_personaggio(foglio: String) -> float:
+	if foglio.begins_with("portatore_") or foglio.begins_with("lavoratore_"):
+		return 0.58
+	if foglio == "guardia" or foglio.begins_with("brettio") or foglio.begins_with("legionario") \
+		or foglio.begins_with("cavaliere_") or foglio.begins_with("guerriero_") \
+		or foglio.begins_with("arciere_") or foglio.begins_with("mercenario_") \
+		or foglio.begins_with("condottiero_"):
+		return 0.72
+	return 1.0
 
 
 func percorri(punti: Array[Vector2]) -> void:

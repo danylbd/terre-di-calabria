@@ -42,11 +42,19 @@ def person(nome: str, direction: int, frame: int, scale: float) -> str:
     cargo = nome.startswith("portatore_") and not nome.endswith("nessuno")
     work = nome.endswith("_lavoro")
     key = item(nome)
-    cloth = "#315d70" if cargo else "#536b5a"
-    light = "#5b8790" if cargo else "#85906b"
-    dark = "#283d40" if cargo else "#465044"
+    # Ogni mestiere porta colori e copricapo diversi, così il villaggio non sembra
+    # popolato da copie dello stesso omino.
+    tuniche = [
+        ("#315d70", "#73a0a0", "#283d40"),
+        ("#70543f", "#b48a5d", "#49382f"),
+        ("#596b4d", "#94a274", "#3d4a39"),
+        ("#754b46", "#b67b68", "#4b3534"),
+        ("#596078", "#929bb0", "#3d4355"),
+    ]
+    indice_veste = (sum(ord(c) for c in key) + (0 if cargo else 173)) % len(tuniche)
+    cloth, light, dark = tuniche[indice_veste]
     hidden_face = direction in (3, 4, 5)
-    stride = [-2, -1, 0, 1, 2, 1, 0, -1][frame]
+    stride = 0 if work else [-2, -1, 0, 1, 2, 1, 0, -1][frame]
     arm = 1 if direction in (1, 2, 3) else -1 if direction in (5, 6, 7) else 0
     equip = ATTREZZI.get(key, ("#765033", "#b8c0be"))
     goods = MATERIALI.get(key, ("#aa8050", "#d8bb82"))
@@ -66,8 +74,14 @@ def person(nome: str, direction: int, frame: int, scale: float) -> str:
           <path d="M44 23q2-1 3 0m4 0q2-1 3 0" fill="none" stroke="#503b34" stroke-width="1.1" stroke-linecap="round"/>
           <path d="M47.5 24l-.5 2 2 .2" fill="none" stroke="#a36a52" stroke-width=".8" stroke-linecap="round"/>
           <path d="M45 28q3 2 6 0" fill="none" stroke="#8d5145" stroke-width=".9" stroke-linecap="round"/>'''
-    headcover = ("<path d=\"M40 21q-1-10 8-12 9 1 9 11l-3-2-2-5-9 1-1 5z\" fill=\"#493d36\" stroke=\"#302e2a\" stroke-width=\"1.2\"/>"
-                 "<path d=\"M40 16q8 3 17 0\" fill=\"none\" stroke=\"#d5b36d\" stroke-width=\"2\"/>")
+    copricapi = [
+        ("#73523d", "#d6b574"), ("#596345", "#c2a56a"),
+        ("#76504a", "#d6ad7b"), ("#4b5660", "#c6b27e"),
+        ("#815f3f", "#e0c482"),
+    ]
+    copricapo, fascia = copricapi[indice_veste]
+    headcover = (f"<path d=\"M40 21q-1-10 8-12 9 1 9 11l-3-2-2-5-9 1-1 5z\" fill=\"{copricapo}\" stroke=\"#302e2a\" stroke-width=\"1.2\"/>"
+                 f"<path d=\"M40 16q8 3 17 0\" fill=\"none\" stroke=\"{fascia}\" stroke-width=\"2\"/><path d=\"M44 12q4-2 8 0\" fill=\"none\" stroke=\"#fff0c8\" stroke-width=\".8\" opacity=\".8\"/>")
     leg_a = 47 + stride * 2
     leg_b = 51 - stride * 2
     carry = ""
@@ -82,10 +96,12 @@ def person(nome: str, direction: int, frame: int, scale: float) -> str:
             carry = f'''<path d="M56 35q0-4 5-4t5 4l2 13q-7 5-14 0z" fill="{goods[0]}" stroke="#584533" stroke-width="1.4"/><path d="M57 39h9M58 45h7" stroke="{goods[1]}" stroke-width="1.4"/><path d="M58 31q3-5 6 0" fill="none" stroke="#584533" stroke-width="1.4"/>'''
     tool = ""
     if not cargo and key in ATTREZZI:
-        tool = f'''<g transform="rotate({-12 + arm * 13} {58 + arm*4} 46)"><path d="M{58+arm*4} 37v25" stroke="{equip[0]}" stroke-width="3.2" stroke-linecap="round"/><path d="M{54+arm*4} 37h9" stroke="{equip[1]}" stroke-width="4.3" stroke-linecap="round"/><path d="M{55+arm*4} 37h8" stroke="#e1d5ba" stroke-width=".7"/></g>'''
+        colpo = [0, -8, -20, -8, 0, 8, 16, 8][frame]
+        tool = f'''<g transform="rotate({-12 + arm * 13 + colpo} {58 + arm*4} 46)"><path d="M{58+arm*4} 37v25" stroke="{equip[0]}" stroke-width="3.2" stroke-linecap="round"/><path d="M{54+arm*4} 37h9" stroke="{equip[1]}" stroke-width="4.3" stroke-linecap="round"/><path d="M{55+arm*4} 37h8" stroke="#e1d5ba" stroke-width=".7"/></g>'''
     if work:
         tool += '<path d="M35 62q3-5 8 0m10 0q4-4 7 0" fill="none" stroke="#e5c878" stroke-width="1.5" stroke-linecap="round"/><circle cx="34" cy="58" r="1.5" fill="#f5df9d"/>'
-    motion = [0, -0.8, -1.3, -0.8, 0, -0.8, -1.3, -0.8][frame]
+    movimento_lavoro = [0, -0.5, -1.0, -0.5, 0, -0.5, -1.0, -0.5]
+    motion = movimento_lavoro[frame] if work else [0, -0.8, -1.3, -0.8, 0, -0.8, -1.3, -0.8][frame]
     return f'''<g transform="translate(0 {motion}) scale({scale})">
       <ellipse cx="48" cy="81" rx="12" ry="3.4" fill="#24322f" opacity=".28"/>
       <path d="M43 60q-2 8 {leg_a-47} 18l4 1q5-8 6-17m1-2q1 8 {leg_b-51} 17l4 1q3-9 0-19" fill="#695247" stroke="#3f3933" stroke-width="1.7" stroke-linejoin="round"/>

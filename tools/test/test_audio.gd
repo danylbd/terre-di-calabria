@@ -94,6 +94,7 @@ func _piazza(tipo: String, punteggio: Callable) -> Edificio:
 		var e := v.costruisci(tipo, c)
 		if e == null:
 			continue
+		f = e.bandiera
 		# strada dalla bandierina esistente più vicina che dà un percorso valido
 		var bandiere: Array = rete.bandiere.keys().filter(func(b): return b != f)
 		bandiere.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())

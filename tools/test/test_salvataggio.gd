@@ -80,7 +80,10 @@ func _riassunto(q: Node2D) -> Dictionary:
 		merci.append("%s->%s" % [m.tipo, m.destinazione.tipo])
 	merci.sort()
 	var con_lavoratore := v.edifici.values().filter(func(e): return e.lavoratore != null).size()
+	var bandiere: Array = q.rete.bandiere.keys().map(func(c): return str(c))
+	bandiere.sort()
 	return {"edifici": edifici, "bandiere": q.rete.bandiere.size(), "tratti": q.rete.tratti.size(),
+		"posizioni_bandiere": bandiere,
 		"portatori": q.rete.portatori(), "lavoratori": con_lavoratore, "coloni": v.coloni_liberi + v.in_cammino + v.costruttori,
 		"popolazione": v.popolazione(), "scorte": v.scorte, "alberi": alberi, "campi": ris.campi.size(),
 		"riserva_rocce": riserva, "merci": merci, "ceppi": ris._ceppi.size()}
@@ -162,6 +165,7 @@ func _piazza(tipo: String, punteggio: Callable, gia_finito := false) -> Edificio
 		var e := v.costruisci(tipo, c, gia_finito)
 		if e == null:
 			continue
+		f = e.bandiera
 		var bandiere: Array = rete.bandiere.keys().filter(func(b): return b != f)
 		bandiere.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())
 		for b in bandiere:

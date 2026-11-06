@@ -304,3 +304,10 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - GitHub Actions run 135 (`4c0655c`) completata con successo; Release `v1.1.0` pubblicata con `TerreDiCalabria-Setup-1.1.0.exe` caricato (126.743.026 byte).
 - Esito `ci-esito`: `success`; export Windows x64 e ARM64 e compilazione Inno Setup riusciti.
 - Documenti di handoff e stato sviluppo aggiornati alla release pubblicata.
+
+### 2026-11-06 — Step 54: correzioni da schermate (v1.1.1)
+- Ingresso degli edifici cercato lungo tutto il perimetro; bandierine stradali invisibili fuori dallo strumento Collegamento; pannello Costruisci realmente richiudibile.
+- Raggio del magazzino iniziale portato a 13 caselle e quello delle torri a 9; costruzione in montagna e prova della miniera di ferro verificate.
+- Coloni/lavoratori ridimensionati, abiti differenziati e animazioni di camminata/lavoro ritoccate; guardie ridotte senza toccare navi e macchine.
+- Salvataggi preservano ingressi, rete stradale e mappa dei territori; tutte le 49 suite Godot, import e screenshot visuale passano.
+- Release Windows ARM64/x64 in preparazione; merge/push e verifica di Actions e asset in attesa del commit finale.

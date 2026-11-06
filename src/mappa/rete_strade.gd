@@ -77,15 +77,16 @@ func motivo_no_bandiera(c: Vector2i) -> String:
 	return ""
 
 
-func aggiungi_bandiera(c: Vector2i, protetta := false) -> bool:
+func aggiungi_bandiera(c: Vector2i, protetta := false, forza := false) -> bool:
 	if bandiere.has(c):
 		if protetta:
 			bandiere[c]["protetta"] = true
 		return true
-	if motivo_no_bandiera(c) != "":
+	if not forza and motivo_no_bandiera(c) != "":
 		return false
 	var s := Sprites.crea("bandierina")
-	s.scale = Vector2.ONE * 1.5
+	# La rete resta logica: i simboli si mostrano come anelli temporanei nello strumento Collegamento.
+	s.visible = false
 	s.position = dati.a_schermo(c.x + 0.5, c.y + 0.5)
 	oggetti.add_child(s)
 	bandiere[c] = {"sprite": s, "protetta": protetta}

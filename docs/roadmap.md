@@ -115,6 +115,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 51 | Mappa più interessante: rocche antiche in rovina, villaggi abbandonati e altri dettagli | fatto (v1.1.0) |
 | 52 | Coloni più dettagliati: atlas animati con otto direzioni, abiti, merci e attrezzi | fatto (v1.1.0) |
 | 53 | Partita pacifica più dinamica: esplorare rovine e trovare ricompense | fatto (v1.1.0) |
+| 54 | Correzioni emerse dalle schermate: accesso alternativo agli edifici, bandierine nascoste, menu Costruisci richiudibile, area edificabile ampliata e personaggi/animazioni rifiniti | test completati, release v1.1.1 in pubblicazione |
 
 ## Fase 5 — rimandata a una versione successiva
 
