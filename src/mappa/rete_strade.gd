@@ -115,6 +115,9 @@ func rimuovi_bandiera(c: Vector2i) -> String:
 
 func libera_protezione(c: Vector2i) -> void:
 	if bandiere.has(c):
+		for e in villaggio.edifici.values():
+			if e.bandiera == c:
+				return
 		bandiere[c]["protetta"] = false
 
 

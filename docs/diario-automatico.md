@@ -325,3 +325,5 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Rete stradale: alberi e ulivi sono attraversabili e vengono sgombrati sul sedime, mentre rocce ed edifici restano ostacoli.
 - Gli innesti vicini riusano la bandierina esistente; la ricerca prova uscite alternative quando i primi accessi sono bloccati.
 - Nuova suite `test_rete_strade.gd`: passano percorso nel bosco, rimozione dell’albero, split del tratto e giunzione a tre segmenti.
+- Rimosso il blocco di costruzione dovuto alla bandierina: i cantieri riusano un nodo adiacente o accettano nodi ravvicinati; se non esiste alcun accesso, la costruzione resta valida e il collegamento viene ritentato quando la rete cambia.
+- Nuova suite `test_edifici_senza_bandiera.gd`: una casa viene costruita anche con tutti i lati perimetrali occupati da bandierine. Verificate anche le suite visuale, navigazione e Stretto.

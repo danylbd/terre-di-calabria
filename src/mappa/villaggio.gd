@@ -148,9 +148,6 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 				return "Posto occupato"
 			if rete and (rete.strada.has(Vector2i(x, y)) or rete.bandiere.has(Vector2i(x, y))):
 				return "C'è una strada"
-	var b := _trova_bandiera_edificio(tipo, c)
-	if b.x < 0:
-		return "Serve spazio davanti alla porta per la bandierina"
 	var qmin := INF
 	var qmax := -INF
 	for j in range(c.y, c.y + s + 1):
@@ -162,7 +159,7 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 		return "Terreno troppo in pendenza"
 	if info.has("miniera") and risorse and risorse.minerale_vicino(Vector2i(c.x + s / 2, c.y + s / 2), info["miniera"]) <= 0:
 		return "Qui sotto non c'è %s: cerca la roccia della montagna" % CatalogoEdifici.NOMI_RISORSE[info["miniera"]].to_lower()
-	if info.has("vicino_mare") and not _mare_entro(b, info["vicino_mare"]):
+	if info.has("vicino_mare") and not _mare_entro(Vector2i(c.x + s / 2, c.y + s / 2), info["vicino_mare"]):
 		return "Va costruita vicino al mare"
 	if controlla_costo:
 		var costo: Dictionary = info["costo"]
@@ -177,6 +174,8 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 func _trova_bandiera_edificio(tipo: String, c: Vector2i) -> Vector2i:
 	var s: int = CatalogoEdifici.dati(tipo)["taglia"]
 	var montano := _edificio_montano(tipo)
+	var bandiera_esistente := Vector2i(-1, -1)
+	var distanza_esistente := INF
 	var candidato := Vector2i(c.x + (s - 1) / 2, c.y + s)
 	var posizioni: Array[Vector2i] = [candidato]
 	for k in s:
@@ -193,12 +192,18 @@ func _trova_bandiera_edificio(tipo: String, c: Vector2i) -> Vector2i:
 		var terreno := dati.tipo(p.x, p.y)
 		if terreno == T.ACQUA or terreno == T.NEVE or (not montano and terreno == T.ROCCIA):
 			continue
-		if dati.occupante(p.x, p.y) != 0 or (rete and rete.bandiere.has(p)):
+		if rete and rete.bandiere.has(p):
+			var distanza := Vector2(p - candidato).length_squared()
+			if distanza < distanza_esistente:
+				distanza_esistente = distanza
+				bandiera_esistente = p
 			continue
-		if rete and rete.motivo_no_bandiera(p) != "":
+		if dati.occupante(p.x, p.y) != 0:
 			continue
+		# I nodi vicini non devono rendere impossibile un edificio: in caso di
+		# necessità la bandierina del cantiere può stare più vicina alle altre.
 		return p
-	return Vector2i(-1, -1)
+	return bandiera_esistente
 
 
 func _edificio_montano(tipo: String) -> bool:
@@ -238,9 +243,7 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false, forza := false) 
 	e.villaggio = self
 	e.prepara(_prossimo_id, tipo, c, gia_finito)
 	if not gia_finito:
-		var ingresso_libero := _trova_bandiera_edificio(tipo, c)
-		if ingresso_libero.x >= 0:
-			e.bandiera = ingresso_libero
+		e.bandiera = _trova_bandiera_edificio(tipo, c)
 	_prossimo_id += 1
 	e.position = dati.a_schermo(e.centro().x, e.centro().y)
 	oggetti.add_child(e)
@@ -261,7 +264,8 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false, forza := false) 
 		metti_lavoratore(e)
 	if gia_finito:
 		_ricalcola_territorio()
-	rete.aggiungi_bandiera(e.bandiera, true)
+	if e.bandiera.x >= 0:
+		rete.aggiungi_bandiera(e.bandiera, true, true)
 	rete.segna_ostacoli_vecchi()
 	if not gia_finito and not caricamento:
 		if rete.collegata(e.bandiera):
@@ -299,7 +303,8 @@ func demolisci(e: Edificio, recupera := true) -> void:
 	if e.tipo in CatalogoEdifici.EDIFICI_SPECIALI:
 		edifici_speciali_acquistati[e.tipo] = edifici_speciali_acquistati.get(e.tipo, 0) + 1
 		edifici_speciali_cambiati.emit()
-	rete.libera_protezione(e.bandiera)
+	if e.bandiera.x >= 0:
+		rete.libera_protezione(e.bandiera)
 	rete.segna_ostacoli_vecchi()
 	e.queue_free()
 	rete._ricalcola()
@@ -507,10 +512,14 @@ func edificio_in(c: Vector2i) -> Edificio:
 
 
 func edificio_con_bandiera(c: Vector2i) -> Edificio:
+	var altro: Edificio = null
 	for e in edifici.values():
 		if e.bandiera == c:
-			return e
-	return null
+			if CatalogoEdifici.dati(e.tipo).get("abitanti", 0) > 0:
+				return e
+			if altro == null:
+				altro = e
+	return altro
 
 
 func _on_completato(e: Edificio) -> void:
@@ -570,6 +579,12 @@ func _perdi_fuori_confine() -> void:
 
 func _aggiorna_collegamenti() -> void:
 	for e in edifici.values():
+		if e.bandiera.x < 0:
+			var nuova_bandiera := _trova_bandiera_edificio(e.tipo, e.casella)
+			if nuova_bandiera.x >= 0:
+				e.bandiera = nuova_bandiera
+				rete.aggiungi_bandiera(nuova_bandiera, true, true)
+				rete.segna_ostacoli_vecchi()
 		e.collegato = e.tipo == "magazzino" or rete.collegata(e.bandiera)
 		_chiama_lavoratore(e)
 		_manda_costruttore(e)
