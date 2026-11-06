@@ -85,10 +85,13 @@ func _prova() -> void:
 	_controlla(p.rete.tratti.size() < tratti_prima, "le strade fuori dai confini sono sparite")
 
 	# il castello allarga di più della torre
-	var cast := _piazza("castello", func(f): return -Vector2(f - mag.bandiera).length(), true)
+	var cast := _piazza("castello", func(f): return Vector2(f - mag.bandiera).length(), true)
 	_controlla(cast != null and cast.presidiata, "castello piazzato e presidiato")
 	_controlla(_conta(1) > mio_0 + 100, "il castello allarga molto i confini (%d)" % _conta(1))
 
+	# Il centro nemico sopra è un dato temporaneo del test, non viene salvato dal gioco.
+	v.centri_esterni.clear()
+	v._ricalcola_territorio()
 	# salvataggio
 	var mio := _conta(1)
 	Salvataggio.salva(p, FILE)
@@ -192,6 +195,7 @@ func _piazza(tipo: String, punteggio: Callable, gia_finito := false) -> Edificio
 		var e := v.costruisci(tipo, c, gia_finito)
 		if e == null:
 			continue
+		f = e.bandiera
 		var bandiere: Array = rete.bandiere.keys().filter(func(b): return b != f)
 		bandiere.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())
 		for b in bandiere:

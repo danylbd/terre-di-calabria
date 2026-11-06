@@ -1,6 +1,6 @@
 extends "res://tools/test/test_catena.gd"
-## Test automatico dello step 38 (mappa «Il Bruzio di Annibale»): la catena di test_catena giocata nella
-## Calabria di Annibale; poi la forma della mappa (i due mari, l'istmo stretto tra Sant'Eufemia e Squillace,
+## Test automatico dello step 38 (mappa «Il Bruzio di Annibale»): la forma della mappa (i due mari,
+## l'istmo stretto tra Sant'Eufemia e Squillace,
 ## la Sila alta e boscosa, Crotone e il capo Lacinio sullo Ionio, Consentia nell'interno, Locri a sud),
 ## i villaggi indigeni del Bruzio e il salvataggio della mappa.
 ## Uso: godot --headless --path . --script tools/test/test_bruzio.gd (FOTO=file.png senza --headless)

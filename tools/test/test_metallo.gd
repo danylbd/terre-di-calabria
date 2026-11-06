@@ -43,8 +43,10 @@ func _prova() -> void:
 	var fond := _piazza("fonderia", func(f): return -Vector2(f - mag.bandiera).length())
 	var fabb := _piazza("fabbro", func(f): return -Vector2(f - mag.bandiera).length())
 	var bosc := _piazza("boscaiolo", func(f): return _conta_vicini(ris.alberi, f, 7))
-	for e in [miniera, carb, fond, fabb, bosc]:
-		_controlla(e != null, "edificio piazzato")
+	var edifici := [miniera, carb, fond, fabb, bosc]
+	var tipi := ["miniera", "carbonaia", "fonderia", "fabbro", "boscaiolo"]
+	for i in edifici.size():
+		_controlla(edifici[i] != null, "%s piazzato" % tipi[i])
 	if errori > 0:
 		_fine()
 		return
@@ -163,6 +165,7 @@ func _piazza(tipo: String, punteggio: Callable, gia_finito := false) -> Edificio
 		var e := v.costruisci(tipo, c, gia_finito)
 		if e == null:
 			continue
+		f = e.bandiera
 		var bandiere: Array = rete.bandiere.keys().filter(func(b): return b != f)
 		bandiere.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())
 		for b in bandiere:

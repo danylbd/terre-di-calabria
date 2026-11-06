@@ -9,6 +9,7 @@ signal strumento(nome: String, attivo: bool)   # "strada", "demolisci"
 var _griglia: GridContainer
 var _corpo: VBoxContainer
 var _pulsante_chiudi: Button
+var _intestazione: HBoxContainer
 var _schede: Array[Button] = []
 var _pulsanti := {}          # tipo -> Button
 var _attrezzi := {}
@@ -16,6 +17,7 @@ var _nota: Label
 var villaggio: Villaggio
 var _categoria := "Base"
 var _gruppo := ButtonGroup.new()
+var _altezza_aperta := 0.0
 
 
 func _ready() -> void:
@@ -23,21 +25,21 @@ func _ready() -> void:
 	var colonna := VBoxContainer.new()
 	colonna.add_theme_constant_override("separation", 8)
 	add_child(colonna)
-	var intestazione := HBoxContainer.new()
-	colonna.add_child(intestazione)
+	_intestazione = HBoxContainer.new()
+	colonna.add_child(_intestazione)
 
 	var titolo := Label.new()
 	titolo.text = "Costruisci"
 	titolo.add_theme_font_size_override("font_size", 22)
 	titolo.add_theme_color_override("font_color", Palette.TERRACOTTA_SCURA)
 	titolo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	intestazione.add_child(titolo)
+	_intestazione.add_child(titolo)
 	_pulsante_chiudi = Button.new()
 	_pulsante_chiudi.text = "−"
 	_pulsante_chiudi.custom_minimum_size = Vector2(38, 34)
 	_pulsante_chiudi.tooltip_text = "Riduci il menu di costruzione"
 	_pulsante_chiudi.pressed.connect(alterna)
-	intestazione.add_child(_pulsante_chiudi)
+	_intestazione.add_child(_pulsante_chiudi)
 
 	_corpo = VBoxContainer.new()
 	_corpo.add_theme_constant_override("separation", 8)
@@ -87,12 +89,23 @@ func _ready() -> void:
 		_attrezzi[nome] = b
 
 	_mostra_categoria(_categoria)
+	call_deferred("_memorizza_altezza_aperta")
 
 
 func alterna() -> void:
 	_corpo.visible = not _corpo.visible
 	_pulsante_chiudi.text = "−" if _corpo.visible else "+"
 	_pulsante_chiudi.tooltip_text = "Riduci il menu di costruzione" if _corpo.visible else "Espandi il menu di costruzione"
+	await get_tree().process_frame
+	var nuova_altezza := _altezza_aperta if _corpo.visible else _intestazione.get_combined_minimum_size().y + 22.0
+	size.y = nuova_altezza
+	# Il pannello è ancorato al centro verticale: mantiene la maniglia sempre nella stessa zona.
+	position.y = -nuova_altezza * 0.5
+	update_minimum_size()
+
+
+func _memorizza_altezza_aperta() -> void:
+	_altezza_aperta = maxf(size.y, get_combined_minimum_size().y)
 
 
 func _mostra_categoria(cat: String) -> void:

@@ -10,7 +10,7 @@ signal popolazione_cambiata
 signal edifici_speciali_cambiati
 
 const T := DatiMappa.Terreno
-const RAGGIO_MAGAZZINO := 9.0
+const RAGGIO_MAGAZZINO := 13.0
 const TERRENI_EDIFICABILI := [T.PRATO, T.SECCO, T.TERRA]
 const PENDENZA_MAX := {1: 14.0, 2: 12.0, 3: 10.0}
 const PENDENZA_MINIERA := 80.0
@@ -148,11 +148,8 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 				return "Posto occupato"
 			if rete and (rete.strada.has(Vector2i(x, y)) or rete.bandiere.has(Vector2i(x, y))):
 				return "C'è una strada"
-	var b := Vector2i(c.x + (s - 1) / 2, c.y + s)
-	var vietati := [T.ACQUA, T.NEVE] if info.has("miniera") else ([T.ACQUA] if montano else [T.ACQUA, T.ROCCIA, T.NEVE])
-	if not dati.nel_territorio(b.x, b.y) or dati.tipo(b.x, b.y) in vietati or dati.occupante(b.x, b.y) != 0:
-		return "Serve spazio davanti alla porta per la bandierina"
-	if rete and not rete.bandiere.has(b) and rete.motivo_no_bandiera(b) != "":
+	var b := _trova_bandiera_edificio(tipo, c)
+	if b.x < 0:
 		return "Serve spazio davanti alla porta per la bandierina"
 	var qmin := INF
 	var qmax := -INF
@@ -173,6 +170,35 @@ func motivo_impossibile(tipo: String, c: Vector2i, controlla_costo := false) -> 
 			if scorte.get(r, 0) < costo[r]:
 				return "Mancano %s" % CatalogoEdifici.NOMI_RISORSE[r].to_lower()
 	return ""
+
+
+## Cerca una casella d'ingresso libera lungo il perimetro. La porta frontale è preferita,
+## ma una strada o una bandierina vicina non devono rendere impossibile piazzare l'edificio.
+func _trova_bandiera_edificio(tipo: String, c: Vector2i) -> Vector2i:
+	var s: int = CatalogoEdifici.dati(tipo)["taglia"]
+	var montano := _edificio_montano(tipo)
+	var candidato := Vector2i(c.x + (s - 1) / 2, c.y + s)
+	var posizioni: Array[Vector2i] = [candidato]
+	for k in s:
+		posizioni.append(Vector2i(c.x + k, c.y + s))
+	for k in s:
+		posizioni.append(Vector2i(c.x + s, c.y + k))
+	for k in s:
+		posizioni.append(Vector2i(c.x - 1, c.y + k))
+	for k in s:
+		posizioni.append(Vector2i(c.x + k, c.y - 1))
+	for p in posizioni:
+		if not dati.dentro(p.x, p.y) or not dati.nel_territorio(p.x, p.y):
+			continue
+		var terreno := dati.tipo(p.x, p.y)
+		if terreno == T.ACQUA or terreno == T.NEVE or (not montano and terreno == T.ROCCIA):
+			continue
+		if dati.occupante(p.x, p.y) != 0 or (rete and rete.bandiere.has(p)):
+			continue
+		if rete and rete.motivo_no_bandiera(p) != "":
+			continue
+		return p
+	return Vector2i(-1, -1)
 
 
 func _edificio_montano(tipo: String) -> bool:
@@ -211,6 +237,10 @@ func costruisci(tipo: String, c: Vector2i, gia_finito := false, forza := false) 
 	e.dati_mappa = dati
 	e.villaggio = self
 	e.prepara(_prossimo_id, tipo, c, gia_finito)
+	if not gia_finito:
+		var ingresso_libero := _trova_bandiera_edificio(tipo, c)
+		if ingresso_libero.x >= 0:
+			e.bandiera = ingresso_libero
 	_prossimo_id += 1
 	e.position = dati.a_schermo(e.centro().x, e.centro().y)
 	oggetti.add_child(e)

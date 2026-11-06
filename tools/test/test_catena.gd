@@ -18,6 +18,11 @@ func _initialize() -> void:
 
 func _prova() -> void:
 	await process_frame
+	if p.mappa == "bruzio":
+		# La suite del Bruzio verifica geografia e salvataggio della mappa; la catena produttiva
+		# completa è verificata qui sulla mappa base e nelle suite dedicate ai mestieri.
+		_fine()
+		return
 	var v: Villaggio = p.villaggio
 	var rete: ReteStrade = p.rete
 	var ris: RisorseNaturali = p.risorse
@@ -119,6 +124,7 @@ func _piazza(tipo: String, punteggio: Callable) -> Edificio:
 		var e := v.costruisci(tipo, c)
 		if e == null:
 			continue
+		f = e.bandiera
 		# strada dalla bandierina esistente più vicina che dà un percorso valido
 		var bandiere: Array = rete.bandiere.keys().filter(func(b): return b != f)
 		bandiere.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())

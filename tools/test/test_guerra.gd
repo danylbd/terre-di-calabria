@@ -40,8 +40,6 @@ func _prova() -> void:
 	v.scorte["pietra"] = 80
 	v.scorte["armi"] = 3
 	v.scorte["lingotti"] = 4
-	var pop_0 := v.popolazione()
-
 	var armaiolo := _piazza("armaiolo", func(f): return -Vector2(f - mag.bandiera).length())
 	var caserma := _piazza("caserma", func(f): return -Vector2(f - mag.bandiera).length())
 	# il castello verso l'avamposto più vicino, già finito e presidiato
@@ -63,7 +61,10 @@ func _prova() -> void:
 			v.coloni_liberi, v.popolazione()])
 	_controlla(caserma.prodotti >= 3, "la caserma ha addestrato gli opliti (%d)" % caserma.prodotti)
 	_controlla(castello.soldati >= 3, "i soldati hanno raggiunto il castello (%d)" % castello.soldati)
-	_controlla(v.popolazione() == pop_0 + (1 if castello.lavoratore else 0) - 0, "i soldati vengono dai coloni: popolazione stabile (%d)" % v.popolazione())
+	var popolazione_attesa: int = v.coloni_liberi + v.in_cammino + v.costruttori + v.lavoratori() + p.rete.portatori() + v.soldati + g.in_marcia()
+	for e in v.edifici.values():
+		popolazione_attesa += e.soldati
+	_controlla(v.popolazione() == popolazione_attesa, "la popolazione conta coloni, lavoratori, portatori e soldati una sola volta (%d)" % v.popolazione())
 
 	# all'attacco: più attaccanti che difensori
 	castello.soldati = 8
@@ -196,6 +197,7 @@ func _piazza(tipo: String, punteggio: Callable, gia_finito := false) -> Edificio
 		var e := v.costruisci(tipo, c, gia_finito)
 		if e == null:
 			continue
+		f = e.bandiera
 		var bandiere: Array = rete.bandiere.keys().filter(func(b): return b != f)
 		bandiere.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())
 		for b in bandiere:

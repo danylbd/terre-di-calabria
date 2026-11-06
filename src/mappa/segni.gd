@@ -42,8 +42,6 @@ func _draw() -> void:
 		draw_polyline(punti, Color(COLORI_POPOLI[1], 0.9), 2.5)
 	if mostra_bandiere and villaggio.rete:
 		for c in villaggio.rete.bandiere:
-			if villaggio.rete.collegata(c) and c != inizio_strada:
-				continue
 			var p := dati.a_schermo(c.x + 0.5, c.y + 0.5)
 			var scelta: bool = c == inizio_strada
 			var col := Palette.OCRA if scelta else Color(Palette.PERGAMENA_CHIARA, 0.9)

@@ -439,7 +439,7 @@ func _strumento(nome: String, attivo: bool) -> void:
 		Suono.suona("clic")
 		_esci_modalita(false)
 		modalita = nome
-		segni.mostra_bandiere = nome in ["strada", "bandierina", "demolisci"]
+		segni.mostra_bandiere = nome == "strada"
 		segni.queue_redraw()
 		Input.set_default_cursor_shape(Input.CURSOR_CROSS if nome == "demolisci" else Input.CURSOR_POINTING_HAND)
 	elif modalita == nome:

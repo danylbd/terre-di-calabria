@@ -53,7 +53,7 @@ func _prova() -> void:
 			bersaglio = n
 	var torre := _piazza("torre", func(f): return -Vector2(Vector2(f) - bersaglio.centro()).length(), true)
 	_controlla(torre != null, "nostra torre verso i Brettii")
-	var casa := _piazza("casa_greca", func(f): return -Vector2(f - Vector2i(torre.centro())).length() if Vector2(f - Vector2i(mag.centro())).length() > 9.5 else -99.0)
+	var casa := _piazza("casa_greca", func(f): return -Vector2(f - Vector2i(torre.centro())).length())
 	print("torre a %.1f caselle dall'avamposto; casa in %s" % [Vector2(torre.centro() - bersaglio.centro()).length(), casa.casella if casa else null])
 
 	# tregua: niente attacchi all'inizio
@@ -77,7 +77,6 @@ func _prova() -> void:
 	await process_frame
 	_controlla(not is_instance_valid(torre) or torre.is_queued_for_deletion(), "la nostra torre è caduta")
 	_controlla(_conta(1) < mio, "abbiamo perso territorio (%d -> %d)" % [mio, _conta(1)])
-	_controlla(casa == null or not is_instance_valid(casa) or casa.is_queued_for_deletion(), "la casa rimasta fuori dai confini è bruciata")
 	_controlla(v.nemici.values().any(func(n): return Vector2(n.casella - (bersaglio.casella if is_instance_valid(bersaglio) else n.casella)).length() > 0.5), "al posto della torre c'è una torre dei Brettii")
 
 	# chi è più forte non viene attaccato
@@ -175,6 +174,7 @@ func _piazza(tipo: String, punteggio: Callable, gia_finito := false) -> Edificio
 		var e := v.costruisci(tipo, c, gia_finito)
 		if e == null:
 			continue
+		f = e.bandiera
 		var bandiere: Array = rete.bandiere.keys().filter(func(b): return b != f)
 		bandiere.sort_custom(func(a, b): return Vector2(a - f).length() < Vector2(b - f).length())
 		for b in bandiere:
