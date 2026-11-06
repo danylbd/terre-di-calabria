@@ -1,6 +1,6 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-06 — step 54, test completati, release v1.1.1 da pubblicare.** Repository `danylbd/terre-di-calabria`. Le foto hanno guidato le correzioni al piazzamento, alle bandierine visibili, al menu Costruisci e all'area edificabile. Gli ingressi liberi si cercano lungo il perimetro; le bandierine restano invisibili fuori dallo strumento Collegamento; il menu si richiude; il raggio del magazzino iniziale è 13 e quello delle torri 9, con confini sbloccati solo dalla guardia. Portatori/lavoratori sono alla scala 0.58, guardie 0.72; atlanti con vestiario differenziato, animazione utensili e salvataggi che preservano ingressi, rete e territorio. Tutte le 49 suite, import Godot e screenshot visuale sono verificati. Restano commit, merge, push e controllo GitHub Actions/release. La v1.1.0 è la release stabile precedente.
+**Aggiornamento 2026-11-06 — step 54 completato e pubblicato come v1.1.1.** Repository `danylbd/terre-di-calabria`. Le foto hanno guidato le correzioni al piazzamento, alle bandierine visibili, al menu Costruisci e all'area edificabile. Ingressi liberi cercati lungo il perimetro; bandierine nascoste fuori dallo strumento Collegamento; menu richiudibile; raggio magazzino 13 e torri 9 con presidio; portatori/lavoratori alla scala 0.58, guardie 0.72; atlanti con vestiario differenziato e animazioni utensili. Salvataggi preservano ingressi, rete e territorio. Tutte le 49 suite, import Godot e screenshot visuale sono verificati. GitHub Actions run 137 e `ci-esito` confermano il commit `de5cb45b61310e03390d3bd187f16c34e8aa4839`; installer Setup ARM64/x64: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1). La v1.1.0 è la release precedente.
 
 ## Correzioni emerse dalla verifica
 
@@ -12,6 +12,6 @@
 - Zancle non lasciava abbastanza spazio pianeggiante e accessibile per la segheria: radura iniziale ampliata a 12 caselle.
 - Il test audio si aspettava il vecchio suono generico della cava; ora controlla il suono dedicato `cava`.
 
-**Ultimo passaggio:** suites verdi e correzione della serializzazione della rete/territorio; in corso la preparazione della release v1.1.1.
+**Ultimo passaggio:** release v1.1.1 pubblicata e verificata; asset Setup Windows ARM64/x64 disponibile su GitHub.
 
 Storico in [`diario-automatico.md`](diario-automatico.md).
