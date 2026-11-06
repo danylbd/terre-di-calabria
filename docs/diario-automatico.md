@@ -327,3 +327,6 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Nuova suite `test_rete_strade.gd`: passano percorso nel bosco, rimozione dell’albero, split del tratto e giunzione a tre segmenti.
 - Rimosso il blocco di costruzione dovuto alla bandierina: i cantieri riusano un nodo adiacente o accettano nodi ravvicinati; se non esiste alcun accesso, la costruzione resta valida e il collegamento viene ritentato quando la rete cambia.
 - Nuova suite `test_edifici_senza_bandiera.gd`: una casa viene costruita anche con tutti i lati perimetrali occupati da bandierine. Verificate anche le suite visuale, navigazione e Stretto.
+- Corretto il collegamento stradale: il clic iniziale entro una casella da un nodo seleziona la bandierina più vicina; la destinazione prossima a un nodo o a una strada riusa l'innesto esistente, così anteprima e costruzione terminano nello stesso punto.
+- La ricerca valuta gli altri accessi ai nodi se il primo percorso valido devia; rimosso il limite arbitrario di 32 caselle per i collegamenti.
+- Verificate `test_rete_strade.gd`, `test_edifici_senza_bandiera.gd`, `test_piazzamento_visuale.gd` e `test_catena.gd`: tutte riportano `RISULTATO: OK`.

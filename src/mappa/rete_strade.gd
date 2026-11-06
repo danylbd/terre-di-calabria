@@ -9,7 +9,6 @@ signal portatore_nuovo(p: Portatore)
 signal merce_rilasciata(m: Merce)
 
 const T := DatiMappa.Terreno
-const LUNGHEZZA_MAX := 32
 const TEXTURE_STRADA := preload("res://assets/terreno/strada.png")
 
 
@@ -126,10 +125,10 @@ func libera_protezione(c: Vector2i) -> void:
 ## Percorso migliore da una bandierina a una casella (vuoto se impossibile).
 func trova_percorso(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 	var vuoto: Array[Vector2i] = []
-	# Se il giocatore punta al tratto appena accanto a un nodo già esistente,
-	# riusa quel nodo invece di tentare un secondo innesto troppo ravvicinato.
-	if strada.has(a) or _albero_attraversabile(a):
-		var nodo_vicino := _bandiera_vicina(a)
+	# Un clic impreciso su una strada o accanto a un nodo esistente deve comunque
+	# raggiungere quel nodo, senza richiedere una nuova casella per la bandierina.
+	if not bandiere.has(a) and (strada.has(a) or _albero_attraversabile(a) or motivo_spaziatura(a) != ""):
+		var nodo_vicino := bandiera_vicina(a)
 		if nodo_vicino.x >= 0:
 			a = nodo_vicino
 	if not bandiere.has(da) or da == a or not dati.dentro(a.x, a.y):
@@ -141,7 +140,7 @@ func trova_percorso(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 			return vuoto
 	_aggiorna_ostacoli()
 	var p := _percorso_tra_uscite(da, a)
-	if p.size() < 2 or p.size() > LUNGHEZZA_MAX:
+	if p.size() < 2:
 		return vuoto
 	for c in p:
 		if not dati.nel_territorio(c.x, c.y):
@@ -164,6 +163,7 @@ func _percorso_tra_uscite(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 		_astar.set_point_solid(a, false)
 	var limite_da := mini(4, uscite_da.size())
 	var limite_a := mini(4, uscite_a.size())
+	var minimo_teorico := maxi(absi(da.x - a.x), absi(da.y - a.y)) + 1
 	for espansione in 2:
 		for i in limite_da:
 			for j in limite_a:
@@ -180,7 +180,9 @@ func _percorso_tra_uscite(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 					tot.append(a)
 				if migliore.is_empty() or tot.size() < migliore.size():
 					migliore = tot
-		if not migliore.is_empty():
+		# In terreno libero bastano gli accessi migliori. Se la via trovata fa
+		# una deviazione, prova anche gli altri lati prima di scegliere il tracciato.
+		if not migliore.is_empty() and migliore.size() <= minimo_teorico:
 			break
 		limite_da = uscite_da.size()
 		limite_a = uscite_a.size()
@@ -207,7 +209,7 @@ func motivo_spaziatura(c: Vector2i) -> String:
 	return ""
 
 
-func _bandiera_vicina(c: Vector2i) -> Vector2i:
+func bandiera_vicina(c: Vector2i) -> Vector2i:
 	var migliore := Vector2i(-1, -1)
 	var distanza := INF
 	for dy in range(-1, 2):

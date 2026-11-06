@@ -379,6 +379,12 @@ func _clic_strada(c: Vector2i) -> void:
 		var e := villaggio.edificio_in(c)
 		if e:
 			c = e.bandiera
+		elif not rete.bandiera_in(c):
+			# I simboli dei nodi sono piccoli o nascosti: accetta un clic impreciso
+			# sul nodo più vicino, come già fa il tracciamento del percorso.
+			var nodo_vicino := rete.bandiera_vicina(c)
+			if nodo_vicino.x >= 0:
+				c = nodo_vicino
 		if not rete.bandiera_in(c):
 			_mostra_avviso("Una strada parte sempre da una bandierina", true)
 			return

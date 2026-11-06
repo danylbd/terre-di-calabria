@@ -2,7 +2,7 @@
 
 **Aggiornamento 2026-11-06 — step 54 pubblicato come v1.1.1; step 55 in corso.** Repository `danylbd/terre-di-calabria`. La release v1.1.1 è verificata e scaricabile: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1).
 
-**Step 55 — worktree `C:\Users\User\Projects\tdc-wt\step-55-menu-costruzione`, ramo `step-55-menu-costruzione` basato su main `e3cfaeb`.** Corretti menu Costruisci, ciclo del passo dei coloni, nomi dei luoghi, collegamento/fusione delle strade e costruzione senza spazio obbligatorio per una bandierina. Niente merge su main né release finché il proprietario raccoglie altri bug. Test mirati visuale, atlas, rete, accesso agli edifici, navigazione e Stretto passati.
+**Step 55 — worktree `C:\Users\User\Projects\tdc-wt\step-55-menu-costruzione`, ramo `step-55-menu-costruzione` basato su main `e3cfaeb`.** Corretti menu Costruisci, ciclo del passo dei coloni, nomi dei luoghi, collegamento/fusione delle strade e costruzione senza spazio obbligatorio per una bandierina. Nell'ultimo fix i clic d'avvio vicini a un nodo usano la bandierina più vicina e ricerca/anteprima/conferma convergono sullo stesso innesto; la ricerca prova gli accessi alternativi quando il primo percorso devia. Niente merge su main né release finché il proprietario raccoglie altri bug. Suite mirate visuale, rete, edifici senza bandierina e catena produttiva passate.
 
 ## Correzioni emerse dalla verifica
 
