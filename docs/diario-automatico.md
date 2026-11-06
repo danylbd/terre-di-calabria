@@ -322,3 +322,6 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Coloni: ciclo del passo impostato in loop, partenze sfalsate e ritmo legato alla velocità, mantenendo gli atlas 8×8 originali.
 - Luoghi: cartigli con fondo scuro nascosti per impostazione predefinita e mostrati soltanto vicino al cursore.
 - Test mirati visuale e atlas coloni passano; worktree step 55 resta separato, senza merge o release mentre il proprietario raccoglie altri bug.
+- Rete stradale: alberi e ulivi sono attraversabili e vengono sgombrati sul sedime, mentre rocce ed edifici restano ostacoli.
+- Gli innesti vicini riusano la bandierina esistente; la ricerca prova uscite alternative quando i primi accessi sono bloccati.
+- Nuova suite `test_rete_strade.gd`: passano percorso nel bosco, rimozione dell’albero, split del tratto e giunzione a tre segmenti.

@@ -4,7 +4,7 @@
 
 ## Lavoro corrente — step 55, bug dopo v1.1.1
 
-Worktree dedicato `C:\Users\User\Projects\tdc-wt\step-55-menu-costruzione`, ramo `step-55-menu-costruzione`, basato su `main` e3cfaeb. In corso: menu Costruisci ancorato in alto e con corpo scorrevole; animazioni dei passi sfalsate e sincronizzate alla velocità effettiva; nomi dei luoghi nascosti finché il cursore non passa vicino, con fondo scuro. Test mirati visuale e atlas coloni passano. La raccolta bug è aperta su richiesta del proprietario: non fare merge su main né pubblicare release prima che la lista sia completa.
+Worktree dedicato `C:\Users\User\Projects\tdc-wt\step-55-menu-costruzione`, ramo `step-55-menu-costruzione`, basato su `main` e3cfaeb. Corretti: menu Costruisci ancorato in alto e scorrevole; passi dei coloni in loop, sfalsati e sincronizzati alla velocità; nomi dei luoghi nascosti fino al passaggio del cursore; strade che attraversano alberi e si innestano sui tratti esistenti. Test mirati visuale, atlas coloni e rete stradale passano. La raccolta bug è aperta su richiesta del proprietario: non fare merge su main né pubblicare release prima che la lista sia completa.
 
 ## Versione pubblicata
 

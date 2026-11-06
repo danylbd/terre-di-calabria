@@ -116,7 +116,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 52 | Coloni più dettagliati: atlas animati con otto direzioni, abiti, merci e attrezzi | fatto (v1.1.0) |
 | 53 | Partita pacifica più dinamica: esplorare rovine e trovare ricompense | fatto (v1.1.0) |
 | 54 | Correzioni emerse dalle schermate: accesso alternativo agli edifici, bandierine nascoste, menu Costruisci richiudibile, area edificabile ampliata e personaggi/animazioni rifiniti | fatto (v1.1.1) |
-| 55 | Bug raccolti dopo la release: riapertura del menu Costruisci, andatura naturale dei coloni e nomi dei luoghi solo al passaggio del cursore | in corso; release in attesa del completamento della raccolta bug |
+| 55 | Bug raccolti dopo la release: menu Costruisci, andatura dei coloni, nomi dei luoghi e logica di fusione/attraversamento delle strade | in corso; release in attesa del completamento della raccolta bug |
 
 ## Fase 5 — rimandata a una versione successiva
 

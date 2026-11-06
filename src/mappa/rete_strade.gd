@@ -123,12 +123,19 @@ func libera_protezione(c: Vector2i) -> void:
 ## Percorso migliore da una bandierina a una casella (vuoto se impossibile).
 func trova_percorso(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 	var vuoto: Array[Vector2i] = []
+	# Se il giocatore punta al tratto appena accanto a un nodo già esistente,
+	# riusa quel nodo invece di tentare un secondo innesto troppo ravvicinato.
+	if strada.has(a) or _albero_attraversabile(a):
+		var nodo_vicino := _bandiera_vicina(a)
+		if nodo_vicino.x >= 0:
+			a = nodo_vicino
 	if not bandiere.has(da) or da == a or not dati.dentro(a.x, a.y):
 		return vuoto
-	if not bandiere.has(a) and motivo_no_bandiera(a) != "" and not strada.has(a):
-		return vuoto
-	if strada.has(a) and motivo_spaziatura(a) != "":
-		return vuoto
+	if not bandiere.has(a):
+		if motivo_spaziatura(a) != "":
+			return vuoto
+		if motivo_no_bandiera(a) != "" and not _albero_attraversabile(a):
+			return vuoto
 	_aggiorna_ostacoli()
 	var p := _percorso_tra_uscite(da, a)
 	if p.size() < 2 or p.size() > LUNGHEZZA_MAX:
@@ -152,19 +159,28 @@ func _percorso_tra_uscite(da: Vector2i, a: Vector2i) -> Array[Vector2i]:
 	if not bandiere.has(a):
 		uscite_a = [a] as Array[Vector2i]
 		_astar.set_point_solid(a, false)
-	for u in uscite_da.slice(0, 4):
-		for v in uscite_a.slice(0, 4):
-			var tratto: Array[Vector2i] = [u]
-			if u != v:
-				tratto = _astar.get_id_path(u, v)
-			if tratto.is_empty():
-				continue
-			var tot: Array[Vector2i] = [da]
-			tot.append_array(tratto)
-			if tot[-1] != a:
-				tot.append(a)
-			if migliore.is_empty() or tot.size() < migliore.size():
-				migliore = tot
+	var limite_da := mini(4, uscite_da.size())
+	var limite_a := mini(4, uscite_a.size())
+	for espansione in 2:
+		for i in limite_da:
+			for j in limite_a:
+				var u: Vector2i = uscite_da[i]
+				var v: Vector2i = uscite_a[j]
+				var tratto: Array[Vector2i] = [u]
+				if u != v:
+					tratto = _astar.get_id_path(u, v)
+				if tratto.is_empty():
+					continue
+				var tot: Array[Vector2i] = [da]
+				tot.append_array(tratto)
+				if tot[-1] != a:
+					tot.append(a)
+				if migliore.is_empty() or tot.size() < migliore.size():
+					migliore = tot
+		if not migliore.is_empty():
+			break
+		limite_da = uscite_da.size()
+		limite_a = uscite_a.size()
 	_astar.set_point_solid(a, era_solido)
 	return migliore
 
@@ -188,11 +204,37 @@ func motivo_spaziatura(c: Vector2i) -> String:
 	return ""
 
 
+func _bandiera_vicina(c: Vector2i) -> Vector2i:
+	var migliore := Vector2i(-1, -1)
+	var distanza := INF
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			var candidato := c + Vector2i(dx, dy)
+			if bandiere.has(candidato):
+				var d := Vector2(candidato - c).length_squared()
+				if d < distanza:
+					distanza = d
+					migliore = candidato
+	return migliore
+
+
+func _albero_attraversabile(c: Vector2i) -> bool:
+	if villaggio == null or villaggio.risorse == null:
+		return false
+	return (villaggio.risorse.alberi.has(c) or villaggio.risorse.ulivi.has(c)) and not villaggio.risorse.rocce.has(c)
+
+
 ## Costruisce la strada; se l'arrivo non è una bandierina ne pianta una. Restituisce la bandierina d'arrivo.
 func costruisci_strada(percorso: Array[Vector2i]) -> bool:
 	if percorso.size() < 2:
 		return false
 	var arrivo: Vector2i = percorso[-1]
+	# Sposta gli alberi lungo il tracciato prima di creare il nodo di arrivo:
+	# una foresta non deve spezzare una strada né rendere irraggiungibile il collegamento.
+	for c in percorso:
+		if _albero_attraversabile(c):
+			villaggio.risorse.sgombra_per_strada(c)
+			_ostacoli_vecchi = true
 	if not bandiere.has(arrivo):
 		if not aggiungi_bandiera(arrivo):
 			return false
@@ -317,7 +359,9 @@ func _aggiorna_ostacoli() -> void:
 		for x in dati.larghezza:
 			var c := Vector2i(x, y)
 			var t := dati.tipo(x, y)
-			var solido := t == T.ACQUA or t == T.NEVE or dati.occupante(x, y) != 0 or strada.has(c) or bandiere.has(c) or not dati.nel_territorio(x, y)
+			var occupante := dati.occupante(x, y)
+			var albero := occupante == DatiMappa.NATURA and _albero_attraversabile(c)
+			var solido := t == T.ACQUA or t == T.NEVE or (occupante != 0 and not albero) or strada.has(c) or bandiere.has(c) or not dati.nel_territorio(x, y)
 			_astar.set_point_solid(c, solido)
 
 
