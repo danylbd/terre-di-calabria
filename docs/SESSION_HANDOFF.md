@@ -1,6 +1,10 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-06 — step 54 completato e pubblicato come v1.1.1.** Repository `danylbd/terre-di-calabria`. Le foto hanno guidato le correzioni al piazzamento, alle bandierine visibili, al menu Costruisci e all'area edificabile. Ingressi liberi cercati lungo il perimetro; bandierine nascoste fuori dallo strumento Collegamento; menu richiudibile; raggio magazzino 13 e torri 9 con presidio; portatori/lavoratori alla scala 0.58, guardie 0.72; atlanti con vestiario differenziato e animazioni utensili. Salvataggi preservano ingressi, rete e territorio. Tutte le 49 suite, import Godot e screenshot visuale sono verificati. GitHub Actions run 137 e `ci-esito` confermano il commit `de5cb45b61310e03390d3bd187f16c34e8aa4839`; installer Setup ARM64/x64: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1). La v1.1.0 è la release precedente.
+**Aggiornamento 2026-11-07 — step 54 pubblicato come v1.1.1; step 55 verificato per v1.1.2.** Repository `danylbd/terre-di-calabria`. La release v1.1.1 è verificata e scaricabile: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1).
+
+**Step 55 — worktree `C:\Users\User\Projects\tdc-wt\step-55-completamento`, ramo `step-55-completamento`.** Correzioni confermate per menu Costruisci, nomi dei luoghi al passaggio del mouse, costruzione senza spazio per bandierina, fusioni stradali e passaggi nel bosco. L'audit economia ha corretto la capienza: solo magazzini completati aggiungono 200 posti. Il proprietario ha scelto l'opzione 1 per i personaggi C10: otto popoli civili, otto tipi militari, atlanti 4×8 celle a 160 px, marcia e combattimento. Importazione Godot, screenshot runtime e tutte le 52 suite passano. Il merge su `main` avvia il workflow che esporta e pubblica il Setup v1.1.2; prima di chiudere verificare run, asset e tag.
+
+Il reference originale è in `docs/immagini/riferimento-personaggi-A-B-C.png`; il pannello destro è il C scelto dal proprietario. Gli atlas finali sono `assets/grafica/c10_portatore_*.png` e `assets/grafica/c10_soldato_*.png`; marcia e combattimento dei soldati usano i rispettivi fogli `_lotta`. Per rigenerarli eseguire `py -3 tools/grafica/prepara_atlanti_c10.py`.
 
 ## Correzioni emerse dalla verifica
 
@@ -12,6 +16,6 @@
 - Zancle non lasciava abbastanza spazio pianeggiante e accessibile per la segheria: radura iniziale ampliata a 12 caselle.
 - Il test audio si aspettava il vecchio suono generico della cava; ora controlla il suono dedicato `cava`.
 
-**Ultimo passaggio:** release v1.1.1 pubblicata e verificata; asset Setup Windows ARM64/x64 disponibile su GitHub.
+**Ultimo passaggio:** rimpiazzato il rendering procedurale con i sorgenti illustrati C e aggiornato il generatore affinché non li sovrascriva. Import Godot, preview alla scala di gioco, controllo degli atlas e screenshot OpenGL in scena completati; restano le varianti di beni/utensili e l'audit finale. Nessuna release pubblicata per lo step 55.
 
 Storico in [`diario-automatico.md`](diario-automatico.md).

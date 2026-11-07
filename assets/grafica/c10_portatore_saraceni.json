@@ -1,0 +1,22 @@
+{
+  "cella": [
+    160,
+    160
+  ],
+  "ancora": [
+    80,
+    156
+  ],
+  "fotogrammi": 4,
+  "direzioni": [
+    "S",
+    "SE",
+    "E",
+    "NE",
+    "N",
+    "NO",
+    "O",
+    "SO"
+  ],
+  "fps": 8
+}

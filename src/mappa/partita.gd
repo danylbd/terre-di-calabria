@@ -50,6 +50,7 @@ var popolo := "greci"         # il popolo del giocatore (Popoli.DATI)   # quale 
 var decori := {}            # Vector2i -> [Sprite2D] fiori, funghi, cespugli (spariscono sotto gli edifici)
 var rovine: Array[Vector2i] = []
 var rovine_esplorate: Array[Vector2i] = []
+var _etichette_luoghi: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -198,6 +199,7 @@ func _process(delta: float) -> void:
 	if c == _casella_mouse:
 		return
 	_casella_mouse = c
+	_aggiorna_nomi_luoghi(c)
 	_aggiorna_fantasma()
 	_aggiorna_evidenziato()
 	_aggiorna_anteprima_strada()
@@ -377,6 +379,12 @@ func _clic_strada(c: Vector2i) -> void:
 		var e := villaggio.edificio_in(c)
 		if e:
 			c = e.bandiera
+		elif not rete.bandiera_in(c):
+			# I simboli dei nodi sono piccoli o nascosti: accetta un clic impreciso
+			# sul nodo più vicino, come già fa il tracciamento del percorso.
+			var nodo_vicino := rete.bandiera_vicina(c)
+			if nodo_vicino.x >= 0:
+				c = nodo_vicino
 		if not rete.bandiera_in(c):
 			_mostra_avviso("Una strada parte sempre da una bandierina", true)
 			return
@@ -718,19 +726,45 @@ func _metti_nomi_luoghi() -> void:
 	var nomi := Node2D.new()
 	nomi.z_index = 40
 	add_child(nomi)
+	_etichette_luoghi.clear()
 	for nome in dati.luoghi:
 		var c: Vector2i = dati.luoghi[nome]
 		if c == dati.villaggio:
 			continue
 		var l := Label.new()
 		l.text = nome
-		l.add_theme_font_size_override("font_size", 30)
-		l.add_theme_color_override("font_color", Color(Palette.PERGAMENA_CHIARA, 0.85))
-		l.add_theme_color_override("font_outline_color", Color(Palette.INCHIOSTRO, 0.6))
-		l.add_theme_constant_override("outline_size", 8)
+		l.add_theme_font_size_override("font_size", 22)
+		l.add_theme_color_override("font_color", Palette.PERGAMENA_CHIARA)
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		nomi.add_child(l)
-		l.position = dati.a_schermo(c.x + 0.5, c.y + 0.5) - l.get_combined_minimum_size() * 0.5 - Vector2(0, 40)
+		var sfondo := StyleBoxFlat.new()
+		sfondo.bg_color = Color(Palette.INCHIOSTRO, 0.88)
+		sfondo.set_corner_radius_all(6)
+		sfondo.content_margin_left = 9
+		sfondo.content_margin_right = 9
+		sfondo.content_margin_top = 4
+		sfondo.content_margin_bottom = 4
+		var pannello_nome := PanelContainer.new()
+		pannello_nome.add_theme_stylebox_override("panel", sfondo)
+		pannello_nome.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pannello_nome.z_index = 41
+		pannello_nome.add_child(l)
+		nomi.add_child(pannello_nome)
+		pannello_nome.reset_size()
+		pannello_nome.position = dati.a_schermo(c.x + 0.5, c.y + 0.5) - pannello_nome.get_combined_minimum_size() * 0.5 - Vector2(0, 40)
+		pannello_nome.visible = false
+		_etichette_luoghi.append({"casella": c, "pannello": pannello_nome})
+
+
+func _aggiorna_nomi_luoghi(cursore: Vector2i) -> void:
+	var piu_vicino := -1
+	var distanza_vicina := 2.5
+	for i in _etichette_luoghi.size():
+		var distanza := Vector2(cursore - _etichette_luoghi[i]["casella"]).length()
+		if distanza < distanza_vicina:
+			distanza_vicina = distanza
+			piu_vicino = i
+	for i in _etichette_luoghi.size():
+		(_etichette_luoghi[i]["pannello"] as Control).visible = i == piu_vicino
 
 
 ## Il popolo del salvataggio da caricare; la campagna è dei Greci; altrimenti quello scelto nel menu.
@@ -861,7 +895,7 @@ func _crea_interfaccia() -> void:
 	menu = MenuCostruzione.new()
 	menu.villaggio = villaggio
 	strato.add_child(menu)
-	menu.set_anchors_and_offsets_preset(Control.PRESET_CENTER_LEFT, Control.PRESET_MODE_MINSIZE, 14)
+	menu.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 14)
 	menu.edificio_scelto.connect(_scegli_edificio)
 	menu.strumento.connect(_strumento)
 	villaggio.edifici_speciali_cambiati.connect(menu.aggiorna)

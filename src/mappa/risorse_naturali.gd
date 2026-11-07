@@ -432,6 +432,21 @@ func sgombra(c: Vector2i) -> void:
 		dati.occupa(c.x, c.y, 0)
 
 
+## Libera il sedime di una strada da alberi e ulivi, senza rimuovere rocce o edifici.
+func sgombra_per_strada(c: Vector2i) -> void:
+	if funghi.has(c):
+		(funghi[c]["sprite"] as Node).queue_free()
+		funghi.erase(c)
+	for albero in alberi.get(c, []):
+		(albero["sprite"] as Node).queue_free()
+	alberi.erase(c)
+	for ulivo in ulivi.get(c, []):
+		(ulivo as Node).queue_free()
+	ulivi.erase(c)
+	if dati.occupante(c.x, c.y) == DatiMappa.NATURA and not rocce.has(c) and not campi.has(c):
+		dati.occupa(c.x, c.y, 0)
+
+
 func togli_massi(c: Vector2i) -> void:
 	if rocce.has(c):
 		(rocce[c]["sprite"] as Node).queue_free()

@@ -316,3 +316,25 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Merge su `main`: `de5cb45b61310e03390d3bd187f16c34e8aa4839`; GitHub Actions run 137 completato con successo per export ARM64/x64 e Setup.
 - Tag `v1.1.1` pubblicato con `TerreDiCalabria-Setup-1.1.1.exe` (123.645.878 byte): https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1.
 - Il ramo `ci-esito` riporta `success` e lo stesso commit; tutte le 49 suite Godot erano verdi prima del merge.
+
+### 2026-11-06 — Step 55: correzioni visive raccolte dopo v1.1.1
+- Pannello Costruisci ancorato in alto, riapertura dentro lo schermo e contenuti scorrevoli nelle finestre basse.
+- Coloni: ciclo del passo impostato in loop, partenze sfalsate e ritmo legato alla velocità, mantenendo gli atlas 8×8 originali.
+- Luoghi: cartigli con fondo scuro nascosti per impostazione predefinita e mostrati soltanto vicino al cursore.
+- Test mirati visuale e atlas coloni passano; worktree step 55 resta separato, senza merge o release mentre il proprietario raccoglie altri bug.
+- Rete stradale: alberi e ulivi sono attraversabili e vengono sgombrati sul sedime, mentre rocce ed edifici restano ostacoli.
+- Gli innesti vicini riusano la bandierina esistente; la ricerca prova uscite alternative quando i primi accessi sono bloccati.
+- Nuova suite `test_rete_strade.gd`: passano percorso nel bosco, rimozione dell’albero, split del tratto e giunzione a tre segmenti.
+- Rimosso il blocco di costruzione dovuto alla bandierina: i cantieri riusano un nodo adiacente o accettano nodi ravvicinati; se non esiste alcun accesso, la costruzione resta valida e il collegamento viene ritentato quando la rete cambia.
+- Nuova suite `test_edifici_senza_bandiera.gd`: una casa viene costruita anche con tutti i lati perimetrali occupati da bandierine. Verificate anche le suite visuale, navigazione e Stretto.
+- Corretto il collegamento stradale: il clic iniziale entro una casella da un nodo seleziona la bandierina più vicina; la destinazione prossima a un nodo o a una strada riusa l'innesto esistente, così anteprima e costruzione terminano nello stesso punto.
+- La ricerca valuta gli altri accessi ai nodi se il primo percorso valido devia; rimosso il limite arbitrario di 32 caselle per i collegamenti.
+- Verificate `test_rete_strade.gd`, `test_edifici_senza_bandiera.gd`, `test_piazzamento_visuale.gd` e `test_catena.gd`: tutte riportano `RISULTATO: OK`.
+- Su approvazione del proprietario scelta la direzione C per i personaggi: silhouette compatte e leggibili, palette e capi d'abito specifici per popolo.
+- Generati 280 atlas civili (35 varianti di ruolo e carico × 8 popoli) e 18 atlas di soldati (9 tipi × marcia/combattimento); selezione culturale collegata ai portatori e ai lavoratori.
+- Import Godot completato senza errori; anteprime dei gruppi civili e militari salvate in `docs/immagini/preview-coloni-popoli.png` e `docs/immagini/preview-soldati-popoli.png`.
+- Il proprietario sceglie l'opzione 1 C10; gli atlas PNG/JSON per otto popoli e otto tipi militari sono integrati con sorgenti rigenerabili e screenshot runtime.
+- Audit UI/strade: menu ancorato dopo la chiusura, nomi alleati su hover, piazzamento libero e fusioni stradali nel bosco; le tre suite mirate passano.
+- Audit economia/save: corretto il conteggio della capienza per escludere i magazzini incompleti; test dedicato, Agorà, salvataggio, stagione e durata passano.
+- Adeguati i test alle quattro pose C10; import Godot e 52 suite completate con `RISULTATO: OK`.
+- Aggiornata la versione a 1.1.2 e il workflow affinché esegua tutte le suite prima dell'export; merge su main da verificare per chiudere il rilascio.

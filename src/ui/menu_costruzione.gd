@@ -18,6 +18,7 @@ var villaggio: Villaggio
 var _categoria := "Base"
 var _gruppo := ButtonGroup.new()
 var _altezza_aperta := 0.0
+var _contenitore_corpo: ScrollContainer
 
 
 func _ready() -> void:
@@ -41,9 +42,15 @@ func _ready() -> void:
 	_pulsante_chiudi.pressed.connect(alterna)
 	_intestazione.add_child(_pulsante_chiudi)
 
+	_contenitore_corpo = ScrollContainer.new()
+	_contenitore_corpo.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_contenitore_corpo.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_contenitore_corpo.custom_minimum_size.y = 0
+	colonna.add_child(_contenitore_corpo)
 	_corpo = VBoxContainer.new()
 	_corpo.add_theme_constant_override("separation", 8)
-	colonna.add_child(_corpo)
+	_corpo.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_contenitore_corpo.add_child(_corpo)
 
 	var riga := HBoxContainer.new()
 	riga.add_theme_constant_override("separation", 4)
@@ -94,18 +101,23 @@ func _ready() -> void:
 
 func alterna() -> void:
 	_corpo.visible = not _corpo.visible
+	_contenitore_corpo.visible = _corpo.visible
 	_pulsante_chiudi.text = "−" if _corpo.visible else "+"
 	_pulsante_chiudi.tooltip_text = "Riduci il menu di costruzione" if _corpo.visible else "Espandi il menu di costruzione"
 	await get_tree().process_frame
-	var nuova_altezza := _altezza_aperta if _corpo.visible else _intestazione.get_combined_minimum_size().y + 22.0
+	var altezza_massima := maxf(120.0, get_viewport_rect().size.y - 28.0)
+	var nuova_altezza := minf(_altezza_aperta, altezza_massima) if _corpo.visible else _intestazione.get_combined_minimum_size().y + 22.0
 	size.y = nuova_altezza
-	# Il pannello è ancorato al centro verticale: mantiene la maniglia sempre nella stessa zona.
-	position.y = -nuova_altezza * 0.5
+	# Il pannello resta ancorato in alto: la sua maniglia non salta fuori schermo
+	# quando si passa dalla versione compatta a quella completa.
+	position.y = 14.0
 	update_minimum_size()
 
 
 func _memorizza_altezza_aperta() -> void:
-	_altezza_aperta = maxf(size.y, get_combined_minimum_size().y)
+	var margini_verticali := get_theme_constant("margin_top", "PanelContainer") + get_theme_constant("margin_bottom", "PanelContainer")
+	_altezza_aperta = maxf(size.y, _intestazione.get_combined_minimum_size().y + _corpo.get_combined_minimum_size().y + 8.0 + margini_verticali)
+	size.y = minf(_altezza_aperta, maxf(120.0, get_viewport_rect().size.y - 28.0))
 
 
 func _mostra_categoria(cat: String) -> void:

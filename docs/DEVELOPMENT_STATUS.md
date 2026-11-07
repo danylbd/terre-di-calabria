@@ -1,8 +1,14 @@
 # Stato dello sviluppo
 
-*Aggiornato il 2026-11-06. Fonte del piano completo: [`roadmap.md`](roadmap.md); richieste del proprietario: [`decisioni.md`](decisioni.md).*
+*Aggiornato il 2026-11-07. Fonte del piano completo: [`roadmap.md`](roadmap.md); richieste del proprietario: [`decisioni.md`](decisioni.md).*
 
-## Versione in preparazione
+## Lavoro corrente — step 55, bug dopo v1.1.1
+
+Worktree finale `C:\Users\User\Projects\tdc-wt\step-55-completamento`, ramo `step-55-completamento`, basato sui fix step 55. Corretti e verificati menu Costruisci che si richiude e si riapre nel viewport, nomi alleati su hover, strade con innesti e passaggi sugli alberi, costruzione senza vincolo di spazio bandierina e capienza conteggiata solo per magazzini finiti. La grafica scelta dal proprietario è C10: otto popoli civili e otto tipi militari, atlas 4×8 celle da 160 px, animazioni di marcia e combattimento, filtro lineare e scala 0,38. Gli atlas PNG/JSON e i sorgenti di rigenerazione sono inclusi nel ramo; screenshot runtime OpenGL in `docs/immagini/screenshot-coloni-C10-stile-C-in-gioco.png`, `screenshot-soldati-C10-cammino-in-gioco.png` e `screenshot-soldati-C10-combattimento-in-gioco.png`. Import Godot, `git diff --check` e tutte le 52 suite automatiche sono passati; la PR verso `main` avvia la pubblicazione v1.1.2.
+
+Per il riferimento C usare `docs/immagini/riferimento-personaggi-A-B-C.png`; il proprietario ha scelto l'opzione C10. `py -3 tools/grafica/prepara_atlanti_c10.py` ricostruisce gli atlas dai sorgenti e `py tools/grafica/contatto_atlas_c.py` genera i contact sheet. Importazione Godot, screenshot runtime e 52 suite automatiche sono verificati. La PR verso `main` farà partire il workflow di export e pubblicazione v1.1.2.
+
+## Versione pubblicata
 
 **v1.1.1 — correzioni da schermate reali**, step 54: pubblicata. Edifici con accesso alternativo, bandierine stradali invisibili durante il gioco, pannello Costruisci richiudibile, raggio magazzino 13 e torri 9 (con guardia), coloni e soldati proporzionati senza rimpicciolire navi/macchine; atlanti con abiti variati e animazioni di camminata/lavoro. Salvataggi aggiornati per conservare ingressi reali, rete e territorio esplorato.
 

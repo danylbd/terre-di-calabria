@@ -1,6 +1,7 @@
 # Godot
 .godot/
 *.import.tmp
+__pycache__/
 export/
 build/
 # Installer
