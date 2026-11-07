@@ -46,6 +46,16 @@ jobs:
           & $env:GODOT --headless --path . --import
           exit 0
 
+      - name: Esegue tutte le suite di gioco
+        shell: pwsh
+        run: |
+          $tests = Get-ChildItem tools/test -Filter "test_*.gd" | Sort-Object Name
+          foreach ($test in $tests) {
+            Write-Host "Eseguo $($test.Name)"
+            & $env:GODOT --headless --path . --script $test.FullName
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
       - name: Esporta
         shell: pwsh
         run: |

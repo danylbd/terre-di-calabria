@@ -79,8 +79,8 @@ func _verifica(partita: Node) -> void:
 	var colono := Colono.new()
 	colono.prepara(dati, Vector2.ZERO)
 	var animazione_colono := colono.get_child(0) as AnimatedSprite2D
-	_controlla(is_equal_approx(animazione_colono.scale.x, 0.58), "il colono è ridimensionato per la scala degli edifici")
-	_controlla(animazione_colono.sprite_frames.get_frame_count("S") == 8, "il colono mantiene otto fotogrammi di camminata")
+	_controlla(is_equal_approx(animazione_colono.scale.x, 0.38), "il colono C10 è ridimensionato per la scala degli edifici")
+	_controlla(animazione_colono.sprite_frames.get_frame_count("S") == 4, "il colono C10 usa i quattro fotogrammi di camminata")
 	_controlla(animazione_colono.sprite_frames.get_animation_loop("S"), "il ciclo del passo continua finché il colono cammina")
 	colono.velocita = 2.3
 	colono.percorri([Vector2(1, 0)])
@@ -89,12 +89,12 @@ func _verifica(partita: Node) -> void:
 	colono.free()
 	var soldato := Colono.new()
 	soldato.prepara(dati, Vector2.ZERO, "guardia")
-	_controlla(is_equal_approx(soldato.get_child(0).scale.x, 0.72), "le guardie mantengono una scala leggibile e proporzionata")
+	_controlla(is_equal_approx(soldato.get_child(0).scale.x, 0.38), "le guardie C10 mantengono una scala leggibile e proporzionata")
 	soldato.free()
 	var lavoratore := Colono.new()
 	lavoratore.prepara(dati, Vector2.ZERO, "lavoratore_martello_lavoro")
 	var animazione_lavoro := lavoratore.get_child(0) as AnimatedSprite2D
-	_controlla(animazione_lavoro.sprite_frames.get_frame_count("S") == 8, "l'attività mostra l'animazione del mestiere")
+	_controlla(animazione_lavoro.sprite_frames.get_frame_count("S") == 4, "l'attività mostra l'animazione del mestiere")
 	lavoratore.free()
 	var nave := Colono.new()
 	nave.prepara(dati, Vector2.ZERO, "nave")

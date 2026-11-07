@@ -333,3 +333,8 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Su approvazione del proprietario scelta la direzione C per i personaggi: silhouette compatte e leggibili, palette e capi d'abito specifici per popolo.
 - Generati 280 atlas civili (35 varianti di ruolo e carico × 8 popoli) e 18 atlas di soldati (9 tipi × marcia/combattimento); selezione culturale collegata ai portatori e ai lavoratori.
 - Import Godot completato senza errori; anteprime dei gruppi civili e militari salvate in `docs/immagini/preview-coloni-popoli.png` e `docs/immagini/preview-soldati-popoli.png`.
+- Il proprietario sceglie l'opzione 1 C10; gli atlas PNG/JSON per otto popoli e otto tipi militari sono integrati con sorgenti rigenerabili e screenshot runtime.
+- Audit UI/strade: menu ancorato dopo la chiusura, nomi alleati su hover, piazzamento libero e fusioni stradali nel bosco; le tre suite mirate passano.
+- Audit economia/save: corretto il conteggio della capienza per escludere i magazzini incompleti; test dedicato, Agorà, salvataggio, stagione e durata passano.
+- Adeguati i test alle quattro pose C10; import Godot e 52 suite completate con `RISULTATO: OK`.
+- Aggiornata la versione a 1.1.2 e il workflow affinché esegua tutte le suite prima dell'export; merge su main da verificare per chiudere il rilascio.

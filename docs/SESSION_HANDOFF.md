@@ -1,8 +1,10 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-06 — step 54 pubblicato come v1.1.1; step 55 in corso.** Repository `danylbd/terre-di-calabria`. La release v1.1.1 è verificata e scaricabile: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1).
+**Aggiornamento 2026-11-07 — step 54 pubblicato come v1.1.1; step 55 verificato per v1.1.2.** Repository `danylbd/terre-di-calabria`. La release v1.1.1 è verificata e scaricabile: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1).
 
-**Step 55 — worktree `C:\Users\User\Projects\tdc-wt\step-55-menu-costruzione`, ramo `step-55-menu-costruzione` basato su main `e3cfaeb`.** Corretti menu Costruisci, ciclo del passo dei coloni, nomi dei luoghi, collegamento/fusione delle strade e costruzione senza spazio obbligatorio per una bandierina. Nell'ultimo fix i clic d'avvio vicini a un nodo usano la bandierina più vicina e ricerca/anteprima/conferma convergono sullo stesso innesto; la ricerca prova gli accessi alternativi quando il primo percorso devia. Su approvazione della direzione C, creati 280 atlas civili distinti per ruolo/carico e popolo e 18 atlas di soldati per marcia e combattimento; portatori e lavoratori caricano la variante del loro popolo. Anteprime in `docs/immagini/preview-coloni-popoli.png` e `docs/immagini/preview-soldati-popoli.png`. Niente merge su main né release finché il proprietario raccoglie altri bug.
+**Step 55 — worktree `C:\Users\User\Projects\tdc-wt\step-55-completamento`, ramo `step-55-completamento`.** Correzioni confermate per menu Costruisci, nomi dei luoghi al passaggio del mouse, costruzione senza spazio per bandierina, fusioni stradali e passaggi nel bosco. L'audit economia ha corretto la capienza: solo magazzini completati aggiungono 200 posti. Il proprietario ha scelto l'opzione 1 per i personaggi C10: otto popoli civili, otto tipi militari, atlanti 4×8 celle a 160 px, marcia e combattimento. Importazione Godot, screenshot runtime e tutte le 52 suite passano. Il merge su `main` avvia il workflow che esporta e pubblica il Setup v1.1.2; prima di chiudere verificare run, asset e tag.
+
+Il reference originale è in `docs/immagini/riferimento-personaggi-A-B-C.png`; il pannello destro è il C scelto dal proprietario. Gli atlas finali sono `assets/grafica/c10_portatore_*.png` e `assets/grafica/c10_soldato_*.png`; marcia e combattimento dei soldati usano i rispettivi fogli `_lotta`. Per rigenerarli eseguire `py -3 tools/grafica/prepara_atlanti_c10.py`.
 
 ## Correzioni emerse dalla verifica
 
@@ -14,6 +16,6 @@
 - Zancle non lasciava abbastanza spazio pianeggiante e accessibile per la segheria: radura iniziale ampliata a 12 caselle.
 - Il test audio si aspettava il vecchio suono generico della cava; ora controlla il suono dedicato `cava`.
 
-**Ultimo passaggio:** step 55 in lavorazione; correggere i bug raccolti, poi attendere che il proprietario completi la lista prima della prossima release.
+**Ultimo passaggio:** rimpiazzato il rendering procedurale con i sorgenti illustrati C e aggiornato il generatore affinché non li sovrascriva. Import Godot, preview alla scala di gioco, controllo degli atlas e screenshot OpenGL in scena completati; restano le varianti di beni/utensili e l'audit finale. Nessuna release pubblicata per lo step 55.
 
 Storico in [`diario-automatico.md`](diario-automatico.md).

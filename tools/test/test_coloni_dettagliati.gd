@@ -35,10 +35,10 @@ func _initialize() -> void:
 			if nomi.has(soldato + suffisso):
 				varianti_soldati += 1
 	_controlla(varianti_soldati == 18, "18 atlas animati dei tipi di soldato presenti (%d)" % varianti_soldati)
-	_controlla(Sprites.atlante_colono("portatore_nessuno", "saraceni") == "portatore_nessuno_saraceni",
+	_controlla(Sprites.atlante_colono("portatore_nessuno", "saraceni") == "c10_portatore_saraceni",
 		"il portatore seleziona l'atlante del proprio popolo")
-	_controlla(Sprites.atlante_colono("lavoratore_ascia_lavoro", "normanni") == "lavoratore_ascia_lavoro_normanni",
-		"l'animazione del mestiere conserva la variante culturale")
+	_controlla(Sprites.atlante_colono("lavoratore_ascia_lavoro", "normanni") == "c10_portatore_normanni",
+		"il lavoratore usa l'atlante C10 del proprio popolo")
 	for nome in nomi:
 		var meta := Sprites.info(nome)
 		var texture: Texture2D = Sprites.texture(nome)

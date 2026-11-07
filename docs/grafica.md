@@ -92,8 +92,15 @@ tools/studio/modelli.gd  ──▶  modello 3D (pietra, intonaco, coppi veri, le
 
 ## 8. Atlas dei personaggi — direzione C
 
-La direzione scelta per i personaggi è compatta e leggibile: sagome chiare, colori per popolo, abiti e attrezzi semplificati ma riconoscibili. Gli atlas civili mantengono 8 direzioni × 8 fotogrammi e conservano varianti per merci e mestieri. Gli otto popoli hanno tavolozze e dettagli d'abito distinti; ogni tipo di soldato ha invece un atlas di marcia e uno di combattimento con equipaggiamento proprio.
+L'opzione 1 C10 scelta dal proprietario usa personaggi compatti, proporzioni leggibili, forme arrotondate e ombreggiatura morbida. Ogni atlas civile è specifico per Greci, Brettii, Romani, Saraceni, Normanni, Siculi, Sicani e Cartaginesi; gerla e coperta sono parte del modello. Gli otto soldati hanno equipaggiamenti distinti, inclusi arcieri e cavalieri montati. Ogni atlas misura 4 × 8 celle da 160 px: quattro fotogrammi di marcia per otto direzioni; per ogni soldato ci sono inoltre quattro pose di combattimento. In gioco viene usato il filtro lineare e la scala 0,38.
 
-Per rigenerare tutte le varianti civili e militari, dopo `genera_coloni.py` eseguire `python tools/grafica/genera_atlas_popoli.py`; i sorgenti SVG finiscono in `assets/grafica/coloni/` e i metadati in `assets/grafica/`. I portatori e lavoratori scelgono la variante in base al popolo dell'unità o del proprietario dell'edificio.
+I sorgenti C10 sono in `tools/grafica/sorgenti_direzione_c/c10_portatore_*.png` e `c10_soldato_*.png`, inclusi i fogli `_lotta`. La normalizzazione pulisce i residui colorati dello sfondo, mantiene armi e accessori connessi alla figura e ricostruisce metadati e celle coerenti. Il preparatore scrive atlas e JSON C10 separati dai precedenti, poi Godot li carica direttamente:
 
-Anteprima: `python3 tools/studio/anteprima.py assets/grafica docs/immagini/g1-villaggio.png`
+```powershell
+py -3 tools/grafica/prepara_atlanti_c10.py
+py tools/grafica/contatto_atlas_c.py
+```
+
+Il preparatore produce PNG e JSON `c10_*` in `assets/grafica/`; `src/core/sprites.gd` li usa per civili e soldati, distinguendo anche marcia e combattimento. Gli screenshot runtime su mappa sono `docs/immagini/screenshot-coloni-C10-stile-C-in-gioco.png`, `docs/immagini/screenshot-soldati-C10-cammino-in-gioco.png` e `docs/immagini/screenshot-soldati-C10-combattimento-in-gioco.png`. I contact sheet mostrano gli otto popoli e tutti i fotogrammi: `atlanti-C10-coloni-contact.png`, `atlanti-C10-soldati-contact.png` e `atlanti-C10-soldati-lotta-contact.png`.
+
+Copertura C10: le otto identità civili e gli otto tipi militari dispongono di atlanti per otto direzioni; i soldati hanno marcia e combattimento. La resa effettiva è stata controllata con screenshot OpenGL nella mappa. I lavoratori mantengono l'abito del popolo, mentre merci e attrezzi sono mostrati come dettagli sovrapposti.
