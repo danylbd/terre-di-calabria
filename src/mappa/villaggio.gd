@@ -406,7 +406,11 @@ func magazzini_massimi() -> int:
 
 
 func capienza_magazzini() -> int:
-	return _conta("magazzino") * 200
+	var funzionanti := 0
+	for e in edifici.values():
+		if e.tipo == "magazzino" and e.finito:
+			funzionanti += 1
+	return funzionanti * 200
 
 
 func merci_in_scorta() -> int:
