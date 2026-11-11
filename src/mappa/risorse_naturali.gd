@@ -5,7 +5,7 @@ extends Node
 ## e i giacimenti di ferro nascosti nella roccia dei monti.
 
 const SPECIE_ABBATTIBILI := ["pino", "castagno", "quercia"]
-const RISERVA_ROCCIA := 6
+const RISERVA_ROCCIA := 12
 const TEMPO_CRESCITA := 45.0        # secondi per ogni fase dell'alberello (3 fasi)
 const DURATA_CEPPO := 90.0
 const TEMPO_CAMPO := 35.0           # secondi per ogni fase del grano (seminato, verde, alto, maturo)

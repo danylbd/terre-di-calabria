@@ -1,8 +1,12 @@
 # Stato dello sviluppo
 
-*Aggiornato il 2026-11-07. Fonte del piano completo: [`roadmap.md`](roadmap.md); richieste del proprietario: [`decisioni.md`](decisioni.md).*
+*Aggiornato il 2026-11-11. Fonte del piano completo: [`roadmap.md`](roadmap.md); richieste del proprietario: [`decisioni.md`](decisioni.md).*
 
-## Lavoro corrente — step 55, bug dopo v1.1.1
+## Lavoro corrente — step 56, preparazione v1.1.3
+
+Ramo `fix/bug-mercato-strade-aure`, basato sulla `main` aggiornata a `f6f70fa`. Sistemato il pulsante per comprare le merci nell'Agorà; ridotti gli artefatti delle intersezioni stradali; barra risorse posizionata dopo il menu Costruisci; anteprima dell'aura di lavoro per cava, boscaiolo e altre attività produttive; pietra più abbondante e concentrata con nuovi sprite. Import Godot 4.7.2 e `git diff --check` passati. Test automatici non eseguiti localmente; il workflow GitHub li esegue durante il rilascio.
+
+## Storico step 55
 
 Worktree finale `C:\Users\User\Projects\tdc-wt\step-55-completamento`, ramo `step-55-completamento`, basato sui fix step 55. Corretti e verificati menu Costruisci che si richiude e si riapre nel viewport, nomi alleati su hover, strade con innesti e passaggi sugli alberi, costruzione senza vincolo di spazio bandierina e capienza conteggiata solo per magazzini finiti. La grafica scelta dal proprietario è C10: otto popoli civili e otto tipi militari, atlas 4×8 celle da 160 px, animazioni di marcia e combattimento, filtro lineare e scala 0,38. Gli atlas PNG/JSON e i sorgenti di rigenerazione sono inclusi nel ramo; screenshot runtime OpenGL in `docs/immagini/screenshot-coloni-C10-stile-C-in-gioco.png`, `screenshot-soldati-C10-cammino-in-gioco.png` e `screenshot-soldati-C10-combattimento-in-gioco.png`. Import Godot, `git diff --check` e tutte le 52 suite automatiche sono passati; la PR verso `main` avvia la pubblicazione v1.1.2.
 

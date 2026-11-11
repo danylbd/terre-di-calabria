@@ -1,6 +1,8 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-07 — step 54 pubblicato come v1.1.1; step 55 verificato per v1.1.2.** Repository `danylbd/terre-di-calabria`. La release v1.1.1 è verificata e scaricabile: [release v1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1).
+**Aggiornamento 2026-11-11 — step 56 pronto per v1.1.3.** Repository `danylbd/terre-di-calabria`; worktree corrente `work/terre-di-calabria-bugfix`, ramo `fix/bug-mercato-strade-aure`, basato sulla `main` a `f6f70fa`. Correzioni: acquisto merci nell'Agorà, giunzioni stradali, disposizione menu, aure di lavoro di cave e attività produttive, vene di pietra più dense con nuove rocce. Import Godot 4.7.2 e `git diff --check` completati; suite automatiche non eseguite localmente. Pubblicazione GitHub v1.1.3 ancora da completare e verificare.
+
+La release v1.1.2 è il riferimento pubblico precedente: [release v1.1.2](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.2).
 
 **Step 55 — worktree `C:\Users\User\Projects\tdc-wt\step-55-completamento`, ramo `step-55-completamento`.** Correzioni confermate per menu Costruisci, nomi dei luoghi al passaggio del mouse, costruzione senza spazio per bandierina, fusioni stradali e passaggi nel bosco. L'audit economia ha corretto la capienza: solo magazzini completati aggiungono 200 posti. Il proprietario ha scelto l'opzione 1 per i personaggi C10: otto popoli civili, otto tipi militari, atlanti 4×8 celle a 160 px, marcia e combattimento. Importazione Godot, screenshot runtime e tutte le 52 suite passano. Il merge su `main` avvia il workflow che esporta e pubblica il Setup v1.1.2; prima di chiudere verificare run, asset e tag.
 

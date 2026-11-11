@@ -467,6 +467,7 @@ func _esci_modalita(deseleziona := true) -> void:
 	if _fantasma:
 		_fantasma.visible = false
 	segni.anteprima_confine = []
+	segni.anteprima_lavoro = false
 	if _evidenziato:
 		_evidenziato.evidenzia(Color.WHITE)
 		_evidenziato = null
@@ -484,7 +485,9 @@ func _aggiorna_fantasma() -> void:
 	var ok := villaggio.puo_costruire(tipo_scelto, c)
 	_fantasma.modulate = Color(0.75, 1.0, 0.75, 0.8) if ok else Color(1.0, 0.45, 0.4, 0.6)
 	var info := CatalogoEdifici.dati(tipo_scelto)
-	segni.anteprima_confine = [Vector2(c.x + taglia * 0.5, c.y + taglia * 0.5), float(info["territorio"])] if info.has("territorio") else []
+	var raggio_zona := float(info.get("territorio", Lavoratore.raggio_zona_lavoro(tipo_scelto)))
+	segni.anteprima_confine = [Vector2(c.x + taglia * 0.5, c.y + taglia * 0.5), raggio_zona] if raggio_zona > 0.0 else []
+	segni.anteprima_lavoro = not info.has("territorio") and raggio_zona > 0.0
 	segni.queue_redraw()
 
 
@@ -542,6 +545,9 @@ func _metti_natura() -> void:
 	var latifoglie := FastNoiseLite.new()
 	latifoglie.seed = SEME + 13
 	latifoglie.frequency = 0.06
+	var filoni_pietra := FastNoiseLite.new()
+	filoni_pietra.seed = SEME + 27
+	filoni_pietra.frequency = 0.18
 	for y in dati.altezza:
 		for x in dati.larghezza:
 			if Vector2(x - dati.villaggio.x - 1, y - dati.villaggio.y - 1).length() < 7.0:
@@ -577,7 +583,11 @@ func _metti_natura() -> void:
 					elif rng.randf() < 0.07:
 						_metti("ulivo_%d" % rng.randi_range(1, 3), x, y, rng)
 				T.ROCCIA:
-					if rng.randf() < 0.25:
+					# La pietra forma filoni: densità alta in chiazze ravvicinate e più
+					# bassa fuori dai filoni, così le cave trovano riserve sfruttabili.
+					var filone := filoni_pietra.get_noise_2d(x, y)
+					var probabilita_pietra := 0.72 if filone > -0.08 else 0.18
+					if rng.randf() < probabilita_pietra:
 						_metti("rocce_%d" % rng.randi_range(1, 3), x, y, rng)
 					elif rng.randf() < 0.08:
 						_metti("pino_%d" % rng.randi_range(1, 4), x, y, rng)
@@ -889,19 +899,20 @@ func _crea_interfaccia() -> void:
 
 	barra = BarraRisorse.new()
 	strato.add_child(barra)
-	barra.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 12)
-	barra.grow_horizontal = Control.GROW_DIRECTION_BOTH
 
 	menu = MenuCostruzione.new()
 	menu.villaggio = villaggio
 	strato.add_child(menu)
 	menu.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 14)
+	barra.posiziona_dopo.call_deferred(menu)
+	menu.resized.connect(barra._ricentra)
 	menu.edificio_scelto.connect(_scegli_edificio)
 	menu.strumento.connect(_strumento)
 	villaggio.edifici_speciali_cambiati.connect(menu.aggiorna)
 
 	pannello = PannelloEdificio.new()
 	pannello.villaggio = villaggio
+	pannello.logistica = logistica
 	strato.add_child(pannello)
 	pannello.schiere = schiere
 	pannello.navi_guerra = navi_guerra

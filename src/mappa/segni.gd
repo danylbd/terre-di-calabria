@@ -8,7 +8,8 @@ var villaggio: Villaggio
 var tipo_scelto := ""
 var mostra_bandiere := false
 var inizio_strada := Vector2i(-1, -1)
-var anteprima_confine := []          # [centro (caselle), raggio] del forte che si sta piazzando
+var anteprima_confine := []          # [centro (caselle), raggio] del territorio o della zona di lavoro
+var anteprima_lavoro := false
 const COLORI_POPOLI := [Color(0, 0, 0, 0), Color("2f78a8"), Color("b0322a"), Color("d9a441"), Color("4f8a2a")]
 var _posti: Array[Vector2i] = []
 
@@ -38,8 +39,11 @@ func _draw() -> void:
 		for k in 65:
 			var a := k * TAU / 64
 			punti.append(dati.a_schermo(centro.x + cos(a) * r, centro.y + sin(a) * r))
+		var area := Color("74a94e", 0.12) if anteprima_lavoro else Color(COLORI_POPOLI[1], 0.10)
+		var bordo := Color("78bd55", 0.9) if anteprima_lavoro else Color(COLORI_POPOLI[1], 0.9)
+		draw_colored_polygon(punti, area)
 		draw_polyline(punti, Color(Palette.INCHIOSTRO, 0.5), 5.0)
-		draw_polyline(punti, Color(COLORI_POPOLI[1], 0.9), 2.5)
+		draw_polyline(punti, bordo, 2.5)
 	if mostra_bandiere and villaggio.rete:
 		for c in villaggio.rete.bandiere:
 			var p := dati.a_schermo(c.x + 0.5, c.y + 0.5)

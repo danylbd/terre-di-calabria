@@ -29,6 +29,7 @@ const REGOLAZIONI := {
 	"stoffa_rossa": [0.0, 0.0, 1.15], "bronzo": [0.1, 0.1, 1.1], "pelliccia": [0.1, 0.2, 1.0],
 	"intonaco_bianco": [0.3, 0.35, 1.0], "intonaco_giallo": [0.4, 0.4, 1.1], "blocchi_greci": [0.35, 0.3, 1.05],
 	"roccia_chiara": [0.3, 0.4, 1.0], "sabbia": [0.1, 0.2, 1.05], "maiolica": [0.0, 0.1, 1.2], "piombo": [0.2, 0.2, 1.0],
+	"roccia_fresca": [0.2, 0.2, 1.0],
 	"pietra_grezza": [0.5, 0.4, 1.05], "paglia_scura": [0.2, 0.3, 1.05], "paglia_tetto": [0.2, 0.35, 1.05], "stoffa_verde": [0.0, 0.0, 1.15], "osso": [0.1, 0.15, 1.0],
 	"mattoni": [0.3, 0.3, 1.1], "intonaco_ocra": [0.45, 0.4, 1.15], "laterizio": [0.2, 0.45, 1.05], "laterizio_scuro": [0.15, 0.4, 1.05],
 	"rosso_pompeiano": [0.25, 0.3, 1.15], "stoffa_pompeiana": [0.0, 0.0, 1.15], "basoli": [0.3, 0.3, 1.0],
@@ -771,6 +772,9 @@ static func materiale(nome: String) -> Material:
 		"roccia_chiara":
 			m.albedo_texture = _rumore(62, 0.14, Color("9c8e78"), Color("e2d8c4"))
 			m.uv1_scale = Vector3(2, 2, 2)
+		"roccia_fresca":
+			m.albedo_texture = _rumore(500, 0.18, Color("626d73"), Color("9aa4a7"))
+			m.roughness = 0.9
 		"mare":
 			m.albedo_color = Color("2f7c9a")
 			m.roughness = 0.15
@@ -1298,21 +1302,21 @@ static func rocce(seme: int) -> Node3D:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seme * 31
 	var r := Node3D.new()
-	for k in 3 + seme % 2:
-		var mi := MeshInstance3D.new()
-		var sm := SphereMesh.new()
-		sm.radius = 0.5
-		sm.height = 1.0
-		sm.radial_segments = 7
-		sm.rings = 4
-		mi.mesh = sm
-		var dim := rng.randf_range(0.12, 0.26)
-		mi.scale = Vector3(dim * rng.randf_range(1.0, 1.6), dim * rng.randf_range(0.6, 1.0), dim * rng.randf_range(0.9, 1.4))
-		mi.position = Vector3(rng.randf_range(-0.18, 0.18), dim * 0.3, rng.randf_range(-0.15, 0.15))
-		mi.rotation = Vector3(rng.randf_range(-0.3, 0.3), rng.randf() * TAU, rng.randf_range(-0.3, 0.3))
-		mi.material_override = materiale("roccia_massi")
-		r.add_child(mi)
-	r.add_child(sfera(0.05, Vector3(0.2, 0.02, 0.18), "aghi", Vector3(1.4, 0.5, 1.0)))
+	# Una vena bassa e compatta di lastre fratturate, distinta dai sassi tondi
+	# sparsi: i toni freddi e i piani tagliati leggono come pietra da cava.
+	r.add_child(cilindro(0.34, 0.31, 0.06, Vector3(0, 0.03, 0), "roccia_massi", Vector3.ZERO, 7))
+	for k in 4 + seme % 2:
+		var a := k * TAU / float(4 + seme % 2) + rng.randf_range(-0.18, 0.18)
+		var raggio := rng.randf_range(0.18, 0.32)
+		var altezza := rng.randf_range(0.18, 0.32)
+		var pos := Vector3(cos(a) * rng.randf_range(0.08, 0.2), altezza * 0.5 + 0.05, sin(a) * rng.randf_range(0.08, 0.2))
+		var mat := "roccia_fresca" if k % 3 == 0 else "roccia_massi"
+		r.add_child(cilindro(raggio, raggio * rng.randf_range(0.56, 0.82), altezza, pos, mat,
+			Vector3(rng.randf_range(-0.18, 0.18), rng.randf() * TAU, rng.randf_range(-0.18, 0.18)), 5 + k % 2))
+	# Due schegge chiare rendono riconoscibile il giacimento anche a zoom ridotto.
+	for k in 2:
+		var pos := Vector3(rng.randf_range(-0.18, 0.18), rng.randf_range(0.12, 0.22), rng.randf_range(-0.16, 0.16))
+		r.add_child(scatola(Vector3(0.038, 0.018, 0.018), pos, "roccia_chiara", Vector3(0, rng.randf() * TAU, rng.randf_range(-0.35, 0.35))))
 	return r
 
 

@@ -117,6 +117,7 @@ Piano completo: [`piano-imperivm.md`](piano-imperivm.md). Si aggiunge sopra l'ec
 | 53 | Partita pacifica più dinamica: esplorare rovine e trovare ricompense | fatto (v1.1.0) |
 | 54 | Correzioni emerse dalle schermate: accesso alternativo agli edifici, bandierine nascoste, menu Costruisci richiudibile, area edificabile ampliata e personaggi/animazioni rifiniti | fatto (v1.1.1) |
 | 55 | Bug raccolti dopo la release: menu Costruisci, coloni, nomi dei luoghi, rete stradale, piazzamento senza vincolo della bandierina, atlas distinti per popolo e capienza effettiva dei magazzini | fatto (v1.1.2) |
+| 56 | Agorà: acquisto merci; giunzioni stradali; sovrapposizione dei menu; aure di lavoro per attività produttive; vene di pietra più dense e nuova grafica | pronto per pubblicazione (v1.1.3) |
 
 ## Fase 5 — rimandata a una versione successiva
 

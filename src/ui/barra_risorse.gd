@@ -23,6 +23,7 @@ var _capienza: Label
 var _elenco: ScrollContainer
 var _pulsante_elenco: Button
 var _dettaglio := false
+var _elemento_sopra: Control
 
 
 func _ready() -> void:
@@ -128,4 +129,17 @@ func aggiorna_coloni(popolazione: int, capacita: int) -> void:
 
 func _ricentra() -> void:
 	reset_size()
-	set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 12)
+	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 12)
+	var larghezza := get_viewport_rect().size.x
+	var sinistra := 12.0
+	if is_instance_valid(_elemento_sopra):
+		sinistra = _elemento_sopra.position.x + _elemento_sopra.size.x + 14.0
+	offset_left = sinistra
+	offset_right = larghezza - 12.0
+	size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+func posiziona_dopo(elemento: Control) -> void:
+	_elemento_sopra = elemento
+	_ricentra()
+	get_viewport().size_changed.connect(_ricentra)
