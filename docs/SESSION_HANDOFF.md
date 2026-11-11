@@ -1,6 +1,6 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-11 — step 56 pronto per v1.1.3.** Repository `danylbd/terre-di-calabria`; worktree corrente `work/terre-di-calabria-bugfix`, ramo `fix/bug-mercato-strade-aure`, basato sulla `main` a `f6f70fa`. Correzioni: acquisto merci nell'Agorà, giunzioni stradali, disposizione menu, aure di lavoro di cave e attività produttive, vene di pietra più dense con nuove rocce. Import Godot 4.7.2 e `git diff --check` completati; suite automatiche non eseguite localmente. Pubblicazione GitHub v1.1.3 ancora da completare e verificare.
+**Aggiornamento 2026-11-11 — step 56 in pubblicazione v1.1.3.** Repository `danylbd/terre-di-calabria`; PR #2 (`dbe19bc`) integrata. Correzioni: acquisto merci nell'Agorà, giunzioni stradali, disposizione menu, aure di lavoro di cave e attività produttive, vene di pietra più dense con nuove rocce. La prima pipeline ha importato il progetto, ma `test_durata.gd` ha raggiunto 200 merci in rete. Aggiunto limite di produzione a 190 merci sul ramo `fix/limite-rete-merci`; va integrato e verificato con una nuova pipeline prima che la release sia disponibile.
 
 La release v1.1.2 è il riferimento pubblico precedente: [release v1.1.2](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.2).
 

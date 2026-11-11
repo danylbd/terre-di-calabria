@@ -345,3 +345,4 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - L'anteprima di costruzione mostra il raggio operativo per cave e attività produttive.
 - Aumentata la disponibilità di pietra, disposte le rocce in vene più concentrate e aggiornate le relative immagini.
 - Import Godot 4.7.2 e `git diff --check` passati; suite automatiche da eseguire con GitHub Actions.
+- La prima pipeline ha rilevato 200 merci in rete in `test_durata.gd`; limitata la produzione quando la rete raggiunge 190 merci per evitare l'accumulo e mantenere sotto controllo la capacità dei portatori.
