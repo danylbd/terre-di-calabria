@@ -1,0 +1,5 @@
+esito: success
+commit: 61b4df257e9223ef3f7d190daa44ccff7a1e4502
+esecuzione: 142 (push)
+data: 2026-11-11T16:18:17Z
+
