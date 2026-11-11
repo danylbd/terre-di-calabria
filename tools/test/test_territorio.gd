@@ -84,6 +84,11 @@ func _prova() -> void:
 	_controlla(_conta(1) == mio_0, "i confini tornano come prima (%d)" % _conta(1))
 	_controlla(p.rete.tratti.size() < tratti_prima, "le strade fuori dai confini sono sparite")
 
+	# Isola la prova del castello: la sovrapposizione con il centro esterno è già
+	# stata verificata sopra e non deve ridurre casualmente l'espansione misurata.
+	v.centri_esterni.clear()
+	v._ricalcola_territorio()
+
 	# il castello allarga di più della torre
 	var cast := _piazza("castello", func(f): return Vector2(f - mag.bandiera).length(), true)
 	_controlla(cast != null and cast.presidiata, "castello piazzato e presidiato")

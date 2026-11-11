@@ -1,6 +1,6 @@
 # Passaggio di consegne tra sessioni
 
-**Aggiornamento 2026-11-11 — step 56 in pubblicazione v1.1.3.** Repository `danylbd/terre-di-calabria`; PR #2 (`dbe19bc`) integrata. Correzioni: acquisto merci nell'Agorà, giunzioni stradali, disposizione menu, aure di lavoro di cave e attività produttive, vene di pietra più dense con nuove rocce. La prima pipeline ha importato il progetto, ma `test_durata.gd` ha raggiunto 200 merci in rete. Aggiunto limite di produzione a 190 merci sul ramo `fix/limite-rete-merci`; va integrato e verificato con una nuova pipeline prima che la release sia disponibile.
+**Aggiornamento 2026-11-11 — step 56 in pubblicazione v1.1.3.** Repository `danylbd/terre-di-calabria`; PR #2 (`dbe19bc`) e PR #3 (`f1d72be`) integrate. Correzioni: acquisto merci nell'Agorà, giunzioni stradali, disposizione menu, aure di lavoro di cave e attività produttive, vene di pietra più dense con nuove rocce. La suite di durata ora passa con il limite di rete a 190 merci. La successiva pipeline ha esposto una sovrapposizione nel test territoriale; isolata la verifica del castello in PR #4, in attesa della pipeline per pubblicare la release.
 
 La release v1.1.2 è il riferimento pubblico precedente: [release v1.1.2](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.2).
 
