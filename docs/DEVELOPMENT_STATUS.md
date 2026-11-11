@@ -4,7 +4,7 @@
 
 ## Lavoro corrente — step 56, preparazione v1.1.3
 
-Ramo `fix/bug-mercato-strade-aure`, basato sulla `main` aggiornata a `f6f70fa`. Sistemato il pulsante per comprare le merci nell'Agorà; ridotti gli artefatti delle intersezioni stradali; barra risorse posizionata dopo il menu Costruisci; anteprima dell'aura di lavoro per cava, boscaiolo e altre attività produttive; pietra più abbondante e concentrata con nuovi sprite. Import Godot 4.7.2 e `git diff --check` passati. Test automatici non eseguiti localmente; il workflow GitHub li esegue durante il rilascio.
+PR #2 integrata in `main`. Importazione Godot 4.7.2 passata. Il workflow ha rilevato in `test_durata.gd` 200 merci in rete, superando la soglia di stabilità dopo aver aumentato le riserve di pietra. Limitata la produzione quando la rete raggiunge 190 merci; in attesa di una nuova esecuzione completa della pipeline.
 
 ## Storico step 55
 

@@ -8,6 +8,7 @@ signal prodotta(tipo: String)
 
 const INTERVALLO_USCITA := 0.7      # secondi tra un'uscita e l'altra da un magazzino
 const MAX_PER_BANDIERA := 8
+const MAX_MERCI_IN_RETE := 190      # evita che la produzione superi stabilmente la capacità dei portatori
 const SCORTA_MINIMA := 6            # chi produce senza materie prime (il pozzo) si ferma oltre questa scorta
 const SCORTA_MASSIMA := 12          # chi trasforma (carbonaia, mulino...) si ferma oltre questa, se nessuno ne chiede
 ## merci che servono sempre: i ducati (all'agorà si compra con quelli) e le assi (per costruire)
@@ -115,7 +116,7 @@ func _spazio_ingresso(e: Edificio, tipo: String) -> int:
 ## Un lavoratore ha prodotto una merce: la posa alla bandierina del suo edificio e le trova
 ## una destinazione (prima chi la usa per lavorare, altrimenti il magazzino).
 func produci(tipo: String, da: Edificio) -> void:
-	if tipo == "":
+	if tipo == "" or merci.size() >= MAX_MERCI_IN_RETE:
 		return
 	if merci_in_uscita(da) >= 50:
 		return
@@ -132,7 +133,7 @@ func produci(tipo: String, da: Edificio) -> void:
 
 
 func puo_produrre(da: Edificio) -> bool:
-	if not da.produzione_attiva:
+	if not da.produzione_attiva or merci.size() >= MAX_MERCI_IN_RETE:
 		return false
 	var prodotti := CatalogoEdifici.prodotti(da.tipo)
 	if prodotti.is_empty():
