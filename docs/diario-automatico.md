@@ -338,3 +338,10 @@ Memoria tra un turno automatico e l'altro: in fondo l'ultimo turno.
 - Audit economia/save: corretto il conteggio della capienza per escludere i magazzini incompleti; test dedicato, Agorà, salvataggio, stagione e durata passano.
 - Adeguati i test alle quattro pose C10; import Godot e 52 suite completate con `RISULTATO: OK`.
 - Aggiornata la versione a 1.1.2 e il workflow affinché esegua tutte le suite prima dell'export; merge su main da verificare per chiudere il rilascio.
+### 2026-11-11 — Step 56: Agorà, strade, aure di lavoro e pietra (v1.1.3)
+
+- Aggiunto l'acquisto manuale delle merci nell'Agorà, separato dagli ordini automatici e dagli edifici speciali.
+- Migliorate le estremità e gli incroci stradali; sistemata la sovrapposizione tra menu Costruisci e barra risorse.
+- L'anteprima di costruzione mostra il raggio operativo per cave e attività produttive.
+- Aumentata la disponibilità di pietra, disposte le rocce in vene più concentrate e aggiornate le relative immagini.
+- Import Godot 4.7.2 e `git diff --check` passati; suite automatiche da eseguire con GitHub Actions.

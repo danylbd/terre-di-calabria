@@ -113,7 +113,7 @@ static func salva(p: Node2D, percorso := PERCORSO) -> bool:
 	for e in v.edifici.values():
 		edifici.append({"id": e.id, "tipo": e.tipo, "casella": _v(e.casella), "bandiera": _v(e.bandiera), "finito": e.finito, "progresso": e.progresso,
 			"consegnati": e.consegnati, "richiesti": e.richiesti, "ingresso": e.ingresso, "in_arrivo": e.in_arrivo,
-			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "vendite_in_coda": e.vendite_in_coda, "guadagno": e.guadagno, "presidiata": e.presidiata, "soldati": e.soldati + e.soldati_in_arrivo, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono, "produzione_attiva": e.produzione_attiva, "priorita_materiali": e.priorita_materiali,
+			"prodotti": e.prodotti, "nascita": e.nascita, "acquisto": e.acquisto, "acquisto_prenotato": e.acquisto_prenotato, "vendite_in_coda": e.vendite_in_coda, "guadagno": e.guadagno, "presidiata": e.presidiata, "soldati": e.soldati + e.soldati_in_arrivo, "manca_attrezzo": e.manca_attrezzo, "manca_colono": e.manca_colono, "produzione_attiva": e.produzione_attiva, "priorita_materiali": e.priorita_materiali,
 			"lavoratore": e.lavoratore != null and is_instance_valid(e.lavoratore)})
 	d["edifici"] = edifici
 	d["pionieri"] = v.pionieri.map(func(c): return _v(c))
@@ -221,6 +221,7 @@ static func carica(p: Node2D, percorso := PERCORSO) -> bool:
 		e.priorita_materiali = int(s.get("priorita_materiali", 0))
 		e.nascita = s["nascita"]
 		e.acquisto = s.get("acquisto", "")
+		e.acquisto_prenotato = s.get("acquisto_prenotato", "")
 		e.vendite_in_coda.assign(s.get("vendite_in_coda", []))
 		e.guadagno = int(s.get("guadagno", 0))
 		e.presidiata = s.get("presidiata", false)

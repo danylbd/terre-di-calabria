@@ -28,6 +28,7 @@ var produzione_attiva := true
 var priorita_materiali := 0       # priorità di consegna al cantiere: 0 normale, 1 alta, 2 urgente
 var nascita := 0.0                   # abitazioni: secondi al prossimo colono
 var acquisto := ""                   # agorà: la merce da comprare con i ducati ("" = niente)
+var acquisto_prenotato := ""          # agorà: acquisto singolo richiesto dal giocatore
 var vendite_in_coda: Array[String] = [] # agorà: ordine in cui arrivano le merci da vendere
 var guadagno := 0                    # agorà: ducati ricavati finora
 var presidiata := false              # torri e castelli: la guardia è entrata, i confini si allargano

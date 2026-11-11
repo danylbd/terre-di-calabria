@@ -18,6 +18,7 @@ var _testo: RichTextLabel
 var _icona: TextureRect
 var _aggiorna := 0.0
 var _compra: OptionButton
+var _compra_merce: Button
 var _riga_compra: HBoxContainer
 var _riga_speciali: HBoxContainer
 var _speciale: OptionButton
@@ -27,6 +28,7 @@ var _attacca: Button
 var _schiera: Button
 var schiere: Schiere
 var navi_guerra: NaviGuerra
+var logistica: Logistica
 var _nave: Button
 var _macchine := {}                  # "ariete"/"onagro" -> Button (all'armaiolo)
 var _produzione: Button
@@ -77,6 +79,7 @@ func _ready() -> void:
 	et.add_theme_color_override("font_color", Palette.INCHIOSTRO)
 	_riga_compra.add_child(et)
 	_compra = OptionButton.new()
+	_compra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_compra.add_item("niente")
 	for m in CatalogoEdifici.ACQUISTO:
 		_compra.add_item("%s (%d)" % [CatalogoEdifici.NOMI_RISORSE[m], CatalogoEdifici.ACQUISTO[m]])
@@ -84,6 +87,13 @@ func _ready() -> void:
 		if edificio:
 			edificio.acquisto = "" if i == 0 else CatalogoEdifici.ACQUISTO.keys()[i - 1])
 	_riga_compra.add_child(_compra)
+	_compra_merce = Button.new()
+	_compra_merce.text = "Compra"
+	_compra_merce.custom_minimum_size = Vector2(92, 36)
+	_compra_merce.tooltip_text = "Ordina una singola unità della merce selezionata"
+	_compra_merce.pressed.connect(_ordina_merce)
+	_riga_compra.add_child(_compra_merce)
+	_riga_compra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_riga_speciali = HBoxContainer.new()
 	_riga_speciali.add_theme_constant_override("separation", 8)
 	colonna.add_child(_riga_speciali)
@@ -97,7 +107,7 @@ func _ready() -> void:
 		_speciale.add_item("%s (%d ducati)" % [d["nome"], d["prezzo_ducati"]])
 	_riga_speciali.add_child(_speciale)
 	_compra_speciale = Button.new()
-	_compra_speciale.text = "Compra"
+	_compra_speciale.text = "Compra edificio"
 	_compra_speciale.pressed.connect(func():
 		if edificio and villaggio.acquista_edificio_speciale(CatalogoEdifici.EDIFICI_SPECIALI[_speciale.selected]):
 			_riempi())
@@ -170,8 +180,8 @@ func mostra(e: Edificio) -> void:
 	visible = true
 	_icona.texture = Sprites.icona(Popoli.sprite(e.tipo, Popoli.di(e.proprietario)))
 	_titolo.text = CatalogoEdifici.dati(e.tipo)["nome"]
-	_riga_compra.visible = e.tipo == "agora"
-	_riga_speciali.visible = e.tipo == "agora"
+	_riga_compra.visible = e.tipo == "agora" and e.proprietario == 1
+	_riga_speciali.visible = e.tipo == "agora" and e.proprietario == 1
 	_pulsanti.visible = e.proprietario == 1
 	if e.tipo == "agora":
 		_compra.select(0 if e.acquisto == "" else CatalogoEdifici.ACQUISTO.keys().find(e.acquisto) + 1)
@@ -235,6 +245,24 @@ func _riempi() -> void:
 	if e.tipo == "agora":
 		var speciale: String = CatalogoEdifici.EDIFICI_SPECIALI[_speciale.selected]
 		_compra_speciale.disabled = villaggio.scorte.get("ducati", 0) < CatalogoEdifici.dati(speciale)["prezzo_ducati"]
+		var merce := _merce_selezionata()
+		var prezzo: int = CatalogoEdifici.ACQUISTO.get(merce, 0)
+		var ordine_pendente := e.acquisto_prenotato != ""
+		var scorte_sufficienti := logistica != null and merce != "" and not logistica.serve(merce, Logistica.SCORTA_MASSIMA)
+		_compra_merce.disabled = merce == "" or ordine_pendente or not e.finito or not e.collegato or logistica == null or villaggio.scorte.get("ducati", 0) < prezzo or scorte_sufficienti
+		if ordine_pendente:
+			_compra_merce.tooltip_text = "Ordine in attesa: %s" % CatalogoEdifici.NOMI_RISORSE.get(e.acquisto_prenotato, e.acquisto_prenotato)
+		elif merce == "":
+			_compra_merce.tooltip_text = "Scegli una merce da comprare"
+		elif not e.finito or not e.collegato:
+			_compra_merce.tooltip_text = "Completa e collega l'agorà prima di acquistare"
+		elif scorte_sufficienti:
+			_compra_merce.tooltip_text = "Il magazzino ha già scorte sufficienti di questa merce"
+		elif villaggio.scorte.get("ducati", 0) < prezzo:
+			_compra_merce.tooltip_text = "Servono %d ducati per comprare %s" % [prezzo, CatalogoEdifici.NOMI_RISORSE.get(merce, "merce")]
+		else:
+			_compra_merce.tooltip_text = "Ordina una singola unità di %s per %d ducati" % [CatalogoEdifici.NOMI_RISORSE.get(merce, "merce"), prezzo]
+		_compra_merce.text = "In coda…" if ordine_pendente else "Compra"
 	if info.has("soldati_max") and e.finito:
 		righe.append("Soldati: %d / %d%s" % [e.soldati, info["soldati_max"], "  (+%d in arrivo)" % e.soldati_in_arrivo if e.soldati_in_arrivo > 0 else ""])
 	righe.append("[b]%s[/b]" % stato(e, villaggio))
@@ -267,6 +295,21 @@ func _riempi() -> void:
 			var nomi := prodotti_edificio.map(func(p): return "attrezzi" if p == "attrezzi" else CatalogoEdifici.NOMI_RISORSE[p].to_lower())
 			righe.append("Produce: %s  —  finora %d" % [", ".join(nomi), e.prodotti])
 	_testo.text = "\n".join(righe)
+
+
+func _merce_selezionata() -> String:
+	return "" if _compra.selected <= 0 else CatalogoEdifici.ACQUISTO.keys()[_compra.selected - 1]
+
+
+func _ordina_merce() -> void:
+	var merce := _merce_selezionata()
+	if edificio == null or edificio.proprietario != 1 or not edificio.finito or not edificio.collegato or merce == "" or edificio.acquisto_prenotato != "":
+		return
+	var prezzo: int = CatalogoEdifici.ACQUISTO[merce]
+	if villaggio.scorte.get("ducati", 0) < prezzo or (logistica and not logistica.serve(merce, Logistica.SCORTA_MASSIMA)):
+		return
+	edificio.acquisto_prenotato = merce
+	_riempi()
 
 
 ## Una frase che dice a che punto è l'edificio e, se è fermo, perché.

@@ -50,6 +50,26 @@ var _avvisato := false
 var _colpo := 0.0
 
 
+static func raggio_zona_lavoro(tipo: String) -> float:
+	if tipo in ["boscaiolo", "cava", "pescatore", "uliveto"]:
+		return RAGGIO
+	if tipo == "pesca_spada":
+		return RAGGIO_LARGO
+	if tipo in ["miniera_ferro", "miniera_argento"]:
+		return 3.0
+	if tipo == "guardaboschi":
+		return RAGGIO - 1
+	if tipo == "raccoglitore_funghi":
+		return RAGGIO_LARGO
+	if tipo in ["fattoria", "vigneto", "ortolano", "agrumeto"]:
+		return RAGGIO_CAMPI + 1
+	if tipo == "argillaio":
+		return 4.0
+	if tipo == "saline":
+		return 3.0
+	return 0.0
+
+
 func avvia(e: Edificio, r: RisorseNaturali, l: Logistica, rs: ReteStrade, partenza: Array[Vector2]) -> void:
 	edificio = e
 	risorse = r
@@ -362,10 +382,15 @@ func _lavora_agora() -> void:
 			Suono.suona_in("completato", edificio.global_position, -10.0)
 			_attesa = 2.0          # il mercante resta al banco: la prossima vendita tra poco
 			return
-	var a := edificio.acquisto
+	var singolo := edificio.acquisto_prenotato != ""
+	var a: String = edificio.acquisto_prenotato if singolo else edificio.acquisto
+	if singolo and (v.scorte.get("ducati", 0) < CatalogoEdifici.ACQUISTO[a] or not logistica.serve(a, Logistica.SCORTA_MASSIMA)):
+		return
 	if a != "" and v.scorte.get("ducati", 0) >= CatalogoEdifici.ACQUISTO[a] and logistica.serve(a, Logistica.SCORTA_MASSIMA):
 		v.scorte["ducati"] -= CatalogoEdifici.ACQUISTO[a]
 		v.scorte_cambiate.emit()
+		if singolo:
+			edificio.acquisto_prenotato = ""
 		_attrezzo_scelto = a
 		stato = Stato.LAVORO
 		_attesa = CatalogoEdifici.dati(mestiere).get("durata", DURATA_DENTRO) * edificio.villaggio.vantaggi.get("lavoro", 1.0) * Popoli.durata(mestiere)

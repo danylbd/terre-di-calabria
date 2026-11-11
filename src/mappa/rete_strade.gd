@@ -327,12 +327,14 @@ func _dividi(t: Tratto, c: Vector2i) -> void:
 
 func _nuova_linea() -> Line2D:
 	var l := Line2D.new()
-	l.width = 40.0
+	l.width = 36.0
 	l.texture = TEXTURE_STRADA
 	l.texture_mode = Line2D.LINE_TEXTURE_TILE
 	l.joint_mode = Line2D.LINE_JOINT_ROUND
-	l.begin_cap_mode = Line2D.LINE_CAP_ROUND
-	l.end_cap_mode = Line2D.LINE_CAP_ROUND
+	# I tratti si incontrano al centro delle bandierine: cap tondi sovrapposti
+	# creano nodi gonfi e irregolari quando tre o più strade si collegano.
+	l.begin_cap_mode = Line2D.LINE_CAP_NONE
+	l.end_cap_mode = Line2D.LINE_CAP_NONE
 	l.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	l.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	return l

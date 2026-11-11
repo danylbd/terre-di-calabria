@@ -3,11 +3,11 @@
 Gioco di strategia ed economia in stile «costruisci e trasporta», ambientato nella Calabria antica e medievale.
 Originale: meccaniche ispirate ai classici del genere, ma grafica, popoli, storia, musica e nomi sono nostri.
 
-## Versione attuale: 1.1.1
+## Versione corrente in pubblicazione: 1.1.3
 
-Corregge il piazzamento degli edifici vicino agli ingressi occupati, nasconde le bandierine stradali durante il gioco, richiude davvero il menu Costruisci e amplia l'area edificabile: magazzino iniziale di raggio 13 e torri di raggio 9, sempre attive solo con una guardia presente. Coloni e guardie sono ridimensionati; le animazioni e i vestiti dei lavoratori sono stati rifiniti. Il salvataggio conserva ingressi, rete stradale e territorio già esplorato.
+Corregge l'acquisto manuale delle merci nell'Agorà, migliora le giunzioni stradali, sistema la sovrapposizione dei menu e mostra l'aura di lavoro durante il piazzamento delle attività produttive. Le vene di pietra sono più abbondanti e concentrate, con una nuova grafica.
 
-Scarica [TerreDiCalabria-Setup-1.1.1.exe](https://github.com/danylbd/terre-di-calabria/releases/download/v1.1.1/TerreDiCalabria-Setup-1.1.1.exe) dalla [release 1.1.1](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.1) (Windows ARM64 o x64).
+La build Windows ARM64/x64 verrà pubblicata nella [release 1.1.3](https://github.com/danylbd/terre-di-calabria/releases/tag/v1.1.3) al completamento di GitHub Actions.
 
 ## Che cosa c'è nella versione 1.1.0
 
