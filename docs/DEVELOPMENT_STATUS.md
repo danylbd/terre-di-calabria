@@ -4,7 +4,7 @@
 
 ## Lavoro corrente — step 56, preparazione v1.1.3
 
-PR #2 integrata in `main`. Importazione Godot 4.7.2 passata. Il workflow ha rilevato in `test_durata.gd` 200 merci in rete, superando la soglia di stabilità dopo aver aumentato le riserve di pietra. Limitata la produzione quando la rete raggiunge 190 merci; in attesa di una nuova esecuzione completa della pipeline.
+PR #2 integrata in `main`. La prima pipeline ha trovato 200 merci in rete in `test_durata.gd`; limitata la produzione a 190 merci. Nella pipeline successiva la durata è passata; `test_territorio.gd` era condizionato da quante celle del castello restavano già nel territorio del centro esterno. Isolata la verifica del raggio del castello dopo aver già controllato la sovrapposizione nemica; attesa nuova pipeline.
 
 ## Storico step 55
 
